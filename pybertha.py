@@ -1,4 +1,4 @@
-from ctypes import cdll
+import ctypes
 
 import os.path
 
@@ -8,6 +8,14 @@ if (not os.path.isfile(soname) ):
     print "SO ", soname, " does not exist "
     exit()
 
-berthaw = cdll.LoadLibrary(soname)
+berthaw = ctypes.cdll.LoadLibrary(soname)
 
-berthaw.__bertha_wrapper_MOD_bertha_main()
+fittcoefffname = "fitcoeff.txt"
+vctfilename = "vct.txt" 
+ovapfilename = "ovap.txt"
+in_fittcoefffname = ctypes.c_char_p(fittcoefffname)
+in_vctfilename = ctypes.c_char_p(vctfilename)
+in_ovapfilename = ctypes.c_char_p(ovapfilename)
+
+berthaw.__bertha_wrapper_MOD_bertha_main(in_fittcoefffname, in_vctfilename, \
+        in_ovapfilename, len(fittcoefffname), len(vctfilename), len(ovapfilename))

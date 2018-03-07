@@ -4,7 +4,7 @@
 
       contains
 
-      subroutine bertha_main()
+      subroutine bertha_main(fittcoefffname, vctfilename, ovapfilename)
 
       use spec, only: coord, znuc, cnuc, expset, iznuc, icrge, kvals,
      > nkappa, lmaxx, nfunct, ncent, ndim, nshift, nocc,
@@ -23,6 +23,9 @@
 !     use looptime, only: loop3
 
       implicit none
+
+      character*(*), intent(in) :: fittcoefffname, vctfilename,
+     >   ovapfilename
 
       interface
         subroutine diagonalizer (eigen)
@@ -58,8 +61,6 @@
       real :: coulenergy
 
       character(len=7) :: expo
-      character(len=11) :: vctfilename
-      character(len=11) :: ovapfilename
 
       real, external :: walltime, cputime
 
@@ -78,12 +79,9 @@
       ndim = 0
       nshift = 0
 
-      open (unit=11, file="fittcoeff.restart", err=9999,
+      open (unit=11, file=fittcoefffname, err=9999,
      +      status ="unknown")
 
-      write(vctfilename,'(a7)') "vct.out"
-      write(ovapfilename,'(a8)') "ovap.out"
-  
       call factrl ()
 
       lammax = 4 * maxlqn + 10
@@ -212,7 +210,7 @@
         ioccm0 = nocc
         allocate(v(nfitt),zz(nfitt),stat=rc)
         if (rc.ne.0) call errmsg('error allocating memory')
-        open(unit=11, file="fittcoeff.restart", status='unknown')
+        open(unit=11, file=fittcoefffname, status='unknown')
         rewind(11)
         read(11,*) v
 
@@ -281,7 +279,7 @@
  5678   format ('Time for the factlu walltime             ', 
      +          f10.2, '  cputime ', f10.2)
 
-        !write (11, *) v
+        write (11, *) v
         rewind (11)
 
         call jfitenergy(v,nfitt,efittcoul)
