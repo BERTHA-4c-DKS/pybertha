@@ -1,12 +1,5 @@
       module bertha_wrapper
 
-      implicit none
-
-      contains
-
-      subroutine bertha_main(fittcoefffname, vctfilename, ovapfilename,
-     +                       fnameinput, fittfname)
-
       use spec, only: coord, znuc, cnuc, expset, iznuc, icrge, kvals,
      > nkappa, lmaxx, nfunct, ncent, ndim, nshift, nocc,
      > iter, iall, irun, readinput
@@ -20,13 +13,57 @@
       use shiftr, only: sfact
       use opensh, only: nopen
       use indsys
-!     use timetot, only: tot
-!     use looptime, only: loop3
+
+      implicit none
+
+      integer :: intype, fitcase, testfit, igrid, iprint, mactve,
+     +           maxit, nactve, ncore
+      real :: amass(ncentm), sfact1, sfact2
+      character(len=7) :: expo
+
+      contains
+
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
+      subroutine bertha_init(fnameinput)
+
+      implicit none
+
+      character*(*), intent(in) :: fnameinput
+
+      integer :: lammax
+
+      call writeversion ()
+
+      ndim = 0
+      maxit = 2
+      nshift = 0
+
+      call factrl ()
+
+      lammax = 4 * maxlqn + 10
+      call gfinit(lammax)
+
+      if(.not.readinput (0, intype, amass, ncore, mactve, nactve,
+     +                   igrid, nopen, iprint, maxit, expo,
+     +                   fitcase, testfit, sfact1, sfact2, fnameinput)) then
+        stop
+      endif
+
+      write(6,11) ndim
+   11 format(2x,'total dimension of the matrix: ',i6/)
+
+      end subroutine bertha_init
+
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
+      subroutine bertha_main(fittcoefffname, vctfilename, ovapfilename,
+     +                       fittfname)
 
       implicit none
 
       character*(*), intent(in) :: fittcoefffname, vctfilename,
-     >   ovapfilename, fnameinput, fittfname
+     >   ovapfilename, fittfname
 
       interface
         subroutine diagonalizer (eigen)
@@ -43,14 +80,14 @@
       real, parameter :: tresh = 1.0e-11
       complex, parameter :: czero = (0.0,0.0)
 
-      integer :: nfitt, fitcase, testfit, lammax, intype,
-     + icent, j, ii, jj, i, iprint, ncore, mactve, nactve, 
-     + igrid, nuca, nucb, nucc, nuccnt, rc, istate, a, iocc
+      integer :: nfitt, 
+     + icent, j, ii, jj, i, 
+     + nuca, nucb, nucc, nuccnt, rc, istate, a, iocc
 
       real, allocatable :: eigen(:), v(:), zz(:)
 
-      real :: amass(ncentm), monoelectronenergy, centfun(ncentm), 
-     + sfact1, sfact2, erep, dist, r1x, r1y, r1z, d1, r2x, 
+      real :: monoelectronenergy, centfun(ncentm), 
+     + erep, dist, r1x, r1y, r1z, d1, r2x, 
      + r2y, r2z, d2, scprod, ang, diff, eold, oldecoul, rtresh1, 
      + rtresh2, efittcoulplusexc, efittcoul, etemp, excfit, 
      + exc, cputime11, timetomt1, ffre,
@@ -61,41 +98,15 @@
       real :: energy1, wtimeio, ctimeio, energy2
       real :: coulenergy
 
-      character(len=7) :: expo
 
       real, external :: walltime, cputime
 
-      integer :: maxit
-
       logical :: filefound
-
-      maxit = 2
 
       cputime11 = cputime ()
 
-      call writeversion ()
-
-      ! open (unit=98, file = "out.val", ERR=9999, status = "unknown")
-
-      ndim = 0
-      nshift = 0
-
       open (unit=11, file=fittcoefffname, err=9999,
      +      status ="unknown")
-
-      call factrl ()
-
-      lammax = 4 * maxlqn + 10
-      call gfinit(lammax)
-
-      if(.not.readinput (0, intype, amass, ncore, mactve, nactve,
-     +                   igrid, nopen, iprint, maxit, expo,
-     +                   fitcase, testfit, sfact1, sfact2, fnameinput)) then
-        stop
-      endif
-      
-      write(6,11) ndim
-   11 format(2x,'total dimension of the matrix: ',i6/)
 
       call getmem ()
       allocate(eigen(ndim), stat=rc)
