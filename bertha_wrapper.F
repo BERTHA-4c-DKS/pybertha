@@ -4,7 +4,8 @@
 
       contains
 
-      subroutine bertha_main(fittcoefffname, vctfilename, ovapfilename)
+      subroutine bertha_main(fittcoefffname, vctfilename, ovapfilename,
+     +                       fnameinput, fittfname)
 
       use spec, only: coord, znuc, cnuc, expset, iznuc, icrge, kvals,
      > nkappa, lmaxx, nfunct, ncent, ndim, nshift, nocc,
@@ -25,7 +26,7 @@
       implicit none
 
       character*(*), intent(in) :: fittcoefffname, vctfilename,
-     >   ovapfilename
+     >   ovapfilename, fnameinput, fittfname
 
       interface
         subroutine diagonalizer (eigen)
@@ -89,7 +90,7 @@
 
       if(.not.readinput (0, intype, amass, ncore, mactve, nactve,
      +                   igrid, nopen, iprint, maxit, expo,
-     +                   fitcase, testfit, sfact1, sfact2)) then
+     +                   fitcase, testfit, sfact1, sfact2, fnameinput)) then
         stop
       endif
       
@@ -100,7 +101,7 @@
       allocate(eigen(ndim), stat=rc)
 
       call initijkvec()
-      call initfitting(fitcase,nfitt)
+      call initfitting(fitcase,nfitt,fittfname)
       call flabel(centfun)
 ! nuclear repulsion energy
       erep = 0.0

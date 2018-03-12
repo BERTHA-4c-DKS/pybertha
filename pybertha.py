@@ -13,9 +13,14 @@ berthaw = ctypes.cdll.LoadLibrary(soname)
 fittcoefffname = "fitcoeff.txt"
 vctfilename = "vct.txt" 
 ovapfilename = "ovap.txt"
+fnameinput = "input.inp"
+fittfname = "fitt2.inp"
 in_fittcoefffname = ctypes.c_char_p(fittcoefffname)
 in_vctfilename = ctypes.c_char_p(vctfilename)
 in_ovapfilename = ctypes.c_char_p(ovapfilename)
+in_fnameinput = ctypes.c_char_p(fnameinput)
+in_fittfname = ctypes.c_char_p(fittfname)
 
 berthaw.__bertha_wrapper_MOD_bertha_main(in_fittcoefffname, in_vctfilename, \
-        in_ovapfilename, len(fittcoefffname), len(vctfilename), len(ovapfilename))
+        in_ovapfilename, in_fnameinput, in_fittfname, len(fittcoefffname), \
+        len(vctfilename), len(ovapfilename), len(fnameinput), len(fittfname))
