@@ -21,8 +21,7 @@ in_ovapfilename = ctypes.c_char_p(ovapfilename)
 in_fnameinput = ctypes.c_char_p(fnameinput)
 in_fittfname = ctypes.c_char_p(fittfname)
 
-berthaw.__bertha_wrapper_MOD_bertha_init(in_fnameinput, len(fnameinput))
+berthaw.bertha_init(in_fnameinput)
 
-berthaw.__bertha_wrapper_MOD_bertha_main(in_fittcoefffname, in_vctfilename, \
-        in_ovapfilename, in_fittfname, len(fittcoefffname), \
-        len(vctfilename), len(ovapfilename), len(fittfname))
+berthaw.bertha_main(in_fittcoefffname, in_vctfilename, \
+        in_ovapfilename, in_fittfname)

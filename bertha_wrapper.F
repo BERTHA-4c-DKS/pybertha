@@ -25,7 +25,7 @@
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
-      subroutine bertha_init(fnameinput)
+      subroutine bertha_init(fnameinput) 
 
       implicit none
 
@@ -58,7 +58,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine bertha_main(fittcoefffname, vctfilename, ovapfilename,
-     +                       fittfname)
+     +                       fittfname) 
 
       implicit none
 
@@ -81,7 +81,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       complex, parameter :: czero = (0.0,0.0)
 
       integer :: nfitt, 
-     + icent, j, ii, jj, i, 
+     + icent, j, ii, jj, i, iter, 
      + nuca, nucb, nucc, nuccnt, rc, istate, a, iocc
 
       real, allocatable :: eigen(:), v(:), zz(:)
@@ -397,7 +397,8 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         time1 = walltime ()
         ctime1 = cputime ()
 
-        if ((iter.gt.1.and.sfact.ne.0.0).or.irun.eq.0.or.irun.eq.2)
+        if (((iter.gt.1).and.(sfact.ne.(0.0))).or.(irun.eq.0).
+     >      or.(irun.eq.2))
      >     call shftlv()
         time1 = walltime () - time1
         ctime1 = cputime () - ctime1
