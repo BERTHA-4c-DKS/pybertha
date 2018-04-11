@@ -1,8 +1,10 @@
       module bertha_wrapper
 
+      use, intrinsic :: iso_c_binding
+
       use spec, only: coord, znuc, cnuc, expset, iznuc, icrge, kvals,
      > nkappa, lmaxx, nfunct, ncent, ndim, nshift, nocc,
-     > iter, iall, irun, readinput
+     > iter, iall, irun, readinput, verbose
       use fmat, only: fock, ovap
       use coeff, only: c
       use dcoeff, only: d
@@ -25,15 +27,19 @@
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
-      subroutine bertha_init(fnameinput) 
+      subroutine bertha_init(fnameinput, verbosity) 
 
       implicit none
 
       character*(*), intent(in) :: fnameinput
 
+      integer (c_int) :: verbosity
+
       integer :: lammax
 
-      call writeversion ()
+      verbose = verbosity
+
+      if (verbose .eq. 1) call writeversion ()
 
       ndim = 0
       maxit = 2
@@ -47,10 +53,10 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       if(.not.readinput (0, intype, amass, ncore, mactve, nactve,
      +                   igrid, nopen, iprint, maxit, expo,
      +                   fitcase, testfit, sfact1, sfact2, fnameinput)) then
-        stop
+        return
       endif
 
-      write(6,11) ndim
+      if (verbose .eq. 1) write(6,11) ndim
    11 format(2x,'total dimension of the matrix: ',i6/)
 
       end subroutine bertha_init
@@ -58,9 +64,11 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine bertha_main(fittcoefffname, vctfilename, ovapfilename,
-     +                       fittfname) 
+     +                       fittfname, aptr) 
 
       implicit none
+
+      real (c_double) :: aptr(*)
 
       character*(*), intent(in) :: fittcoefffname, vctfilename,
      >   ovapfilename, fittfname
@@ -125,32 +133,34 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         end do
       end do
 
-      write(6,*)
-     & '************************************************************'
-      write(6,*)
-      write(6,*)
-      write(6,*)
-     & '        molecular geometry a: cartesian coordinates         '
-      write(6,*)
-      write(6,*)
-     & 'centre        x-coordinate    y-coordinate    z-coordinate'
-      write(6,"(60('='))")
-      do nuca = 1,ncent
-        write(6,1118) elmnt(iznuc(nuca)),
-     &                coord(1,nuca),coord(2,nuca),coord(3,nuca)
- 1118   format(3x,a,6x,f14.6,2x,f14.6,2x,f14.6)
-        write(6,*)
-     &  '------------------------------------------------------------'
-      end do
-
-      write(6,*)
-      write(6,*)
-      write(6,*)
-     & '                molecular geometry b: r-matrix              '
-      write(6,*)
-      write(6,*)
-     & 'c1  c2       bond distance  c1  c2  c3     angle (degrees)  '
-      write(6,"(60('='))")
+      if (verbose .eq. 1) then 
+       write(6,*)
+     &  '************************************************************'
+       write(6,*)
+       write(6,*)
+       write(6,*)
+     &  '        molecular geometry a: cartesian coordinates         '
+       write(6,*)
+       write(6,*)
+     &  'centre        x-coordinate    y-coordinate    z-coordinate'
+       write(6,"(60('='))")
+       do nuca = 1,ncent
+         write(6,1118) elmnt(iznuc(nuca)),
+     &                 coord(1,nuca),coord(2,nuca),coord(3,nuca)
+ 1118    format(3x,a,6x,f14.6,2x,f14.6,2x,f14.6)
+         write(6,*)
+     &   '------------------------------------------------------------'
+       end do
+       
+       write(6,*)
+       write(6,*)
+       write(6,*)
+     &  '                molecular geometry b: r-matrix              '
+       write(6,*)
+       write(6,*)
+     &  'c1  c2       bond distance  c1  c2  c3     angle (degrees)  '
+       write(6,"(60('='))")
+      endif
 
       nuccnt = 1
       do nucb = 2,ncent
@@ -158,7 +168,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         r1y = coord(2,nucb)-coord(2,nuccnt)
         r1z = coord(3,nucb)-coord(3,nuccnt)
         d1 = sqrt(r1x**2+r1y**2+r1z**2)
-        write(6,1119) elmnt(iznuc(nuccnt)),elmnt(iznuc(nucb)),d1
+        if (verbose .eq. 1) write(6,1119) elmnt(iznuc(nuccnt)),elmnt(iznuc(nucb)),d1
         do nucc = 2,nucb-1
           r2x = coord(1,nucc)-coord(1,nuccnt)
           r2y = coord(2,nucc)-coord(2,nuccnt)
@@ -166,28 +176,33 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
           d2 = sqrt(r2x**2+r2y**2+r2z**2)
           scprod = (r1x*r2x+r1y*r2y+r1z*r2z)
           ang = acos(scprod/(d1*d2))*(180.0/pi)
-          write(6,1120) elmnt(iznuc(nucb)),
+          if (verbose .eq. 1) write(6,1120) elmnt(iznuc(nucb)),
      >                  elmnt(iznuc(nuccnt)),
      >                  elmnt(iznuc(nucc)),ang
         end do
-        write(6,*)
+        if (verbose .eq. 1) write(6,*)
      &  '------------------------------------------------------------'
       end do
 
  1119 format(2x,a,2x,a,4x,f14.6)
  1120 format(30x,a,2x,a,2x,a,2x,f14.6)
 
-      write(6,*)
-      write(6,*)
-      write(6,*)
-      write(6,*)
+      if (verbose .eq. 1) then
+       write(6,*)
+       write(6,*)
+       write(6,*)
+       write(6,*)
+      endif
 
       if (irun.eq.1) then
         ioccm0 = nshift + 1
-        write(6,*)
-     &   '          initialze the atomic densities on each centre   '
-        write(6,*)
-        write(6,*)
+        if (verbose .eq. 1) then
+         write(6,*)
+     &    '          initialze the atomic densities on each centre   '
+         write(6,*)
+         write(6,*)
+        endif 
+
         do icent = 1,ncent
           call atomic(amass,iznuc,icrge,lmaxx,nkappa,icent,nshift)
         end do
@@ -257,7 +272,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
   777 format
      > ("=============================================================")
       do iter = 1,maxit
-        write (0, 777)
+        if (verbose .eq. 1) write (0, 777)
         wtimeiter = walltime ()
         ctimeiter = cputime ()
         fock = czero
@@ -269,7 +284,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         time1 = walltime () - time1
         ctime1 = cputime() - ctime1
 
-        write (0, 6661 ) time1, ctime1
+        if (verbose .eq. 1) write (0, 6661 ) time1, ctime1
  6661   format ('Time for hden walltime                   ', f10.2,
      +  '  cputime ', f10.2,/)
 
@@ -287,7 +302,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         timetomt2 = walltime () - timetomt2
         ctimetomt2 = cputime () - ctimetomt2
 
-        write (0, 5678) timetomt2, ctimetomt2
+        if (verbose .eq. 1) write (0, 5678) timetomt2, ctimetomt2
  5678   format ('Time for the factlu walltime             ', 
      +          f10.2, '  cputime ', f10.2)
 
@@ -304,7 +319,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         timetomt2 = walltime () - timetomt2
         ctimetomt2 = cputime () - ctimetomt2
 
-        write (0, 5680) timetomt2, ctimetomt2
+        if (verbose .eq. 1) write (0, 5680) timetomt2, ctimetomt2
  5680   format ('Time for the zz walltime                 ', f10.2, 
      +          '  cputime ', f10.2)
 
@@ -324,7 +339,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         timetomt1 = walltime () - timetomt1
         ctimetomt1 = cputime () - ctimetomt1
 
-        write (0, 5679) timetomt1, ctimetomt1
+        if (verbose .eq. 1) write (0, 5679) timetomt1, ctimetomt1
  5679   format ('Total time for the fitting walltime      ', f10.2, 
      +          '  cputime ', f10.2, / )
 
@@ -349,29 +364,36 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         ecoul = ecoul / 2
         exc = 0.0
 
-        write(6,*) '******** energies values ********* '
-        write(6,*) ' '
+        if (verbose .eq. 1) then
+         write(6,*) '******** energies values ********* '
+         write(6,*) ' '
+        endif
 
         if(testfit /= 0) then
-          write(6,*) '******** ATTENTION rjmat is on. This should be used only for benchmark********* '
+          if (verbose .eq. 1) 
+     >      write(6,*) '******** ATTENTION rjmat is on. This should be used only for benchmark********* '
           call rjmat(ndim,c,coulenergy) 
-          write(6,*) 'coulomb  energy              : ',coulenergy/2.0d0
-          write(6,*) ' '
-          write(6,*) '******** energies fitted values ********* '
-          write(6,*) ' '
-          write(6,*) 'coulomb  energy(fitting)     : ',efittcoul/2.0d0
-          write(6,*) 'Exc(rhofit)                  : ',excfit
-          write(6,*) ' '
-          write(6,*) 'Error in Coulomb energy due to fitting: ',efittcoul/2.0d0-coulenergy/2.0
-          write(6,*) ' '
-          write(6,*) '******************************************************************************* '
-          write(6,*) ' '
+          if (verbose .eq. 1) then
+           write(6,*) 'coulomb  energy              : ',coulenergy/2.0d0
+           write(6,*) ' '
+           write(6,*) '******** energies fitted values ********* '
+           write(6,*) ' '
+           write(6,*) 'coulomb  energy(fitting)     : ',efittcoul/2.0d0
+           write(6,*) 'Exc(rhofit)                  : ',excfit
+           write(6,*) ' '
+           write(6,*) 'Error in Coulomb energy due to fitting: ',efittcoul/2.0d0-coulenergy/2.0
+           write(6,*) ' '
+           write(6,*) '******************************************************************************* '
+           write(6,*) ' '
+          endif
         else
-          write(6,*) '******** energies fitted values ********* '
-          write(6,*) ' '
-          write(6,*) 'coulomb  energy(fitting)     : ',efittcoul/2.0d0
-          write(6,*) 'Exc(rhofit)                  : ',excfit
-          write(6,*) ' '
+          if (verbose .eq. 1) then
+           write(6,*) '******** energies fitted values ********* '
+           write(6,*) ' '
+           write(6,*) 'coulomb  energy(fitting)     : ',efittcoul/2.0d0
+           write(6,*) 'Exc(rhofit)                  : ',excfit
+           write(6,*) ' '
+          endif
         endif
 
         energy2 = excfit - etemp
@@ -391,7 +413,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         end do
         close(unit=99)
 
-        write (0, 6664 ) time1, ctime1
+        if (verbose .eq. 1) write (0, 6664 ) time1, ctime1
  6664   format ('Time for oneel walltime                  ', f10.2,
      +          '  cputime ', f10.2, /)
         time1 = walltime ()
@@ -402,7 +424,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
      >     call shftlv()
         time1 = walltime () - time1
         ctime1 = cputime () - ctime1
-        write (0, 5564 ) time1, ctime1
+        if (verbose .eq. 1) write (0, 5564 ) time1, ctime1
  5564   format ('Time for shftlv                          ', f10.2,
      +          '  cputime ', f10.2, /)
 
@@ -436,24 +458,26 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         wtimeio = walltime () - wtimeio
         ctimeio = cputime () - ctimeio
         
-        write (0, 3567) wtimeio, ctimeio
+        if (verbose .eq. 1) write (0, 3567) wtimeio, ctimeio
  3567   format ("Time for the io walltime                 ", 
      +        f10.2, "  cputime ", f10.2, /)
 
         if (iprint.eq.2) then
-          write(6,*) 'iteration number: ',iter
-          write(6,*) 'level shift parameter = ',sfact
-          do istate = 1,nocc+nopen
-            write(6,*) 'eigenvalue number, e:',
-     &                 istate,eigen(istate+nshift)-sfact
-          end do
-          write(6,*) 'lumo               e:',
-     &               istate,eigen(nocc+nopen+nshift+1)
-          write(6,*) 'total electronic energy = ',etotal-(sfact*nocc)
-          write(6,*) 'nuclear repulsion energy = ',erep
-          write(6,*) 'total energy = ',etotal+erep-(sfact*nocc)
-          write(6,*) ' '
-          write(6,*) '-----------------------------------------------'
+          if (verbose .eq. 1) then 
+           write(6,*) 'iteration number: ',iter
+           write(6,*) 'level shift parameter = ',sfact
+           do istate = 1,nocc+nopen
+             write(6,*) 'eigenvalue number, e:',
+     &                  istate,eigen(istate+nshift)-sfact
+           end do
+           write(6,*) 'lumo               e:',
+     &                istate,eigen(nocc+nopen+nshift+1)
+           write(6,*) 'total electronic energy = ',etotal-(sfact*nocc)
+           write(6,*) 'nuclear repulsion energy = ',erep
+           write(6,*) 'total energy = ',etotal+erep-(sfact*nocc)
+           write(6,*) ' '
+           write(6,*) '-----------------------------------------------'
+          endif
         end if
 
         diff = abs(eold-etotal)/(abs(etotal)+1.0)
@@ -469,7 +493,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         denswalltime = walltime () - denswalltime
         denscputime = cputime () - denscputime
 
-        write (0, 3457) denswalltime, denscputime
+        if (verbose .eq. 1) write (0, 3457) denswalltime, denscputime
  3457   format ('Time for dens walltime                   ', f10.2,
      +          '  cputime ', f10.2, /)
 
@@ -485,36 +509,38 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         wtimeiter = walltime () - wtimeiter
         ctimeiter = cputime () - ctimeiter
 
-        write (0, 777)
-        write (0, 6666) iter, wtimeiter, ctimeiter
+        if (verbose .eq. 1) write (0, 777)
+        if (verbose .eq. 1) write (0, 6666) iter, wtimeiter, ctimeiter
  6666   format ("Total time for iteration ", I4, " walltime   ",
      +          F10.2, "  cputime ", F10.2, /)
       end do
 
-      write(6,*) 'convergence not obtained in the maximum number'
-      write(6,*) 'of iterations'
+      if (verbose .eq. 1) write(6,*) 'convergence not obtained in the maximum number'
+      if (verbose .eq. 1) write(6,*) 'of iterations'
 
  2000 continue
       if (iter.le.maxit) then
         wtimeiter = walltime () - wtimeiter
         ctimeiter = cputime () - ctimeiter
 
-        write (0, 777)
-        write (0, 6666) iter, wtimeiter, ctimeiter
+        if (verbose .eq. 1) write (0, 777)
+        if (verbose .eq. 1) write (0, 6666) iter, wtimeiter, ctimeiter
       endif
 
       cputime11 = cputime11 - cputime ()
 
-      write(6,*) ' '
-      write(6,*) '**********************************************'
-      write(6,*) 'final output:'
-      write(6,*) 'convergence obtained in',iter,'     iterations'
-      write(6,*) ' '
-      write(6,*) 'bond length = ',coord(3,2)
-      write(6,*) 'total energy = ',etotal+erep-(nocc*sfact)
-      write(6,*) ' '
-      write(6,*) 'total cpu-time used (sec):', cputime11
-      write(6,*) '**********************************************'
+      if (verbose .eq. 1) then
+       write(6,*) ' '
+       write(6,*) '**********************************************'
+       write(6,*) 'final output:'
+       write(6,*) 'convergence obtained in',iter,'     iterations'
+       write(6,*) ' '
+       write(6,*) 'bond length = ',coord(3,2)
+       write(6,*) 'total energy = ',etotal+erep-(nocc*sfact)
+       write(6,*) ' '
+       write(6,*) 'total cpu-time used (sec):', cputime11
+       write(6,*) '**********************************************'
+      endif
 
       iall = 2
       irun = 0
@@ -525,16 +551,23 @@ c     call getresourcesusage ()
       !call gencubefile(ncent,coord,iznuc,nfitt,fitcase)
       wtimeiter = walltime () - wtimeiter
 
-      write (0, 6679) wtimeiter
+      if (verbose .eq. 1) write (0, 6679) wtimeiter
  6679 format ('Time for cube is: ', f8.4)
 
       deallocate(eigen)
-      call fremem()
 
-      stop
+      return 
 
  9999 call errmsg("Error open file")
 
       end subroutine 
+
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
+      subroutine bertha_finalize()
+
+      call fremem()
+
+      end subroutine
 
       end module
