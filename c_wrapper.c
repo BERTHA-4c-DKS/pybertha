@@ -6,9 +6,11 @@ void __bertha_wrapper_MOD_bertha_main (char *, char *, char *, char *,
     double *, int, int, int, int);
 void __bertha_wrapper_MOD_bertha_finalize();
 
-extern int __spec_MOD_ndim;
+extern int __spec_MOD_ndim, __spec_MOD_nshift, __spec_MOD_nocc, 
+       __opensh_MOD_nopen;
+extern double __shiftr_MOD_sfact, __energy_MOD_etotal;
 
-int bertha_init (char * filename, int verbosity)
+int init (char * filename, int verbosity)
 {
   __bertha_wrapper_MOD_bertha_init(filename, &verbosity, 
       strlen(filename));
@@ -16,7 +18,7 @@ int bertha_init (char * filename, int verbosity)
   return 0;
 }
 
-int bertha_main(char * fittcoefffname, char * vctfilename, 
+int mainrun(char * fittcoefffname, char * vctfilename, 
     char * ovapfilename, char * fittfname, double * a)
 {
   /*
@@ -40,7 +42,44 @@ int get_ndim ()
   return val;
 }
 
-int bertha_finalize ()
+int get_nshift ()
+{
+  int val = __spec_MOD_nshift;
+
+  return val;
+}
+
+int get_nopen ()
+{
+  int val = __opensh_MOD_nopen;
+
+  return val;
+}
+
+int get_nocc ()
+{
+  int val = __spec_MOD_nocc;
+
+  return val;
+}
+
+double get_sfact ()
+{
+  double val = __shiftr_MOD_sfact;
+
+  return val;
+}
+
+double get_etotal ()
+{
+  double val = __energy_MOD_etotal;
+
+  return val;
+}
+
+
+
+int finalize ()
 {
   __bertha_wrapper_MOD_bertha_finalize();
 

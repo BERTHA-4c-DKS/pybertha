@@ -64,26 +64,14 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine bertha_main(fittcoefffname, vctfilename, ovapfilename,
-     +                       fittfname, aptr) 
+     +                       fittfname, eigen) 
 
       implicit none
 
-      real (c_double) :: aptr(*)
+      real (c_double) :: eigen(*)
 
       character*(*), intent(in) :: fittcoefffname, vctfilename,
      >   ovapfilename, fittfname
-
-      interface
-        subroutine diagonalizer (eigen)
-          real, allocatable, intent(inout) :: eigen(:)
-        end subroutine diagonalizer
-      end interface
-
-      interface
-        subroutine diagonalizer_iter (eigen)
-          real, allocatable, intent(inout) :: eigen(:)
-        end subroutine diagonalizer_iter
-      end interface
 
       real, parameter :: tresh = 1.0e-11
       complex, parameter :: czero = (0.0,0.0)
@@ -92,7 +80,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
      + icent, j, ii, jj, i, iter, 
      + nuca, nucb, nucc, nuccnt, rc, istate, a, iocc
 
-      real, allocatable :: eigen(:), v(:), zz(:)
+      real, allocatable :: v(:), zz(:)
 
       real :: monoelectronenergy, centfun(ncentm), 
      + erep, dist, r1x, r1y, r1z, d1, r2x, 
@@ -117,7 +105,6 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
      +      status ="unknown")
 
       call getmem ()
-      allocate(eigen(ndim), stat=rc)
 
       call initijkvec()
       call initfitting(fitcase,nfitt,fittfname)
@@ -553,8 +540,6 @@ c     call getresourcesusage ()
 
       if (verbose .eq. 1) write (0, 6679) wtimeiter
  6679 format ('Time for cube is: ', f8.4)
-
-      deallocate(eigen)
 
       return 
 
