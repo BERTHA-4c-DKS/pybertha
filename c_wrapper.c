@@ -8,7 +8,8 @@ void __bertha_wrapper_MOD_bertha_finalize();
 
 extern int __spec_MOD_ndim, __spec_MOD_nshift, __spec_MOD_nocc, 
        __opensh_MOD_nopen;
-extern double __shiftr_MOD_sfact, __energy_MOD_etotal;
+extern double __shiftr_MOD_sfact, __energy_MOD_etotal, 
+       __bertha_wrapper_MOD_erep;
 
 int init (char * filename, int verbosity)
 {
@@ -69,6 +70,15 @@ double get_sfact ()
 
   return val;
 }
+
+double get_erep ()
+{
+  double val = __bertha_wrapper_MOD_erep;
+
+  return val;
+}
+
+
 
 double get_etotal ()
 {

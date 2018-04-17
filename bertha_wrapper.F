@@ -20,7 +20,7 @@
 
       integer :: intype, fitcase, testfit, igrid, iprint, mactve,
      +           maxit, nactve, ncore
-      real :: amass(ncentm), sfact1, sfact2
+      real :: amass(ncentm), sfact1, sfact2, erep
       character(len=7) :: expo
 
       contains
@@ -83,7 +83,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       real, allocatable :: v(:), zz(:)
 
       real :: monoelectronenergy, centfun(ncentm), 
-     + erep, dist, r1x, r1y, r1z, d1, r2x, 
+     + dist, r1x, r1y, r1z, d1, r2x, 
      + r2y, r2z, d2, scprod, ang, diff, eold, oldecoul, rtresh1, 
      + rtresh2, efittcoulplusexc, efittcoul, etemp, excfit, 
      + exc, cputime11, timetomt1, ffre,
@@ -181,6 +181,10 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
        write(6,*)
       endif
 
+      if (verbose .eq. -1) then 
+        write(6,*) "Initialze the atomic densities on each centre"
+      endif
+
       if (irun.eq.1) then
         ioccm0 = nshift + 1
         if (verbose .eq. 1) then
@@ -219,6 +223,10 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         ioccm0 = nocc
         call dens()
       end if
+
+      if (verbose .eq. -1) then 
+        write(6,*) "Done"
+      endif
 
       if (irun.eq.2) then
         ioccm0 = nocc
@@ -259,6 +267,10 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
   777 format
      > ("=============================================================")
       do iter = 1,maxit
+        if (verbose .eq. -1) then 
+          write(6,*) "Iteration ", iter
+        endif
+
         if (verbose .eq. 1) write (0, 777)
         wtimeiter = walltime ()
         ctimeiter = cputime ()
@@ -466,6 +478,12 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
            write(6,*) '-----------------------------------------------'
           endif
         end if
+
+        if (verbose .eq. -1) then
+           write(6,*) '  total electronic energy  = ',etotal-(sfact*nocc)
+           write(6,*) '  nuclear repulsion energy = ',erep
+           write(6,*) '  total energy             = ',etotal+erep-(sfact*nocc)
+        endif
 
         diff = abs(eold-etotal)/(abs(etotal)+1.0)
         if (diff.lt.tresh.and.iall.eq.2) then
