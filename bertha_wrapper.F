@@ -65,7 +65,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine bertha_main(fittcoefffname, vctfilename, ovapfilename,
-     +                       fittfname, eigen) 
+     +                       fittfname, eigen, ovap_ptr) 
 
       implicit none
 
@@ -73,6 +73,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       character*(*), intent(in) :: fittcoefffname, vctfilename,
      >   ovapfilename, fittfname
+      type(c_ptr),intent(out) :: ovap_ptr
 
       real, parameter :: tresh = 1.0e-11
       complex, parameter :: czero = (0.0,0.0)
@@ -565,6 +566,10 @@ c     call getresourcesusage ()
 
       if (verbose .eq. 1) write (0, 6679) wtimeiter
  6679 format ('Time for cube is: ', f8.4)
+
+c      print *, ovap(1,1), ovap(1, 2), ovap(1, 3)
+
+      ovap_ptr = c_loc(ovap(1,1))
 
       return 
 

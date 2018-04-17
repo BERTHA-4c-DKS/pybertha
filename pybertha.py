@@ -47,24 +47,26 @@ print "     level shift: ", sfact
 print ""
 
 eigen = numpy.zeros(ndim, dtype=numpy.double)
+ovapm = numpy.zeros((ndim, ndim), dtype=numpy.double)
 
 bertha.mainrun(in_fittcoefffname, in_vctfilename, \
         in_ovapfilename, in_fittfname, \
-        ctypes.c_void_p(eigen.ctypes.data))
+        ctypes.c_void_p(eigen.ctypes.data), \
+        ctypes.c_void_p(ovapm.ctypes.data))
 
 print ""
 print "Final results "
 for i in range(nocc+nopen):
-    print "eigenvalue %5d %12.5f"%(i+1, eigen[i+nshift]-sfact)
+    print "eigenvalue %5d %20.8f"%(i+1, eigen[i+nshift]-sfact)
     
-print "      lumo       %12.5f"%(eigen[i+nshift+1])
+print "      lumo       %20.8f"%(eigen[i+nshift+1])
 
 erep = bertha.get_erep()
 etotal = bertha.get_etotal()
 
 print ""
-print "total electronic energy  = %12.5f"%(etotal-(sfact*nocc))
-print "nuclear repulsion energy = %12.5f"%(erep)
-print "total energy             = %12.5f"%(etotal+erep-(sfact*nocc))
+print "total electronic energy  = %20.8f"%(etotal-(sfact*nocc))
+print "nuclear repulsion energy = %20.8f"%(erep)
+print "total energy             = %20.8f"%(etotal+erep-(sfact*nocc))
 
 bertha.finalize()
