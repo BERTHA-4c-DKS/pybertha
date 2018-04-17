@@ -23,7 +23,10 @@ in_fnameinput = ctypes.c_char_p(fnameinput)
 in_fittfname = ctypes.c_char_p(fittfname)
 
 verbosity = -1
-bertha.init(in_fnameinput, ctypes.c_int(verbosity))
+dumpfiles = 0
+
+bertha.init(in_fnameinput, ctypes.c_int(verbosity), 
+        ctypes.c_int(dumpfiles))
 ndim = bertha.get_ndim()
 nshift = bertha.get_nshift()
 nocc = bertha.get_nocc()
@@ -34,6 +37,8 @@ sfact = bertha.get_sfact()
 nopen = bertha.get_nopen()
 
 print "Verbosity       : ", verbosity
+print "Dumpfiles       : ", dumpfiles
+print ""
 print "Matrix dimension: ", ndim
 print "            nocc: ", nocc
 print "          nshift: ", nshift

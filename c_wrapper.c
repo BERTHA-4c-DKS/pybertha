@@ -1,7 +1,7 @@
 #include <string.h>
 #include <stdio.h>
 
-void __bertha_wrapper_MOD_bertha_init (char *, int *, int);
+void __bertha_wrapper_MOD_bertha_init (char *, int *, int *, int);
 void __bertha_wrapper_MOD_bertha_main (char *, char *, char *, char *, 
     double *, int, int, int, int);
 void __bertha_wrapper_MOD_bertha_finalize();
@@ -11,10 +11,10 @@ extern int __spec_MOD_ndim, __spec_MOD_nshift, __spec_MOD_nocc,
 extern double __shiftr_MOD_sfact, __energy_MOD_etotal, 
        __bertha_wrapper_MOD_erep;
 
-int init (char * filename, int verbosity)
+int init (char * filename, int verbosity, int dumpfiles)
 {
   __bertha_wrapper_MOD_bertha_init(filename, &verbosity, 
-      strlen(filename));
+      &dumpfiles, strlen(filename));
 
   return 0;
 }

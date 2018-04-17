@@ -4,7 +4,7 @@
 
       use spec, only: coord, znuc, cnuc, expset, iznuc, icrge, kvals,
      > nkappa, lmaxx, nfunct, ncent, ndim, nshift, nocc,
-     > iter, iall, irun, readinput, verbose
+     > iter, iall, irun, readinput, verbose, dumpfiles
       use fmat, only: fock, ovap
       use coeff, only: c
       use dcoeff, only: d
@@ -27,17 +27,18 @@
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
-      subroutine bertha_init(fnameinput, verbosity) 
+      subroutine bertha_init(fnameinput, verbosity, dumpfilesin) 
 
       implicit none
 
       character*(*), intent(in) :: fnameinput
 
-      integer (c_int) :: verbosity
+      integer (c_int) :: verbosity, dumpfilesin
 
       integer :: lammax
 
       verbose = verbosity
+      dumpfiles = dumpfilesin
 
       if (verbose .eq. 1) call writeversion ()
 
@@ -101,8 +102,10 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       cputime11 = cputime ()
 
-      open (unit=11, file=fittcoefffname, err=9999,
-     +      status ="unknown")
+      if (dumpfiles .eq. 1) then 
+        open (unit=11, file=fittcoefffname, err=9999,
+     +        status ="unknown")
+      endif
 
       call getmem ()
 
@@ -305,8 +308,8 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
  5678   format ('Time for the factlu walltime             ', 
      +          f10.2, '  cputime ', f10.2)
 
-        write (11, *) v
-        rewind (11)
+        if (dumpfiles .eq. 1) write (11, *) v
+        if (dumpfiles .eq. 1) rewind (11)
 
         call jfitenergy(v,nfitt,efittcoul)
         a=0
@@ -403,14 +406,16 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         time1 = walltime () - time1
         ctime1 = cputime () - ctime1
 
-        open (unit=99, file=ovapfilename, err=9999, status='unknown')
-        write (99, '(I5)') ndim
-        do i=1,ndim
-          do j=1,ndim
-            write(99,'(E22.10E4,1X,E22.10E4)') ovap(i, j)
-          end do
-        end do
-        close(unit=99)
+        if (dumpfiles .eq. 1) then
+         open (unit=99, file=ovapfilename, err=9999, status='unknown')
+         write (99, '(I5)') ndim
+         do i=1,ndim
+           do j=1,ndim
+             write(99,'(E22.10E4,1X,E22.10E4)') ovap(i, j)
+           end do
+         end do
+         close(unit=99)
+        endif
 
         if (verbose .eq. 1) write (0, 6664 ) time1, ctime1
  6664   format ('Time for oneel walltime                  ', f10.2,
@@ -437,16 +442,18 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         wtimeio = walltime ()
         ctimeio = cputime ()
 
-        open (unit=10, file=vctfilename, err=9999, status='unknown')
-        rewind(unit=10)
-        write (10, '(I5,I5)') nocc, ndim
-        do iocc = nshift+1,nshift+nocc
-          write(10,'(E18.10)') eigen(iocc)
-          do i=1,ndim
-            write(10,'(E17.10,1X,E17.10)') c(i,iocc)
-          end do
-        end do
-        close(unit=10)
+        if (dumpfiles .eq. 1) then
+         open (unit=10, file=vctfilename, err=9999, status='unknown')
+         rewind(unit=10)
+         write (10, '(I5,I5)') nocc, ndim
+         do iocc = nshift+1,nshift+nocc
+           write(10,'(E18.10)') eigen(iocc)
+           do i=1,ndim
+             write(10,'(E17.10,1X,E17.10)') c(i,iocc)
+           end do
+         end do
+         close(unit=10)
+        endif
         
         energy1 = 0.0
         do istate = 1,nocc
