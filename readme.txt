@@ -6,3 +6,5 @@ Python => propaga Density0 a Density1
 Python -> Fortran riceve Density1 che usa per costruire la nuova Fock1 
 Fortran -> Python Fock1 
 
+dipolematrix call after bertha.init 
+
