@@ -11,47 +11,7 @@ extern int __spec_MOD_ndim, __spec_MOD_nshift, __spec_MOD_nocc,
 extern double __shiftr_MOD_sfact, __energy_MOD_etotal, 
        __bertha_wrapper_MOD_erep;
 
-int init (char * filename, int verbosity, int dumpfiles)
-{
-  __bertha_wrapper_MOD_bertha_init(filename, &verbosity, 
-      &dumpfiles, strlen(filename));
-
-  return 0;
-}
-
-int mainrun(char * fittcoefffname, char * vctfilename, 
-    char * ovapfilename, char * fittfname, double * eigen,
-    double * ovapin)
-{
-  int i, j, ndim;
-
-  /*
-  for (i=0; i<10; i++)
-    printf("%f \n", a[i]);
-  */
-
-  double * ovap = NULL;
-
-  __bertha_wrapper_MOD_bertha_main(fittcoefffname, vctfilename, 
-        ovapfilename, fittfname, eigen, (void *)&(ovap), 
-        strlen(fittcoefffname), strlen(vctfilename), strlen(ovapfilename), 
-        strlen(fittfname));
-
-  ndim = get_ndim();
-
-  /*
-  for (i=0; i<ndim; ++i)
-    for (j=0; j<ndim; ++j)
-      printf ("%f ", ovap[i+j]);
-  */
-
-  /*
-  printf ("%f %f \n", ovap[0], ovap[1]);
-  printf ("%f %f \n", ovap[2], ovap[3]);
-  */
-
-  return 0;
-}
+// DATA METHODS
 
 int get_ndim ()
 {
@@ -101,6 +61,55 @@ double get_etotal ()
   double val = __energy_MOD_etotal;
 
   return val;
+}
+
+// METHODS
+
+int init (char * filename, int verbosity, int dumpfiles)
+{
+  __bertha_wrapper_MOD_bertha_init(filename, &verbosity, 
+      &dumpfiles, strlen(filename));
+
+  return 0;
+}
+
+int mainrun(char * fittcoefffname, char * vctfilename, 
+    char * ovapfilename, char * fittfname, double * eigen,
+    double * ovapin)
+{
+  int i, j, ndim, counter;
+
+  /*
+  for (i=0; i<10; i++)
+    printf("%f \n", a[i]);
+  */
+
+  double * ovap = NULL;
+
+  __bertha_wrapper_MOD_bertha_main(fittcoefffname, vctfilename, 
+        ovapfilename, fittfname, eigen, (void *)&(ovap), 
+        strlen(fittcoefffname), strlen(vctfilename), strlen(ovapfilename), 
+        strlen(fittfname));
+
+  ndim = get_ndim();
+  counter = 0;
+  for (i=0; i<ndim; ++i)
+  {
+    for (j=0; j<ndim; ++j)
+    {
+      //printf ("%10.5f , %10.5f i \n", ovap[counter], ovap[counter+1]);
+      counter = counter + 2;
+      ovapin[counter] = ovap[counter];
+      ovapin[counter + 2] = ovap[counter+1]; 
+    }
+  }
+
+  /*
+  printf ("%f %f \n", ovap[0], ovap[1]);
+  printf ("%f %f \n", ovap[2], ovap[3]);
+  */
+
+  return 0;
 }
 
 

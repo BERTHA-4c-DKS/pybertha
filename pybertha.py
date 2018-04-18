@@ -47,7 +47,7 @@ print "     level shift: ", sfact
 print ""
 
 eigen = numpy.zeros(ndim, dtype=numpy.double)
-ovapm = numpy.zeros((ndim, ndim), dtype=numpy.double)
+ovapm = numpy.zeros((2*ndim*ndim), dtype=numpy.double)
 
 bertha.mainrun(in_fittcoefffname, in_vctfilename, \
         in_ovapfilename, in_fittfname, \
