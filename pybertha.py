@@ -47,12 +47,12 @@ print "     level shift: ", sfact
 print ""
 
 eigen = numpy.zeros(ndim, dtype=numpy.double)
-ovapm = numpy.zeros((2*ndim*ndim), dtype=numpy.double)
+ovapbuffer = numpy.zeros((2*ndim*ndim), dtype=numpy.double)
 
 bertha.mainrun(in_fittcoefffname, in_vctfilename, \
         in_ovapfilename, in_fittfname, \
         ctypes.c_void_p(eigen.ctypes.data), \
-        ctypes.c_void_p(ovapm.ctypes.data))
+        ctypes.c_void_p(ovapbuffer.ctypes.data))
 
 print ""
 print "Final results "
@@ -70,3 +70,10 @@ print "nuclear repulsion energy = %20.8f"%(erep)
 print "total energy             = %20.8f"%(etotal+erep-(sfact*nocc))
 
 bertha.finalize()
+
+ovapm = numpy.zeros((ndim,ndim), dtype=numpy.complex64)
+counter = 0
+for j in range(ndim):
+    for i in range(ndim):
+        ovapm[i, j] = complex(ovapbuffer[counter], ovapbuffer[counter+1])
+        counter = counter + 2
