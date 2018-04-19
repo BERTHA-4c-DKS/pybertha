@@ -591,6 +591,15 @@ c     call getresourcesusage ()
            counter = counter + 2
         enddo
       enddo
+
+      counter = 1
+      do i = 1, ndim
+        do j = 1, ndim
+           fock_ptr(counter) = real(fock(i,j))
+           fock_ptr(counter+1) = imag(fock(i,j))
+           counter = counter + 2
+        enddo
+      enddo
       
       return 
 
