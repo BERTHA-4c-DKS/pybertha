@@ -1,7 +1,45 @@
 import ctypes
 import numpy
+import sys
+import re
 
 import os.path
+
+###############################################################################
+
+def doublevct_to_complexmat (invector, dim):
+    
+    outm = numpy.zeros((dim,dim), dtype=numpy.complex64)
+    counter = 0
+    for j in range(dim):
+        for i in range(dim):
+            outm[i, j] = complex(invector[counter], invector[counter+1])
+            counter = counter + 2
+
+    return outm
+
+###############################################################################
+
+def read_ovapfile (fname):
+    
+    fp = open(fname)
+    ndim = int(fp.readline())
+
+    ovapcmp = numpy.zeros((ndim,ndim), dtype=numpy.complex64)
+    
+    for j in range(ndim):
+        for i in range(ndim):
+            line = fp.readline()
+            
+            line = re.sub( '\s+', ' ', line).strip()
+            sline = line.split(" ")
+            ovapcmp[i, j] = complex(numpy.float64(sline[0]), numpy.float64(sline[1]))
+    
+    fp.close()
+
+    return ovapcmp
+
+###############################################################################
 
 soname = './bertha_wrapper.so'
 
@@ -23,7 +61,7 @@ in_fnameinput = ctypes.c_char_p(fnameinput)
 in_fittfname = ctypes.c_char_p(fittfname)
 
 verbosity = -1
-dumpfiles = 0
+dumpfiles = 1
 
 bertha.init(in_fnameinput, ctypes.c_int(verbosity), 
         ctypes.c_int(dumpfiles))
@@ -71,9 +109,12 @@ print "total energy             = %20.8f"%(etotal+erep-(sfact*nocc))
 
 bertha.finalize()
 
-ovapm = numpy.zeros((ndim,ndim), dtype=numpy.complex64)
-counter = 0
-for j in range(ndim):
-    for i in range(ndim):
-        ovapm[i, j] = complex(ovapbuffer[counter], ovapbuffer[counter+1])
-        counter = counter + 2
+ovapm = doublevct_to_complexmat (ovapbuffer, ndim)
+ovapcmp = read_ovapfile ("ovap.txt")
+
+for i in range(ndim):
+    for j in range(ndim):
+        if (ovapcmp[i, j] != ovapm[i, j]):
+          sys.stdout.write("(%20.10f %20.10fi) -> (%20.10f %20.10fi) \n"%(ovapm[i, j].real, ovapm[i, j].imag,
+              ovapcmp[i, j].real, ovapcmp[i, j].imag))
+    #sys.stdout.write("\n")

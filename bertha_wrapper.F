@@ -73,12 +73,12 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       character*(*), intent(in) :: fittcoefffname, vctfilename,
      >   ovapfilename, fittfname
-      type(c_ptr),intent(out) :: ovap_ptr
+      real (c_double), intent(out) :: ovap_ptr(*)
 
       real, parameter :: tresh = 1.0e-11
       complex, parameter :: czero = (0.0,0.0)
 
-      integer :: nfitt, 
+      integer :: nfitt, counter, 
      + icent, j, ii, jj, i, iter, 
      + nuca, nucb, nucc, nuccnt, rc, istate, a, iocc
 
@@ -418,6 +418,20 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
          close(unit=99)
         endif
 
+        counter = 1
+        do i = 1, ndim
+          do j = 1, ndim
+c            write (6, '("(",F10.5," ",F10.5,"i)")', advance="no") ovap(i, j)
+c            write (6, '("(",F10.5," ",F10.5,"i)")') ovap(i, j)
+             ovap_ptr(counter) = real(ovap(i,j))
+             ovap_ptr(counter+1) = imag(ovap(i,j))
+             counter = counter + 2
+          enddo
+c          write (6, *) " "
+        enddo
+        
+c        ovap_ptr = c_loc(ovap(1,1))
+
         if (verbose .eq. 1) write (0, 6664 ) time1, ctime1
  6664   format ('Time for oneel walltime                  ', f10.2,
      +          '  cputime ', f10.2, /)
@@ -566,10 +580,6 @@ c     call getresourcesusage ()
 
       if (verbose .eq. 1) write (0, 6679) wtimeiter
  6679 format ('Time for cube is: ', f8.4)
-
-c      print *, ovap(1,1), ovap(1, 2), ovap(1, 3)
-
-      ovap_ptr = c_loc(ovap(1,1))
 
       return 
 

@@ -3,7 +3,7 @@
 
 void __bertha_wrapper_MOD_bertha_init (char *, int *, int *, int);
 void __bertha_wrapper_MOD_bertha_main (char *, char *, char *, char *, 
-    double *, void **, int, int, int, int);
+    double *, double *, int, int, int, int);
 void __bertha_wrapper_MOD_bertha_finalize();
 
 extern int __spec_MOD_ndim, __spec_MOD_nshift, __spec_MOD_nocc, 
@@ -77,20 +77,18 @@ int mainrun(char * fittcoefffname, char * vctfilename,
     char * ovapfilename, char * fittfname, double * eigen,
     double * ovapin)
 {
-  int i, j, ndim, counter;
-
   /*
+  int i, j, ndim, counter;
   for (i=0; i<10; i++)
     printf("%f \n", a[i]);
   */
 
-  double * ovap = NULL;
-
   __bertha_wrapper_MOD_bertha_main(fittcoefffname, vctfilename, 
-        ovapfilename, fittfname, eigen, (void *)&(ovap), 
+        ovapfilename, fittfname, eigen, ovapin, 
         strlen(fittcoefffname), strlen(vctfilename), strlen(ovapfilename), 
         strlen(fittfname));
 
+  /*
   ndim = get_ndim();
   counter = 0;
   for (i=0; i<ndim; ++i)
@@ -98,11 +96,12 @@ int mainrun(char * fittcoefffname, char * vctfilename,
     for (j=0; j<ndim; ++j)
     {
       //printf ("%10.5f , %10.5f i \n", ovap[counter], ovap[counter+1]);
-      counter = counter + 2;
       ovapin[counter] = ovap[counter];
-      ovapin[counter + 2] = ovap[counter+1]; 
+      ovapin[counter+1] = ovap[counter+1]; 
+      counter = counter + 2;
     }
   }
+  */
 
   /*
   printf ("%f %f \n", ovap[0], ovap[1]);
