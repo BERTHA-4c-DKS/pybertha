@@ -65,7 +65,8 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine bertha_main(fittcoefffname, vctfilename, ovapfilename,
-     +                       fittfname, eigen, ovap_ptr) 
+     +                       fittfname, eigen, ovap_ptr, eige_ptr, 
+     +                       fock_ptr) 
 
       implicit none
 
@@ -73,7 +74,8 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       character*(*), intent(in) :: fittcoefffname, vctfilename,
      >   ovapfilename, fittfname
-      real (c_double), intent(out) :: ovap_ptr(*)
+      real (c_double), intent(out) :: ovap_ptr(*), eige_ptr(*), 
+     +                                fock_ptr(*)
 
       real, parameter :: tresh = 1.0e-11
       complex, parameter :: czero = (0.0,0.0)
@@ -581,6 +583,15 @@ c     call getresourcesusage ()
       if (verbose .eq. 1) write (0, 6679) wtimeiter
  6679 format ('Time for cube is: ', f8.4)
 
+      counter = 1
+      do i = 1, ndim
+        do j = 1, ndim
+           eige_ptr(counter) = real(c(i,j))
+           eige_ptr(counter+1) = imag(c(i,j))
+           counter = counter + 2
+        enddo
+      enddo
+      
       return 
 
  9999 call errmsg("Error open file")

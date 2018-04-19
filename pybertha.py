@@ -8,7 +8,10 @@ import os.path
 ###############################################################################
 
 def doublevct_to_complexmat (invector, dim):
-    
+
+    if (invector.size != (2*dim*dim)):
+        return None
+
     outm = numpy.zeros((dim,dim), dtype=numpy.complex64)
     counter = 0
     for j in range(dim):
@@ -85,12 +88,33 @@ print "     level shift: ", sfact
 print ""
 
 eigen = numpy.zeros(ndim, dtype=numpy.double)
+
 ovapbuffer = numpy.zeros((2*ndim*ndim), dtype=numpy.double)
+fockbuffer = numpy.zeros((2*ndim*ndim), dtype=numpy.double)
+eigenvctbu = numpy.zeros((2*ndim*ndim), dtype=numpy.double)
 
 bertha.mainrun(in_fittcoefffname, in_vctfilename, \
         in_ovapfilename, in_fittfname, \
         ctypes.c_void_p(eigen.ctypes.data), \
-        ctypes.c_void_p(ovapbuffer.ctypes.data))
+        ctypes.c_void_p(ovapbuffer.ctypes.data), 
+        ctypes.c_void_p(fockbuffer.ctypes.data),
+        ctypes.c_void_p(eigenvctbu.ctypes.data))
+
+ovapm = doublevct_to_complexmat (ovapbuffer, ndim)
+if ovapm is None:
+    print "Error in ovap matrix size"
+    exit(-1)
+
+eigem = doublevct_to_complexmat (eigenvctbu, ndim)
+if eigem is None:
+    print "Error in ovap matrix size"
+    exit(-1)
+
+fockm = doublevct_to_complexmat (fockbuffer, ndim)
+if fockm is None:
+    print "Error in ovap matrix size"
+    exit(-1)
+
 
 print ""
 print "Final results "
@@ -109,7 +133,6 @@ print "total energy             = %20.8f"%(etotal+erep-(sfact*nocc))
 
 bertha.finalize()
 
-ovapm = doublevct_to_complexmat (ovapbuffer, ndim)
 ovapcmp = read_ovapfile ("ovap.txt")
 
 for i in range(ndim):

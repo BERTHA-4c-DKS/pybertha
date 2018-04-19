@@ -3,7 +3,7 @@
 
 void __bertha_wrapper_MOD_bertha_init (char *, int *, int *, int);
 void __bertha_wrapper_MOD_bertha_main (char *, char *, char *, char *, 
-    double *, double *, int, int, int, int);
+    double *, double *, double *, double *, int, int, int, int);
 void __bertha_wrapper_MOD_bertha_finalize();
 
 extern int __spec_MOD_ndim, __spec_MOD_nshift, __spec_MOD_nocc, 
@@ -75,7 +75,7 @@ int init (char * filename, int verbosity, int dumpfiles)
 
 int mainrun(char * fittcoefffname, char * vctfilename, 
     char * ovapfilename, char * fittfname, double * eigen,
-    double * ovapin)
+    double * ovapin, double * eigenv, double * fockin)
 {
   /*
   int i, j, ndim, counter;
@@ -84,7 +84,7 @@ int mainrun(char * fittcoefffname, char * vctfilename,
   */
 
   __bertha_wrapper_MOD_bertha_main(fittcoefffname, vctfilename, 
-        ovapfilename, fittfname, eigen, ovapin, 
+        ovapfilename, fittfname, eigen, ovapin, eigenv, fockin,
         strlen(fittcoefffname), strlen(vctfilename), strlen(ovapfilename), 
         strlen(fittfname));
 
