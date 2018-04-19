@@ -454,6 +454,15 @@ c        ovap_ptr = c_loc(ovap(1,1))
           fock(i,i) = cmplx(ffre,0.0)
         end do
 
+        counter = 1
+        do i = 1, ndim
+          do j = 1, ndim
+             fock_ptr(counter) = real(fock(i,j))
+             fock_ptr(counter+1) = imag(fock(i,j))
+             counter = counter + 2
+          enddo
+        enddo
+
         call diagonalizer (eigen)
 
         wtimeio = walltime ()
@@ -471,6 +480,15 @@ c        ovap_ptr = c_loc(ovap(1,1))
          end do
          close(unit=10)
         endif
+
+        counter = 1
+        do i = 1, ndim
+          do j = 1, ndim
+             eige_ptr(counter) = real(c(i,j))
+             eige_ptr(counter+1) = imag(c(i,j))
+             counter = counter + 2
+          enddo
+        enddo
         
         energy1 = 0.0
         do istate = 1,nocc
@@ -583,24 +601,7 @@ c     call getresourcesusage ()
       if (verbose .eq. 1) write (0, 6679) wtimeiter
  6679 format ('Time for cube is: ', f8.4)
 
-      counter = 1
-      do i = 1, ndim
-        do j = 1, ndim
-           eige_ptr(counter) = real(c(i,j))
-           eige_ptr(counter+1) = imag(c(i,j))
-           counter = counter + 2
-        enddo
-      enddo
-
-      counter = 1
-      do i = 1, ndim
-        do j = 1, ndim
-           fock_ptr(counter) = real(fock(i,j))
-           fock_ptr(counter+1) = imag(fock(i,j))
-           counter = counter + 2
-        enddo
-      enddo
-      
+     
       return 
 
  9999 call errmsg("Error open file")

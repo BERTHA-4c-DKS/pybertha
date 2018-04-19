@@ -44,6 +44,35 @@ def read_ovapfile (fname):
 
 ###############################################################################
 
+def read_vctfile (fname):
+    
+    fp = open(fname)
+    line = fp.readline()
+    line = re.sub( '\s+', ' ', line).strip()
+    sline = line.split(" ")
+ 
+    nocc = int(sline[0])
+    ndim = int(sline[1])
+
+    vct = numpy.zeros((ndim,nocc), dtype=numpy.complex64)
+    
+    for i in range(nocc):
+        line = fp.readline()
+        for j in range(ndim):
+            line = fp.readline()
+            
+            line = re.sub( '\s+', ' ', line).strip()
+            sline = line.split(" ")
+            vct[j, i] = complex(numpy.float64(sline[0]), numpy.float64(sline[1]))
+    
+    fp.close()
+
+    return vct
+
+###############################################################################
+
+
+
 soname = './bertha_wrapper.so'
 
 if (not os.path.isfile(soname) ):
@@ -141,3 +170,19 @@ for i in range(ndim):
           sys.stdout.write("(%20.10f %20.10fi) -> (%20.10f %20.10fi) \n"%(ovapm[i, j].real, ovapm[i, j].imag,
               ovapcmp[i, j].real, ovapcmp[i, j].imag))
     #sys.stdout.write("\n")
+
+eigecmp = read_vctfile ("vct.txt")
+
+j = 0
+for iocc in range(nshift-1, nshift+nocc):
+    for i in range(ndim):
+        if (eigecmp[i, j] != eigem[iocc, j]):
+          sys.stdout.write("(%20.10f %20.10fi) -> (%20.10f %20.10fi) \n"%(
+              eigem[iocc, j].real, eigem[iocc, j].imag,
+              eigecmp[i, j].real, eigecmp[i, j].imag))
+    j = j + 1
+ 
+
+#density = numpy.matmul(eigem, numpy.conjugate(eigem.transpose()), out=None)
+#density = numpy.matmul(density.transpose(), ovapm)
+#print density.trace()
