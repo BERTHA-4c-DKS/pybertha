@@ -5,6 +5,9 @@ import re
 
 import os.path
 
+from numpy.linalg import eigvalsh
+from scipy.linalg import eigh
+
 ###############################################################################
 
 def doublevct_to_complexmat (invector, dim):
@@ -91,7 +94,7 @@ in_fnameinput = ctypes.c_char_p(fnameinput)
 in_fittfname = ctypes.c_char_p(fittfname)
 
 verbosity = -1
-dumpfiles = 1
+dumpfiles = 0
 
 bertha.init(in_fnameinput, ctypes.c_int(verbosity), 
         ctypes.c_int(dumpfiles))
@@ -118,8 +121,10 @@ eigen = numpy.zeros(ndim, dtype=numpy.double)
 
 ovapbuffer = numpy.zeros((2*ndim*ndim), dtype=numpy.double)
 ovapbuffer = numpy.ascontiguousarray(ovapbuffer, dtype=numpy.double)
+
 fockbuffer = numpy.zeros((2*ndim*ndim), dtype=numpy.double)
 fockbuffer = numpy.ascontiguousarray(fockbuffer, dtype=numpy.double)
+
 eigenvctbu = numpy.zeros((2*ndim*ndim), dtype=numpy.double)
 eigenvctbu = numpy.ascontiguousarray(eigenvctbu, dtype=numpy.double)
 
@@ -191,6 +196,7 @@ for i in range(nocc):
       print ""
 """
 
+print ""
 print "Compute density matrix "
 density = numpy.matmul(occeigv, numpy.conjugate(occeigv.transpose()), out=None)
 density = numpy.matmul(density.transpose(), ovapm)
@@ -200,6 +206,15 @@ print "(%20.10f, %20.10fi)"%(trace.real, trace.imag)
 
 """
 # to check if needed
+eigvals, eigvecs = eigh(fockm, ovapm, eigvals_only=False)
+
+iocc = 0 
+for i in range(ndim): 
+    if i >= nshift and iocc < nocc:
+        print eigvals[i] - sfact
+        iocc = iocc + 1
+
+
 ovapcmp = read_ovapfile ("ovap.txt")
 
 for i in range(ndim):
