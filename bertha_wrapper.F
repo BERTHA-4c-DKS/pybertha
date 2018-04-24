@@ -471,6 +471,7 @@ c        ovap_ptr = c_loc(ovap(1,1))
         if (dumpfiles .eq. 1) then
          open (unit=10, file=vctfilename, err=9999, status='unknown')
          rewind(unit=10)
+
          write (10, '(I5,I5)') nocc, ndim
          do iocc = nshift+1,nshift+nocc
            write(10,'(E18.10)') eigen(iocc)
@@ -478,12 +479,21 @@ c        ovap_ptr = c_loc(ovap(1,1))
              write(10,'(E17.10,1X,E17.10)') c(i,iocc)
            end do
          end do
+
+c        write (10, '(I5,I5)') ndim, ndim
+c        do iocc = 1,ndim
+c          write(10,'(E18.10)') eigen(iocc)
+c          do i=1,ndim
+c            write(10,'(E17.10,1X,E17.10)') c(i,iocc)
+c          end do
+c        end do
+ 
          close(unit=10)
         endif
 
         counter = 1
-        do i = 1, ndim
-          do j = 1, ndim
+        do j = 1, ndim
+          do i = 1, ndim
              eige_ptr(counter) = real(c(i,j))
              eige_ptr(counter+1) = imag(c(i,j))
              counter = counter + 2

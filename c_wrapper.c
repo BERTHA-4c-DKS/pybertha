@@ -101,6 +101,17 @@ int mainrun(char * fittcoefffname, char * vctfilename,
       counter = counter + 2;
     }
   }
+
+  ndim = get_ndim();
+  counter = 0;
+  for (i=0; i<ndim; ++i)
+  {
+    for (j=0; j<ndim; ++j)
+    {
+      printf ("%15.10f , %15.10fi \n", eigenv[counter], eigenv[counter+1]);
+      counter = counter + 2;
+    }
+  }
   */
 
   /*

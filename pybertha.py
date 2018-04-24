@@ -71,8 +71,6 @@ def read_vctfile (fname):
 
 ###############################################################################
 
-
-
 soname = './bertha_wrapper.so'
 
 if (not os.path.isfile(soname) ):
@@ -119,15 +117,18 @@ print ""
 eigen = numpy.zeros(ndim, dtype=numpy.double)
 
 ovapbuffer = numpy.zeros((2*ndim*ndim), dtype=numpy.double)
+ovapbuffer = numpy.ascontiguousarray(ovapbuffer, dtype=numpy.double)
 fockbuffer = numpy.zeros((2*ndim*ndim), dtype=numpy.double)
+fockbuffer = numpy.ascontiguousarray(fockbuffer, dtype=numpy.double)
 eigenvctbu = numpy.zeros((2*ndim*ndim), dtype=numpy.double)
+eigenvctbu = numpy.ascontiguousarray(eigenvctbu, dtype=numpy.double)
 
 bertha.mainrun(in_fittcoefffname, in_vctfilename, \
         in_ovapfilename, in_fittfname, \
         ctypes.c_void_p(eigen.ctypes.data), \
         ctypes.c_void_p(ovapbuffer.ctypes.data), 
-        ctypes.c_void_p(fockbuffer.ctypes.data),
-        ctypes.c_void_p(eigenvctbu.ctypes.data))
+        ctypes.c_void_p(eigenvctbu.ctypes.data),
+        ctypes.c_void_p(fockbuffer.ctypes.data))
 
 ovapm = doublevct_to_complexmat (ovapbuffer, ndim)
 if ovapm is None:
@@ -139,11 +140,21 @@ if eigem is None:
     print "Error in ovap matrix size"
     exit(-1)
 
+"""
+counter = 0
+for i in range(ndim):
+      print "i ==> ", i+1, eigen[i]
+      for j in range(ndim):
+          sys.stdout.write("(%20.10f %20.10fi) \n"%(
+                eigenvctbu[counter], eigenvctbu[counter+1]))
+          counter = counter + 2
+      print ""
+"""
+
 fockm = doublevct_to_complexmat (fockbuffer, ndim)
 if fockm is None:
     print "Error in ovap matrix size"
     exit(-1)
-
 
 print ""
 print "Final results "
@@ -162,6 +173,33 @@ print "total energy             = %20.8f"%(etotal+erep-(sfact*nocc))
 
 bertha.finalize()
 
+occeigv = numpy.zeros((ndim,nocc), dtype=numpy.complex64)
+
+iocc = 0
+for i in range(ndim):
+    if i >= nshift and iocc < nocc:
+        for j in range(ndim):
+            occeigv[j, iocc] = eigem[j, i]
+        iocc = iocc + 1
+
+"""
+for i in range(nocc):
+      print "i ==> ", i+1, eigen[i+nshift]
+      for j in range(ndim):
+          sys.stdout.write("(%20.10f %20.10fi)\n"%(
+              occeigv[j, i].real, occeigv[j, i].imag))
+      print ""
+"""
+
+print "Compute density matrix "
+density = numpy.matmul(occeigv, numpy.conjugate(occeigv.transpose()), out=None)
+density = numpy.matmul(density.transpose(), ovapm)
+print "Trace  "
+trace = density.trace()
+print "(%20.10f, %20.10fi)"%(trace.real, trace.imag)
+
+"""
+# to check if needed
 ovapcmp = read_ovapfile ("ovap.txt")
 
 for i in range(ndim):
@@ -173,16 +211,12 @@ for i in range(ndim):
 
 eigecmp = read_vctfile ("vct.txt")
 
-j = 0
-for iocc in range(nshift-1, nshift+nocc):
-    for i in range(ndim):
-        if (eigecmp[i, j] != eigem[iocc, j]):
+for i in range(ndim):
+      print "i ==> ", i+1, eigen[i]
+      for j in range(ndim):
+        if (eigecmp[i, j] != eigem[i, j]):
           sys.stdout.write("(%20.10f %20.10fi) -> (%20.10f %20.10fi) \n"%(
-              eigem[iocc, j].real, eigem[iocc, j].imag,
+              eigem[i, j].real, eigem[i, j].imag,
               eigecmp[i, j].real, eigecmp[i, j].imag))
-    j = j + 1
- 
-
-#density = numpy.matmul(eigem, numpy.conjugate(eigem.transpose()), out=None)
-#density = numpy.matmul(density.transpose(), ovapm)
-#print density.trace()
+      print ""
+"""
