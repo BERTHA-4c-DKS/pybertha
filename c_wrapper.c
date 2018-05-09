@@ -2,9 +2,14 @@
 #include <stdio.h>
 
 void __bertha_wrapper_MOD_bertha_init (char *, int *, int *, int);
+void __bertha_wrapper_MOD_bertha_realtime_init ();
 void __bertha_wrapper_MOD_bertha_main (char *, char *, char *, char *, 
     double *, double *, double *, double *, int, int, int, int);
 void __bertha_wrapper_MOD_bertha_finalize();
+void __bertha_wrapper_MOD_bertha_realtime_finalize();
+void  __bertha_wrapper_MOD_bertha_realtime_dipolematrix(int *, 
+      int *, double *);
+void  __bertha_wrapper_MOD_bertha_realtime_fock (double *, double *);
 
 extern int __spec_MOD_ndim, __spec_MOD_nshift, __spec_MOD_nocc, 
        __opensh_MOD_nopen;
@@ -55,7 +60,6 @@ double get_erep ()
   return val;
 }
 
-
 double get_etotal ()
 {
   double val = __energy_MOD_etotal;
@@ -69,6 +73,29 @@ int init (char * filename, int verbosity, int dumpfiles)
 {
   __bertha_wrapper_MOD_bertha_init(filename, &verbosity, 
       &dumpfiles, strlen(filename));
+
+  return 0;
+}
+
+int realtime_fock (double * dens_ptr, double * fock_ptr)
+{
+  __bertha_wrapper_MOD_bertha_realtime_fock (dens_ptr, fock_ptr);
+
+  return 0;
+}
+
+int realtime_dipolematrix (int direction, int norm, 
+    double * vext_ptr)
+{
+  __bertha_wrapper_MOD_bertha_realtime_dipolematrix(&direction, 
+      &norm, vext_ptr);
+
+  return 0;
+}
+
+int realtime_init ()
+{
+  __bertha_wrapper_MOD_bertha_realtime_init();
 
   return 0;
 }
@@ -126,6 +153,13 @@ int mainrun(char * fittcoefffname, char * vctfilename,
 int finalize ()
 {
   __bertha_wrapper_MOD_bertha_finalize();
+
+  return 0;
+}
+
+int realtime_finalize ()
+{
+  __bertha_wrapper_MOD_bertha_realtime_finalize();
 
   return 0;
 }

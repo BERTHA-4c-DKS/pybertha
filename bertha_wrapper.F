@@ -19,7 +19,7 @@
       implicit none
 
       integer :: intype, fitcase, testfit, igrid, iprint, mactve,
-     +           maxit, nactve, ncore
+     +           maxit, nactve, ncore, nfitt
       real :: amass(ncentm), sfact1, sfact2, erep
       character(len=7) :: expo
 
@@ -80,8 +80,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       real, parameter :: tresh = 1.0e-11
       complex, parameter :: czero = (0.0,0.0)
 
-      integer :: nfitt, counter, 
-     + icent, j, ii, jj, i, iter, 
+      integer :: counter, icent, j, ii, jj, i, iter, 
      + nuca, nucb, nucc, nuccnt, rc, istate, a, iocc
 
       real, allocatable :: v(:), zz(:)
@@ -625,5 +624,127 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       call fremem()
 
       end subroutine
+
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
+      subroutine bertha_realtime_init() 
+
+      use realtime
+
+      implicit none
+
+      call allocate_real_time(ndim)
+
+      end subroutine bertha_realtime_init
+
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
+      subroutine bertha_realtime_finalize() 
+
+      use realtime
+
+      implicit none
+
+      call deallocate_real_time()
+
+      end subroutine bertha_realtime_finalize
+
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
+      subroutine bertha_realtime_dipolematrix (direction, norm, 
+     +                                         vext_ptr)
+
+      use realtime
+
+      implicit none
+
+      integer, intent(in) :: direction, norm
+      real (c_double), intent(out) :: vext_ptr(*) 
+
+      integer :: counter, i, j
+      
+      logical :: normalise
+
+      if (norm.eq.1) normalise = .true.
+      if (norm.eq.0) normalise = .false.
+
+      ! come se fosse px a regime avremo px py pz e quindi
+      ! tre matrici  vext (2 = z, 3 = y, 4 = x)
+      call dipolematrix (direction, normalise)
+
+      counter = 1
+      do i = 1, ndim
+        do j = 1, ndim
+           vext_ptr(counter) = real(vext(i,j))
+           vext_ptr(counter+1) = imag(vext(i,j))
+           counter = counter + 2
+        enddo
+      enddo
+
+      end subroutine bertha_realtime_dipolematrix 
+
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
+      subroutine bertha_realtime_fock (dens_ptr, fock_ptr)
+
+      use fmat, only: fock
+      use coeff, only: c
+      use realtime
+
+      implicit none 
+
+      real (c_double), intent(out) :: fock_ptr(*)
+      real (c_double), intent(in) :: dens_ptr(*) 
+
+      real :: excfit, efittcoul, monoelectronenergy
+      complex, parameter :: czero = (0.0,0.0)
+      real, allocatable :: v(:), zz(:)
+      integer :: counter, i, j, a, rc
+
+      counter = 1
+      do i = 1, ndim
+        do j = 1, ndim
+           c(i, j) = cmplx(dens_ptr(counter), dens_ptr(counter+1))
+           counter = counter + 2
+        enddo
+      enddo
+
+      fock = czero
+      call hden ()
+      allocate(v(nfitt),zz(nfitt), stat=rc)
+      if (rc.ne.0) call errmsg('error allocating memory')
+      call v_calculation(nfitt,fitcase,v)
+      call factlu(nfitt,v)
+      call jfitenergy(v,nfitt,efittcoul)
+      a = 0
+      excfit = 0.0
+      call dftinit_fit(excfit,igrid,expo,v,nfitt,fitcase,zz,a, 
+     +                 .false.)
+      v = zz + v
+      call jmatfitt(fock,ndim,v,nfitt,fitcase)
+      deallocate(v)
+      deallocate(zz)
+
+      do i = 1,nshift
+        do j = 1,i
+          fock(j,i) = conjg(fock(i,j))
+          fock(j+nshift,i+nshift) = conjg(fock(i+nshift,j+nshift))
+        end do
+      end do
+
+      call oneel(monoelectronenergy)
+
+      counter = 1
+      do i = 1, ndim
+        do j = 1, ndim
+           fock_ptr(counter) = real(fock(i,j))
+           fock_ptr(counter+1) = imag(fock(i,j))
+           counter = counter + 2
+        enddo
+      enddo
+
+      end subroutine bertha_realtime_fock
+
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       end module
