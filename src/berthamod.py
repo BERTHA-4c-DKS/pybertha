@@ -280,6 +280,9 @@ class pybertha:
 
     def get_realtime_dipolematrix (self, direction, normalise):
         if self.__realtime_init:
+
+            ndim = self.get_ndim()
+
             vextbuffer = numpy.zeros((2*ndim*ndim), dtype=numpy.double)
             vextbuffer = numpy.ascontiguousarray(vextbuffer, dtype=numpy.double)
             
@@ -297,6 +300,9 @@ class pybertha:
 
     def get_realtime_fock (self, eigem):
         if self.__realtime_init:
+
+            ndim = self.get_ndim()
+
             cbuffer = complexmat_to_doublevct (eigem)
 
             fockbuffer = numpy.zeros((2*ndim*ndim), dtype=numpy.double)
