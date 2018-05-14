@@ -96,10 +96,14 @@ def read_vctfile (fname):
 
 ###############################################################################
 
+class Error(Exception):
+    """Base class for exceptions in this module."""
+    pass
+
 class pybertha:
     
-    def __init__(self):
-        soname = './bertha_wrapper.so'
+    def __init__(self, sopath="./bertha_wrapper.so"):
+        soname = sopath
         if (not os.path.isfile(soname) ):
             raise Error("SO %s  does not exist" % soname)
 
@@ -207,6 +211,8 @@ class pybertha:
 
     def run(self):
         if self.__init:
+            ndim = self.get_ndim()
+
             eigen = numpy.zeros(ndim, dtype=numpy.double)
             eigen = numpy.ascontiguousarray(eigen, dtype=numpy.double)
 
@@ -245,9 +251,9 @@ class pybertha:
 
             self.__mainrundone = True
 
-            return ovapm, eigem, fockm
+            return ovapm, eigem, fockm, eigen
 
-        return None, None, None
+        return None, None, None, None
 
     def get_etotal(self):
         self.__bertha.get_etotal.restype = ctypes.c_double
