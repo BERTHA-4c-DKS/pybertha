@@ -439,6 +439,15 @@ c        ovap_ptr = c_loc(ovap(1,1))
         time1 = walltime ()
         ctime1 = cputime ()
 
+        counter = 1
+        do i = 1, ndim
+          do j = 1, ndim
+             fock_ptr(counter) = real(fock(i,j))
+             fock_ptr(counter+1) = imag(fock(i,j))
+             counter = counter + 2
+          enddo
+        enddo
+
         if (((iter.gt.1).and.(sfact.ne.(0.0))).or.(irun.eq.0).
      >      or.(irun.eq.2))
      >     call shftlv()
@@ -452,15 +461,6 @@ c        ovap_ptr = c_loc(ovap(1,1))
           ffre = real(fock(i,i))
           fock(i,i) = cmplx(ffre,0.0)
         end do
-
-        counter = 1
-        do i = 1, ndim
-          do j = 1, ndim
-             fock_ptr(counter) = real(fock(i,j))
-             fock_ptr(counter+1) = imag(fock(i,j))
-             counter = counter + 2
-          enddo
-        enddo
 
         call diagonalizer (eigen)
 
