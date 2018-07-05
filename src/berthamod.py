@@ -24,8 +24,8 @@ def complexmat_to_doublevct (inm):
     counter = 0
     for j in range(dim):
         for i in range(dim):
-            cbuffer[  counter] = inm[i, j].real
-            cbuffer[counter+1] = inm[i, j].imag
+            cbuffer[  counter] = inm[j, i].real
+            cbuffer[counter+1] = inm[j, i].imag
             counter = counter + 2
 
     return cbuffer
@@ -41,7 +41,7 @@ def doublevct_to_complexmat (invector, dim):
     counter = 0
     for j in range(dim):
         for i in range(dim):
-            outm[i, j] = complex(invector[counter], invector[counter+1])
+            outm[j, i] = complex(invector[counter], invector[counter+1])
             counter = counter + 2
 
     return outm

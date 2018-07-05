@@ -493,8 +493,8 @@ c        end do
         counter = 1
         do j = 1, ndim
           do i = 1, ndim
-             eige_ptr(counter) = real(c(i,j))
-             eige_ptr(counter+1) = imag(c(i,j))
+             eige_ptr(counter) = real(c(j,i))
+             eige_ptr(counter+1) = imag(c(j,i))
              counter = counter + 2
           enddo
         enddo
