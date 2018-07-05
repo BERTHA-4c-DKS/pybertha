@@ -19,7 +19,7 @@ ovapfilename = "ovap.txt"
 fnameinput = "input.inp"
 fittfname = "fitt2.inp"
 
-verbosity = -1
+verbosity = 1
 dumpfiles = 0
 
 
@@ -86,7 +86,7 @@ print "total energy             = %20.8f"%(etotal+erep-(sfact*nocc))
 
 bertha.finalize()
 
-occeigv = numpy.zeros((ndim,nocc), dtype=numpy.complex64)
+occeigv = numpy.zeros((ndim,nocc), dtype=numpy.complex128)
 
 iocc = 0
 for i in range(ndim):

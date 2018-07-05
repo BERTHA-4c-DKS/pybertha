@@ -37,7 +37,7 @@ def doublevct_to_complexmat (invector, dim):
     if (invector.size != (2*dim*dim)):
         return None
 
-    outm = numpy.zeros((dim,dim), dtype=numpy.complex64)
+    outm = numpy.zeros((dim,dim), dtype=numpy.complex128)
     counter = 0
     for j in range(dim):
         for i in range(dim):
@@ -53,7 +53,7 @@ def read_ovapfile (fname):
     fp = open(fname)
     ndim = int(fp.readline())
 
-    ovapcmp = numpy.zeros((ndim,ndim), dtype=numpy.complex64)
+    ovapcmp = numpy.zeros((ndim,ndim), dtype=numpy.complex128)
     
     for j in range(ndim):
         for i in range(ndim):
@@ -79,7 +79,7 @@ def read_vctfile (fname):
     nocc = int(sline[0])
     ndim = int(sline[1])
 
-    vct = numpy.zeros((ndim,nocc), dtype=numpy.complex64)
+    vct = numpy.zeros((ndim,nocc), dtype=numpy.complex128)
     
     for i in range(nocc):
         line = fp.readline()
