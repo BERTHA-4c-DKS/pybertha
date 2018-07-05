@@ -20,7 +20,7 @@ fnameinput = "input.inp"
 fittfname = "fitt2.inp"
 
 verbosity = -1
-dumpfiles = 0
+dumpfiles = 1
 
 
 bertha.set_fittcoefffname(fittcoefffname)
@@ -51,7 +51,7 @@ print "     level shift: ", sfact
 print ""
 
 ovapm, eigem, fockm, eigen = bertha.run()
-
+print "fock[0,10] = ", fockm[0,10]
 if (fockm is None) or (eigen is None) or (fockm is None) \
         or (eigen is None):
     print "Error in bertha run"
@@ -81,6 +81,22 @@ vextbuffer = numpy.zeros((2*ndim*ndim), dtype=numpy.double)
 vextbuffer = numpy.ascontiguousarray(vextbuffer, dtype=numpy.double)
 
 vextm = bertha.get_realtime_dipolematrix(direction, normalise)
-fockm = bertha.get_realtime_fock(eigem)
-
+#build density
+occeigv = numpy.zeros((ndim,nocc), dtype=numpy.complex128)
+iocc = 0
+for i in range(ndim):
+    if i >= nshift and iocc < nocc:
+        for j in range(ndim):
+            occeigv[j, iocc] = eigem[j, i]
+        iocc = iocc + 1
+density=numpy.matmul(occeigv,numpy.conjugate(occeigv.transpose()))
+fockm_test = bertha.get_realtime_fock(density.T)
+trace=numpy.trace(numpy.matmul(density,ovapm))
+print "trace of density dot ovap " , trace
+print "fock_test[0,10] = ", fockm_test[0,10]
+diff=fockm-fockm_test
+print "max value of diff" ,numpy.max(diff)
+diff_trace=numpy.trace(numpy.matmul(density.T,diff))
+print 'trace diff_dot_dens: ', diff_trace
 bertha.finalize()
+
