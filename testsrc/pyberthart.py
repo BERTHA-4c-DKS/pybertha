@@ -79,7 +79,7 @@ bertha.realtime_init()
 D_0=numpy.zeros((ndim,ndim),dtype=numpy.complex128)
 for num in range(nocc):
     D_0[num+nshift,num+nshift]=1.0+0.0j
-dt=0.1
+dt=0.5
 #containers
 ene_list = []
 dip_list = []
@@ -168,7 +168,7 @@ fockm_ti=bertha.get_realtime_fock(D_ti.T)
 
 ene_list.append(numpy.trace(numpy.matmul(D_ti,fockm_ti)))
 
-niter=1000
+niter=200
 fo = open("err.txt","w")
 
 fock_mid_backwd=numpy.copy(fock_mid_init)
@@ -217,11 +217,8 @@ for j in range(1,niter):
 fo.close
 t=0.0
 for v in dip_list:
-    print t,v.real
+    sys.stderr.write(str(t) + " " + str(v.real) + "\n")
     t+=dt
-
-
-
 
 
 bertha.finalize()
