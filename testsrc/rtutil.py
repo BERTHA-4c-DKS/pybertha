@@ -48,7 +48,7 @@ def mo_fock_mid_forwd_eval(bertha,D_ti,fock_mid_ti_backwd,i,delta_t,dipole_z,C,C
    k=1
    t_arg=numpy.float_(i)*numpy.float_(delta_t)
    fockmtx = bertha.get_realtime_fock(D_ti.T)
-   fock_ti_ao=fockmtx+0.0*kick(0.00002,t_arg)
+   fock_ti_ao=fockmtx+dipole_z*kick(0.00002,t_arg)
    #dipole matrix null for test
    dens_test=numpy.zeros((ndim,ndim),dtype=numpy.complex128)
    fock_guess = 2.00*fock_ti_ao - fock_mid_ti_backwd
@@ -61,7 +61,7 @@ def mo_fock_mid_forwd_eval(bertha,D_ti,fock_mid_ti_backwd,i,delta_t,dipole_z,C,C
         D_ti_dt=numpy.matmul(C,numpy.matmul(Dp_ti_dt,numpy.conjugate(C.T)))
     #build the correspondig Fock , fock_ti+dt
         
-        fock_ti_dt_ao=bertha.get_realtime_fock(D_ti_dt.T)+0.0*kick(0.00002,t_arg+delta_t)
+        fock_ti_dt_ao=bertha.get_realtime_fock(D_ti_dt.T)+dipole_z*kick(0.00002,t_arg+delta_t)
         fock_inter= 0.5*fock_ti_ao + 0.5*fock_ti_dt_ao
     #update fock_guess
         fock_guess=numpy.copy(fock_inter)

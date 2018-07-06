@@ -84,8 +84,16 @@ ene_list = []
 dip_list = []
 imp_list = []
 C = eigem
+print type(eigem)
 #C_inv used to backtransform D(AO)
-C_inv = numpy.linalg.inv(C)
+try: 
+    C_inv = numpy.linalg.inv(eigem)
+except LinAlgError:
+    print "error" 
+test=numpy.matmul(C_inv,eigem)
+test1=numpy.matmul(numpy.conjugate(C.T),numpy.matmul(ovapm,C))
+#print test1
+print numpy.allclose(numpy.eye((ndim),dtype=numpy.complex128),test1)
 #build density in ao basis
 occeigv = numpy.zeros((ndim,nocc), dtype=numpy.complex128)
 
@@ -104,7 +112,6 @@ normalise = 1
 
 dipz_mat = bertha.get_realtime_dipolematrix(direction, normalise)
 
-print numpy.matmul(C,C_inv)
 
 fock_mid_init = rtutil.mo_fock_mid_forwd_eval(bertha,Da,fockm,0,numpy.float_(dt),\
 	dipz_mat,C,C_inv,ovapm,ndim)
