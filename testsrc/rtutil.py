@@ -67,7 +67,7 @@ def mo_fock_mid_forwd_eval(bertha,D_ti,fock_mid_ti_backwd,i,delta_t,dipole_z,C,C
         test_u = numpy.matmul(u,numpy.conjugate(u.T))
         diff = test_u - numpy.eye(u.shape[0])
         print "max diff: ", numpy.max(diff)
-        print('U is unitary(fock_mid) :%s' % numpy.allclose(test_u,numpy.eye(u.shape[0]),atol=1.e-15))
+        print('U is unitary(fock_mid) :%s' % numpy.allclose(test_u,numpy.eye(u.shape[0]),atol=1.e-14))
         tmpd=numpy.matmul(Dp_ti,numpy.conjugate(u.T))
         Dp_ti_dt=numpy.matmul(u,tmpd)
     #backtrasform Dp_ti_dt
