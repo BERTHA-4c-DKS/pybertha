@@ -168,7 +168,7 @@ fockm_ti=bertha.get_realtime_fock(D_ti.T)
 
 ene_list.append(numpy.trace(numpy.matmul(D_ti,fockm_ti)))
 
-niter=3
+niter=1000
 fo = open("err.txt","w")
 
 fock_mid_backwd=numpy.copy(fock_mid_init)
@@ -215,8 +215,10 @@ for j in range(1,niter):
     fock_mid_backwd=numpy.copy(fock_mid_tmp)
 
 fo.close
-
-
+t=0.0
+for v in dip_list:
+    print t,v.real
+    t+=dt
 
 
 

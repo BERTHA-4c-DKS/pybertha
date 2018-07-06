@@ -34,7 +34,6 @@ def exp_opmat(mat,dt):
 
 def kick(Fmax,t):
     func = 0.0
-    return func
     if t >0:
       func=0.0
     elif (t == 0.0):
