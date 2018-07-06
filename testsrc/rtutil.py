@@ -1,12 +1,16 @@
 import numpy 
 import sys
+import scipy.linalg as scila
 
 def exp_opmat(mat,dt):
 #first find eigenvector of a  matrix defined as -iF*dt, F beig hermitian
 # and take the exponential of the diagonal
 #for our purpose mat=-iF, F being hermitian
-    w,v=numpy.linalg.eig(-1.j*dt*mat)
-    diag=numpy.exp(w)
+    try: 
+       w,v=numpy.linalg.eigh(dt*mat)
+    except LinAlgError:
+       print "error"
+    diag=numpy.exp(-1.j*w)
 #build the diagonal matrix
 # use numpy.diagflat(w)
 #   dmat=numpy.zeros(mat.shape,dtype=float)
@@ -15,7 +19,11 @@ def exp_opmat(mat,dt):
     dmat=numpy.diagflat(diag)
 # for a general matrix Diag = M^(-1) A M
 # M is v 
-    v_i=numpy.linalg.inv(v)
+#    try:
+#       v_i=numpy.linalg.inv(v)
+#    except LinAlgError:
+#       print "error"
+    v_i=numpy.conjugate(v.T)
 #transform back
 #matmul introduced in numpy 1.10 is preferred with respect numpy.dot 
     tmp=numpy.matmul(dmat,v_i)
@@ -26,7 +34,7 @@ def exp_opmat(mat,dt):
 
 def kick(Fmax,t):
     func = 0.0
-
+    return func
     if t >0:
       func=0.0
     elif (t == 0.0):
@@ -55,6 +63,11 @@ def mo_fock_mid_forwd_eval(bertha,D_ti,fock_mid_ti_backwd,i,delta_t,dipole_z,C,C
    while True:
         fockp_guess=numpy.matmul(numpy.conjugate(C.T),numpy.matmul(fock_guess,C))
         u=exp_opmat(fockp_guess,delta_t)
+        #u=scila.expm(-1.j*fockp_guess*delta_t)
+        test_u = numpy.matmul(u,numpy.conjugate(u.T))
+        diff = test_u - numpy.eye(u.shape[0])
+        print "max diff: ", numpy.max(diff)
+        print('U is unitary(fock_mid) :%s' % numpy.allclose(test_u,numpy.eye(u.shape[0]),atol=1.e-15))
         tmpd=numpy.matmul(Dp_ti,numpy.conjugate(u.T))
         Dp_ti_dt=numpy.matmul(u,tmpd)
     #backtrasform Dp_ti_dt

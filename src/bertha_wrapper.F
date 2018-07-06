@@ -439,6 +439,18 @@ c        ovap_ptr = c_loc(ovap(1,1))
         time1 = walltime ()
         ctime1 = cputime ()
 
+        do i = 1,ndim
+          ffre = real(fock(i,i))
+          fock(i,i) = cmplx(ffre,0.0)
+        end do
+
+        do i = 1,nshift
+          do j = 1,i
+            fock(j,i) = conjg(fock(i,j))
+            fock(j+nshift,i+nshift) = conjg(fock(i+nshift,j+nshift))
+          end do
+        end do
+
         counter = 1
         do i = 1, ndim
           do j = 1, ndim
@@ -696,7 +708,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       real (c_double), intent(out) :: fock_ptr(*)
       real (c_double), intent(in) :: dens_ptr(*) 
 
-      real :: excfit, efittcoul, monoelectronenergy
+      real :: excfit, efittcoul, monoelectronenergy, ffre
       complex, parameter :: czero = (0.0,0.0)
       real, allocatable :: v(:), zz(:)
       integer :: counter, i, j, a, rc
@@ -733,6 +745,18 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       end do
 
       call oneel(monoelectronenergy)
+
+      do i = 1,nshift
+        do j = 1,i
+          fock(j,i) = conjg(fock(i,j))
+          fock(j+nshift,i+nshift) = conjg(fock(i+nshift,j+nshift))
+        end do
+      end do
+
+      do i = 1,ndim
+        ffre = real(fock(i,i))
+        fock(i,i) = cmplx(ffre,0.0)
+      end do
 
       counter = 1
       do i = 1, ndim
