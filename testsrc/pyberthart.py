@@ -79,7 +79,7 @@ bertha.realtime_init()
 D_0=numpy.zeros((ndim,ndim),dtype=numpy.complex128)
 for num in range(nocc):
     D_0[num+nshift,num+nshift]=1.0+0.0j
-dt=0.5
+dt=0.1
 #containers
 ene_list = []
 dip_list = []
@@ -165,10 +165,11 @@ Dp_ti=Dp_t1
 #aggiungere repulsione nucleare
 #Enuc_list.append(-func_t0*Ndip_z+Nuc_rep) #just in case of non-zero nuclear dipole
 fockm_ti=bertha.get_realtime_fock(D_ti.T)
-
+ene_list.append(numpy.trace(numpy.matmul(Da,fockm)))
 ene_list.append(numpy.trace(numpy.matmul(D_ti,fockm_ti)))
 
-niter=200
+t_int = 200.0
+niter=int(t_int/dt)
 fo = open("err.txt","w")
 
 fock_mid_backwd=numpy.copy(fock_mid_init)
@@ -219,6 +220,7 @@ t=0.0
 for v in dip_list:
     sys.stderr.write(str(t) + " " + str(v.real) + "\n")
     t+=dt
-
-
+t_point=numpy.linspace(0.0,niter*dt,niter+1)
+numpy.savetxt('dipole.txt',numpy.c_[t_point.real,-1.0*numpy.array(dip_list).real], fmt='%.12e')
+numpy.savetxt('ene.txt',numpy.c_[t_point.real,numpy.array(ene_list).real], fmt='%.12e')
 bertha.finalize()

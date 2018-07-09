@@ -19,11 +19,11 @@ def exp_opmat(mat,dt):
     dmat=numpy.diagflat(diag)
 # for a general matrix Diag = M^(-1) A M
 # M is v 
-#    try:
-#       v_i=numpy.linalg.inv(v)
-#    except LinAlgError:
-#       print "error"
-    v_i=numpy.conjugate(v.T)
+    try:
+       v_i=numpy.linalg.inv(v)
+    except LinAlgError:
+       print "error"
+#   v_i=numpy.conjugate(v.T)
 #transform back
 #matmul introduced in numpy 1.10 is preferred with respect numpy.dot 
     tmp=numpy.matmul(dmat,v_i)
@@ -55,7 +55,7 @@ def mo_fock_mid_forwd_eval(bertha,D_ti,fock_mid_ti_backwd,i,delta_t,dipole_z,C,C
    k=1
    t_arg=numpy.float_(i)*numpy.float_(delta_t)
    fockmtx = bertha.get_realtime_fock(D_ti.T)
-   fock_ti_ao=fockmtx+dipole_z*kick(0.00002,t_arg)
+   fock_ti_ao=fockmtx+dipole_z*kick(0.0001,t_arg)
    #dipole matrix null for test
    dens_test=numpy.zeros((ndim,ndim),dtype=numpy.complex128)
    fock_guess = 2.00*fock_ti_ao - fock_mid_ti_backwd
@@ -73,7 +73,7 @@ def mo_fock_mid_forwd_eval(bertha,D_ti,fock_mid_ti_backwd,i,delta_t,dipole_z,C,C
         D_ti_dt=numpy.matmul(C,numpy.matmul(Dp_ti_dt,numpy.conjugate(C.T)))
     #build the correspondig Fock , fock_ti+dt
         
-        fock_ti_dt_ao=bertha.get_realtime_fock(D_ti_dt.T)+dipole_z*kick(0.00002,t_arg+delta_t)
+        fock_ti_dt_ao=bertha.get_realtime_fock(D_ti_dt.T)+dipole_z*kick(0.0001,t_arg+delta_t)
         fock_inter= 0.5*fock_ti_ao + 0.5*fock_ti_dt_ao
     #update fock_guess
         fock_guess=numpy.copy(fock_inter)
