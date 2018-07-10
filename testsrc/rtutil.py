@@ -45,6 +45,41 @@ def kick(Fmax,t):
 
 #################################################
 
+def gauss_env(k,t,t0=3.0,s=0.2):
+#s is the pulse width
+#when used the envelope must be multiplied by sin(wt)
+# (typically a few time step
+    func=k*np.exp(-(t-t0)**2.0/(2.0*s**2.0))
+    return func
+
+#################################################
+
+def envelope(Fmax,w,t):
+   if (t >= 0.0 and t<= 2.00*np.pi/w):
+      Amp =(w*t/(2.00*np.pi))*Fmax
+   elif (t > 2.00*np.pi/w and t < 4.00*np.pi/w):
+      Amp = Fmax
+   elif ( t >= 4.00*np.pi/w and t <= 6.00*np.pi/w):
+      Amp = (3.00 -w*t/(2.00*np.pi))*Fmax
+   elif ( t > 6.00*np.pi/w):
+      Amp = 0.0
+   else :
+      Amp = 0.0
+
+   return Amp
+
+#################################################
+
+# 1-oscillation 
+def sin_env(Fmax,w,t):
+   if (t >= 0.0 and t<= 2.00*np.pi/w):
+      Amp = Fmax
+   else:
+      Amp = 0.0
+   return Amp
+
+#################################################
+
 def mo_fock_mid_forwd_eval(bertha,D_ti,fock_mid_ti_backwd,i,delta_t,dipole_z,C,C_inv,S,ndim):
 
    fock_inter=numpy.zeros((ndim,ndim),dtype=numpy.complex128)   
