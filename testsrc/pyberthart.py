@@ -18,7 +18,7 @@ fittcoefffname = "fitcoeff.txt"
 vctfilename = "vct.txt" 
 ovapfilename = "ovap.txt"
 fnameinput = "input.inp"
-fittfname = "fitt2.inp"
+fittfname = "fitt2a2.inp"
 
 verbosity = -1
 dumpfiles = 0
