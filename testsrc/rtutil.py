@@ -90,7 +90,7 @@ def mo_fock_mid_forwd_eval(bertha,D_ti,fock_mid_ti_backwd,i,delta_t,dipole_z,C,C
    k=1
    t_arg=numpy.float_(i)*numpy.float_(delta_t)
    fockmtx = bertha.get_realtime_fock(D_ti.T)
-   fock_ti_ao=fockmtx+dipole_z*kick(0.0001,t_arg)
+   fock_ti_ao=fockmtx-dipole_z*kick(0.0001,t_arg)
    #dipole matrix null for test
    dens_test=numpy.zeros((ndim,ndim),dtype=numpy.complex128)
    fock_guess = 2.00*fock_ti_ao - fock_mid_ti_backwd
@@ -108,7 +108,7 @@ def mo_fock_mid_forwd_eval(bertha,D_ti,fock_mid_ti_backwd,i,delta_t,dipole_z,C,C
         D_ti_dt=numpy.matmul(C,numpy.matmul(Dp_ti_dt,numpy.conjugate(C.T)))
     #build the correspondig Fock , fock_ti+dt
         
-        fock_ti_dt_ao=bertha.get_realtime_fock(D_ti_dt.T)+dipole_z*kick(0.0001,t_arg+delta_t)
+        fock_ti_dt_ao=bertha.get_realtime_fock(D_ti_dt.T)-dipole_z*kick(0.0001,t_arg+delta_t)
         fock_inter= 0.5*fock_ti_ao + 0.5*fock_ti_dt_ao
     #update fock_guess
         fock_guess=numpy.copy(fock_inter)
@@ -117,8 +117,14 @@ def mo_fock_mid_forwd_eval(bertha,D_ti,fock_mid_ti_backwd,i,delta_t,dipole_z,C,C
         #calc frobenius of the difference D_ti_dt_mo_new-D_ti_dt_mo
             diff=D_ti_dt-dens_test
             norm_f=numpy.linalg.norm(diff,'fro')
-            print norm_f
+            if ((k-1)>10):
+                print('i = %i' % i)
+                print('still not converged in %i+1 interpolations\n' % (k-1))
+                print('norm of density diff %.8f\n' % norm_f)
             if norm_f<(1e-6):
+                print('converged after %i+1 interpolations\n' % (k-1))
+                print('i = %i' % i)
+                print('norm of density diff %.8f\n' % norm_f)
                 tr_dt=numpy.trace(numpy.matmul(S,D_ti_dt))
                 break
         dens_test=numpy.copy(D_ti_dt)

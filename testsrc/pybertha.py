@@ -107,7 +107,7 @@ for i in range(nocc):
 print ""
 print "Compute density matrix "
 density = numpy.matmul(occeigv, numpy.conjugate(occeigv.transpose()), out=None)
-density = numpy.matmul(density.transpose(), ovapm)
+density = numpy.matmul(density, ovapm)
 print "Trace  "
 trace = density.trace()
 print "(%20.10f, %20.10fi)"%(trace.real, trace.imag)

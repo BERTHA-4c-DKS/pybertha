@@ -18,7 +18,7 @@ fittcoefffname = "fitcoeff.txt"
 vctfilename = "vct.txt" 
 ovapfilename = "ovap.txt"
 fnameinput = "input.inp"
-fittfname = "fitt2_dga2.inp"
+fittfname = "fitt2a2.inp"
 
 verbosity = -1
 dumpfiles = 0
@@ -92,11 +92,12 @@ try:
     C_inv = numpy.linalg.inv(eigem)
 except LinAlgError:
     print "error" 
+print('is atol=1.e-14 for inversion of C ?')
 test=numpy.matmul(C_inv,eigem)
 print numpy.allclose(numpy.eye((ndim),dtype=numpy.complex128),test,atol=1.e-14)
 diff =test-numpy.eye((ndim),dtype=numpy.complex128)
 print numpy.max(diff)
-#print test1
+print('orthonormal orbitals?')
 test1=numpy.matmul(numpy.conjugate(C.T),numpy.matmul(ovapm,C))
 print numpy.allclose(numpy.eye((ndim),dtype=numpy.complex128),test1,atol=1.e-14)
 diff =test1-numpy.eye((ndim),dtype=numpy.complex128)
@@ -221,6 +222,6 @@ for v in dip_list:
     sys.stderr.write(str(t) + " " + str(v.real) + "\n")
     t+=dt
 t_point=numpy.linspace(0.0,niter*dt,niter+1)
-numpy.savetxt('dipole.txt',numpy.c_[t_point.real,-1.0*numpy.array(dip_list).real], fmt='%.12e')
+numpy.savetxt('dipole.txt',numpy.c_[t_point.real,numpy.array(dip_list).real], fmt='%.12e')
 numpy.savetxt('ene.txt',numpy.c_[t_point.real,numpy.array(ene_list).real], fmt='%.12e')
 bertha.finalize()
