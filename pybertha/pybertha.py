@@ -15,9 +15,10 @@ import berthamod
 parser = argparse.ArgumentParser()
 parser.add_argument("-f","--inputfile", help="Specify BERTHA input file (default: input.inp)", required=False, 
         type=str, default="input.inp")
+parser.add_argument("-t","--fittfile", help="Specify BERTHA fitt2 file (default: fitt2.inp)", required=False, 
+        type=str, default="fitt2.inp")
 
 args = parser.parse_args()
-
 
 bertha = berthamod.pybertha("../../lib/bertha_wrapper.so")
 
@@ -30,9 +31,12 @@ if not os.path.isfile(fnameinput):
     print "File ", fnameinput, " does not exist"
     exit(1)
 
-fittfname = "fitt2.inp"
+fittfname = args.fittfile
+if not os.path.isfile(fittfname):
+    print "File ", fittfname, " does not exist"
+    exit(1)
 
-verbosity = 1
+verbosity = -1
 dumpfiles = 0
 
 
