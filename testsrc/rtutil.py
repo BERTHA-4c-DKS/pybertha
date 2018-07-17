@@ -117,14 +117,10 @@ def mo_fock_mid_forwd_eval(bertha,D_ti,fock_mid_ti_backwd,i,delta_t,dipole_z,C,C
         #calc frobenius of the difference D_ti_dt_mo_new-D_ti_dt_mo
             diff=D_ti_dt-dens_test
             norm_f=numpy.linalg.norm(diff,'fro')
-            if ((k-1)>10):
-                print('i = %i' % i)
-                print('still not converged in %i+1 interpolations\n' % (k-1))
-                print('norm of density diff %.8f\n' % norm_f)
             if norm_f<(1e-6):
-                print('converged after %i+1 interpolations\n' % (k-1))
+                print('converged after %i interpolations\n' % (k))
                 print('i = %i' % i)
-                print('norm of density diff %.8f\n' % norm_f)
+                print('norm of D_ti_dt_(%i)-D_ti_dt(%i) : %.8f\n' % (k,k-1,norm_f))
                 tr_dt=numpy.trace(numpy.matmul(S,D_ti_dt))
                 break
         dens_test=numpy.copy(D_ti_dt)
