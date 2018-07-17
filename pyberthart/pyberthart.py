@@ -63,7 +63,7 @@ for i in range(nocc+nopen):
     print "eigenvalue %5d %20.8f"%(i+1, eigen[i+nshift]-sfact)
     sum+=eigen[i+nshift]-sfact
 print "      lumo       %20.8f"%(eigen[i+nshift+1])
-print "summa : ", sum
+print "      Sum of eigen : ", sum
 erep = bertha.get_erep()
 etotal = bertha.get_etotal()
 
@@ -91,8 +91,7 @@ imp_list = []
 Enuc_list = []
 C = eigem
 
-fo = None
-
+fo = sys.stderr
 if debug:
     fo = open("debug_info.txt", "w")
 
@@ -106,20 +105,24 @@ except LinAlgError:
     exit(1)
 
 test = numpy.matmul(C_inv, eigem)
-sys.stderr.write("Check if atol is 1.e-14 for inversion of C: %s\n"% \
+if debug:
+  fo.write("Check if atol is 1.e-14 for inversion of C: %s\n"% \
         numpy.allclose(numpy.eye((ndim),dtype=numpy.complex128), \
         test,atol=1.e-14))
 diff = test - numpy.eye((ndim),dtype=numpy.complex128)
 mdiff = numpy.max(diff)
-sys.stderr.write("  maxdiff is: %0.14f %.14f\n"%(mdiff.real, mdiff.imag))
+if debug:
+  fo.write("  maxdiff is: %0.14f %.14f\n"%(mdiff.real, mdiff.imag))
 
 test = numpy.matmul(numpy.conjugate(C.T),numpy.matmul(ovapm,C))
-sys.stderr.write("Check orthonormal orbitals (atol = 1.e-14): %s\n"% \
+if debug:
+  fo.write("Check orthonormal orbitals (atol = 1.e-14): %s\n"% \
         numpy.allclose(numpy.eye((ndim),dtype=numpy.complex128), \
         test, atol=1.e-14))
 diff = test - numpy.eye((ndim),dtype=numpy.complex128)
 mdiff = numpy.max(diff)
-sys.stderr.write("  maxdiff is: %0.14f %.14f\n"%(mdiff.real, mdiff.imag))
+if debug:
+  fo.write("  maxdiff is: %0.14f %.14f\n"%(mdiff.real, mdiff.imag))
 
 #build density in ao basis
 
@@ -136,8 +139,9 @@ Da = numpy.matmul(occeigv,numpy.conjugate(occeigv.transpose()))
 #check trace(S Da)
 trace_ds = numpy.trace(numpy.matmul(Da,ovapm))
 trace_dsfock = numpy.trace(numpy.matmul(Da,fockm))
-sys.stderr.write("Density matrix trace at  t0: %.14f %.14f \n"%(trace_ds.real,trace_ds.imag))
-sys.stderr.write("Trace of fock*density at t0: %.14f %.14f \n"%(trace_dsfock.real, trace_dsfock.imag))
+if debug:
+  fo.write("Density matrix trace at  t0: %.14f %.14f \n"%(trace_ds.real,trace_ds.imag))
+  fo.write("Trace of fock*density at t0: %.14f %.14f \n"%(trace_dsfock.real, trace_dsfock.imag))
 direction = 2
 normalise = 1
 dipz_mat = bertha.get_realtime_dipolematrix (direction, normalise)
@@ -145,14 +149,15 @@ dipz_mat = bertha.get_realtime_dipolematrix (direction, normalise)
 fockmh = numpy.conjugate(fockm.T)
 diff_fockmh = fockm-fockmh
 mdiff = numpy.max(diff_fockmh)
-sys.stderr.write("Check max diff fockm-fockmh: %.14f %.14f\n"%\
+if debug:
+  fo.write("Check max diff fockm-fockmh: %.14f %.14f\n"%\
         (mdiff.real, mdiff.imag))
-sys.stderr.write("Fockm (t=0) is hermitian: %s \n"%numpy.allclose(fockm,fockmh,atol=1.e-15))
+  fo.write("Fockm (t=0) is hermitian: %s \n"%numpy.allclose(fockm,fockmh,atol=1.e-15))
 
 print "Start first mo_fock_mid_forwd_eval "
 
 fock_mid_init = rtutil.mo_fock_mid_forwd_eval(bertha,Da,fockm,0,numpy.float_(dt),\
-	dipz_mat,C,C_inv,ovapm,ndim)
+	dipz_mat,C,C_inv,ovapm,ndim, debug, fo)
 
 if (fock_mid_init is None):
     print "Error accurs in mo_fock_mid_forwd_eval"
@@ -160,8 +165,9 @@ if (fock_mid_init is None):
 
 fock_mid_h=numpy.conjugate(fock_mid_init.T)
 diff_fock_mid_h=fock_mid_init-fock_mid_h
-sys.stderr.write("Max diff fock_mid_init-fock_mid_h"%(numpy.max(diff_fock_mid_h)))
-sys.stderr.write('Fockm (t=1/2) is hermitian: %s\n'% 
+if debug:
+  fo.write("Max diff fock_mid_init-fock_mid_h"%(numpy.max(diff_fock_mid_h)))
+  fo.write('Fockm (t=1/2) is hermitian: %s\n'% 
         numpy.allclose(fock_mid_init,fock_mid_h,atol=1.e-14))
 
 fockp_mid_init=numpy.matmul(numpy.conjugate(C.T),numpy.matmul(fock_mid_init,C))
@@ -172,23 +178,29 @@ temp=numpy.matmul(D_0,numpy.conjugate(u.T))
 Dp_t1=numpy.matmul(u,temp)
 #check u if unitary
 test_u=numpy.matmul(u,numpy.conjugate(u.T))
-sys.stderr.write('U is unitary : %s' % 
+if debug:
+  fo.write('U is unitary : %s' % 
         numpy.allclose(test_u,numpy.eye(u.shape[0]),atol=1.e-14))
 #backtrasform Dp_t1
 D_t1=numpy.matmul(C,numpy.matmul(Dp_t1,numpy.conjugate(C.T)))
 diff = D_t1 - Da 
-sys.stderr.write("Max diff density: %f "%(numpy.max(diff)))
+mdiff = numpy.max(diff)
+if debug:
+  fo.write("Max diff density: %.12e %.12e \n"%(mdiff.real, mdiff.imag))
 
 dip_list.append(numpy.trace(numpy.matmul(Da,dipz_mat)))
 dip_list.append(numpy.trace(numpy.matmul(D_t1,dipz_mat)))
-sys.stderr.write("Dipole: %.12e\n"%(numpy.trace(numpy.matmul(Da,dipz_mat))).real)
-sys.stderr.write("Dipole: %.12e\n"%(numpy.trace(numpy.matmul(D_t1,dipz_mat))).real)
+if debug:
+  fo.write("Dipole: %.12e\n"%(numpy.trace(numpy.matmul(Da,dipz_mat))).real)
+  fo.write("Dipole: %.12e\n"%(numpy.trace(numpy.matmul(D_t1,dipz_mat))).real)
 
 tfock = numpy.trace(numpy.matmul(D_t1,fockm))
-sys.stderr.write("Trace fock*density t1: %.14f, %.14f\n"%(tfock.real, tfock.imag))
+if debug:
+  fo.write("Trace fock*density t1: %.14f, %.14f\n"%(tfock.real, tfock.imag))
 
 trace_ds=numpy.trace(numpy.matmul(D_t1,ovapm))
-sys.stderr.write(" Traceds: %.14f %.14fi\n" % (trace_ds.real,trace_ds.imag))
+if debug:
+  fo.write(" Traceds: %.14f %.14fi\n" % (trace_ds.real,trace_ds.imag))
 
 Ndip_z=0.0
 #estrarre le 3 componenti del dipolo nucleare
@@ -208,16 +220,19 @@ for j in range(1,niter):
 
     rtutil.progress_bar(j, niter-1)
 
-    fock_mid_tmp = rtutil.mo_fock_mid_forwd_eval(bertha,numpy.copy(D_ti),
-            fock_mid_backwd,j,numpy.float_(dt),dipz_mat,C,C_inv,ovapm,ndim)
+    fock_mid_tmp = rtutil.mo_fock_mid_forwd_eval(bertha,numpy.copy(D_ti), \
+            fock_mid_backwd,j,numpy.float_(dt),dipz_mat,C,C_inv,ovapm,ndim,\
+                    debug, fo)
     
     if (fock_mid_tmp is None):
         print "Error accurs in mo_fock_mid_forwd_eval"
         exit(1)
 
-    sys.stderr.write('%.8f\n' % numpy.trace(numpy.matmul(ovapm,D_ti)).real)
+    if debug:
+      fo.write('%.8f\n' % numpy.trace(numpy.matmul(ovapm,D_ti)).real)
     Ah = numpy.conjugate(fock_mid_tmp.T)
-    sys.stderr.write('Fock_mid hermitian: %s\n' % numpy.allclose(fock_mid_tmp,Ah,atol=1.e-14))
+    if debug:
+      fo.write('Fock_mid hermitian: %s\n' % numpy.allclose(fock_mid_tmp,Ah,atol=1.e-14))
     # transform fock_mid_init in MO basis
     fockp_mid_tmp = numpy.matmul(numpy.conjugate(C.T),numpy.matmul(fock_mid_tmp,C))
     u = rtutil.exp_opmat(numpy.copy(fockp_mid_tmp),numpy.float_(dt))
@@ -231,15 +246,18 @@ for j in range(1,niter):
 
     #evolve the density in orthonormal basis
     #check the trace of density to evolve
-    sys.stderr.write('trace of density to evolve: %.8f\n' % numpy.trace(Dp_ti).real)
+    if debug:
+      fo.write('trace of density to evolve: %.8f\n' % numpy.trace(Dp_ti).real)
     temp=numpy.matmul(Dp_ti,numpy.conjugate(u.T))
     Dp_ti_dt = numpy.matmul(u,temp)
     #backtransform Dp_ti_dt
     D_ti_dt=numpy.matmul(C,numpy.matmul(Dp_ti_dt,numpy.conjugate(C.T)))
-    sys.stderr.write('  Trace of D_ti_dt %.8f\n' % numpy.trace(Dp_ti_dt).real)
+    if debug:
+      fo.write('  Trace of D_ti_dt %.8f\n' % numpy.trace(Dp_ti_dt).real)
     #dipole expectation for D_ti_dt
     dip_list.append(numpy.trace(numpy.matmul(dipz_mat,D_ti_dt)))
-    sys.stderr.write("Dipole: %.12e\n"%(numpy.trace(numpy.matmul(dipz_mat,D_ti_dt)).real))
+    if debug:
+      fo.write("Dipole: %.12e\n"%(numpy.trace(numpy.matmul(dipz_mat,D_ti_dt)).real))
 
     #Energy expectation value at t = t_i_dt 
     fockm_ti_dt=bertha.get_realtime_fock(D_ti_dt.T)
@@ -248,13 +266,14 @@ for j in range(1,niter):
     
     # update D_ti and Dp_ti for the next step
     # message for debug
-    # sys.stderr.write('here I update the matrices Dp_ti and D_ti\n')
+    # fo.write('here I update the matrices Dp_ti and D_ti\n')
     D_ti = numpy.copy(D_ti_dt)
     Dp_ti = numpy.copy(Dp_ti_dt)
-    
-    sys.stderr.write('  Trace of Dp_ti %.8f\n' % numpy.trace(Dp_ti).real)
-    sys.stderr.write('  Trace of ovapm * D_ti  %.8f\n' % numpy.trace(numpy.matmul(ovapm,D_ti)).real)
-    sys.stderr.flush()
+  
+    if debug:
+      fo.write('  Trace of Dp_ti %.8f\n' % numpy.trace(Dp_ti).real)
+      fo.write('  Trace of ovapm * D_ti  %.8f\n' % numpy.trace(numpy.matmul(ovapm,D_ti)).real)
+      fo.flush()
 
     #update fock_mid_backwd for the next step
     fock_mid_backwd=numpy.copy(fock_mid_tmp)

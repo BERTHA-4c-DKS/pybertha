@@ -113,7 +113,7 @@ def sin_env(Fmax,w,t):
 #######################################################################
 
 def mo_fock_mid_forwd_eval(bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
-    dipole_z, C, C_inv, S, ndim):
+    dipole_z, C, C_inv, S, ndim, debug=False, odbg=sys.stderr):
 
    fock_inter = numpy.zeros((ndim,ndim),dtype=numpy.complex128)   
    
@@ -146,9 +146,10 @@ def mo_fock_mid_forwd_eval(bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
         test_u = numpy.matmul(u,numpy.conjugate(u.T))
         diff = test_u - numpy.eye(u.shape[0])
         maxdiff = numpy.max(diff)
-        sys.stderr.write("U is unitary(fock_mid) : %s"% 
+        if debug:
+          odbg.write("U is unitary(fock_mid) : %s"% 
                 numpy.allclose(test_u,numpy.eye(u.shape[0]),atol=1.e-14))
-        sys.stderr.write("  max diff: %20.15f %20.15f \n"%
+          odbg.write("  max diff: %20.15f %20.15f \n"%
                 (maxdiff.real, maxdiff.imag))
         tmpd = numpy.matmul(Dp_ti,numpy.conjugate(u.T))
         Dp_ti_dt = numpy.matmul(u,tmpd)
@@ -170,9 +171,10 @@ def mo_fock_mid_forwd_eval(bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
             diff = D_ti_dt-dens_test
             norm_f = numpy.linalg.norm(diff,'fro')
             if norm_f < (1e-6):
-                sys.stderr.write(" Converged after %i interpolations\n" % (k))
-                sys.stderr.write("   i = %i" % i)
-                sys.stderr.write("   norm of D_ti_dt_(%i)-D_ti_dt(%i) : %.8f\n" % (k,k-1,norm_f))
+                if debug:
+                  odbg.write(" Converged after %i interpolations\n" % (k))
+                  odbg.write("   i = %i" % i)
+                  odbg.write("   norm of D_ti_dt_(%i)-D_ti_dt(%i) : %.8f\n" % (k,k-1,norm_f))
                 tr_dt = numpy.trace(numpy.matmul(S,D_ti_dt))
                 break
 
