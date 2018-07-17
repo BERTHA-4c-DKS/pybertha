@@ -1,8 +1,9 @@
+import argparse
+import os.path
 import ctypes
 import numpy
 import sys
 import re
-import os.path
 
 import scipy.linalg as scila
 from numpy.linalg import eigvalsh
@@ -12,12 +13,25 @@ sys.path.insert(0, '../src/')
 import berthamod
 import rtutil
 
+parser = argparse.ArgumentParser()
+parser.add_argument("-f","--inputfile", help="Specify BERTHA input file (default: input.inp)", required=False, 
+        type=str, default="input.inp")
+parser.add_argument("-d", "--debug", help="Debug on, prints debug info to debug_info.txt", required=False, 
+        default=False, action="store_true")
+
+args = parser.parse_args()
+
 bertha = berthamod.pybertha("../../lib/bertha_wrapper.so")
 
 fittcoefffname = "fitcoeff.txt"
 vctfilename = "vct.txt" 
 ovapfilename = "ovap.txt"
-fnameinput = "input.inp"
+
+fnameinput = args.inputfile
+if not os.path.isfile(fnameinput):
+    print "File ", fnameinput, " does not exist"
+    exit(1)
+
 fittfname = "fitt2a2.inp"
 
 verbosity = -1
@@ -81,7 +95,7 @@ D_0 = numpy.zeros((ndim,ndim), dtype=numpy.complex128)
 for num in range(nocc):
     D_0[num+nshift,num+nshift]=1.0+0.0j
 
-debug = True
+debug = args.debug
 dt = 0.1
 t_int = 1.0
 niter = int(t_int/dt)

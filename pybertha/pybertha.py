@@ -1,3 +1,4 @@
+import argparse
 import ctypes
 import numpy
 import sys
@@ -11,12 +12,24 @@ from scipy.linalg import eigh
 sys.path.insert(0, '../src/')
 import berthamod
 
+parser = argparse.ArgumentParser()
+parser.add_argument("-f","--inputfile", help="Specify BERTHA input file (default: input.inp)", required=False, 
+        type=str, default="input.inp")
+
+args = parser.parse_args()
+
+
 bertha = berthamod.pybertha("../../lib/bertha_wrapper.so")
 
 fittcoefffname = "fitcoeff.txt"
 vctfilename = "vct.txt" 
 ovapfilename = "ovap.txt"
-fnameinput = "input.inp"
+
+fnameinput = args.inputfile
+if not os.path.isfile(fnameinput):
+    print "File ", fnameinput, " does not exist"
+    exit(1)
+
 fittfname = "fitt2.inp"
 
 verbosity = 1
