@@ -4,13 +4,13 @@ import sys
 import re
 import os.path
 
-import rtutil
 import scipy.linalg as scila
 from numpy.linalg import eigvalsh
 from scipy.linalg import eigh
 
 sys.path.insert(0, '../src/')
 import berthamod
+import rtutil
 
 bertha = berthamod.pybertha("../../lib/bertha_wrapper.so")
 
