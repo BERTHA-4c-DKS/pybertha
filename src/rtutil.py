@@ -143,14 +143,16 @@ def mo_fock_mid_forwd_eval(bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
           return None 
 
         #u=scila.expm(-1.j*fockp_guess*delta_t)
-        test_u = numpy.matmul(u,numpy.conjugate(u.T))
-        diff = test_u - numpy.eye(u.shape[0])
-        maxdiff = numpy.max(diff)
+
         if debug:
+          test_u = numpy.matmul(u,numpy.conjugate(u.T))
+          diff = test_u - numpy.eye(u.shape[0])
+          maxdiff = numpy.max(diff)
           odbg.write("U is unitary(fock_mid) : %s"% 
                 numpy.allclose(test_u,numpy.eye(u.shape[0]),atol=1.e-14))
-          odbg.write("  max diff: %20.15f %20.15f \n"%
+          odbg.write("  max diff: %.12e %.12e \n"%
                 (maxdiff.real, maxdiff.imag))
+
         tmpd = numpy.matmul(Dp_ti,numpy.conjugate(u.T))
         Dp_ti_dt = numpy.matmul(u,tmpd)
         #backtrasform Dp_ti_dt
