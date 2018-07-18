@@ -16,26 +16,42 @@ import rtutil
 parser = argparse.ArgumentParser()
 parser.add_argument("-f","--inputfile", help="Specify BERTHA input file (default: input.inp)", required=False, 
         type=str, default="input.inp")
+parser.add_argument("-t","--fittfile", help="Specify BERTHA fitting input file (default: fitt2.inp)", required=False, 
+        type=str, default="fitt2.inp")
+parser.add_argument("-c","--fitcoefffile", help="Specify BERTHA fitcoeff output file (default: fitcoeff.txt)",
+        required=False, type=str, default="fitcoeff.txt")
+parser.add_argument("-e","--vctfile", help="Specify BERTHA vct output file (default: vct.txt)", required=False, 
+        type=str, default="vct.txt")
+parser.add_argument("-p","--ovapfile", help="Specify BERTHA ovap output file (default: ovap.txt)", required=False, 
+        type=str, default="ovap.txt")
+parser.add_argument("-s", "--dumpfiles", help="Dumpfile on, default is off", required=False,
+        default=False, action="store_true")
 parser.add_argument("-d", "--debug", help="Debug on, prints debug info to debug_info.txt", required=False, 
         default=False, action="store_true")
+parser.add_argument("-v", "--verbosity", help="Verbosity level 0 = minim, -1 = print iteration info, " + 
+        "1 = maximum (defaul -1)", required=False, default=-1, type=int)
+
 
 args = parser.parse_args()
 
 bertha = berthamod.pybertha("../../lib/bertha_wrapper.so")
 
-fittcoefffname = "fitcoeff.txt"
-vctfilename = "vct.txt" 
-ovapfilename = "ovap.txt"
+fittcoefffname = args.fitcoefffile
+vctfilename = args.vctfile
+ovapfilename = args.ovapfile
 
 fnameinput = args.inputfile
 if not os.path.isfile(fnameinput):
     print "File ", fnameinput, " does not exist"
     exit(1)
 
-fittfname = "fitt2a2.inp"
+fittfname = args.fittfile
+if not os.path.isfile(fittfname):
+    print "File ", fittfname , " does not exist"
+    exit(1)
 
-verbosity = -1
-dumpfiles = 0
+verbosity = args.verbosity
+dumpfiles = int(args.dumpfiles)
 
 bertha.set_fittcoefffname(fittcoefffname)
 bertha.set_ovapfilename(ovapfilename)
