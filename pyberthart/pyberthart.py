@@ -110,10 +110,6 @@ bertha.realtime_init()
 
 print "Start RT"
 
-D_0 = numpy.zeros((ndim,ndim), dtype=numpy.complex128)
-for num in range(nocc):
-    D_0[num+nshift,num+nshift]=1.0+0.0j
-
 debug = args.debug
 dt = args.dt
 t_int = args.totaltime
@@ -128,7 +124,11 @@ ene_list = []
 dip_list = []
 imp_list = []
 Enuc_list = []
+
 C = eigem
+D_0 = numpy.zeros((ndim,ndim), dtype=numpy.complex128)
+for num in range(nocc):
+    D_0[num+nshift,num+nshift]=1.0+0.0j
 
 fo = sys.stderr
 if debug:
@@ -143,12 +143,11 @@ except LinAlgError:
     print "Error in numpy.linalg.inv of eigem" 
     exit(1)
 
-test = numpy.matmul(C_inv, eigem)
 if debug:
+  test = numpy.matmul(C_inv, eigem)
   fo.write("Check if atol is 1.e-14 for inversion of C: %s\n"% \
         numpy.allclose(numpy.eye((ndim),dtype=numpy.complex128), \
         test,atol=1.e-14))
-
 
 if debug:
   diff = test - numpy.eye((ndim),dtype=numpy.complex128)
@@ -188,10 +187,10 @@ direction = 2
 normalise = 1
 dipz_mat = bertha.get_realtime_dipolematrix (direction, normalise)
 
-fockmh = numpy.conjugate(fockm.T)
-diff_fockmh = fockm-fockmh
-mdiff = numpy.max(diff_fockmh)
 if debug:
+  fockmh = numpy.conjugate(fockm.T)
+  diff_fockmh = fockm-fockmh
+  mdiff = numpy.max(diff_fockmh)
   fo.write("Check max diff fockm-fockmh: %.12e %.12e\n"%\
         (mdiff.real, mdiff.imag))
   fo.write("Fockm (t=0) is hermitian: %s \n"%numpy.allclose(fockm,fockmh,atol=1.e-15))
@@ -204,7 +203,6 @@ fock_mid_init = rtutil.mo_fock_mid_forwd_eval(bertha,Da,fockm,0,numpy.float_(dt)
 if (fock_mid_init is None):
     print "Error accurs in mo_fock_mid_forwd_eval"
     exit(1)
-
 
 if debug:
   fock_mid_h=numpy.conjugate(fock_mid_init.T)
@@ -248,6 +246,7 @@ if debug:
 
 Ndip_z=0.0
 #estrarre le 3 componenti del dipolo nucleare
+
 D_ti=D_t1
 Dp_ti=Dp_t1
 #aggiungere repulsione nucleare

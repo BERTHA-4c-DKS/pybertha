@@ -129,13 +129,13 @@ def mo_fock_mid_forwd_eval(bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
    if pulse is None:
      return None 
 
-   fock_ti_ao = fockmtx-dipole_z * pulse
+   fock_ti_ao = fockmtx- (dipole_z * pulse)
    # dipole matrix null for test
    dens_test = numpy.zeros((ndim,ndim),dtype=numpy.complex128)
    fock_guess = 2.00*fock_ti_ao - fock_mid_ti_backwd
    while True:
-        fockp_guess = numpy.matmul(numpy.conjugate(C.T),
-            numpy.matmul(fock_guess,C))
+        fockp_guess = numpy.matmul(numpy.conjugate(C.T), \
+                numpy.matmul(fock_guess,C))
 
         u = exp_opmat(fockp_guess,delta_t)
 
@@ -159,11 +159,11 @@ def mo_fock_mid_forwd_eval(bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
         D_ti_dt = numpy.matmul(C,numpy.matmul(Dp_ti_dt,numpy.conjugate(C.T)))
         #build the correspondig Fock , fock_ti+dt
         
-        pulse = kick(0.0001,t_arg)
+        pulse = kick(0.0001,t_arg+delta_t)
         if pulse is None:
           return None 
 
-        fock_ti_dt_ao=bertha.get_realtime_fock(D_ti_dt.T)-dipole_z*pulse
+        fock_ti_dt_ao=bertha.get_realtime_fock(D_ti_dt.T)-(dipole_z*pulse)
         fock_inter = 0.5*fock_ti_ao + 0.5*fock_ti_dt_ao
         #update fock_guess
         fock_guess = numpy.copy(fock_inter)
