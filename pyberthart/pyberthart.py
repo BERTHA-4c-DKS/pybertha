@@ -34,6 +34,8 @@ parser.add_argument("-d", "--debug", help="Debug on, prints debug info to debug_
         default=False, action="store_true")
 parser.add_argument("-v", "--verbosity", help="Verbosity level 0 = minim, -1 = print iteration info, " + 
         "1 = maximum (defaul -1)", required=False, default=-1, type=int)
+parser.add_argument("--iterations", help="Use iteration number instead of progressbar",
+        required=False, default=False, action="store_true")
 
 args = parser.parse_args()
 
@@ -261,7 +263,10 @@ print ""
 fock_mid_backwd=numpy.copy(fock_mid_init)
 for j in range(1,niter):
 
-    rtutil.progress_bar(j, niter-1)
+    if (args.iterations):
+        print "Iteration ", j, " of ", niter-1
+    else:
+        rtutil.progress_bar(j, niter-1)
 
     fock_mid_tmp = rtutil.mo_fock_mid_forwd_eval(bertha,numpy.copy(D_ti), \
             fock_mid_backwd,j,numpy.float_(dt),dipz_mat,C,C_inv,ovapm,ndim,\
