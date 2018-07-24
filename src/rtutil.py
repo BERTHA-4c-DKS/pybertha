@@ -56,8 +56,9 @@ def exp_opmat(mat,dt):
 
 #######################################################################
 
-def kick(Fmax,t):
+def kick (Fmax, w, t):
 
+    w = 0.0
     func = 0.0
     if t > 0:
       func = 0.0
@@ -71,11 +72,12 @@ def kick(Fmax,t):
 
 #######################################################################
 
-def gauss_env(k,t,t0=3.0,s=0.2):
+def gauss_env (k, w, t, t0=3.0, s=0.2):
     
     #s is the pulse width
     #when used the envelope must be multiplied by sin(wt)
     # (typically a few time step
+    w = 0.0
     
     func=k*np.exp(-(t-t0)**2.0/(2.0*s**2.0))
     
@@ -83,7 +85,7 @@ def gauss_env(k,t,t0=3.0,s=0.2):
 
 #######################################################################
 
-def envelope(Fmax,w,t):
+def envelope (Fmax, w, t):
    
    if (t >= 0.0 and t<= 2.00*np.pi/w):
       Amp =(w*t/(2.00*np.pi))*Fmax
@@ -100,7 +102,7 @@ def envelope(Fmax,w,t):
 
 #######################################################################
 
-def sin_env(Fmax,w,t):
+def sin_env (Fmax, w, t):
    
    # 1-oscillation 
    if (t >= 0.0 and t<= 2.00*np.pi/w):
@@ -112,8 +114,20 @@ def sin_env(Fmax,w,t):
 
 #######################################################################
 
+funcswitcher = {
+    "kick": kick,
+    "gauss_env": gauss_env,
+    "envelope": envelope,
+    "sin_env": sin_env
+     }
+   
+#######################################################################
+
 def mo_fock_mid_forwd_eval(bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
-    dipole_z, C, C_inv, S, ndim, debug=False, odbg=sys.stderr):
+    dipole_z, C, C_inv, S, ndim, debug=False, odbg=sys.stderr, 
+    impulsefunc="kick", fmax=0.0001, w=0.0): 
+
+   func = funcswitcher.get(impulsefunc, lambda: kick)
 
    fock_inter = numpy.zeros((ndim,ndim),dtype=numpy.complex128)   
    
@@ -122,14 +136,14 @@ def mo_fock_mid_forwd_eval(bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
    
    Dp_ti = numpy.matmul(C_inv,numpy.matmul(D_ti,numpy.conjugate(C_inv.T)))
    k = 1
-   t_arg = numpy.float_(i)*numpy.float_(delta_t)
+   t_arg = numpy.float_(i) * numpy.float_ (delta_t)
    fockmtx = bertha.get_realtime_fock(D_ti.T)
    
-   pulse = kick(0.0001,t_arg)
+   pulse = func(fmax, w, t_arg)
    if pulse is None:
      return None 
 
-   fock_ti_ao = fockmtx- (dipole_z * pulse)
+   fock_ti_ao = fockmtx - (dipole_z * pulse)
    # dipole matrix null for test
    dens_test = numpy.zeros((ndim,ndim),dtype=numpy.complex128)
    fock_guess = 2.00*fock_ti_ao - fock_mid_ti_backwd
@@ -159,7 +173,7 @@ def mo_fock_mid_forwd_eval(bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
         D_ti_dt = numpy.matmul(C,numpy.matmul(Dp_ti_dt,numpy.conjugate(C.T)))
         #build the correspondig Fock , fock_ti+dt
         
-        pulse = kick(0.0001,t_arg+delta_t)
+        pulse = func (fmax, w, t_arg + delta_t)
         if pulse is None:
           return None 
 

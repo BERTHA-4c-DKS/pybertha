@@ -13,7 +13,13 @@ sys.path.insert(0, '../src/')
 import berthamod
 import rtutil
 
+listpulses = ""
+for key in rtutil.funcswitcher:
+    listpulses += key
+    listpulses += " "
+
 parser = argparse.ArgumentParser()
+
 parser.add_argument("-f","--inputfile", help="Specify BERTHA input file (default: input.inp)", required=False, 
         type=str, default="input.inp")
 parser.add_argument("-t","--fittfile", help="Specify BERTHA fitting input file (default: fitt2.inp)", required=False, 
@@ -30,6 +36,12 @@ parser.add_argument("-m", "--dt", help="Specify dt to be used (default: 0.1)", r
         default=0.1, type=numpy.float64)
 parser.add_argument("-T", "--totaltime", help="Specify total time )deaful: 1.0)", required=False,
         default=1.0, type=numpy.float64)
+parser.add_argument("--pulse", help="Specify the pulse to use [" + listpulses + "] default kick", required=False, 
+        type=str, default="kick")
+parser.add_argument("--pulseFmax", help="Specify the pulse Fmax value (default: 0.0001)", 
+        default=0.0001, type=numpy.float64)
+parser.add_argument("--pulsew", help="Specify the pulse w value if needed (default: 0.0)", 
+        default=0.0, type=numpy.float64)
 parser.add_argument("-d", "--debug", help="Debug on, prints debug info to debug_info.txt", required=False, 
         default=False, action="store_true")
 parser.add_argument("-v", "--verbosity", help="Verbosity level 0 = minim, -1 = print iteration info, " + 
@@ -200,7 +212,7 @@ if debug:
 print "Start first mo_fock_mid_forwd_eval "
 
 fock_mid_init = rtutil.mo_fock_mid_forwd_eval(bertha,Da,fockm,0,numpy.float_(dt),\
-	dipz_mat,C,C_inv,ovapm,ndim, debug, fo)
+	dipz_mat,C,C_inv,ovapm,ndim, debug, fo, args.pulse, args.pulseFmax, args.pulsew)
 
 if (fock_mid_init is None):
     print "Error accurs in mo_fock_mid_forwd_eval"
@@ -270,7 +282,7 @@ for j in range(1,niter):
 
     fock_mid_tmp = rtutil.mo_fock_mid_forwd_eval(bertha,numpy.copy(D_ti), \
             fock_mid_backwd,j,numpy.float_(dt),dipz_mat,C,C_inv,ovapm,ndim,\
-                    debug, fo)
+                    debug, fo, args.pulse, args.pulseFmax, args.pulsew)
     
     if (fock_mid_tmp is None):
         print "Error accurs in mo_fock_mid_forwd_eval"
