@@ -79,7 +79,7 @@ def gauss_env (k, w, t, t0=3.0, s=0.2):
     # (typically a few time step
     w = 0.0
     
-    func=k*np.exp(-(t-t0)**2.0/(2.0*s**2.0))
+    func=k*numpy.exp(-(t-t0)**2.0/(2.0*s**2.0))
     
     return func
 
@@ -87,13 +87,13 @@ def gauss_env (k, w, t, t0=3.0, s=0.2):
 
 def envelope (Fmax, w, t):
    
-   if (t >= 0.0 and t<= 2.00*np.pi/w):
-      Amp =(w*t/(2.00*np.pi))*Fmax
-   elif (t > 2.00*np.pi/w and t < 4.00*np.pi/w):
+   if (t >= 0.0 and t<= 2.00*numpy.pi/w):
+      Amp =(w*t/(2.00*numpy.pi))*Fmax
+   elif (t > 2.00*numpy.pi/w and t < 4.00*numpy.pi/w):
       Amp = Fmax
-   elif ( t >= 4.00*np.pi/w and t <= 6.00*np.pi/w):
-      Amp = (3.00 -w*t/(2.00*np.pi))*Fmax
-   elif ( t > 6.00*np.pi/w):
+   elif ( t >= 4.00*numpy.pi/w and t <= 6.00*numpy.pi/w):
+      Amp = (3.00 -w*t/(2.00*numpy.pi))*Fmax
+   elif ( t > 6.00*numpy.pi/w):
       Amp = 0.0
    else :
       Amp = 0.0
@@ -105,7 +105,7 @@ def envelope (Fmax, w, t):
 def sin_env (Fmax, w, t):
    
    # 1-oscillation 
-   if (t >= 0.0 and t<= 2.00*np.pi/w):
+   if (t >= 0.0 and t<= 2.00*numpy.pi/w):
       Amp = Fmax
    else:
       Amp = 0.0
