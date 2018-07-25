@@ -96,12 +96,15 @@ print "          nshift: ", nshift
 print "           nopen: ", nopen
 print "     level shift: ", sfact
 print ""
+sys.stdout.flush()
 
 ovapm, eigem, fockm, eigen = bertha.run()
 if (fockm is None) or (eigen is None) or (fockm is None) \
         or (eigen is None):
     print "Error in bertha run"
     exit(-1)
+
+sys.stdout.flush()
 
 print ""
 print "Final results "
@@ -133,6 +136,8 @@ print "Debug: ", debug
 print "dt : ", dt
 print "Total time  : ", t_int
 print "Number of iterations: ", niter
+
+sys.stdout.flush()
 
 ene_list = []
 dip_list = []
@@ -335,6 +340,8 @@ for j in range(1,niter):
 
     #update fock_mid_backwd for the next step
     fock_mid_backwd=numpy.copy(fock_mid_tmp)
+
+    sys.stdout.flush()
 
 print ""
 print ""
