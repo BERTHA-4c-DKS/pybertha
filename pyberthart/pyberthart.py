@@ -299,10 +299,8 @@ for j in range(1,niter):
     # u=scila.expm(-1.0j*fockp_mid_tmp*dt)
     # check u is unitary
     test_u = numpy.matmul(u,numpy.conjugate(u.T))
-    
     if (not numpy.allclose(numpy.eye(u.shape[0]),test_u,atol=1.e-14)):
-        print("U is not unitary\n")
-        exit(1)
+        print("WARNING: U is not unitary\n")
 
     #evolve the density in orthonormal basis
     #check the trace of density to evolve

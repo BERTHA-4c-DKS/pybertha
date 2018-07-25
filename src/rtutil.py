@@ -140,6 +140,9 @@ def mo_fock_mid_forwd_eval(bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
    fockmtx = bertha.get_realtime_fock(D_ti.T)
    
    pulse = func(fmax, w, t_arg)
+   if debug: 
+       odbg.write("Pulse: %.8f\n"%(pulse))
+
    if pulse is None:
      return None 
 
@@ -174,6 +177,9 @@ def mo_fock_mid_forwd_eval(bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
         #build the correspondig Fock , fock_ti+dt
         
         pulse = func (fmax, w, t_arg + delta_t)
+        if debug: 
+            odbg.write("Pulse: %.8f\n"%(pulse))
+
         if pulse is None:
           return None 
 
