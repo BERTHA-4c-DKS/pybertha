@@ -3,44 +3,54 @@
 
 #ifdef USEINTELCMP
 
+#define f_bertha_init bertha_wrapper_mp_bertha_init_
+#define f_bertha_realtime_init bertha_wrapper_mp_bertha_realtime_init_
+#define f_bertha_main bertha_wrapper_mp_bertha_main_
+#define f_bertha_finalize bertha_wrapper_mp_bertha_finalize_
+#define f_bertha_realtime_finalize bertha_wrapper_mp_bertha_realtime_finalize_
+#define f_bertha_realtime_dipolematrix bertha_wrapper_mp_bertha_realtime_dipolematrix_
+#define f_bertha_realtime_fock bertha_wrapper_mp_bertha_realtime_fock_
+
+#define f_ndim spec_mp_ndim_
+#define f_nshift spec_mp_nshift_
+#define f_nocc spec_mp_nocc_
+#define f_nopen opensh_mp_nopen_
+#define f_sfact shiftr_mp_sfact_
+#define f_etotal energy_mp_etotal_
+#define f_erep bertha_wrapper_mp_erep_
+
 #else
-
-void __bertha_wrapper_MOD_bertha_init (char *, int *, int *, int);
-void __bertha_wrapper_MOD_bertha_realtime_init ();
-void __bertha_wrapper_MOD_bertha_main (char *, char *, char *, char *, 
-    double *, double *, double *, double *, int, int, int, int);
-void __bertha_wrapper_MOD_bertha_finalize();
-void __bertha_wrapper_MOD_bertha_realtime_finalize();
-void __bertha_wrapper_MOD_bertha_realtime_dipolematrix(int *, 
-      int *, double *);
-void __bertha_wrapper_MOD_bertha_realtime_fock (double *, double *);
-
-extern int _spec_MOD_ndim, __spec_MOD_nshift, __spec_MOD_nocc, 
-       __opensh_MOD_nopen;
-extern double __shiftr_MOD_sfact, __energy_MOD_etotal, 
-       __bertha_wrapper_MOD_erep;
 
 #define f_bertha_init __bertha_wrapper_MOD_bertha_init
 #define f_bertha_realtime_init __bertha_wrapper_MOD_bertha_realtime_init
 #define f_bertha_main __bertha_wrapper_MOD_bertha_main
 #define f_bertha_finalize __bertha_wrapper_MOD_bertha_finalize
 #define f_bertha_realtime_finalize __bertha_wrapper_MOD_bertha_realtime_finalize
-#define f__bertha_realtime_dipolematrix __bertha_wrapper_MOD_bertha_realtime_dipolematrix
-#define f__bertha_realtime_fock __bertha_wrapper_MOD_bertha_realtime_fock
+#define f_bertha_realtime_dipolematrix __bertha_wrapper_MOD_bertha_realtime_dipolematrix
+#define f_bertha_realtime_fock __bertha_wrapper_MOD_bertha_realtime_fock
 
 #define f_ndim __spec_MOD_ndim
 #define f_nshift __spec_MOD_nshift
 #define f_nocc __spec_MOD_nocc
 #define f_nopen __opensh_MOD_nopen
-
 #define f_sfact __shiftr_MOD_sfact
-/*
- __energy_MOD_etotal      
- __bertha_wrapper_MOD_erep
-*/
+#define f_etotal __energy_MOD_etotal
+#define f_erep __bertha_wrapper_MOD_erep
 
-#define 
 #endif
+
+void f_bertha_init (char *, int *, int *, int);
+void f_bertha_realtime_init ();
+void f_bertha_main (char *, char *, char *, char *, 
+    double *, double *, double *, double *, int, int, int, int);
+void f_bertha_finalize();
+void f_bertha_realtime_finalize();
+void f_bertha_realtime_dipolematrix(int *, 
+      int *, double *);
+void f_bertha_realtime_fock (double *, double *);
+
+extern int f_ndim,f_nshift, f_nocc, f_nopen;
+extern double f_sfact, f_etotal, f_erep;
 
 // DATA METHODS
 
@@ -81,14 +91,14 @@ double get_sfact ()
 
 double get_erep ()
 {
-  double val = __bertha_wrapper_MOD_erep;
+  double val = f_erep;
 
   return val;
 }
 
 double get_etotal ()
 {
-  double val = __energy_MOD_etotal;
+  double val = f_etotal;
 
   return val;
 }
