@@ -77,7 +77,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       real (c_double), intent(out) :: ovap_ptr(*), eige_ptr(*), 
      +                                fock_ptr(*)
 
-      real, parameter :: tresh = 1.0e-11
+      real, parameter :: tresh = 1.0e-13
       complex, parameter :: czero = (0.0,0.0)
 
       integer :: counter, icent, j, ii, jj, i, iter, 
