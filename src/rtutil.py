@@ -192,6 +192,9 @@ def mo_fock_mid_forwd_eval(bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
             # calc frobenius of the difference D_ti_dt_mo_new-D_ti_dt_mo
             diff = D_ti_dt-dens_test
             norm_f = numpy.linalg.norm(diff,'fro')
+            if debug:
+              odbg.write("Norm: %.8f\n" %(norm_f))
+              odbg.flush()
             if norm_f < (1e-6):
                 if debug:
                   odbg.write(" Converged after %i interpolations\n" % (k))
