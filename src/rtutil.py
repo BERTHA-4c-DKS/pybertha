@@ -195,7 +195,7 @@ def mo_fock_mid_forwd_eval(bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
             if debug:
               odbg.write("Norm: %.10e\n" %(norm_f))
               odbg.flush()
-            if norm_f < (5e-5):
+            if norm_f < (1e-6):
                 if debug:
                   odbg.write(" Converged after %i interpolations\n" % (k))
                   odbg.write("   i = %i" % i)
