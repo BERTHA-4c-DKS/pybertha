@@ -20,7 +20,7 @@
 
       integer :: intype, fitcase, testfit, igrid, iprint, mactve,
      +           maxit, nactve, ncore, nfitt
-      real :: amass(ncentm), sfact1, sfact2, erep
+      real :: amass(ncentm), sfact1, sfact2, erep, tresh
       character(len=7) :: expo
 
       contains
@@ -77,7 +77,6 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       real (c_double), intent(out) :: ovap_ptr(*), eige_ptr(*), 
      +                                fock_ptr(*)
 
-      real, parameter :: tresh = 1.0e-13
       complex, parameter :: czero = (0.0,0.0)
 
       integer :: counter, icent, j, ii, jj, i, iter, 

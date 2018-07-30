@@ -29,6 +29,8 @@ parser.add_argument("-d", "--debug", help="Debug on, prints debug info to debug_
         default=False, action="store_true")
 parser.add_argument("-v", "--verbosity", help="Verbosity level 0 = minim, -1 = print iteration info, " + 
         "1 = maximum (defaul -1)", required=False, default=-1, type=int)
+parser.add_argument("--tresh", help="det treshold (default = 1.0e-12)", required=False, 
+        type=numpy.float64, default=1.0e-12)
 
 args = parser.parse_args()
 
@@ -56,6 +58,7 @@ bertha.set_ovapfilename(ovapfilename)
 bertha.set_vctfilename(vctfilename)
 bertha.set_fnameinput(fnameinput)
 bertha.set_fittfname(fittfname)
+bertha.set_tresh(args.tresh)
 
 bertha.set_verbosity(verbosity)
 bertha.set_dumpfiles(dumpfiles)

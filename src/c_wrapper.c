@@ -18,6 +18,7 @@
 #define f_sfact shiftr_mp_sfact_
 #define f_etotal energy_mp_etotal_
 #define f_erep bertha_wrapper_mp_erep_
+#define f_tresh bertha_wrapper_mp_tresh_
 
 #else
 
@@ -36,7 +37,7 @@
 #define f_sfact __shiftr_MOD_sfact
 #define f_etotal __energy_MOD_etotal
 #define f_erep __bertha_wrapper_MOD_erep
-
+#define f_tresh __bertha_wrapper_MOD_tresh
 #endif
 
 void f_bertha_init (char *, int *, int *, int);
@@ -50,9 +51,21 @@ void f_bertha_realtime_dipolematrix(int *,
 void f_bertha_realtime_fock (double *, double *);
 
 extern int f_ndim,f_nshift, f_nocc, f_nopen;
-extern double f_sfact, f_etotal, f_erep;
+extern double f_sfact, f_etotal, f_erep, f_tresh;
 
 // DATA METHODS
+
+double get_tresh ()
+{
+  double val = f_tresh;
+
+  return val;
+}
+
+void set_tresh (double val)
+{
+  f_tresh = val;
+}
 
 int get_ndim ()
 {

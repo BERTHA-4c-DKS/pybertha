@@ -126,6 +126,14 @@ class pybertha:
 
         self.__realtime_init = False
 
+    def set_tresh (self, ini):
+        self.__bertha.set_tresh(ctypes.c_double(ini)) 
+
+    def get_tresh (self):
+        self.__bertha.get_tresh.restype = ctypes.c_double
+ 
+        return self.__bertha.get_tresh()
+
     def set_fittcoefffname (self, ini):
         self.__fittcoefffname = ini
 
