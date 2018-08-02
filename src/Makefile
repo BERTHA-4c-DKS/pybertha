@@ -3,7 +3,8 @@ include ../../config.mk
 BERTHAWLIB = bertha_wrapper.so
 
 OBJ = bertha_wrapper.o \
-      c_wrapper.o
+      c_wrapper.o \
+      cubefile.o
 
 all : $(BERTHAWLIB)
 

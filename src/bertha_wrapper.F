@@ -111,6 +111,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       call getmem ()
 
       call initijkvec()
+
       call initfitting(fitcase,nfitt,fittfname)
       call flabel(centfun)
 ! nuclear repulsion energy
@@ -766,7 +767,13 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       character*(*), intent(in) :: fname
       real (c_double), intent(in) :: dens_ptr(*) 
 
+      real :: centfun(ncentm)
       integer :: counter, i, j
+      real, allocatable :: v(:), zz(:)
+
+      real*8, dimension (3) :: ri, rf, dr
+      integer, dimension (3) :: nr
+      real*8 :: margin
 
       counter = 1
       do i = 1, ndim
@@ -776,8 +783,69 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         enddo
       enddo
 
+      ri(1) = coord(1, 1)
+      ri(2) = coord(2, 1)
+      ri(3) = coord(3, 1)
+
+      rf(1) = coord(1, 1)
+      rf(2) = coord(2, 1)
+      rf(3) = coord(3, 1)
+
+      do i=1,ncent
+        print *, coord(1, i), coord(2, i), coord(3, i)
+
+        if (coord(1, i) .lt. ri(1)) ri(1) = coord(1, i) 
+        if (coord(2, i) .lt. ri(2)) ri(2) = coord(2, i)
+        if (coord(3, i) .lt. ri(3)) ri(3) = coord(3, i)
+
+        if (coord(1, i) .gt. rf(1)) rf(1) = coord(1, i) 
+        if (coord(2, i) .gt. rf(2)) rf(2) = coord(2, i)
+        if (coord(3, i) .gt. rf(3)) rf(3) = coord(3, i)
+ 
+      enddo
+
+      !print *, "Min: ", ri(1), ri(2), ri(3)
+      !print *, "Max: ", rf(1), rf(2), rf(3)
+
+      margin = 15.0
+      dr(1) = 0.2    
+      dr(2) = 0.2 
+      dr(3) = 0.2
+
+      ri(1) = ri(1) - margin
+      ri(2) = ri(2) - margin
+      ri(3) = ri(3) - margin
+
+      rf(1) = rf(1) + margin
+      rf(2) = rf(2) + margin
+      rf(3) = rf(3) + margin
+
+      nr = INT( (rf - ri) / dr + 1.0 )
+
+      !allocate (denh(ndim*ndim))
+
+      call initijkvec()
+      call initfitting(fitcase,nfitt,"fitt2.inp")
+      call flabel(centfun)
+      allocate (v(nfitt),zz(nfitt))
+
+      ! rho
+      call hden()
+      call v_calculation(nfitt,fitcase,v)
+      call factlu(nfitt,v)
+      ! write(filename, '(A)') "fit-rho.cube"
+      ! print *, "Writing cubefile: ", filename
+      call cubefile (ncent,coord,iznuc,v,nfitt,fitcase,
+     +               ri,nr,dr,fname) 
+
+      !deallocate(denh)
+      deallocate(zz)
+      deallocate(v) 
+
       end subroutine bertha_density_to_cube 
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       end module
+
+
