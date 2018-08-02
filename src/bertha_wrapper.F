@@ -759,4 +759,25 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
+      subroutine bertha_density_to_cube (dens_ptr, fname)
+
+      implicit none
+
+      character*(*), intent(in) :: fname
+      real (c_double), intent(in) :: dens_ptr(*) 
+
+      integer :: counter, i, j
+
+      counter = 1
+      do i = 1, ndim
+        do j = 1, ndim
+           c(i, j) = cmplx(dens_ptr(counter), dens_ptr(counter+1))
+           counter = counter + 2
+        enddo
+      enddo
+
+      end subroutine bertha_density_to_cube 
+
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
       end module

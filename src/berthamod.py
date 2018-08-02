@@ -217,6 +217,17 @@ class pybertha:
         
         return 0
 
+    def density_to_cube(self, dens, fname):
+
+        in_fname = ctypes.c_char_p(fname)
+
+        ndim = self.get_ndim()
+
+        cbuffer = complexmat_to_doublevct (dens)
+
+        self.__bertha.density_to_cube (ctypes.c_void_p(cbuffer.ctypes.data), \
+                fname)
+
     def run(self):
         if self.__init:
             ndim = self.get_ndim()

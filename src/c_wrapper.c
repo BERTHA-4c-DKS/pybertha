@@ -10,6 +10,7 @@
 #define f_bertha_realtime_finalize bertha_wrapper_mp_bertha_realtime_finalize_
 #define f_bertha_realtime_dipolematrix bertha_wrapper_mp_bertha_realtime_dipolematrix_
 #define f_bertha_realtime_fock bertha_wrapper_mp_bertha_realtime_fock_
+#define f_bertha_density_to_cube  bertha_wrapper_mp_bertha_density_to_cube_
 
 #define f_ndim spec_mp_ndim_
 #define f_nshift spec_mp_nshift_
@@ -29,6 +30,7 @@
 #define f_bertha_realtime_finalize __bertha_wrapper_MOD_bertha_realtime_finalize
 #define f_bertha_realtime_dipolematrix __bertha_wrapper_MOD_bertha_realtime_dipolematrix
 #define f_bertha_realtime_fock __bertha_wrapper_MOD_bertha_realtime_fock
+#define f_bertha_density_to_cube  __bertha_wrapper_MOD_bertha_density_to_cube_
 
 #define f_ndim __spec_MOD_ndim
 #define f_nshift __spec_MOD_nshift
@@ -38,8 +40,10 @@
 #define f_etotal __energy_MOD_etotal
 #define f_erep __bertha_wrapper_MOD_erep
 #define f_tresh __bertha_wrapper_MOD_tresh
+
 #endif
 
+void f_bertha_density_to_cube (double *, char *, int);
 void f_bertha_init (char *, int *, int *, int);
 void f_bertha_realtime_init ();
 void f_bertha_main (char *, char *, char *, char *, 
@@ -198,6 +202,10 @@ int mainrun(char * fittcoefffname, char * vctfilename,
   return 0;
 }
 
+void density_to_cube (double * dens_ptr, char * filename)
+{
+  f_bertha_density_to_cube(dens_ptr, filename, strlen(filename));
+} 
 
 int finalize ()
 {

@@ -70,4 +70,4 @@ BLYP
 'scalapack'
 2 2 32 2.0
 'maxit'
-200
+2

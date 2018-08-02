@@ -335,6 +335,8 @@ for j in range(1,niter):
     # fo.write('here I update the matrices Dp_ti and D_ti\n')
     D_ti = numpy.copy(D_ti_dt)
     Dp_ti = numpy.copy(Dp_ti_dt)
+
+    bertha.density_to_cube(Dp_ti_dt, "density.cube")
   
     if debug:
       fo.write('  Trace of Dp_ti %.8f\n' % numpy.trace(Dp_ti).real)
