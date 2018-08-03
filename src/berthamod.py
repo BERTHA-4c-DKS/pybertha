@@ -217,16 +217,17 @@ class pybertha:
         
         return 0
 
-    def density_to_cube(self, dens, fname):
+    def density_to_cube(self, dens, fname, margin = 10.0, 
+            drx = 0.2, dry = 0.2, drz = 0.2):
 
+        in_fittfname = ctypes.c_char_p(self.__fittfname)
         in_fname = ctypes.c_char_p(fname)
-
-        ndim = self.get_ndim()
 
         cbuffer = complexmat_to_doublevct (dens)
 
         self.__bertha.density_to_cube (ctypes.c_void_p(cbuffer.ctypes.data), \
-                fname)
+                ctypes.c_double(margin), ctypes.c_double(drx), ctypes.c_double(dry), \
+                ctypes.c_double(drz), in_fname, in_fittfname)
 
     def run(self):
         if self.__init:

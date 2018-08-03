@@ -336,8 +336,6 @@ for j in range(1,niter):
     D_ti = numpy.copy(D_ti_dt)
     Dp_ti = numpy.copy(Dp_ti_dt)
 
-    bertha.density_to_cube(Dp_ti_dt, "density.cube")
-  
     if debug:
       fo.write('  Trace of Dp_ti %.8f\n' % numpy.trace(Dp_ti).real)
       fo.write('  Trace of ovapm * D_ti  %.8f\n' % numpy.trace(numpy.matmul(ovapm,D_ti)).real)
@@ -347,6 +345,9 @@ for j in range(1,niter):
     fock_mid_backwd=numpy.copy(fock_mid_tmp)
 
     sys.stdout.flush()
+
+print "Dump density density.cube"
+bertha.density_to_cube(D_ti, "density.cube", margin = 5.0)
 
 print ""
 print ""

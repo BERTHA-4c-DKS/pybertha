@@ -43,7 +43,8 @@
 
 #endif
 
-void f_bertha_density_to_cube (double *, char *, int);
+void f_bertha_density_to_cube (double *, double *, double *, 
+    double *, double*, char *, char *, int, int);
 void f_bertha_init (char *, int *, int *, int);
 void f_bertha_realtime_init ();
 void f_bertha_main (char *, char *, char *, char *, 
@@ -202,9 +203,12 @@ int mainrun(char * fittcoefffname, char * vctfilename,
   return 0;
 }
 
-void density_to_cube (double * dens_ptr, char * filename)
+void density_to_cube (double * dens_ptr, double margin, double drx, double dry, 
+    double drz, char * filename, char * fittfname)
 {
-  f_bertha_density_to_cube(dens_ptr, filename, strlen(filename));
+  //fprintf (stdout, "%f %f %f %f \n",  margin, drx, dry, drz);
+  f_bertha_density_to_cube(dens_ptr, &margin, &drx, &dry, &drz, 
+      filename, fittfname, strlen(filename), strlen(fittfname));
 } 
 
 int finalize ()

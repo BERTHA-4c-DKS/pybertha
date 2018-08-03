@@ -760,20 +760,21 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
-      subroutine bertha_density_to_cube (dens_ptr, fname)
+      subroutine bertha_density_to_cube (dens_ptr, margin, drx, dry, 
+     >    drz, fname, fittfname)
 
       implicit none
 
-      character*(*), intent(in) :: fname
+      character*(*), intent(in) :: fname, fittfname
       real (c_double), intent(in) :: dens_ptr(*) 
+      real, intent(in) :: drx, dry, drz, margin
 
       real :: centfun(ncentm)
       integer :: counter, i, j
       real, allocatable :: v(:), zz(:)
 
-      real*8, dimension (3) :: ri, rf, dr
+      real, dimension (3) :: ri, rf, dr
       integer, dimension (3) :: nr
-      real*8 :: margin
 
       counter = 1
       do i = 1, ndim
@@ -792,7 +793,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       rf(3) = coord(3, 1)
 
       do i=1,ncent
-        print *, coord(1, i), coord(2, i), coord(3, i)
+        !print *, coord(1, i), coord(2, i), coord(3, i)
 
         if (coord(1, i) .lt. ri(1)) ri(1) = coord(1, i) 
         if (coord(2, i) .lt. ri(2)) ri(2) = coord(2, i)
@@ -804,13 +805,15 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
  
       enddo
 
+      !print *, drx, dry, drz
       !print *, "Min: ", ri(1), ri(2), ri(3)
       !print *, "Max: ", rf(1), rf(2), rf(3)
 
-      margin = 15.0
-      dr(1) = 0.2    
-      dr(2) = 0.2 
-      dr(3) = 0.2
+      dr(1) = drx
+      dr(2) = dry 
+      dr(3) = drz
+
+      !print *, "dr: ", dr(1), dr(2), dr(3)
 
       ri(1) = ri(1) - margin
       ri(2) = ri(2) - margin
@@ -822,10 +825,8 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       nr = INT( (rf - ri) / dr + 1.0 )
 
-      !allocate (denh(ndim*ndim))
-
       call initijkvec()
-      call initfitting(fitcase,nfitt,"fitt2.inp")
+      call initfitting(fitcase, nfitt, fittfname)
       call flabel(centfun)
       allocate (v(nfitt),zz(nfitt))
 
