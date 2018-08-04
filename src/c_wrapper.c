@@ -30,7 +30,7 @@
 #define f_bertha_realtime_finalize __bertha_wrapper_MOD_bertha_realtime_finalize
 #define f_bertha_realtime_dipolematrix __bertha_wrapper_MOD_bertha_realtime_dipolematrix
 #define f_bertha_realtime_fock __bertha_wrapper_MOD_bertha_realtime_fock
-#define f_bertha_density_to_cube  __bertha_wrapper_MOD_bertha_density_to_cube_
+#define f_bertha_density_to_cube  __bertha_wrapper_MOD_bertha_density_to_cube
 
 #define f_ndim __spec_MOD_ndim
 #define f_nshift __spec_MOD_nshift
