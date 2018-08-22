@@ -5,6 +5,8 @@ import numpy
 import sys
 import re
 
+import timeit
+
 import scipy.linalg as scila
 from numpy.linalg import eigvalsh
 from scipy.linalg import eigh
@@ -283,10 +285,7 @@ print ""
 fock_mid_backwd=numpy.copy(fock_mid_init)
 for j in range(1,niter):
 
-    if (args.iterations):
-        print "Iteration ", j, " of ", niter-1
-    else:
-        rtutil.progress_bar(j, niter-1)
+    start = timeit.timeit()
 
     fock_mid_tmp = rtutil.mo_fock_mid_forwd_eval(bertha,numpy.copy(D_ti), \
             fock_mid_backwd,j,numpy.float_(dt),dipz_mat,C,C_inv,ovapm,ndim,\
@@ -343,6 +342,13 @@ for j in range(1,niter):
 
     #update fock_mid_backwd for the next step
     fock_mid_backwd=numpy.copy(fock_mid_tmp)
+
+    end = timeit.timeit()
+
+    if (args.iterations):
+        print "Iteration ", j, " of ", niter-1, " ( ", end - start, " s )"
+    else:
+        rtutil.progress_bar(j, niter-1)
 
     sys.stdout.flush()
 
