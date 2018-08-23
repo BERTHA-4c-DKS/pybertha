@@ -54,11 +54,14 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       if(.not.readinput (0, intype, amass, ncore, mactve, nactve,
      +                   igrid, nopen, iprint, maxit, expo,
      +                   fitcase, testfit, sfact1, sfact2, fnameinput)) then
+        call flush(6)
         return
       endif
 
       if (verbose .eq. 1) write(6,11) ndim
    11 format(2x,'total dimension of the matrix: ',i6/)
+      
+      call flush(6)
 
       end subroutine bertha_init
 
@@ -244,7 +247,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         a=0
         excfit=0.0
 
-        call dftinit_fit(excfit,igrid,expo,v,nfitt,fitcase,zz,a,.true.)
+        call dftinit_fit(excfit,igrid,expo,v,nfitt,fitcase,zz,a)
 
         v=v+zz
 
@@ -319,7 +322,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
         timetomt2 = walltime ()
         ctimetomt2 = cputime ()
-        call dftinit_fit(excfit,igrid,expo,v,nfitt,fitcase,zz,a,.true.)
+        call dftinit_fit(excfit,igrid,expo,v,nfitt,fitcase,zz,a)
         timetomt2 = walltime () - timetomt2
         ctimetomt2 = cputime () - ctimetomt2
 
@@ -611,7 +614,8 @@ c     call getresourcesusage ()
       if (verbose .eq. 1) write (0, 6679) wtimeiter
  6679 format ('Time for cube is: ', f8.4)
 
-     
+      call flush(6)
+
       return 
 
  9999 call errmsg("Error open file")
@@ -719,8 +723,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       call jfitenergy(v,nfitt,efittcoul)
       a = 0
       excfit = 0.0
-      call dftinit_fit(excfit,igrid,expo,v,nfitt,fitcase,zz,a, 
-     +                 .false.)
+      call dftinit_fit(excfit,igrid,expo,v,nfitt,fitcase,zz,a)
       v = zz + v
       call jmatfitt(fock,ndim,v,nfitt,fitcase)
       deallocate(v)

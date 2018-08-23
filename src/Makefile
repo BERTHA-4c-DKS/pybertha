@@ -16,4 +16,4 @@ $(BERTHAWLIB): $(OBJ)
 	cp $(BERTHAWLIB) $(ROOTDIR)/lib
 
 clean:
-	rm -f *.o *.mod $(BERTHAWLIB) $(ROOTDIR)/lib/$(BERTHAWLIB)
+	rm -f *.o *.mod *__genmod.f90 $(BERTHAWLIB) $(ROOTDIR)/lib/$(BERTHAWLIB)
