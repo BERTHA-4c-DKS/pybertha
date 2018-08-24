@@ -74,12 +74,12 @@ def kick (Fmax, w, t):
 
 def gauss_env (k, w, t, t0=3.0, s=0.2):
     
-    #s is the pulse width
-    #when used the envelope must be multiplied by sin(wt)
-    # (typically a few time step
-    w = 0.0
+    #s : the pulse width
+    #w : he frequency of the carrier
+    #k : the maximum amplitude of the field
+    #t0 :center of Gaussian envelope (in au time)
     
-    func=k*numpy.exp(-(t-t0)**2.0/(2.0*s**2.0))
+    func=k*numpy.exp(-(t-t0)**2.0/(2.0*s**2.0))*sin(w*t)
     
     return func
 
@@ -102,9 +102,9 @@ def envelope (Fmax, w, t):
 
 #######################################################################
 
-def sin_env (Fmax, w, t):
+def sin_oc (Fmax, w, t):
    
-   # 1-oscillation 
+   # 1-oscillation-cycle sinusoid
    if (t >= 0.0 and t<= 2.00*numpy.pi/w):
       Amp = Fmax
    else:
@@ -114,11 +114,28 @@ def sin_env (Fmax, w, t):
 
 #######################################################################
 
+def cos_env(Fmax,t,w,n=20):
+
+   #define oscillation cycle
+   #n is the number of oscillation cycle in the 
+   # envelope
+   oc=2.00*np.pi/w
+   s=oc*n/2.0
+   if (abs(t-s)<= s):
+      func=sin(w*t)*Fmax*(np.cos(np.pi/2.0/s*(s-t)))**2.0
+   else:
+      func=0.0
+
+   return func
+ 
+#######################################################################
+
 funcswitcher = {
     "kick": kick,
     "gauss_env": gauss_env,
     "envelope": envelope,
-    "sin_env": sin_env
+    "sin_oc": sin_oc,
+    "cos_env": cos_env
      }
    
 #######################################################################
