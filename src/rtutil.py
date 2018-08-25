@@ -124,10 +124,10 @@ def cos_env(Fmax,t,w,n=20):
    #define the period (time for an oscillation cycle)
    #n is the number of oscillation cycle in the 
    # envelope
-   oc=2.00*np.pi/w
+   oc=2.00*numpy.pi/w
    s=oc*n/2.0
    if (abs(t-s)<= s):
-      func=numpy.sin(w*t)*Fmax*(numpy.cos(np.pi/2.0/s*(s-t)))**2.0
+      func=numpy.sin(w*t)*Fmax*(numpy.cos(numpy.pi/2.0/s*(s-t)))**2.0
    else:
       func=0.0
 
