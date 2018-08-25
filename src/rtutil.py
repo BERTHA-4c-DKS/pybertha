@@ -72,14 +72,14 @@ def kick (Fmax, w, t):
 
 #######################################################################
 
-def gauss_env (k, w, t, t0=3.0, s=0.2):
+def gauss_env (Fmax, w, t, t0=3.0, s=0.2):
     
     #s : the pulse width
-    #w : he frequency of the carrier
-    #k : the maximum amplitude of the field
+    #w : the frequency of the carrier
+    #Fmax : the maximum amplitude of the field
     #t0 :center of Gaussian envelope (in au time)
     
-    func=k*numpy.exp(-(t-t0)**2.0/(2.0*s**2.0))*sin(w*t)
+    func=Fmax*numpy.exp(-(t-t0)**2.0/(2.0*s**2.0))*numpy.sin(w*t)
     
     return func
 
@@ -96,9 +96,12 @@ def envelope (Fmax, w, t):
    elif ( t > 6.00*numpy.pi/w):
       Amp = 0.0
    else :
+
       Amp = 0.0
 
-   return Amp
+   func = Amp*numpy.sin(w*t)
+
+   return func
 
 #######################################################################
 
@@ -110,19 +113,21 @@ def sin_oc (Fmax, w, t):
    else:
       Amp = 0.0
 
-   return Amp
+   func = Amp*numpy.sin(w*t)
+
+   return func
 
 #######################################################################
 
 def cos_env(Fmax,t,w,n=20):
 
-   #define oscillation cycle
+   #define the period (time for an oscillation cycle)
    #n is the number of oscillation cycle in the 
    # envelope
    oc=2.00*np.pi/w
    s=oc*n/2.0
    if (abs(t-s)<= s):
-      func=sin(w*t)*Fmax*(np.cos(np.pi/2.0/s*(s-t)))**2.0
+      func=numpy.sin(w*t)*Fmax*(numpy.cos(np.pi/2.0/s*(s-t)))**2.0
    else:
       func=0.0
 
