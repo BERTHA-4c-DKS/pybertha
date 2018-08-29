@@ -31,10 +31,16 @@ parser.add_argument("-v", "--verbosity", help="Verbosity level 0 = minim, -1 = p
         "1 = maximum (defaul -1)", required=False, default=-1, type=int)
 parser.add_argument("--tresh", help="det treshold (default = 1.0e-12)", required=False, 
         type=numpy.float64, default=1.0e-12)
+parser.add_argument("--wrapperso", help="set wrapper SO (default = ../../lib/bertha_wrapper.so)", 
+        required=False, type=str, default="../../lib/bertha_wrapper.so")
 
 args = parser.parse_args()
 
-bertha = berthamod.pybertha("../../lib/bertha_wrapper.so")
+if not os.path.isfile(args.wrapperso):
+    print "SO File ", args.wrapperso, " does not exist"
+    exit(1)
+
+bertha = berthamod.pybertha(args.wrapperso)
 
 fittcoefffname = args.fitcoefffile
 vctfilename = args.vctfile
