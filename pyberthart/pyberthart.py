@@ -11,7 +11,7 @@ import scipy.linalg as scila
 from numpy.linalg import eigvalsh
 from scipy.linalg import eigh
 
-sys.path.insert(0, '../src/')
+sys.path.insert(0, "../src")
 import berthamod
 import rtutil
 
@@ -52,10 +52,16 @@ parser.add_argument("--iterations", help="Use iteration number instead of progre
         required=False, default=False, action="store_true")
 parser.add_argument("--tresh", help="det treshold (default = 1.0e-12)", required=False, 
         type=numpy.float64, default=1.0e-12)
+parser.add_argument("--wrapperso", help="set wrapper SO (default = ../../lib/bertha_wrapper.so)", 
+        required=False, type=str, default="../../lib/bertha_wrapper.so")
 
 args = parser.parse_args()
 
-bertha = berthamod.pybertha("../../lib/bertha_wrapper.so")
+if not os.path.isfile(args.wrapperso):
+    print "SO File ", args.wrapperso, " does not exist"
+    exit(1)
+
+bertha = berthamod.pybertha(args.wrapperso)
 
 fittcoefffname = args.fitcoefffile
 vctfilename = args.vctfile
@@ -355,11 +361,11 @@ for j in range(1,niter):
 
     sys.stdout.flush()
 
+print ""
+print ""
 print "Dump density density.cube"
 bertha.density_to_cube(D_ti, "density.cube", margin = 5.0)
 
-print ""
-print ""
 print "Done"
 
 if debug:
