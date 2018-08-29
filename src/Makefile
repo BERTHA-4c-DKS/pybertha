@@ -8,12 +8,12 @@ OBJ = bertha_wrapper.o \
 
 all : $(BERTHAWLIB)
 
-FFLAGS+= -fPIC -I$(ROOTDIR)/common -I$(ROOTDIR)/serial
+FFLAGS+= -fPIC -I../../common -I../../serial
 CFLAGS+= -fPIC 
 
 $(BERTHAWLIB): $(OBJ)
-	$(FC) -shared $(OBJ) -o $(BERTHAWLIB) -L$(ROOTDIR)/lib -lbertha -lberthaserial $(LIBS)
-	cp $(BERTHAWLIB) $(ROOTDIR)/lib
+	$(FC) -shared $(OBJ) -o $(BERTHAWLIB) -L../../lib -lbertha -lberthaserial $(LIBS)
+	cp $(BERTHAWLIB) ../../lib
 
 clean:
-	rm -f *.o *.mod *__genmod.f90 $(BERTHAWLIB) $(ROOTDIR)/lib/$(BERTHAWLIB)
+	rm -f *.o *.mod *__genmod.f90 $(BERTHAWLIB) ../../lib/$(BERTHAWLIB)
