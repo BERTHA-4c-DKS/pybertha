@@ -134,13 +134,21 @@ def cos_env(Fmax, w, t, n=20):
    return func
  
 #######################################################################
+def analytic(Fmax, w, t):
+
+   func = 0.0
+ 
+   return func
+
+#######################################################################
 
 funcswitcher = {
     "kick": kick,
     "gauss_env": gauss_env,
     "envelope": envelope,
     "sin_oc": sin_oc,
-    "cos_env": cos_env
+    "cos_env": cos_env,
+    "analytic": analytic
      }
    
 #######################################################################

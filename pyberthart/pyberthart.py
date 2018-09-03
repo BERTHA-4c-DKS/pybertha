@@ -225,6 +225,16 @@ if debug:
         (mdiff.real, mdiff.imag))
   fo.write("Fockm (t=0) is hermitian: %s \n"%numpy.allclose(fockm,fockmh,atol=1.e-15))
 
+if (args.pulse == "analytic"):
+    Amp=args.pulseFmax
+    dipz_mo=numpy.matmul(numpy.conjugate(C.T),numpy.matmul(dipz_mat,C))
+    print " Perturb with analytic kick "
+    u0=rtutil.exp_opmat(dipz_mo,numpy.float_(-Amp))
+    Dp_init=numpy.matmul(u0,numpy.matmul(D_0,numpy.conjugate(u0.T)))
+    #transform back Dp_int
+    Da=numpy.matmul(C,numpy.matmul(Dp_init,numpy.conjugate(C.T)))
+    D_0=Dp_init
+
 print "Start first mo_fock_mid_forwd_eval "
 
 fock_mid_init = rtutil.mo_fock_mid_forwd_eval(bertha,Da,fockm,0,numpy.float_(dt),\
