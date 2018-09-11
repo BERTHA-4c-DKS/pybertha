@@ -20,6 +20,7 @@
 #define f_etotal energy_mp_etotal_
 #define f_erep bertha_wrapper_mp_erep_
 #define f_tresh bertha_wrapper_mp_tresh_
+#define f_densitydiff bertha_wrapper_mp_densitydiff_
 
 #else
 
@@ -40,6 +41,7 @@
 #define f_etotal __energy_MOD_etotal
 #define f_erep __bertha_wrapper_MOD_erep
 #define f_tresh __bertha_wrapper_MOD_tresh
+#define f_densitydiff __bertha_wrapper_MOD_densitydiff
 
 #endif
 
@@ -55,10 +57,22 @@ void f_bertha_realtime_dipolematrix(int *,
       int *, double *);
 void f_bertha_realtime_fock (double *, double *);
 
-extern int f_ndim,f_nshift, f_nocc, f_nopen;
+extern int f_ndim,f_nshift, f_nocc, f_nopen, f_densitydiff;
 extern double f_sfact, f_etotal, f_erep, f_tresh;
 
 // DATA METHODS
+
+int get_densitydiff ()
+{
+  int val = f_densitydiff;
+
+  return val;
+}
+
+void set_densitydiff (int val)
+{
+  f_densitydiff = val;
+}
 
 double get_tresh ()
 {

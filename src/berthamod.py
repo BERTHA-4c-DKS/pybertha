@@ -126,6 +126,16 @@ class pybertha:
 
         self.__realtime_init = False
 
+        set_densitydiff (0)
+
+    def set_densitydiff (self, ini):
+        self.__bertha.set_densitydiff(ctypes.c_int(ini)) 
+
+    def get_densitydiff (self):
+        self.__bertha.get_densitydiff.restype = ctypes.c_int
+ 
+        return self.__bertha.get_densitydiff()
+
     def set_tresh (self, ini):
         self.__bertha.set_tresh(ctypes.c_double(ini)) 
 

@@ -19,7 +19,7 @@
       implicit none
 
       integer :: intype, fitcase, testfit, igrid, iprint, mactve,
-     +           maxit, nactve, ncore, nfitt
+     +           maxit, nactve, ncore, nfitt, densitydiff
       real :: amass(ncentm), sfact1, sfact2, erep, tresh
       character(len=7) :: expo
 
@@ -99,6 +99,8 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       real :: energy1, wtimeio, ctimeio, energy2
       real :: coulenergy
 
+      complex, allocatable :: olddensity(:,:)
+      real :: maxdiff 
 
       real, external :: walltime, cputime
 
@@ -112,6 +114,11 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       endif
 
       call getmem ()
+
+      if (densitydiff .eq. 1) then 
+        allocate(olddensity(ndim, ndim))
+        olddensity = (0.0, 0.0)
+      endif
 
       call initijkvec()
 
@@ -212,6 +219,11 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
         ioccm0 = ioccm0 - nshift
         call dens()
+        if (densitydiff .eq. 1) then 
+          olddensity = c
+        endif
+
+
         ioccm0 = nocc
       else
         inquire(file=vctfilename, exist=filefound)
@@ -230,6 +242,9 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
         ioccm0 = nocc
         call dens()
+        if (densitydiff .eq. 1) then 
+          olddensity = c
+        endif
       end if
 
       if (verbose .eq. -1) then 
@@ -263,6 +278,9 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         call diagonalizer (eigen)
 
         call dens()
+        if (densitydiff .eq. 1) then 
+          olddensity = c
+        endif
 
       endif
 
@@ -549,7 +567,23 @@ c        end do
 
         denswalltime = walltime ()
         denscputime = cputime ()
+        
         call dens()
+        
+        if (densitydiff .eq. 1) then 
+          maxdiff = 0.0 
+
+          do j=1,ndim
+            do i=1,ndim
+              if (abs(olddensity(i, j) - c(i, j)) .gt. maxdiff) then 
+                maxdiff = abs(olddensity(i, j) - c(i, j))
+              endif
+            enddo
+          enddo 
+
+          olddensity = c
+        endif
+
         denswalltime = walltime () - denswalltime
         denscputime = cputime () - denscputime
 
@@ -605,7 +639,11 @@ c        end do
       iall = 2
       irun = 0
 
-c     call getresourcesusage ()
+c     call getresourcesusage ()  
+
+      if (densitydiff .eq. 1) then 
+        deallocate(olddensity)
+      endif
 
       wtimeiter = walltime ()
       !call gencubefile(ncent,coord,iznuc,nfitt,fitcase)
