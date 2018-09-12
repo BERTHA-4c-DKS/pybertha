@@ -553,9 +553,9 @@ c        end do
         end if
 
         if (verbose .eq. -1) then
-           write(6,*) '  total electronic energy  = ',etotal-(sfact*nocc)
-           write(6,*) '  nuclear repulsion energy = ',erep
-           write(6,*) '  total energy             = ',etotal+erep-(sfact*nocc)
+           write(6,'(A, " ", F20.10)') '  total electronic energy   = ',etotal-(sfact*nocc)
+           write(6,'(A, " ", F20.10)') '  nuclear repulsion energy  = ',erep
+           write(6,'(A, " ", F20.10)') '  total energy              = ',etotal+erep-(sfact*nocc)
         endif
 
         diff = abs(eold-etotal)/(abs(etotal)+1.0)
@@ -580,6 +580,10 @@ c        end do
               endif
             enddo
           enddo 
+
+          if (verbose .eq. -1) then
+             write(6,'(A, " ", E20.10)') '  maxdiff in density matrix = ',maxdiff
+          endif
 
           olddensity = c
         endif

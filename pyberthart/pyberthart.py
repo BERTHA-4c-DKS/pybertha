@@ -90,6 +90,8 @@ bertha.set_tresh(args.tresh)
 bertha.set_verbosity(verbosity)
 bertha.set_dumpfiles(dumpfiles)
 
+bertha.set_densitydiff(1)
+
 bertha.init()
 
 ndim = bertha.get_ndim()
@@ -114,6 +116,8 @@ if (fockm is None) or (eigen is None) or (fockm is None) \
         or (eigen is None):
     print "Error in bertha run"
     exit(-1)
+
+bertha.set_densitydiff(0)
 
 sys.stdout.flush()
 
