@@ -100,7 +100,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       real :: coulenergy
 
       complex, allocatable :: olddensity(:,:)
-      real :: maxdiff 
+      real :: maxdiff , percmaxdiff
 
       real, external :: walltime, cputime
 
@@ -572,17 +572,21 @@ c        end do
         
         if (densitydiff .eq. 1) then 
           maxdiff = 0.0 
+          percmaxdiff = 0.0
 
           do j=1,ndim
             do i=1,ndim
               if (abs(olddensity(i, j) - c(i, j)) .gt. maxdiff) then 
                 maxdiff = abs(olddensity(i, j) - c(i, j))
+                percmaxdiff = 100.0 * (maxdiff/(abs(olddensity(i, j) + 
+     +              c(i,j))/2.0))
               endif
             enddo
           enddo 
 
           if (verbose .eq. -1) then
-             write(6,'(A, " ", E20.10)') '  maxdiff in density matrix = ',maxdiff
+             write(6,'(A, " ", E20.10, " (", F8.3, "%) ")') 
+     +       '  maxdiff in density matrix = ',maxdiff, percmaxdiff
           endif
 
           olddensity = c
