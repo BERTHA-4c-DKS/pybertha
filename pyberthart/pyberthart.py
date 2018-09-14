@@ -6,6 +6,8 @@ import sys
 import re
 
 import json
+from json import encoder
+
 import time
 
 import scipy.linalg as scila
@@ -97,6 +99,38 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, iterations,
 ##########################################################################################
 
 def restart_run(args):
+    
+    fp = open(args.restartfile, 'r')
+    json_data = json.load(fp)
+    fp.close()
+
+    j = int(json_data["j"])
+    niter = int(json_data["niter"])
+    pulse = json_data["pulse"]
+    pulseFmax = numpy.float_(json_data["pulseFmax"])
+    pulsew = numpy.float_(json_data["pulsew"])
+    dt = numpy.float_(json_data["dt"])
+    ndim = int(json_data["ndim"])
+    ene_list_REAL = numpy.float_(json_data["ene_list_REAL"])
+    ene_list_IMAG = numpy.float_(json_data["ene_list_IMAG"])
+    dip_list_REAL = numpy.float_(json_data["ene_list_REAL"])
+    dip_list_IMAG = numpy.float_(json_data["ene_list_IMAG"])
+    D_ti_REAL = numpy.float_(json_data["D_ti_REAL"])
+    D_ti_IMAG = numpy.float_(json_data["D_ti_IMAG"])
+
+    fock_mid_backwd_REAL = numpy.float_(json_data["fock_mid_backwd_REAL"])
+    fock_mid_backwd_IMAG = numpy.float_(json_data["fock_mid_backwd_IMAG"])
+    dipz_mat_REAL = numpy.float_(json_data["dipz_mat_REAL"])
+    dipz_mat_IMAG = numpy.float_(json_data["dipz_mat_IMAG"])
+    C_REAL = numpy.float_(json_data["C_REAL"])
+    C_IMAG = numpy.float_(json_data["C_IMAG"])
+    C_inv_REAL = numpy.float_(json_data["C_inv_REAL"])
+    C_inv_IMAG = numpy.float_(json_data["C_inv_IMAG"])
+    ovapm_REAL = numpy.float_(json_data["ovapm_REAL"])
+    ovapm_IMAG = numpy.float_(json_data["ovapm_IMAG"])
+    Dp_ti_REAL = numpy.float_(json_data["Dp_ti_REAL"])
+    Dp_ti_IMAG = numpy.float_(json_data["Dp_ti_IMAG"])
+
 
     return
 
@@ -368,6 +402,8 @@ def normal_run(args):
 
         if args.dumprestartnum > 0:
             if dumpcounter == args.dumprestartnum:
+                
+                encoder.FLOAT_REPR = lambda o: format(o, '.25E')
 
                 json_data = {
                         'j': j,
