@@ -30,7 +30,7 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, iterations,
     
     if (fock_mid_tmp is None):
         print "Error accurs in mo_fock_mid_forwd_eval"
-        exit(1)
+        return None
    
     if debug:
       fo.write('%.8f\n' % numpy.trace(numpy.matmul(ovapm,D_ti)).real)
@@ -93,6 +93,288 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, iterations,
 
     return fock_mid_backwd, D_ti, Dp_ti
 
+##########################################################################################
+
+def restart_run(args):
+
+    return
+
+##########################################################################################
+
+def normal_run(args):
+
+    if not os.path.isfile(args.wrapperso):
+        print "SO File ", args.wrapperso, " does not exist"
+        return False
+    
+    bertha = berthamod.pybertha(args.wrapperso)
+    
+    fittcoefffname = args.fitcoefffile
+    vctfilename = args.vctfile
+    ovapfilename = args.ovapfile
+    
+    fnameinput = args.inputfile
+    if not os.path.isfile(fnameinput):
+        print "File ", fnameinput, " does not exist"
+        return False
+    
+    fittfname = args.fittfile
+    if not os.path.isfile(fittfname):
+        print "File ", fittfname , " does not exist"
+        return False
+    
+    verbosity = args.verbosity
+    dumpfiles = int(args.dumpfiles)
+    
+    bertha.set_fittcoefffname(fittcoefffname)
+    bertha.set_ovapfilename(ovapfilename)
+    bertha.set_vctfilename(vctfilename)
+    bertha.set_fnameinput(fnameinput)
+    bertha.set_fittfname(fittfname)
+    bertha.set_tresh(args.tresh)
+    
+    bertha.set_verbosity(verbosity)
+    bertha.set_dumpfiles(dumpfiles)
+    
+    bertha.set_densitydiff(1)
+    
+    bertha.init()
+    
+    ndim = bertha.get_ndim()
+    nshift = bertha.get_nshift()
+    nocc = bertha.get_nocc()
+    sfact = bertha.get_sfact()
+    nopen = bertha.get_nopen()
+    
+    print "Verbosity       : ", verbosity
+    print "Dumpfiles       : ", dumpfiles
+    print ""
+    print "Matrix dimension: ", ndim
+    print "            nocc: ", nocc
+    print "          nshift: ", nshift
+    print "           nopen: ", nopen
+    print "     level shift: ", sfact
+    print ""
+    sys.stdout.flush()
+    
+    ovapm, eigem, fockm, eigen = bertha.run()
+    if (fockm is None) or (eigen is None) or (fockm is None) \
+            or (eigen is None):
+        print "Error in bertha run"
+        return False
+    
+    bertha.set_densitydiff(0)
+    
+    sys.stdout.flush()
+    
+    print ""
+    print "Final results "
+    sum=0.0
+    for i in range(nocc+nopen):
+        print "eigenvalue %5d %20.8f"%(i+1, eigen[i+nshift]-sfact)
+        sum+=eigen[i+nshift]-sfact
+    print "      lumo       %20.8f"%(eigen[i+nshift+1])
+    print "      Sum of eigen : ", sum
+    erep = bertha.get_erep()
+    etotal = bertha.get_etotal()
+    
+    print ""
+    print "total electronic energy  = %20.8f"%(etotal-(sfact*nocc))
+    print "nuclear repulsion energy = %20.8f"%(erep)
+    print "total energy             = %20.8f"%(etotal+erep-(sfact*nocc))
+    print " "
+    
+    bertha.realtime_init()
+    
+    print "Start RT"
+    
+    debug = args.debug
+    dt = args.dt
+    t_int = args.totaltime
+    niter = int(t_int/dt)
+    
+    print "Debug: ", debug
+    print "dt : ", dt
+    print "Total time  : ", t_int
+    print "Number of iterations: ", niter
+    
+    sys.stdout.flush()
+    
+    ene_list = []
+    dip_list = []
+    imp_list = []
+    Enuc_list = []
+    
+    C = eigem
+    D_0 = numpy.zeros((ndim,ndim), dtype=numpy.complex128)
+    for num in range(nocc):
+        D_0[num+nshift,num+nshift]=1.0+0.0j
+    
+    fo = sys.stderr
+    if debug:
+        fo = open("debug_info.txt", "w")
+    
+    #print type(eigem)
+    #C_inv used to backtransform D(AO)
+    
+    try: 
+        C_inv = numpy.linalg.inv(eigem)
+    except LinAlgError:
+        print "Error in numpy.linalg.inv of eigem" 
+        return False
+    
+    if debug:
+      test = numpy.matmul(C_inv, eigem)
+      fo.write("Check if atol is 1.e-14 for inversion of C: %s\n"% \
+            numpy.allclose(numpy.eye((ndim),dtype=numpy.complex128), \
+            test,atol=1.e-14))
+    
+    if debug:
+      diff = test - numpy.eye((ndim),dtype=numpy.complex128)
+      mdiff = numpy.max(diff)
+      fo.write("  maxdiff is: %.12e %.12e\n"%(mdiff.real, mdiff.imag))
+    
+    if debug:
+      test = numpy.matmul(numpy.conjugate(C.T),numpy.matmul(ovapm,C))
+      fo.write("Check orthonormal orbitals (atol = 1.e-14): %s\n"% \
+            numpy.allclose(numpy.eye((ndim),dtype=numpy.complex128), \
+            test, atol=1.e-14))
+      diff = test - numpy.eye((ndim),dtype=numpy.complex128)
+      mdiff = numpy.max(diff)
+      fo.write("  maxdiff is: %.12e %.12e\n"%(mdiff.real, mdiff.imag))
+    
+    #build density in ao basis
+    
+    occeigv = numpy.zeros((ndim,nocc), dtype=numpy.complex128)
+    iocc = 0
+    
+    for i in range(ndim):
+        if i >= nshift and iocc < nocc:
+            for j in range(ndim):
+                occeigv[j, iocc] = eigem[j, i]
+            iocc = iocc + 1
+    
+    Da = numpy.matmul(occeigv,numpy.conjugate(occeigv.transpose()))
+    
+    if debug:
+      #check trace(S Da)
+      trace_ds = numpy.trace(numpy.matmul(Da,ovapm))
+      trace_dsfock = numpy.trace(numpy.matmul(Da,fockm))
+      fo.write("Density matrix trace at  t0: %.12e %.12e \n"%(trace_ds.real,trace_ds.imag))
+      fo.write("Trace of fock*density at t0: %.12e %.12e \n"%(trace_dsfock.real, trace_dsfock.imag))
+    
+    direction = 2
+    normalise = 1
+    dipz_mat = bertha.get_realtime_dipolematrix (direction, normalise)
+    
+    if debug:
+      fockmh = numpy.conjugate(fockm.T)
+      diff_fockmh = fockm-fockmh
+      mdiff = numpy.max(diff_fockmh)
+      fo.write("Check max diff fockm-fockmh: %.12e %.12e\n"%\
+            (mdiff.real, mdiff.imag))
+      fo.write("Fockm (t=0) is hermitian: %s \n"%numpy.allclose(fockm,fockmh,atol=1.e-15))
+    
+    if (args.pulse == "analytic"):
+        Amp=args.pulseFmax
+        dipz_mo=numpy.matmul(numpy.conjugate(C.T),numpy.matmul(dipz_mat,C))
+        print " Perturb with analytic kick "
+        u0=rtutil.exp_opmat(dipz_mo,numpy.float_(-Amp))
+        Dp_init=numpy.matmul(u0,numpy.matmul(D_0,numpy.conjugate(u0.T)))
+        #transform back Dp_int
+        Da=numpy.matmul(C,numpy.matmul(Dp_init,numpy.conjugate(C.T)))
+        D_0=Dp_init
+    
+    print "Start first mo_fock_mid_forwd_eval "
+    
+    fock_mid_init = rtutil.mo_fock_mid_forwd_eval(bertha,Da,fockm,0,numpy.float_(dt),\
+            dipz_mat,C,C_inv,ovapm,ndim, debug, fo, args.pulse, args.pulseFmax, args.pulsew)
+    
+    if (fock_mid_init is None):
+        print "Error accurs in mo_fock_mid_forwd_eval"
+        return False
+    
+    if debug:
+      fock_mid_h=numpy.conjugate(fock_mid_init.T)
+      diff_fock_mid_h=fock_mid_init-fock_mid_h
+      fo.write("Max diff fock_mid_init-fock_mid_h"%(numpy.max(diff_fock_mid_h)))
+      fo.write('Fockm (t=1/2) is hermitian: %s\n'% 
+            numpy.allclose(fock_mid_init,fock_mid_h,atol=1.e-14))
+    
+    fockp_mid_init=numpy.matmul(numpy.conjugate(C.T),numpy.matmul(fock_mid_init,C))
+    u=rtutil.exp_opmat(fockp_mid_init,numpy.float_(dt))
+    #u=rtutil.exp_opmat(fockp_mid_init,numpy.float_(dt))
+    #u=scila.expm(-1.j*fockp_mid_init*dt)
+    temp=numpy.matmul(D_0,numpy.conjugate(u.T))
+    Dp_t1=numpy.matmul(u,temp)
+    
+    #check u if unitary
+    if debug:
+      test_u=numpy.matmul(u,numpy.conjugate(u.T))
+      fo.write('U is unitary : %s' % 
+            numpy.allclose(test_u,numpy.eye(u.shape[0]),atol=1.e-14))
+    
+    #backtrasform Dp_t1
+    D_t1=numpy.matmul(C,numpy.matmul(Dp_t1,numpy.conjugate(C.T)))
+    
+    if debug:
+      diff = D_t1 - Da 
+      mdiff = numpy.max(diff)
+      fo.write("Max diff density: %.12e %.12e \n"%(mdiff.real, mdiff.imag))
+    
+    dip_list.append(numpy.trace(numpy.matmul(Da,dipz_mat)))
+    dip_list.append(numpy.trace(numpy.matmul(D_t1,dipz_mat)))
+    if debug:
+      fo.write("Dipole: %.12e\n"%(numpy.trace(numpy.matmul(Da,dipz_mat))).real)
+      fo.write("Dipole: %.12e\n"%(numpy.trace(numpy.matmul(D_t1,dipz_mat))).real)
+    
+    if debug:
+      tfock = numpy.trace(numpy.matmul(D_t1,fockm))
+      fo.write("Trace fock*density t1: %.12e, %.12e\n"%(tfock.real, tfock.imag))
+      trace_ds=numpy.trace(numpy.matmul(D_t1,ovapm))
+      fo.write(" Traceds: %.12e %.12ei\n" % (trace_ds.real,trace_ds.imag))
+    
+    Ndip_z=0.0
+    #estrarre le 3 componenti del dipolo nucleare
+    
+    D_ti=D_t1
+    Dp_ti=Dp_t1
+    #aggiungere repulsione nucleare
+    #Enuc_list.append(-func_t0*Ndip_z+Nuc_rep) #just in case of non-zero nuclear dipole
+    fockm_ti=bertha.get_realtime_fock(D_ti.T)
+    ene_list.append(numpy.trace(numpy.matmul(Da,fockm)))
+    ene_list.append(numpy.trace(numpy.matmul(D_ti,fockm_ti)))
+    
+    print "Starting iterations ..."
+    print ""
+    
+    fock_mid_backwd = numpy.copy(fock_mid_init)
+    
+    for j in range(1,niter):
+    
+        fock_mid_backwd, D_ti, Dp_ti = main_loop(j, niter, bertha, 
+                args.pulse, args.pulseFmax, args.pulsew, 
+                args.iterations, fo, D_ti, fock_mid_backwd, dt, dipz_mat, 
+                C, C_inv, ovapm, ndim, debug, Dp_ti, dip_list, 
+                ene_list)
+    
+    print ""
+    print ""
+    print "Dump density density.cube"
+    bertha.density_to_cube(D_ti, "density.cube", margin = 5.0)
+    
+    print "Done"
+    
+    if debug:
+        fo.close()
+    
+    t_point = numpy.linspace(0.0, niter*dt, niter+1)
+    numpy.savetxt('dipole.txt',numpy.c_[t_point.real,numpy.array(dip_list).real], fmt='%.12e')
+    numpy.savetxt('ene.txt',numpy.c_[t_point.real,numpy.array(ene_list).real], fmt='%.12e')
+    
+    bertha.finalize()
+
+    return True
 
 ##########################################################################################
 
@@ -137,279 +419,22 @@ def main():
            type=numpy.float64, default=1.0e-12)
    parser.add_argument("--wrapperso", help="set wrapper SO (default = ../../lib/bertha_wrapper.so)", 
            required=False, type=str, default="../../lib/bertha_wrapper.so")
+
+   parser.add_argument("--restartfile", help="set a restart file (default: restart_pybertha.brt)", 
+           required=False, type=str, default="restart_pybertha.brt")
+   parser.add_argument("--dumprestartnum", help="dump restart file every N iterations (default: 500)",
+           required=False, type=int, default=500)
+   parser.add_argument("--restart", help="restart run from file",
+           required=False, default=False, action="store_true")
    
    args = parser.parse_args()
-   
-   if not os.path.isfile(args.wrapperso):
-       print "SO File ", args.wrapperso, " does not exist"
-       exit(1)
-   
-   bertha = berthamod.pybertha(args.wrapperso)
-   
-   fittcoefffname = args.fitcoefffile
-   vctfilename = args.vctfile
-   ovapfilename = args.ovapfile
-   
-   fnameinput = args.inputfile
-   if not os.path.isfile(fnameinput):
-       print "File ", fnameinput, " does not exist"
-       exit(1)
-   
-   fittfname = args.fittfile
-   if not os.path.isfile(fittfname):
-       print "File ", fittfname , " does not exist"
-       exit(1)
-   
-   verbosity = args.verbosity
-   dumpfiles = int(args.dumpfiles)
-   
-   bertha.set_fittcoefffname(fittcoefffname)
-   bertha.set_ovapfilename(ovapfilename)
-   bertha.set_vctfilename(vctfilename)
-   bertha.set_fnameinput(fnameinput)
-   bertha.set_fittfname(fittfname)
-   bertha.set_tresh(args.tresh)
-   
-   bertha.set_verbosity(verbosity)
-   bertha.set_dumpfiles(dumpfiles)
-   
-   bertha.set_densitydiff(1)
-   
-   bertha.init()
-   
-   ndim = bertha.get_ndim()
-   nshift = bertha.get_nshift()
-   nocc = bertha.get_nocc()
-   sfact = bertha.get_sfact()
-   nopen = bertha.get_nopen()
-   
-   print "Verbosity       : ", verbosity
-   print "Dumpfiles       : ", dumpfiles
-   print ""
-   print "Matrix dimension: ", ndim
-   print "            nocc: ", nocc
-   print "          nshift: ", nshift
-   print "           nopen: ", nopen
-   print "     level shift: ", sfact
-   print ""
-   sys.stdout.flush()
-   
-   ovapm, eigem, fockm, eigen = bertha.run()
-   if (fockm is None) or (eigen is None) or (fockm is None) \
-           or (eigen is None):
-       print "Error in bertha run"
-       exit(-1)
-   
-   bertha.set_densitydiff(0)
-   
-   sys.stdout.flush()
-   
-   print ""
-   print "Final results "
-   sum=0.0
-   for i in range(nocc+nopen):
-       print "eigenvalue %5d %20.8f"%(i+1, eigen[i+nshift]-sfact)
-       sum+=eigen[i+nshift]-sfact
-   print "      lumo       %20.8f"%(eigen[i+nshift+1])
-   print "      Sum of eigen : ", sum
-   erep = bertha.get_erep()
-   etotal = bertha.get_etotal()
-   
-   print ""
-   print "total electronic energy  = %20.8f"%(etotal-(sfact*nocc))
-   print "nuclear repulsion energy = %20.8f"%(erep)
-   print "total energy             = %20.8f"%(etotal+erep-(sfact*nocc))
-   print " "
-   
-   bertha.realtime_init()
-   
-   print "Start RT"
-   
-   debug = args.debug
-   dt = args.dt
-   t_int = args.totaltime
-   niter = int(t_int/dt)
-   
-   print "Debug: ", debug
-   print "dt : ", dt
-   print "Total time  : ", t_int
-   print "Number of iterations: ", niter
-   
-   sys.stdout.flush()
-   
-   ene_list = []
-   dip_list = []
-   imp_list = []
-   Enuc_list = []
-   
-   C = eigem
-   D_0 = numpy.zeros((ndim,ndim), dtype=numpy.complex128)
-   for num in range(nocc):
-       D_0[num+nshift,num+nshift]=1.0+0.0j
-   
-   fo = sys.stderr
-   if debug:
-       fo = open("debug_info.txt", "w")
-   
-   #print type(eigem)
-   #C_inv used to backtransform D(AO)
-   
-   try: 
-       C_inv = numpy.linalg.inv(eigem)
-   except LinAlgError:
-       print "Error in numpy.linalg.inv of eigem" 
-       exit(1)
-   
-   if debug:
-     test = numpy.matmul(C_inv, eigem)
-     fo.write("Check if atol is 1.e-14 for inversion of C: %s\n"% \
-           numpy.allclose(numpy.eye((ndim),dtype=numpy.complex128), \
-           test,atol=1.e-14))
-   
-   if debug:
-     diff = test - numpy.eye((ndim),dtype=numpy.complex128)
-     mdiff = numpy.max(diff)
-     fo.write("  maxdiff is: %.12e %.12e\n"%(mdiff.real, mdiff.imag))
-   
-   if debug:
-     test = numpy.matmul(numpy.conjugate(C.T),numpy.matmul(ovapm,C))
-     fo.write("Check orthonormal orbitals (atol = 1.e-14): %s\n"% \
-           numpy.allclose(numpy.eye((ndim),dtype=numpy.complex128), \
-           test, atol=1.e-14))
-     diff = test - numpy.eye((ndim),dtype=numpy.complex128)
-     mdiff = numpy.max(diff)
-     fo.write("  maxdiff is: %.12e %.12e\n"%(mdiff.real, mdiff.imag))
-   
-   #build density in ao basis
-   
-   occeigv = numpy.zeros((ndim,nocc), dtype=numpy.complex128)
-   iocc = 0
-   
-   for i in range(ndim):
-       if i >= nshift and iocc < nocc:
-           for j in range(ndim):
-               occeigv[j, iocc] = eigem[j, i]
-           iocc = iocc + 1
-   
-   Da = numpy.matmul(occeigv,numpy.conjugate(occeigv.transpose()))
-   
-   if debug:
-     #check trace(S Da)
-     trace_ds = numpy.trace(numpy.matmul(Da,ovapm))
-     trace_dsfock = numpy.trace(numpy.matmul(Da,fockm))
-     fo.write("Density matrix trace at  t0: %.12e %.12e \n"%(trace_ds.real,trace_ds.imag))
-     fo.write("Trace of fock*density at t0: %.12e %.12e \n"%(trace_dsfock.real, trace_dsfock.imag))
-   
-   direction = 2
-   normalise = 1
-   dipz_mat = bertha.get_realtime_dipolematrix (direction, normalise)
-   
-   if debug:
-     fockmh = numpy.conjugate(fockm.T)
-     diff_fockmh = fockm-fockmh
-     mdiff = numpy.max(diff_fockmh)
-     fo.write("Check max diff fockm-fockmh: %.12e %.12e\n"%\
-           (mdiff.real, mdiff.imag))
-     fo.write("Fockm (t=0) is hermitian: %s \n"%numpy.allclose(fockm,fockmh,atol=1.e-15))
-   
-   if (args.pulse == "analytic"):
-       Amp=args.pulseFmax
-       dipz_mo=numpy.matmul(numpy.conjugate(C.T),numpy.matmul(dipz_mat,C))
-       print " Perturb with analytic kick "
-       u0=rtutil.exp_opmat(dipz_mo,numpy.float_(-Amp))
-       Dp_init=numpy.matmul(u0,numpy.matmul(D_0,numpy.conjugate(u0.T)))
-       #transform back Dp_int
-       Da=numpy.matmul(C,numpy.matmul(Dp_init,numpy.conjugate(C.T)))
-       D_0=Dp_init
-   
-   print "Start first mo_fock_mid_forwd_eval "
-   
-   fock_mid_init = rtutil.mo_fock_mid_forwd_eval(bertha,Da,fockm,0,numpy.float_(dt),\
-           dipz_mat,C,C_inv,ovapm,ndim, debug, fo, args.pulse, args.pulseFmax, args.pulsew)
-   
-   if (fock_mid_init is None):
-       print "Error accurs in mo_fock_mid_forwd_eval"
-       exit(1)
-   
-   if debug:
-     fock_mid_h=numpy.conjugate(fock_mid_init.T)
-     diff_fock_mid_h=fock_mid_init-fock_mid_h
-     fo.write("Max diff fock_mid_init-fock_mid_h"%(numpy.max(diff_fock_mid_h)))
-     fo.write('Fockm (t=1/2) is hermitian: %s\n'% 
-           numpy.allclose(fock_mid_init,fock_mid_h,atol=1.e-14))
-   
-   fockp_mid_init=numpy.matmul(numpy.conjugate(C.T),numpy.matmul(fock_mid_init,C))
-   u=rtutil.exp_opmat(fockp_mid_init,numpy.float_(dt))
-   #u=rtutil.exp_opmat(fockp_mid_init,numpy.float_(dt))
-   #u=scila.expm(-1.j*fockp_mid_init*dt)
-   temp=numpy.matmul(D_0,numpy.conjugate(u.T))
-   Dp_t1=numpy.matmul(u,temp)
-   
-   #check u if unitary
-   if debug:
-     test_u=numpy.matmul(u,numpy.conjugate(u.T))
-     fo.write('U is unitary : %s' % 
-           numpy.allclose(test_u,numpy.eye(u.shape[0]),atol=1.e-14))
-   
-   #backtrasform Dp_t1
-   D_t1=numpy.matmul(C,numpy.matmul(Dp_t1,numpy.conjugate(C.T)))
-   
-   if debug:
-     diff = D_t1 - Da 
-     mdiff = numpy.max(diff)
-     fo.write("Max diff density: %.12e %.12e \n"%(mdiff.real, mdiff.imag))
-   
-   dip_list.append(numpy.trace(numpy.matmul(Da,dipz_mat)))
-   dip_list.append(numpy.trace(numpy.matmul(D_t1,dipz_mat)))
-   if debug:
-     fo.write("Dipole: %.12e\n"%(numpy.trace(numpy.matmul(Da,dipz_mat))).real)
-     fo.write("Dipole: %.12e\n"%(numpy.trace(numpy.matmul(D_t1,dipz_mat))).real)
-   
-   if debug:
-     tfock = numpy.trace(numpy.matmul(D_t1,fockm))
-     fo.write("Trace fock*density t1: %.12e, %.12e\n"%(tfock.real, tfock.imag))
-     trace_ds=numpy.trace(numpy.matmul(D_t1,ovapm))
-     fo.write(" Traceds: %.12e %.12ei\n" % (trace_ds.real,trace_ds.imag))
-   
-   Ndip_z=0.0
-   #estrarre le 3 componenti del dipolo nucleare
-   
-   D_ti=D_t1
-   Dp_ti=Dp_t1
-   #aggiungere repulsione nucleare
-   #Enuc_list.append(-func_t0*Ndip_z+Nuc_rep) #just in case of non-zero nuclear dipole
-   fockm_ti=bertha.get_realtime_fock(D_ti.T)
-   ene_list.append(numpy.trace(numpy.matmul(Da,fockm)))
-   ene_list.append(numpy.trace(numpy.matmul(D_ti,fockm_ti)))
-   
-   print "Starting iterations ..."
-   print ""
-   
-   fock_mid_backwd = numpy.copy(fock_mid_init)
-   
-   for j in range(1,niter):
-
-       fock_mid_backwd, D_ti, Dp_ti = main_loop(j, niter, bertha, 
-               args.pulse, args.pulseFmax, args.pulsew, 
-               args.iterations, fo, D_ti, fock_mid_backwd, dt, dipz_mat, 
-               C, C_inv, ovapm, ndim, debug, Dp_ti, dip_list, 
-               ene_list)
-   
-   print ""
-   print ""
-   print "Dump density density.cube"
-   bertha.density_to_cube(D_ti, "density.cube", margin = 5.0)
-   
-   print "Done"
-   
-   if debug:
-       fo.close()
-   
-   t_point = numpy.linspace(0.0, niter*dt, niter+1)
-   numpy.savetxt('dipole.txt',numpy.c_[t_point.real,numpy.array(dip_list).real], fmt='%.12e')
-   numpy.savetxt('ene.txt',numpy.c_[t_point.real,numpy.array(ene_list).real], fmt='%.12e')
-   
-   bertha.finalize()
+  
+   if (not args.restart):
+       if (not normal_run (args)):
+           exit(1)
+   else:
+       if (not restart_run (args)):
+           exit(1)
 
 ##########################################################################################
 
