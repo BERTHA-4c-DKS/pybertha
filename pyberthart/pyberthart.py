@@ -34,11 +34,11 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, iterations,
    
     if debug:
       fo.write('%.8f\n' % numpy.trace(numpy.matmul(ovapm,D_ti)).real)
-    Ah = numpy.conjugate(fock_mid_tmp.T)
-    if debug:
+      Ah = numpy.conjugate(fock_mid_tmp.T)
       fo.write('Fock_mid hermitian: %s\n' % numpy.allclose(fock_mid_tmp,Ah,atol=1.e-14))
-    # transform fock_mid_init in MO basis
-    fockp_mid_tmp = numpy.matmul(numpy.conjugate(C.T),numpy.matmul(fock_mid_tmp,C))
+
+    # transform fock_mid_tmp in MO basis
+    fockp_mid_tmp = numpy.matmul(numpy.conjugate(C.T),numpy.matmul(fock_mid_tmp, C))
     u = rtutil.exp_opmat(numpy.copy(fockp_mid_tmp),numpy.float_(dt))
     # u=scila.expm(-1.0j*fockp_mid_tmp*dt)
     # check u is unitary
@@ -62,7 +62,7 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, iterations,
       fo.write("Dipole: %.12e\n"%(numpy.trace(numpy.matmul(dipz_mat,D_ti_dt)).real))
    
     #Energy expectation value at t = t_i_dt 
-    fockm_ti_dt=bertha.get_realtime_fock(D_ti_dt.T)
+    fockm_ti_dt = bertha.get_realtime_fock(D_ti_dt.T)
    
     ene_list.append(numpy.trace(numpy.matmul(D_ti_dt,fockm_ti_dt)))
     
@@ -71,14 +71,14 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, iterations,
     # fo.write('here I update the matrices Dp_ti and D_ti\n')
     D_ti = numpy.copy(D_ti_dt)
     Dp_ti = numpy.copy(Dp_ti_dt)
-   
+
     if debug:
       fo.write('  Trace of Dp_ti %.8f\n' % numpy.trace(Dp_ti).real)
       fo.write('  Trace of ovapm * D_ti  %.8f\n' % numpy.trace(numpy.matmul(ovapm,D_ti)).real)
       fo.flush()
    
     #update fock_mid_backwd for the next step
-    fock_mid_backwd=numpy.copy(fock_mid_tmp)
+    fock_mid_backwd = numpy.copy(fock_mid_tmp)
    
     end = time.time()
     cend = time.clock()
@@ -90,6 +90,8 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, iterations,
         rtutil.progress_bar(j, niter-1)
    
     sys.stdout.flush()
+
+    return fock_mid_backwd, D_ti, Dp_ti
 
 
 ##########################################################################################
@@ -387,7 +389,8 @@ def main():
    
    for j in range(1,niter):
 
-       main_loop(j, niter, bertha, args.pulse, args.pulseFmax, args.pulsew, 
+       fock_mid_backwd, D_ti, Dp_ti = main_loop(j, niter, bertha, 
+               args.pulse, args.pulseFmax, args.pulsew, 
                args.iterations, fo, D_ti, fock_mid_backwd, dt, dipz_mat, 
                C, C_inv, ovapm, ndim, debug, Dp_ti, dip_list, 
                ene_list)
