@@ -5,6 +5,7 @@ import numpy
 import sys
 import re
 
+import json
 import time
 
 import scipy.linalg as scila
@@ -30,7 +31,7 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, iterations,
     
     if (fock_mid_tmp is None):
         print "Error accurs in mo_fock_mid_forwd_eval"
-        return None
+        return None, None, None
    
     if debug:
       fo.write('%.8f\n' % numpy.trace(numpy.matmul(ovapm,D_ti)).real)
@@ -349,6 +350,8 @@ def normal_run(args):
     print ""
     
     fock_mid_backwd = numpy.copy(fock_mid_init)
+
+    dumpcounter = 0
     
     for j in range(1,niter):
     
@@ -357,6 +360,47 @@ def normal_run(args):
                 args.iterations, fo, D_ti, fock_mid_backwd, dt, dipz_mat, 
                 C, C_inv, ovapm, ndim, debug, Dp_ti, dip_list, 
                 ene_list)
+
+        if fock_mid_backwd is None:
+            return False
+
+        dumpcounter += 1
+
+        if args.dumprestartnum > 0:
+            if dumpcounter == args.dumprestartnum:
+
+                json_data = {
+                        'j': j,
+                        'niter': niter,
+                        'pulse': args.pulse,
+                        'pulseFmax': args.pulseFmax,
+                        'pulsew' : args.pulsew,
+                        'dt': dt,
+                        'ndim' : ndim,
+                        'ene_list_REAL': numpy.real(ene_list).tolist(),
+                        'ene_list_IMAG': numpy.imag(ene_list).tolist(),
+                        'dip_list_REAL': numpy.real(dip_list).tolist(),
+                        'dip_list_IMAG': numpy.imag(dip_list).tolist(),
+                        'D_ti_REAL' : numpy.real(D_ti).tolist(),
+                        'D_ti_IMAG' : numpy.imag(D_ti).tolist(),
+                        'fock_mid_backwd_REAL' : numpy.real(fock_mid_backwd).tolist(),
+                        'fock_mid_backwd_IMAG' : numpy.imag(fock_mid_backwd).tolist(),
+                        'dipz_mat_REAL': numpy.real(dipz_mat).tolist(),
+                        'dipz_mat_IMAG': numpy.imag(dipz_mat).tolist(),
+                        'C_REAL': numpy.real(C).tolist(), 
+                        'C_IMAG': numpy.imag(C).tolist(),
+                        'C_inv_REAL': numpy.real(C_inv).tolist(),
+                        'C_inv_IMAG': numpy.imag(C_inv).tolist(),
+                        'ovapm_REAL': numpy.real(ovapm).tolist(),
+                        'ovapm_IMAG': numpy.imag(ovapm).tolist(),
+                        'Dp_ti_REAL': numpy.real(Dp_ti).tolist(),
+                        'Dp_ti_IMAG': numpy.imag(Dp_ti).tolist(),
+                        }
+
+                with open(args.restartfile, 'w') as fp:
+                    json.dump(json_data, fp, sort_keys=True, indent=4)
+
+                dumpcounter = 0
     
     print ""
     print ""
@@ -420,10 +464,10 @@ def main():
    parser.add_argument("--wrapperso", help="set wrapper SO (default = ../../lib/bertha_wrapper.so)", 
            required=False, type=str, default="../../lib/bertha_wrapper.so")
 
-   parser.add_argument("--restartfile", help="set a restart file (default: restart_pybertha.brt)", 
-           required=False, type=str, default="restart_pybertha.brt")
-   parser.add_argument("--dumprestartnum", help="dump restart file every N iterations (default: 500)",
-           required=False, type=int, default=500)
+   parser.add_argument("--restartfile", help="set a restart file (default: restart_pybertha.json)", 
+           required=False, type=str, default="restart_pybertha.json")
+   parser.add_argument("--dumprestartnum", help="dump restart file every N iterations (default: -1)",
+           required=False, type=int, default=-1)
    parser.add_argument("--restart", help="restart run from file",
            required=False, default=False, action="store_true")
    
