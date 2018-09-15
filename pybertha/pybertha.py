@@ -69,6 +69,8 @@ bertha.set_tresh(args.tresh)
 bertha.set_verbosity(verbosity)
 bertha.set_dumpfiles(dumpfiles)
 
+bertha.set_densitydiff(1)
+
 bertha.init()
 
 ndim = bertha.get_ndim()
