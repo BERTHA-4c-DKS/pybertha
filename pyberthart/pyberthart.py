@@ -54,6 +54,8 @@ parser.add_argument("--iterations", help="Use iteration number instead of progre
         required=False, default=False, action="store_true")
 parser.add_argument("--tresh", help="det treshold (default = 1.0e-12)", required=False, 
         type=numpy.float64, default=1.0e-12)
+parser.add_argument("--propthresh", help="threshold for midpoint iterative scheme (default = 1.0e-6)", required=False, 
+        type=numpy.float64, default=1.0e-6)
 parser.add_argument("--wrapperso", help="set wrapper SO (default = ../../lib/bertha_wrapper.so)", 
         required=False, type=str, default="../../lib/bertha_wrapper.so")
 
@@ -248,7 +250,7 @@ if (args.pulse == "analytic"):
 print "Start first mo_fock_mid_forwd_eval "
 
 fock_mid_init = rtutil.mo_fock_mid_forwd_eval(bertha,Da,fockm,0,numpy.float_(dt),\
-	dipz_mat,C,C_inv,ovapm,ndim, debug, fo, args.pulse, args.pulseFmax, args.pulsew)
+	dipz_mat,C,C_inv,ovapm,ndim, debug, fo, args.pulse, args.pulseFmax, args.pulsew,args.propthresh)
 
 if (fock_mid_init is None):
     print "Error accurs in mo_fock_mid_forwd_eval"
@@ -316,7 +318,7 @@ for j in range(1,niter):
 
     fock_mid_tmp = rtutil.mo_fock_mid_forwd_eval(bertha,numpy.copy(D_ti), \
             fock_mid_backwd,j,numpy.float_(dt),dipz_mat,C,C_inv,ovapm,ndim,\
-                    debug, fo, args.pulse, args.pulseFmax, args.pulsew)
+                    debug, fo, args.pulse, args.pulseFmax, args.pulsewi,args.propthresh)
     
     if (fock_mid_tmp is None):
         print "Error accurs in mo_fock_mid_forwd_eval"
