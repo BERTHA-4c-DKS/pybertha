@@ -40,6 +40,8 @@ parser.add_argument("-T", "--totaltime", help="Specify total time )deaful: 1.0)"
         default=1.0, type=numpy.float64)
 parser.add_argument("--pulse", help="Specify the pulse to use [" + listpulses + "] default kick", required=False, 
         type=str, default="kick")
+parser.add_argument("--select", help="Specify the occupied MO for selective perturbation (default: -2,0,0)", 
+        default="-2;0;0", type=str)
 parser.add_argument("--pulseFmax", help="Specify the pulse Fmax value (default: 0.0001)", 
         default=0.0001, type=numpy.float64)
 parser.add_argument("--pulsew", help="Specify the pulse w value if needed (default: 0.0)", 
@@ -228,6 +230,10 @@ if debug:
 if (args.pulse == "analytic"):
     Amp=args.pulseFmax
     dipz_mo=numpy.matmul(numpy.conjugate(C.T),numpy.matmul(dipz_mat,C))
+    molist = args.select.split(";")
+    molist = [int(m) for m in molist]
+    if (molist[0] != -2):
+        dipz_mo=rtutil.dipole_selection(dipz_mo,nshift,nocc,molist,fo,debug)
     print " Perturb with analytic kick "
     u0=rtutil.exp_opmat(dipz_mo,numpy.float_(-Amp))
     Dp_init=numpy.matmul(u0,numpy.matmul(D_0,numpy.conjugate(u0.T)))
