@@ -20,6 +20,26 @@ import rtutil
 
 ##########################################################################################
 
+def check_and_covert (mat_REAL, mat_IMAG, ndim):
+
+    if ((mat_REAL.shape == mat_IMAG.shape) and 
+        (mat_REAL.shape[0] == mat_REAL.shape[1]) and 
+        (mat_REAL.shape[0] == ndim)):
+
+        mat = numpy.zeros((ndim,ndim),dtype=numpy.complex128)
+
+        for i in range(ndim):
+            for j in range(ndim):
+                mat[i, j] = numpy.complex128(complex(mat_REAL[i][j], 
+                    mat_IMAG[i][j]))
+
+        return mat
+        
+    return None
+
+
+##########################################################################################
+
 def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, iterations, 
         fo, D_ti, fock_mid_backwd, dt, dipz_mat, C, C_inv, ovapm, 
         ndim, debug, Dp_ti, dip_list, ene_list):
@@ -105,18 +125,8 @@ def restart_run(args):
     fp.close()
 
     j = int(json_data["j"])
-    niter = int(json_data["niter"])
-    pulse = json_data["pulse"]
-    pulseFmax = numpy.float_(json_data["pulseFmax"])
-    pulsew = numpy.float_(json_data["pulsew"])
-    dt = numpy.float_(json_data["dt"])
     ndim = int(json_data["ndim"])
-    ene_list_REAL = numpy.float_(json_data["ene_list_REAL"])
-    ene_list_IMAG = numpy.float_(json_data["ene_list_IMAG"])
-    dip_list_REAL = numpy.float_(json_data["ene_list_REAL"])
-    dip_list_IMAG = numpy.float_(json_data["ene_list_IMAG"])
-    D_ti_REAL = numpy.float_(json_data["D_ti_REAL"])
-    D_ti_IMAG = numpy.float_(json_data["D_ti_IMAG"])
+    niter = int(json_data["niter"])
 
     fock_mid_backwd_REAL = numpy.float_(json_data["fock_mid_backwd_REAL"])
     fock_mid_backwd_IMAG = numpy.float_(json_data["fock_mid_backwd_IMAG"])
@@ -130,9 +140,57 @@ def restart_run(args):
     ovapm_IMAG = numpy.float_(json_data["ovapm_IMAG"])
     Dp_ti_REAL = numpy.float_(json_data["Dp_ti_REAL"])
     Dp_ti_IMAG = numpy.float_(json_data["Dp_ti_IMAG"])
+    D_ti_REAL = numpy.float_(json_data["D_ti_REAL"])
+    D_ti_IMAG = numpy.float_(json_data["D_ti_IMAG"])
+
+    fock_mid_backwd = check_and_covert (fock_mid_backwd_REAL ,
+            fock_mid_backwd_IMAG, ndim)
+    dipz_mat = check_and_covert (dipz_mat_REAL, dipz_mat_IMAG, ndim)
+    C = check_and_covert (C_REAL, C_IMAG, ndim)
+    C_inv = check_and_covert (C_inv_REAL, C_inv_IMAG, ndim)
+    ovapm = check_and_covert (ovapm_REAL, ovapm_IMAG, ndim)
+    Dp_ti = check_and_covert (Dp_ti_REAL, Dp_ti_IMAG, ndim)
+    D_ti = check_and_covert (D_ti_REAL, D_ti_IMAG, ndim)
+
+    ene_list_REAL = numpy.float_(json_data["ene_list_REAL"])
+    ene_list_IMAG = numpy.float_(json_data["ene_list_IMAG"])
+    dip_list_REAL = numpy.float_(json_data["ene_list_REAL"])
+    dip_list_IMAG = numpy.float_(json_data["ene_list_IMAG"])
+
+    if ((ene_list_REAL.shape != ene_list_IMAG.shape) or 
+        (dip_list_REAL.shape != dip_list_IMAG.shape) or
+        (ene_list_REAL.shape != dip_list_IMAG.shape)):
+        return False
+
+    ene_list = []
+    dip_list = []
+
+    for i in range(ene_list_REAL.shape[0]):
+        ene_list.append(numpy.complex128(complex(ene_list_REAL[i],
+            ene_list_IMAG[i])))
+        dip_list.append(numpy.complex128(complex(dip_list_REAL[i],
+            dip_list_IMAG[i])))
+
+    args.pulse = json_data['pulse']
+    args.pulseFmax = json_data['pulseFmax']
+    args.pulsew = json_data['pulsew'] 
+    args.dt = json_data['dt']
+    args.inputfile = json_data['inputfile']
+    args.fittfile = json_data["fittfile"]
+    args.fitcoefffile = json_data["fitcoefffile"]
+    args.vctfile = json_data["vctfile"]
+    args.ovapfile = json_data["ovapfile"]
+    args.dumpfiles = json_data["dumpfiles"]
+    args.totaltime = json_data["totaltime"]
+    args.debug = json_data["debug"]
+    args.verbosity = json_data["verbosity"]
+    args.iterations = json_data["iterations"]
+    args.tresh = json_data["tresh"]
+    args.wrapperso = json_data["wrapperso"]
+    args.wrapperso = json_data["dumprestartnum"]
 
 
-    return
+    return True
 
 ##########################################################################################
 
@@ -406,12 +464,25 @@ def normal_run(args):
                 encoder.FLOAT_REPR = lambda o: format(o, '.25E')
 
                 json_data = {
-                        'j': j,
-                        'niter': niter,
                         'pulse': args.pulse,
                         'pulseFmax': args.pulseFmax,
                         'pulsew' : args.pulsew,
-                        'dt': dt,
+                        'dt': args.dt,
+                        'inputfile': args.inputfile ,
+                        "fittfile": args.fittfile ,
+                        "fitcoefffile": args.fitcoefffile ,
+                        "vctfile": args.vctfile ,
+                        "ovapfile": args.ovapfile ,
+                        "dumpfiles": args.dumpfiles ,
+                        "totaltime": args.totaltime ,
+                        "debug": args.debug ,
+                        "verbosity": args.verbosity ,
+                        "iterations": args.iterations ,
+                        "tresh": args.tresh ,
+                        "wrapperso": args.wrapperso ,
+                        "dumprestartnum": args.wrapperso ,
+                        'j': j,
+                        'niter': niter,
                         'ndim' : ndim,
                         'ene_list_REAL': numpy.real(ene_list).tolist(),
                         'ene_list_IMAG': numpy.imag(ene_list).tolist(),
