@@ -300,6 +300,7 @@ def restart_run(args):
     
     sys.stdout.flush()
     
+    fo = sys.stderr
     if debug:
         fo = open("debug_info.txt", "w")
     
