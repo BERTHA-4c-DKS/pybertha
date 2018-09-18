@@ -20,6 +20,87 @@ import rtutil
 
 ##########################################################################################
 
+def single_point (args, bertha):
+
+    fittcoefffname = args.fitcoefffile
+    vctfilename = args.vctfile
+    ovapfilename = args.ovapfile
+    
+    fnameinput = args.inputfile
+    if not os.path.isfile(fnameinput):
+        print "File ", fnameinput, " does not exist"
+        return None, 
+    
+    fittfname = args.fittfile
+    if not os.path.isfile(fittfname):
+        print "File ", fittfname , " does not exist"
+        return None, 
+    
+    verbosity = args.verbosity
+    dumpfiles = int(args.dumpfiles)
+    
+    bertha.set_fittcoefffname(fittcoefffname)
+    bertha.set_ovapfilename(ovapfilename)
+    bertha.set_vctfilename(vctfilename)
+    bertha.set_fnameinput(fnameinput)
+    bertha.set_fittfname(fittfname)
+    bertha.set_tresh(args.tresh)
+    
+    bertha.set_verbosity(verbosity)
+    bertha.set_dumpfiles(dumpfiles)
+    
+    bertha.set_densitydiff(1)
+    
+    bertha.init()
+    
+    ndim = bertha.get_ndim()
+    nshift = bertha.get_nshift()
+    nocc = bertha.get_nocc()
+    sfact = bertha.get_sfact()
+    nopen = bertha.get_nopen()
+    
+    print "Verbosity       : ", verbosity
+    print "Dumpfiles       : ", dumpfiles
+    print ""
+    print "Matrix dimension: ", ndim
+    print "            nocc: ", nocc
+    print "          nshift: ", nshift
+    print "           nopen: ", nopen
+    print "     level shift: ", sfact
+    print ""
+    sys.stdout.flush()
+    
+    ovapm, eigem, fockm, eigen = bertha.run()
+    if (fockm is None) or (eigen is None) or (fockm is None) \
+            or (eigen is None):
+        print "Error in bertha run"
+        return None, 
+    
+    bertha.set_densitydiff(0)
+    
+    sys.stdout.flush()
+    
+    print ""
+    print "Final results "
+    sum=0.0
+    for i in range(nocc+nopen):
+        print "eigenvalue %5d %20.8f"%(i+1, eigen[i+nshift]-sfact)
+        sum+=eigen[i+nshift]-sfact
+    print "      lumo       %20.8f"%(eigen[i+nshift+1])
+    print "      Sum of eigen : ", sum
+    erep = bertha.get_erep()
+    etotal = bertha.get_etotal()
+    
+    print ""
+    print "total electronic energy  = %20.8f"%(etotal-(sfact*nocc))
+    print "nuclear repulsion energy = %20.8f"%(erep)
+    print "total energy             = %20.8f"%(etotal+erep-(sfact*nocc))
+    print " "
+ 
+    return ovapm, eigem, fockm, eigen
+
+##########################################################################################
+
 def check_and_covert (mat_REAL, mat_IMAG, ndim):
 
     if ((mat_REAL.shape == mat_IMAG.shape) and 
@@ -124,7 +205,7 @@ def restart_run(args):
     json_data = json.load(fp)
     fp.close()
 
-    j = int(json_data["j"])
+    jstart = int(json_data["j"])
     ndim = int(json_data["ndim"])
     niter = int(json_data["niter"])
 
@@ -189,6 +270,119 @@ def restart_run(args):
     args.wrapperso = json_data["wrapperso"]
     args.wrapperso = json_data["dumprestartnum"]
 
+    if not os.path.isfile(args.wrapperso):
+        print "SO File ", args.wrapperso, " does not exist"
+        return False
+    
+    bertha = berthamod.pybertha(args.wrapperso)
+
+    # TODO to remove full run 
+    ovapm, eigem, fockm, eigen = single_point (args, bertha)
+    if ovapm is None:
+        return False
+
+    ndim = bertha.get_ndim()
+    nshift = bertha.get_nshift()
+    nocc = bertha.get_nocc()
+ 
+    bertha.realtime_init()
+    
+    print "Start RT"
+    
+    debug = args.debug
+    dt = args.dt
+    t_int = args.totaltime
+    
+    print "Debug: ", debug
+    print "dt : ", dt
+    print "Total time  : ", t_int
+    print "Number of iterations: ", niter
+    
+    sys.stdout.flush()
+    
+    if debug:
+        fo = open("debug_info.txt", "w")
+    
+    dumpcounter = 0
+    for j in range(jstart+1, niter):
+    
+        fock_mid_backwd, D_ti, Dp_ti = main_loop(j, niter, bertha, 
+                args.pulse, args.pulseFmax, args.pulsew, 
+                args.iterations, fo, D_ti, fock_mid_backwd, dt, dipz_mat, 
+                C, C_inv, ovapm, ndim, debug, Dp_ti, dip_list, 
+                ene_list)
+
+        if fock_mid_backwd is None:
+            return False
+
+        dumpcounter += 1
+
+        if args.dumprestartnum > 0:
+            if dumpcounter == args.dumprestartnum:
+                
+                encoder.FLOAT_REPR = lambda o: format(o, '.25E')
+
+                json_data = {
+                        'pulse': args.pulse,
+                        'pulseFmax': args.pulseFmax,
+                        'pulsew' : args.pulsew,
+                        'dt': args.dt,
+                        'inputfile': args.inputfile ,
+                        "fittfile": args.fittfile ,
+                        "fitcoefffile": args.fitcoefffile ,
+                        "vctfile": args.vctfile ,
+                        "ovapfile": args.ovapfile ,
+                        "dumpfiles": args.dumpfiles ,
+                        "totaltime": args.totaltime ,
+                        "debug": args.debug ,
+                        "verbosity": args.verbosity ,
+                        "iterations": args.iterations ,
+                        "tresh": args.tresh ,
+                        "wrapperso": args.wrapperso ,
+                        "dumprestartnum": args.wrapperso ,
+                        'j': j,
+                        'niter': niter,
+                        'ndim' : ndim,
+                        'ene_list_REAL': numpy.real(ene_list).tolist(),
+                        'ene_list_IMAG': numpy.imag(ene_list).tolist(),
+                        'dip_list_REAL': numpy.real(dip_list).tolist(),
+                        'dip_list_IMAG': numpy.imag(dip_list).tolist(),
+                        'D_ti_REAL' : numpy.real(D_ti).tolist(),
+                        'D_ti_IMAG' : numpy.imag(D_ti).tolist(),
+                        'fock_mid_backwd_REAL' : numpy.real(fock_mid_backwd).tolist(),
+                        'fock_mid_backwd_IMAG' : numpy.imag(fock_mid_backwd).tolist(),
+                        'dipz_mat_REAL': numpy.real(dipz_mat).tolist(),
+                        'dipz_mat_IMAG': numpy.imag(dipz_mat).tolist(),
+                        'C_REAL': numpy.real(C).tolist(), 
+                        'C_IMAG': numpy.imag(C).tolist(),
+                        'C_inv_REAL': numpy.real(C_inv).tolist(),
+                        'C_inv_IMAG': numpy.imag(C_inv).tolist(),
+                        'ovapm_REAL': numpy.real(ovapm).tolist(),
+                        'ovapm_IMAG': numpy.imag(ovapm).tolist(),
+                        'Dp_ti_REAL': numpy.real(Dp_ti).tolist(),
+                        'Dp_ti_IMAG': numpy.imag(Dp_ti).tolist(),
+                        }
+
+                with open(args.restartfile, 'w') as fp:
+                    json.dump(json_data, fp, sort_keys=True, indent=4)
+
+                dumpcounter = 0
+    
+    print ""
+    print ""
+    print "Dump density density.cube"
+    bertha.density_to_cube(D_ti, "density.cube", margin = 5.0)
+    
+    print "Done"
+    
+    if debug:
+        fo.close()
+    
+    t_point = numpy.linspace(0.0, niter*dt, niter+1)
+    numpy.savetxt('dipole.txt',numpy.c_[t_point.real,numpy.array(dip_list).real], fmt='%.12e')
+    numpy.savetxt('ene.txt',numpy.c_[t_point.real,numpy.array(ene_list).real], fmt='%.12e')
+    
+    bertha.finalize()
 
     return True
 
@@ -201,81 +395,14 @@ def normal_run(args):
         return False
     
     bertha = berthamod.pybertha(args.wrapperso)
-    
-    fittcoefffname = args.fitcoefffile
-    vctfilename = args.vctfile
-    ovapfilename = args.ovapfile
-    
-    fnameinput = args.inputfile
-    if not os.path.isfile(fnameinput):
-        print "File ", fnameinput, " does not exist"
+
+    ovapm, eigem, fockm, eigen = single_point (args, bertha)
+    if ovapm is None:
         return False
-    
-    fittfname = args.fittfile
-    if not os.path.isfile(fittfname):
-        print "File ", fittfname , " does not exist"
-        return False
-    
-    verbosity = args.verbosity
-    dumpfiles = int(args.dumpfiles)
-    
-    bertha.set_fittcoefffname(fittcoefffname)
-    bertha.set_ovapfilename(ovapfilename)
-    bertha.set_vctfilename(vctfilename)
-    bertha.set_fnameinput(fnameinput)
-    bertha.set_fittfname(fittfname)
-    bertha.set_tresh(args.tresh)
-    
-    bertha.set_verbosity(verbosity)
-    bertha.set_dumpfiles(dumpfiles)
-    
-    bertha.set_densitydiff(1)
-    
-    bertha.init()
-    
+
     ndim = bertha.get_ndim()
     nshift = bertha.get_nshift()
     nocc = bertha.get_nocc()
-    sfact = bertha.get_sfact()
-    nopen = bertha.get_nopen()
-    
-    print "Verbosity       : ", verbosity
-    print "Dumpfiles       : ", dumpfiles
-    print ""
-    print "Matrix dimension: ", ndim
-    print "            nocc: ", nocc
-    print "          nshift: ", nshift
-    print "           nopen: ", nopen
-    print "     level shift: ", sfact
-    print ""
-    sys.stdout.flush()
-    
-    ovapm, eigem, fockm, eigen = bertha.run()
-    if (fockm is None) or (eigen is None) or (fockm is None) \
-            or (eigen is None):
-        print "Error in bertha run"
-        return False
-    
-    bertha.set_densitydiff(0)
-    
-    sys.stdout.flush()
-    
-    print ""
-    print "Final results "
-    sum=0.0
-    for i in range(nocc+nopen):
-        print "eigenvalue %5d %20.8f"%(i+1, eigen[i+nshift]-sfact)
-        sum+=eigen[i+nshift]-sfact
-    print "      lumo       %20.8f"%(eigen[i+nshift+1])
-    print "      Sum of eigen : ", sum
-    erep = bertha.get_erep()
-    etotal = bertha.get_etotal()
-    
-    print ""
-    print "total electronic energy  = %20.8f"%(etotal-(sfact*nocc))
-    print "nuclear repulsion energy = %20.8f"%(erep)
-    print "total energy             = %20.8f"%(etotal+erep-(sfact*nocc))
-    print " "
     
     bertha.realtime_init()
     
