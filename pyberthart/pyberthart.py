@@ -235,8 +235,8 @@ def restart_run(args):
 
     ene_list_REAL = numpy.float_(json_data["ene_list_REAL"])
     ene_list_IMAG = numpy.float_(json_data["ene_list_IMAG"])
-    dip_list_REAL = numpy.float_(json_data["ene_list_REAL"])
-    dip_list_IMAG = numpy.float_(json_data["ene_list_IMAG"])
+    dip_list_REAL = numpy.float_(json_data["dip_list_REAL"])
+    dip_list_IMAG = numpy.float_(json_data["dip_list_IMAG"])
 
     if ((ene_list_REAL.shape != ene_list_IMAG.shape) or 
         (dip_list_REAL.shape != dip_list_IMAG.shape) or
