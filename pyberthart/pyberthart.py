@@ -46,6 +46,12 @@ parser.add_argument("--pulseFmax", help="Specify the pulse Fmax value (default: 
         default=0.0001, type=numpy.float64)
 parser.add_argument("--pulsew", help="Specify the pulse w value if needed (default: 0.0)", 
         default=0.0, type=numpy.float64)
+parser.add_argument("--t0", help="Specify the center of gaussian enveloped pulse (default: 0.0)", 
+        default=0.0, type=numpy.float64)
+
+parser.add_argument("--pulseS", help="Specify the pulse s-parameter: for gaussian enveloped pulse, 's' is sqrt(variance) (default: 0.0)", 
+        default=0.0, type=numpy.float64)
+
 parser.add_argument("-d", "--debug", help="Debug on, prints debug info to debug_info.txt", required=False, 
         default=False, action="store_true")
 parser.add_argument("-v", "--verbosity", help="Verbosity level 0 = minim, -1 = print iteration info, " + 
@@ -250,7 +256,8 @@ if (args.pulse == "analytic"):
 print "Start first mo_fock_mid_forwd_eval "
 
 fock_mid_init = rtutil.mo_fock_mid_forwd_eval(bertha,Da,fockm,0,numpy.float_(dt),\
-	dipz_mat,C,C_inv,ovapm,ndim, debug, fo, args.pulse, args.pulseFmax, args.pulsew,args.propthresh)
+	dipz_mat,C,C_inv,ovapm,ndim, debug, fo, args.pulse, args.pulseFmax, args.pulsew,\
+        args.t0, args.pulseS, args.propthresh)
 
 if (fock_mid_init is None):
     print "Error accurs in mo_fock_mid_forwd_eval"
@@ -318,7 +325,8 @@ for j in range(1,niter):
 
     fock_mid_tmp = rtutil.mo_fock_mid_forwd_eval(bertha,numpy.copy(D_ti), \
             fock_mid_backwd,j,numpy.float_(dt),dipz_mat,C,C_inv,ovapm,ndim,\
-                    debug, fo, args.pulse, args.pulseFmax, args.pulsew,args.propthresh)
+                    debug, fo, args.pulse, args.pulseFmax, args.pulsew,\
+                    args.t0, args.pulseS, args.propthresh)
     
     if (fock_mid_tmp is None):
         print "Error accurs in mo_fock_mid_forwd_eval"

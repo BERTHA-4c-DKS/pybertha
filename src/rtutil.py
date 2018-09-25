@@ -56,7 +56,7 @@ def exp_opmat(mat,dt):
 
 #######################################################################
 
-def kick (Fmax, w, t):
+def kick (Fmax, w, t, t0=0.0, s=0.0):
 
     w = 0.0
     func = 0.0
@@ -74,7 +74,7 @@ def kick (Fmax, w, t):
 
 def gauss_env (Fmax, w, t, t0=3.0, s=0.2):
     
-    #s : the pulse width
+    #s : sqrt(variance) of gaussian envelop
     #w : the frequency of the carrier
     #Fmax : the maximum amplitude of the field
     #t0 :center of Gaussian envelope (in au time)
@@ -85,7 +85,7 @@ def gauss_env (Fmax, w, t, t0=3.0, s=0.2):
 
 #######################################################################
 
-def envelope (Fmax, w, t):
+def envelope (Fmax, w, t, t0=0.0, s=0.0):
    
    if (t >= 0.0 and t<= 2.00*numpy.pi/w):
       Amp =(w*t/(2.00*numpy.pi))*Fmax
@@ -105,7 +105,7 @@ def envelope (Fmax, w, t):
 
 #######################################################################
 
-def sin_oc (Fmax, w, t):
+def sin_oc (Fmax, w, t, t0=0.0, s=0.0):
    
    # 1-oscillation-cycle sinusoid
    if (t >= 0.0 and t<= 2.00*numpy.pi/w):
@@ -119,7 +119,7 @@ def sin_oc (Fmax, w, t):
 
 #######################################################################
 
-def cos_env(Fmax, w, t, n=20):
+def cos_env(Fmax, w, t, t0=0.0, n=20):
 
    #define the period (time for an oscillation cycle)
    #n is the number of oscillation cycle in the 
@@ -134,7 +134,7 @@ def cos_env(Fmax, w, t, n=20):
    return func
  
 #######################################################################
-def analytic(Fmax, w, t):
+def analytic(Fmax, w, t, t0=0.0, s=0.0):
 
    func = 0.0
  
@@ -178,7 +178,7 @@ funcswitcher = {
 
 def mo_fock_mid_forwd_eval(bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
     dipole_z, C, C_inv, S, ndim, debug=False, odbg=sys.stderr, 
-    impulsefunc="kick", fmax=0.0001, w=0.0,propthresh=1.0e-6): 
+    impulsefunc="kick", fmax=0.0001, w=0.0, t0=0.0, sigma=0.0, propthresh=1.0e-6): 
 
    func = funcswitcher.get(impulsefunc, lambda: kick)
 
@@ -192,7 +192,7 @@ def mo_fock_mid_forwd_eval(bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
    t_arg = numpy.float_(i) * numpy.float_ (delta_t)
    fockmtx = bertha.get_realtime_fock(D_ti.T)
    
-   pulse = func(fmax, w, t_arg)
+   pulse = func(fmax, w, t_arg, t0, sigma)
    if debug: 
        odbg.write("Pulse: %.8f\n"%(pulse))
 
@@ -229,7 +229,7 @@ def mo_fock_mid_forwd_eval(bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
         D_ti_dt = numpy.matmul(C,numpy.matmul(Dp_ti_dt,numpy.conjugate(C.T)))
         #build the correspondig Fock , fock_ti+dt
         
-        pulse = func (fmax, w, t_arg + delta_t)
+        pulse = func (fmax, w, t_arg + delta_t, t0, sigma)
         if debug: 
             odbg.write("Pulse: %.8f\n"%(pulse))
 
