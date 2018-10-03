@@ -142,6 +142,29 @@ def analytic(Fmax, w, t):
 
 #######################################################################
 
+def dipole_selection(dipole,nshift,nocc,k,odbg=sys.stderr,debug=False,a=-1):
+    k = k[1:]
+    if debug:
+       odbg.write("Selected transitions from MOs: %s \n"% str(k))
+
+    tmp = dipole[nshift:,nshift:]
+    offdiag = numpy.zeros((nshift,nshift),dtype=numpy.complex128)
+    diag = numpy.diagonal(tmp)
+    diagonal = numpy.diagflat(diag)
+    nvirt = tmp.shape[0]-nocc
+    print('nvirt : %i' % nvirt)
+    if (a == -1):
+       for b in range(nvirt):
+           for j in  k:
+               offdiag[nocc+b,j] = tmp[nocc+b,j]
+    offdiag=(offdiag+offdiag.T)
+    offdiag+=diagonal
+    dipole[nshift:,nshift:] = offdiag
+
+    return dipole
+
+#######################################################################
+
 funcswitcher = {
     "kick": kick,
     "gauss_env": gauss_env,

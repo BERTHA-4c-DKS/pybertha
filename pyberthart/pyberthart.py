@@ -266,6 +266,7 @@ def restart_run(args):
     args.debug = json_data["debug"]
     args.verbosity = json_data["verbosity"]
     args.iterations = json_data["iterations"]
+    args.select = json_data["select"]
     args.tresh = json_data["tresh"]
     args.wrapperso = json_data["wrapperso"]
     args.wrapperso = json_data["dumprestartnum"]
@@ -338,6 +339,7 @@ def restart_run(args):
                         "debug": args.debug ,
                         "verbosity": args.verbosity ,
                         "iterations": args.iterations ,
+                        "select": args.select, 
                         "tresh": args.tresh ,
                         "wrapperso": args.wrapperso ,
                         "dumprestartnum": args.wrapperso ,
@@ -499,6 +501,10 @@ def normal_run(args):
     if (args.pulse == "analytic"):
         Amp=args.pulseFmax
         dipz_mo=numpy.matmul(numpy.conjugate(C.T),numpy.matmul(dipz_mat,C))
+        molist = args.select.split(";")
+        molist = [int(m) for m in molist]
+        if (molist[0] != -2):
+            dipz_mo=rtutil.dipole_selection(dipz_mo,nshift,nocc,molist,fo,debug)
         print " Perturb with analytic kick "
         u0=rtutil.exp_opmat(dipz_mo,numpy.float_(-Amp))
         Dp_init=numpy.matmul(u0,numpy.matmul(D_0,numpy.conjugate(u0.T)))
@@ -606,6 +612,7 @@ def normal_run(args):
                         "debug": args.debug ,
                         "verbosity": args.verbosity ,
                         "iterations": args.iterations ,
+                        "select": args.select,
                         "tresh": args.tresh ,
                         "wrapperso": args.wrapperso ,
                         "dumprestartnum": args.wrapperso ,
@@ -698,6 +705,8 @@ def main():
            type=numpy.float64, default=1.0e-12)
    parser.add_argument("--wrapperso", help="set wrapper SO (default = ../../lib/bertha_wrapper.so)", 
            required=False, type=str, default="../../lib/bertha_wrapper.so")
+   parser.add_argument("--select", help="Specify the occupied MO for selective perturbation (default: -2,0,0)", 
+           default="-2;0;0", type=str)
 
    parser.add_argument("--restartfile", help="set a restart file (default: restart_pybertha.json)", 
            required=False, type=str, default="restart_pybertha.json")
