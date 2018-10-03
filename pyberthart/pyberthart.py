@@ -121,7 +121,7 @@ def check_and_covert (mat_REAL, mat_IMAG, ndim):
 
 ##########################################################################################
 
-def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, 
+def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t0,
         iterations, fo, D_ti, fock_mid_backwd, dt, dipz_mat, C, C_inv, ovapm, 
         ndim, debug, Dp_ti, dip_list, ene_list):
 
@@ -130,7 +130,7 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh,
    
     fock_mid_tmp = rtutil.mo_fock_mid_forwd_eval(bertha, numpy.copy(D_ti), \
             fock_mid_backwd, j, numpy.float_(dt), dipz_mat, C, C_inv, ovapm, \
-            ndim, debug, fo, pulse, pulseFmax, pulsew, propthresh)
+            ndim, debug, fo, pulse, pulseFmax, pulsew, propthresh, pulseS, t0)
     
     if (fock_mid_tmp is None):
         print "Error accurs in mo_fock_mid_forwd_eval"
@@ -271,6 +271,8 @@ def restart_run(args):
     args.tresh = json_data["tresh"]
     args.wrapperso = json_data["wrapperso"]
     args.wrapperso = json_data["dumprestartnum"]
+    args.pulseS = json_data["pulseS"]
+    args.t0 = json_data["t0"]
 
     if not os.path.isfile(args.wrapperso):
         print "SO File ", args.wrapperso, " does not exist"
@@ -311,9 +313,9 @@ def restart_run(args):
     
         fock_mid_backwd, D_ti, Dp_ti = main_loop(j, niter, bertha, 
                 args.pulse, args.pulseFmax, args.pulsew, args.propthresh, 
-                args.iterations, fo, D_ti, fock_mid_backwd, dt, dipz_mat, 
-                C, C_inv, ovapm, ndim, debug, Dp_ti, dip_list, 
-                ene_list)
+                args.pulseS, args.t0, args.iterations, fo, D_ti, 
+                fock_mid_backwd, dt, dipz_mat, C, C_inv, ovapm, 
+                ndim, debug, Dp_ti, dip_list, ene_list)
 
         if fock_mid_backwd is None:
             return False
@@ -343,6 +345,8 @@ def restart_run(args):
                         "select": args.select, 
                         "propthresh": args.propthresh,
                         "tresh": args.tresh ,
+                        "pulseS": args.pulseS ,
+                        "t0": args.t0 , 
                         "wrapperso": args.wrapperso ,
                         "dumprestartnum": args.wrapperso ,
                         'j': j,
@@ -586,9 +590,9 @@ def normal_run(args):
     
         fock_mid_backwd, D_ti, Dp_ti = main_loop(j, niter, bertha, 
                 args.pulse, args.pulseFmax, args.pulsew, args.propthresh,
-                args.iterations, fo, D_ti, fock_mid_backwd, dt, dipz_mat, 
-                C, C_inv, ovapm, ndim, debug, Dp_ti, dip_list, 
-                ene_list)
+                args.pulseS, args.t0, args.iterations, fo, D_ti, 
+                fock_mid_backwd, dt, dipz_mat, C, C_inv, ovapm, 
+                ndim, debug, Dp_ti, dip_list, ene_list)
 
         if fock_mid_backwd is None:
             return False
@@ -618,6 +622,8 @@ def normal_run(args):
                         "select": args.select,
                         "propthresh": args.propthresh,
                         "tresh": args.tresh ,
+                        "pulseS": args.pulseS ,
+                        "t0": args.t0 ,
                         "wrapperso": args.wrapperso ,
                         "dumprestartnum": args.wrapperso ,
                         'j': j,
@@ -713,6 +719,10 @@ def main():
            default="-2;0;0", type=str)
    parser.add_argument("--propthresh", help="threshold for midpoint iterative scheme (default = 1.0e-6)", required=False, 
            type=numpy.float64, default=1.0e-6)
+   parser.add_argument("--t0", help="Specify the center of gaussian enveloped pulse (default: 0.0)", 
+           default=0.0, type=numpy.float64)
+   parser.add_argument("--pulseS", help="Specify the pulse s-parameter: for gaussian enveloped pulse, " + 
+           "'s' is sqrt(variance) (default: 0.0)", default=0.0, type=numpy.float64)
 
    parser.add_argument("--restartfile", help="set a restart file (default: restart_pybertha.json)", 
            required=False, type=str, default="restart_pybertha.json")
