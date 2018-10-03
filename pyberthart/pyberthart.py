@@ -121,8 +121,8 @@ def check_and_covert (mat_REAL, mat_IMAG, ndim):
 
 ##########################################################################################
 
-def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, iterations, 
-        fo, D_ti, fock_mid_backwd, dt, dipz_mat, C, C_inv, ovapm, 
+def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, 
+        iterations, fo, D_ti, fock_mid_backwd, dt, dipz_mat, C, C_inv, ovapm, 
         ndim, debug, Dp_ti, dip_list, ene_list):
 
     start = time.time()
@@ -130,7 +130,7 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, iterations,
    
     fock_mid_tmp = rtutil.mo_fock_mid_forwd_eval(bertha, numpy.copy(D_ti), \
             fock_mid_backwd, j, numpy.float_(dt), dipz_mat, C, C_inv, ovapm, \
-            ndim, debug, fo, pulse, pulseFmax, pulsew)
+            ndim, debug, fo, pulse, pulseFmax, pulsew, propthresh)
     
     if (fock_mid_tmp is None):
         print "Error accurs in mo_fock_mid_forwd_eval"
@@ -267,6 +267,7 @@ def restart_run(args):
     args.verbosity = json_data["verbosity"]
     args.iterations = json_data["iterations"]
     args.select = json_data["select"]
+    args.propthresh = json_data["propthresh"]
     args.tresh = json_data["tresh"]
     args.wrapperso = json_data["wrapperso"]
     args.wrapperso = json_data["dumprestartnum"]
@@ -309,7 +310,7 @@ def restart_run(args):
     for j in range(jstart+1, niter):
     
         fock_mid_backwd, D_ti, Dp_ti = main_loop(j, niter, bertha, 
-                args.pulse, args.pulseFmax, args.pulsew, 
+                args.pulse, args.pulseFmax, args.pulsew, args.propthresh, 
                 args.iterations, fo, D_ti, fock_mid_backwd, dt, dipz_mat, 
                 C, C_inv, ovapm, ndim, debug, Dp_ti, dip_list, 
                 ene_list)
@@ -340,6 +341,7 @@ def restart_run(args):
                         "verbosity": args.verbosity ,
                         "iterations": args.iterations ,
                         "select": args.select, 
+                        "propthresh": args.propthresh,
                         "tresh": args.tresh ,
                         "wrapperso": args.wrapperso ,
                         "dumprestartnum": args.wrapperso ,
@@ -515,7 +517,8 @@ def normal_run(args):
     print "Start first mo_fock_mid_forwd_eval "
     
     fock_mid_init = rtutil.mo_fock_mid_forwd_eval(bertha,Da,fockm,0,numpy.float_(dt),\
-            dipz_mat,C,C_inv,ovapm,ndim, debug, fo, args.pulse, args.pulseFmax, args.pulsew)
+            dipz_mat,C,C_inv,ovapm,ndim, debug, fo, args.pulse, args.pulseFmax, args.pulsew, 
+            args.propthresh)
     
     if (fock_mid_init is None):
         print "Error accurs in mo_fock_mid_forwd_eval"
@@ -582,7 +585,7 @@ def normal_run(args):
     for j in range(1,niter):
     
         fock_mid_backwd, D_ti, Dp_ti = main_loop(j, niter, bertha, 
-                args.pulse, args.pulseFmax, args.pulsew, 
+                args.pulse, args.pulseFmax, args.pulsew, args.propthresh,
                 args.iterations, fo, D_ti, fock_mid_backwd, dt, dipz_mat, 
                 C, C_inv, ovapm, ndim, debug, Dp_ti, dip_list, 
                 ene_list)
@@ -613,6 +616,7 @@ def normal_run(args):
                         "verbosity": args.verbosity ,
                         "iterations": args.iterations ,
                         "select": args.select,
+                        "propthresh": args.propthresh,
                         "tresh": args.tresh ,
                         "wrapperso": args.wrapperso ,
                         "dumprestartnum": args.wrapperso ,
@@ -707,6 +711,8 @@ def main():
            required=False, type=str, default="../../lib/bertha_wrapper.so")
    parser.add_argument("--select", help="Specify the occupied MO for selective perturbation (default: -2,0,0)", 
            default="-2;0;0", type=str)
+   parser.add_argument("--propthresh", help="threshold for midpoint iterative scheme (default = 1.0e-6)", required=False, 
+           type=numpy.float64, default=1.0e-6)
 
    parser.add_argument("--restartfile", help="set a restart file (default: restart_pybertha.json)", 
            required=False, type=str, default="restart_pybertha.json")
