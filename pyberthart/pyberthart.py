@@ -122,12 +122,10 @@ def check_and_covert (mat_REAL, mat_IMAG, ndim):
 ##########################################################################################
 
 def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t0,
-        iterations, fo, D_ti, fock_mid_backwd, dt, dipz_mat, C, C_inv, ovapm, 
+        fo, D_ti, fock_mid_backwd, dt, dipz_mat, C, C_inv, ovapm, 
         ndim, debug, Dp_ti, dip_list, ene_list):
 
-    start = time.time()
-    cstart = time.clock()
-   
+  
     fock_mid_tmp = rtutil.mo_fock_mid_forwd_eval(bertha, numpy.copy(D_ti), \
             fock_mid_backwd, j, numpy.float_(dt), dipz_mat, C, C_inv, ovapm, \
             ndim, debug, fo, pulse, pulseFmax, pulsew, propthresh, pulseS, t0)
@@ -184,17 +182,6 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
     #update fock_mid_backwd for the next step
     fock_mid_backwd = numpy.copy(fock_mid_tmp)
    
-    end = time.time()
-    cend = time.clock()
-   
-    if (iterations):
-        print "Iteration ", j, " of ", niter-1, " ( ", end - start, \
-                " (CPU time: " , cend - cstart, ") s )"
-    else:
-        rtutil.progress_bar(j, niter-1)
-   
-    sys.stdout.flush()
-
     return fock_mid_backwd, D_ti, Dp_ti
 
 ##########################################################################################
@@ -310,10 +297,13 @@ def restart_run(args):
     
     dumpcounter = 0
     for j in range(jstart+1, niter):
+
+        start = time.time()
+        cstart = time.clock()
     
         fock_mid_backwd, D_ti, Dp_ti = main_loop(j, niter, bertha, 
                 args.pulse, args.pulseFmax, args.pulsew, args.propthresh, 
-                args.pulseS, args.t0, args.iterations, fo, D_ti, 
+                args.pulseS, args.t0, fo, D_ti, 
                 fock_mid_backwd, dt, dipz_mat, C, C_inv, ovapm, 
                 ndim, debug, Dp_ti, dip_list, ene_list)
 
@@ -376,6 +366,19 @@ def restart_run(args):
                     json.dump(json_data, fp, sort_keys=True, indent=4)
 
                 dumpcounter = 0
+                
+        end = time.time()
+        cend = time.clock()
+   
+        if (args.iterations):
+            print "Iteration ", j, " of ", niter-1, " ( ", end - start, \
+                    " (CPU time: " , cend - cstart, ") s )"
+        else:
+            rtutil.progress_bar(j, niter-1)
+   
+    sys.stdout.flush()
+
+
     
     print ""
     print ""
@@ -587,10 +590,13 @@ def normal_run(args):
     dumpcounter = 0
     
     for j in range(1,niter):
+
+        start = time.time()
+        cstart = time.clock()
     
         fock_mid_backwd, D_ti, Dp_ti = main_loop(j, niter, bertha, 
                 args.pulse, args.pulseFmax, args.pulsew, args.propthresh,
-                args.pulseS, args.t0, args.iterations, fo, D_ti, 
+                args.pulseS, args.t0, fo, D_ti, 
                 fock_mid_backwd, dt, dipz_mat, C, C_inv, ovapm, 
                 ndim, debug, Dp_ti, dip_list, ene_list)
 
@@ -653,6 +659,16 @@ def normal_run(args):
                     json.dump(json_data, fp, sort_keys=True, indent=4)
 
                 dumpcounter = 0
+
+        end = time.time()
+        cend = time.clock()
+   
+        if (args.iterations):
+            print "Iteration ", j, " of ", niter-1, " ( ", end - start, \
+                    " (CPU time: " , cend - cstart, ") s )"
+        else:
+            rtutil.progress_bar(j, niter-1)
+ 
     
     print ""
     print ""
