@@ -36,6 +36,11 @@ parser.add_argument("--wrapperso", help="set wrapper SO (default = ../../lib/ber
 
 args = parser.parse_args()
 
+print "Options: "
+print args 
+print ""
+print ""
+
 if not os.path.isfile(args.wrapperso):
     print "SO File ", args.wrapperso, " does not exist"
     exit(1)
