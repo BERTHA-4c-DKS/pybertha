@@ -748,6 +748,11 @@ def main():
            required=False, default=False, action="store_true")
    
    args = parser.parse_args()
+
+   print "Options: "
+   print args 
+   print ""
+   print ""
   
    if (not args.restart):
        if (not normal_run (args)):
