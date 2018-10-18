@@ -23,7 +23,7 @@ def exp_opmat(mat,dt):
     
     try: 
        w,v=numpy.linalg.eigh(dt*mat)
-    except LinAlgError:
+    except numpy.linalg.LinAlgError:
        return None 
 
     diag=numpy.exp(-1.j*w)
@@ -39,7 +39,7 @@ def exp_opmat(mat,dt):
     # M is v 
     try:
        v_i=numpy.linalg.inv(v)
-    except LinAlgError:
+    except numpy.linalg.LinAlgError:
        return None 
        
     # v_i=numpy.conjugate(v.T)
