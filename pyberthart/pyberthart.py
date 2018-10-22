@@ -249,7 +249,14 @@ def restart_run(args):
     args.vctfile = json_data["vctfile"]
     args.ovapfile = json_data["ovapfile"]
     args.dumpfiles = json_data["dumpfiles"]
-    args.totaltime = json_data["totaltime"]
+    
+    totaltime = json_data["totaltime"]
+    if args.totaltime < totaltime:
+        args.totaltime = json_data["totaltime"]
+    else:
+        t_int = args.totaltime
+        niter = int(t_int/dt)
+
     args.debug = json_data["debug"]
     args.verbosity = json_data["verbosity"]
     args.iterations = json_data["iterations"]
@@ -713,7 +720,7 @@ def main():
            default=False, action="store_true")
    parser.add_argument("-m", "--dt", help="Specify dt to be used (default: 0.1)", required=False,
            default=0.1, type=numpy.float64)
-   parser.add_argument("-T", "--totaltime", help="Specify total time )deaful: 1.0)", required=False,
+   parser.add_argument("-T", "--totaltime", help="Specify total time (default: 1.0)", required=False,
            default=1.0, type=numpy.float64)
    parser.add_argument("--pulse", help="Specify the pulse to use [" + listpulses + "] default kick", required=False, 
            type=str, default="kick")
@@ -755,10 +762,13 @@ def main():
    print ""
   
    if (not args.restart):
+       if args.totaltime < 0.0:
+           args.totaltime = 1.0
+
        if (not normal_run (args)):
            exit(1)
    else:
-       if (not restart_run (args)):
+      if (not restart_run (args)):
            exit(1)
 
 ##########################################################################################
