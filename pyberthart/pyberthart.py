@@ -267,6 +267,11 @@ def restart_run(args):
     args.pulseS = json_data["pulseS"]
     args.t0 = json_data["t0"]
 
+    print "Options: "
+    print args 
+    print ""
+    print ""
+
     if not os.path.isfile(args.wrapperso):
         print "SO File ", args.wrapperso, " does not exist"
         return False
@@ -408,6 +413,11 @@ def restart_run(args):
 ##########################################################################################
 
 def normal_run(args):
+
+    print "Options: "
+    print args 
+    print ""
+    print ""
 
     if not os.path.isfile(args.wrapperso):
         print "SO File ", args.wrapperso, " does not exist"
@@ -757,11 +767,6 @@ def main():
    
    args = parser.parse_args()
 
-   print "Options: "
-   print args 
-   print ""
-   print ""
-  
    if (not args.restart):
        if args.totaltime < 0.0:
            args.totaltime = 1.0
