@@ -254,8 +254,7 @@ def restart_run(args):
     if args.totaltime < totaltime:
         args.totaltime = json_data["totaltime"]
     else:
-        t_int = args.totaltime
-        niter = int(t_int/dt)
+        niter = int(args.totaltime/args.dt)
 
     args.debug = json_data["debug"]
     args.verbosity = json_data["verbosity"]
