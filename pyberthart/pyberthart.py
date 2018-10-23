@@ -50,6 +50,9 @@ def single_point (args, bertha):
     bertha.set_dumpfiles(dumpfiles)
     
     bertha.set_densitydiff(1)
+
+    berthastart = time.time()
+    berthacstart = time.clock()
     
     bertha.init()
     
@@ -68,6 +71,7 @@ def single_point (args, bertha):
     print "           nopen: ", nopen
     print "     level shift: ", sfact
     print ""
+
     sys.stdout.flush()
     
     ovapm, eigem, fockm, eigen = bertha.run()
@@ -77,6 +81,12 @@ def single_point (args, bertha):
         return None, 
     
     bertha.set_densitydiff(0)
+
+    berthaend = time.time()
+    berthacend = time.clock()
+   
+    print "Single-Point time: ", berthaend - berthastart, \
+                    " (CPU time: " , berthacend - berthacstart, ") s )"
     
     sys.stdout.flush()
     
