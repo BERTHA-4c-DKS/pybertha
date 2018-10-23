@@ -319,7 +319,8 @@ def restart_run(args):
         dumpcounter += 1
 
         if args.dumprestartnum > 0:
-            if dumpcounter == args.dumprestartnum:
+            if (dumpcounter == args.dumprestartnum) or \
+                    (j == niter-1):
                 
                 encoder.FLOAT_REPR = lambda o: format(o, '.25E')
 
@@ -612,7 +613,8 @@ def normal_run(args):
         dumpcounter += 1
 
         if args.dumprestartnum > 0:
-            if dumpcounter == args.dumprestartnum:
+            if (dumpcounter == args.dumprestartnum) or \
+                    (j == niter-1):
                 
                 encoder.FLOAT_REPR = lambda o: format(o, '.25E')
 
