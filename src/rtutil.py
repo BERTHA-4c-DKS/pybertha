@@ -241,7 +241,6 @@ def mo_fock_mid_forwd_eval(bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
         #update fock_guess
         fock_guess = numpy.copy(fock_inter)
         if k > 1:
-            print(k)
             # test on the norm: compare the density at current step and previous step
             # calc frobenius of the difference D_ti_dt_mo_new-D_ti_dt_mo
             diff = D_ti_dt-dens_test
