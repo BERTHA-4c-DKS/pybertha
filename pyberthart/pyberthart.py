@@ -247,7 +247,7 @@ if (args.pulse == "analytic"):
     if (molist[0] != -2):
         dipz_mo=rtutil.dipole_selection(dipz_mo,nshift,nocc,molist,fo,debug)
     print " Perturb with analytic kick "
-    u0=rtutil.exp_opmat(dipz_mo,numpy.float_(-Amp))
+    u0=rtutil.exp_opmat(dipz_mo,numpy.float_(-Amp),debug,fo)
     Dp_init=numpy.matmul(u0,numpy.matmul(D_0,numpy.conjugate(u0.T)))
     #transform back Dp_int
     Da=numpy.matmul(C,numpy.matmul(Dp_init,numpy.conjugate(C.T)))
@@ -271,7 +271,7 @@ if debug:
         numpy.allclose(fock_mid_init,fock_mid_h,atol=1.e-14))
 
 fockp_mid_init=numpy.matmul(numpy.conjugate(C.T),numpy.matmul(fock_mid_init,C))
-u=rtutil.exp_opmat(fockp_mid_init,numpy.float_(dt))
+u=rtutil.exp_opmat(fockp_mid_init,numpy.float_(dt),debug,fo)
 #u=rtutil.exp_opmat(fockp_mid_init,numpy.float_(dt))
 #u=scila.expm(-1.j*fockp_mid_init*dt)
 temp=numpy.matmul(D_0,numpy.conjugate(u.T))
@@ -339,7 +339,7 @@ for j in range(1,niter):
       fo.write('Fock_mid hermitian: %s\n' % numpy.allclose(fock_mid_tmp,Ah,atol=1.e-14))
     # transform fock_mid_init in MO basis
     fockp_mid_tmp = numpy.matmul(numpy.conjugate(C.T),numpy.matmul(fock_mid_tmp,C))
-    u = rtutil.exp_opmat(numpy.copy(fockp_mid_tmp),numpy.float_(dt))
+    u = rtutil.exp_opmat(numpy.copy(fockp_mid_tmp),numpy.float_(dt),debug,fo)
     # u=scila.expm(-1.0j*fockp_mid_tmp*dt)
     # check u is unitary
     test_u = numpy.matmul(u,numpy.conjugate(u.T))

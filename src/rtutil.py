@@ -16,17 +16,52 @@ def progress_bar (count, total, status=''):
 
 #######################################################################
 
-def exp_opmat(mat,dt):
-    # first find eigenvector of a  matrix defined as -iF*dt, F beig hermitian
-    # and take the exponential of the diagonal
-    # for our purpose mat=-iF, F being hermitian
-    
-    try: 
-       w,v=numpy.linalg.eigh(dt*mat)
-    except LinAlgError:
-       return None 
+def exp_opmat(mat,dt,debug=False,odbg=sys.stderr):
+    # first find eigenvectors and eigvals of F (hermitian)
+    # and take the exponential of the -i*w*dt, w being eigvals of F
+    #for debug
+    if False :
+       mat_h = numpy.conjugate(mat.T)
+       diff_mat_h=mat-mat_h
+       odbg.write("Max diff mat-mat_h: (%.15f, %.15fi)\n"%(numpy.max(diff_mat_h.real),numpy.max(diff_mat_h.imag)))
+       odbg.write('Inputted  matrix is hermitian: %s\n'% 
+        numpy.allclose(mat,mat_h,atol=1.e-14))
+       if ( not numpy.allclose(mat,mat_h,atol=1.e-14)):
+          rdiff = diff_mat_h.real
+          maxrdiff = numpy.max(rdiff)
+          idiff = diff_mat_h.imag
+          maxidiff = numpy.max(idiff)
+          #absvalue
+          absmaxrdiff = numpy.abs(numpy.max(rdiff))
+          absmaxidiff = numpy.abs(numpy.max(idiff))
+          odbg.write('Abs values of max(rdiff), max(idiff): %.15f  %.15f \n' % (absmaxrdiff,absmaxidiff))
+          odbg.write('Values of max(rdiff), max(idiff): %.15f  %.15fi \n' % (maxrdiff,maxidiff))
+          matdim = mat.shape[0]
+          for i in range(matdim):
+            for j in range(matdim):
+               if (numpy.abs(rdiff[i,j]) == numpy.abs(maxrdiff)):
+                 if (mat[i,j].real*mat_h[i,j].real>0.0):
+                    odbg.write("same sign for element (%i,%i).real\n" % (i,j))
+                    diffrel= (mat[i,j].real - mat_h[i,j].real)/mat[i,j].real
+                    odbg.write("For element (%i,%i).real relative diff: %.15f\n" % (i,j,diffrel))
+                 else: 
+                    odbg.write("opposit sign for element (%i,%i).real\n" % (i,j))
+               if (numpy.abs(idiff[i,j]) == numpy.abs(maxidiff)):
+                 if (mat[i,j].imag*mat_h[i,j].imag>0.0):
+                    odbg.write("same sign for element (%i,%i).imag\n" % (i,j))
+                    idiffrel= (mat[i,j].imag - mat_h[i,j].imag)/mat[i,j].imag
+                    odbg.write("For element (%i,%i).imag  relative diff: %.15f\n" % (i,j,idiffrel))
+                    
+                 else: 
+                    odbg.write("opposit sign for element (%i,%i).imag\n" % (i,j))
 
-    diag=numpy.exp(-1.j*w)
+    try: 
+       w,v=numpy.linalg.eigh(mat)
+    except numpy.linalg.LinAlgError:
+        print "Error in numpy.linalg.eigh of inputted matrix"
+        return None
+
+    diag=numpy.exp(-1.j*w*dt)
     # build the diagonal matrix
     # use numpy.diagflat(w)
     #   dmat=numpy.zeros(mat.shape,dtype=float)
@@ -37,18 +72,18 @@ def exp_opmat(mat,dt):
     
     # for a general matrix Diag = M^(-1) A M
     # M is v 
-    try:
-       v_i=numpy.linalg.inv(v)
-    except LinAlgError:
-       return None 
+    #try:
+    #   v_i=numpy.linalg.inv(v)
+    #except LinAlgError:
+    #   return None 
        
-    # v_i=numpy.conjugate(v.T)
     # transform back
     # matmul introduced in numpy 1.10 is preferred with respect 
     # numpy.dot 
-    tmp = numpy.matmul(dmat,v_i)
+    #tmp = numpy.matmul(dmat,v_i)
+    tmp = numpy.matmul(dmat,numpy.conjugate(v.T))
     
-    #for real matrices conjugation=transposition
+    #in an orthonrmal basis v_inv = v.H
     
     mat_exp = numpy.matmul(v,tmp)
     
@@ -152,7 +187,7 @@ def dipole_selection(dipole,nshift,nocc,k,odbg=sys.stderr,debug=False,a=-1):
     diag = numpy.diagonal(tmp)
     diagonal = numpy.diagflat(diag)
     nvirt = tmp.shape[0]-nocc
-    print('nvirt : %i' % nvirt)
+    odbg.write("n. virtual orbitals : %i" % nvirt)
     if (a == -1):
        for b in range(nvirt):
            for j in  k:
@@ -207,7 +242,7 @@ def mo_fock_mid_forwd_eval(bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
         fockp_guess = numpy.matmul(numpy.conjugate(C.T), \
                 numpy.matmul(fock_guess,C))
 
-        u = exp_opmat(fockp_guess,delta_t)
+        u = exp_opmat(fockp_guess,delta_t,debug,odbg)
 
         if u is None:
           return None 
