@@ -74,7 +74,7 @@ def exp_opmat(mat,dt,debug=False,odbg=sys.stderr):
     # M is v 
     #try:
     #   v_i=numpy.linalg.inv(v)
-    #except LinAlgError:
+    #except numpy.linalg.LinAlgError:
     #   return None 
        
     # transform back
