@@ -138,7 +138,7 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
   
     fock_mid_tmp = rtutil.mo_fock_mid_forwd_eval(bertha, numpy.copy(D_ti), \
             fock_mid_backwd, j, numpy.float_(dt), dipz_mat, C, C_inv, ovapm, \
-            ndim, debug, fo, pulse, pulseFmax, pulsew, propthresh, pulseS, t0)
+            ndim, debug, fo, pulse, pulseFmax, pulsew, pulseS, t0, propthresh)
     
     if (fock_mid_tmp is None):
         print "Error accurs in mo_fock_mid_forwd_eval"
