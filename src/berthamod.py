@@ -1,3 +1,4 @@
+import threading
 import ctypes
 import numpy
 import sys
@@ -259,13 +260,27 @@ class pybertha:
             in_vctfilename = ctypes.c_char_p(self.__vctfilename)
             in_ovapfilename = ctypes.c_char_p(self.__ovapfilename)
             in_fittfname = ctypes.c_char_p(self.__fittfname)
+
+            maint = threading.Thread(target=self.__bertha.mainrun, \
+                    args=[in_fittcoefffname, \
+                          in_vctfilename, \
+                          in_ovapfilename, \
+                          in_fittfname, \
+                          ctypes.c_void_p(eigen.ctypes.data), \
+                          ctypes.c_void_p(ovapbuffer.ctypes.data), \
+                          ctypes.c_void_p(eigenvctbu.ctypes.data), \
+                          ctypes.c_void_p(fockbuffer.ctypes.data)])
+            maint.daemon = True
+            maint.start()
+            while maint.is_alive():
+                    maint.join(.1)
  
-            self.__bertha.mainrun(in_fittcoefffname, in_vctfilename, \
-                    in_ovapfilename, in_fittfname, \
-                    ctypes.c_void_p(eigen.ctypes.data), \
-                    ctypes.c_void_p(ovapbuffer.ctypes.data), 
-                    ctypes.c_void_p(eigenvctbu.ctypes.data),
-                    ctypes.c_void_p(fockbuffer.ctypes.data))
+            #self.__bertha.mainrun(in_fittcoefffname, in_vctfilename, \
+            #        in_ovapfilename, in_fittfname, \
+            #        ctypes.c_void_p(eigen.ctypes.data), \
+            #        ctypes.c_void_p(ovapbuffer.ctypes.data), \
+            #        ctypes.c_void_p(eigenvctbu.ctypes.data), \
+            #        ctypes.c_void_p(fockbuffer.ctypes.data))
             
             ovapm = doublevct_to_complexmat (ovapbuffer, ndim)
             if ovapm is None:
