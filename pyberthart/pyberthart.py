@@ -319,6 +319,8 @@ def restart_run(args):
     dumpcounter = 0
     for j in range(jstart+1, niter):
 
+        sys.stdout.flush()
+
         start = time.time()
         cstart = time.clock()
     
@@ -398,16 +400,18 @@ def restart_run(args):
         else:
             rtutil.progress_bar(j, niter-1)
    
+        sys.stdout.flush()
+
     sys.stdout.flush()
 
-
-    
     print ""
     print ""
     print "Dump density density.cube"
     bertha.density_to_cube(D_ti, "density.cube", margin = 5.0)
     
     print "Done"
+
+    sys.stdout.flush()
     
     if debug:
         fo.close()
@@ -618,6 +622,8 @@ def normal_run(args):
     
     for j in range(1,niter):
 
+        sys.stdout.flush()
+
         start = time.time()
         cstart = time.clock()
     
@@ -696,8 +702,11 @@ def normal_run(args):
                     " (CPU time: " , cend - cstart, ") s )"
         else:
             rtutil.progress_bar(j, niter-1)
- 
-    
+
+        sys.stdout.flush()
+
+    sys.stdout.flush()
+
     print ""
     print ""
     print "Dump density density.cube"
@@ -705,6 +714,8 @@ def normal_run(args):
     
     print "Done"
     
+    sys.stdout.flush()
+
     if debug:
         fo.close()
     
