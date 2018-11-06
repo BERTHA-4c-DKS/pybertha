@@ -1,65 +1,54 @@
 'TYPE OF BASIS SET; 1 FOR GEOMETRIC, 2 FOR OPTIMIZED'
 2
 'NUMBER OF CENTRES'
-3
-'COORDINATES FOR CENTRE 1'
-10.001736    6.384493    0.000000
-'Z, N, MAXL AND CARGE FOR CENTRE THREE'
-1,1.00794,1,0
-'BASIS SET FOR CENTRE TWO'
-4
-     13.01000000
-     1.962000000
-     0.4446000000
-     0.1220000000
 1
-     0.7270000000
-'COORDINATES FOR CENTRE 1'
-10.312929    9.288282    0.000000
-'Z, N, MAXL AND CARGE FOR CENTRE THREE'
-1,1.00794,1,0
-'BASIS SET FOR CENTRE TWO'
-4
-     13.01000000
-     1.962000000
-     0.4446000000
-     0.1220000000
+'NEW CENTRE. COORDINATES'
+0.000000, 0.000000, 0.0000
+'Z, N, MAXL AND CHARGE'
+30, 65.38, 3, 0
+'BASIS SET'
+14
+  82000.7116290                      
+  12312.4717770                      
+   2801.3944193                      
+    790.99424302               
+    257.56551079               
+     88.814933400              
+    171.86353716               
+     20.302534785              
+      8.3464123068             
+     14.847536940              
+      2.4495029507             
+      0.99845821824            
+      0.11891307937            
+      0.42297428760E-01              
+10    
+   1071.5185372                    
+    252.69712152                   
+     80.100829126            
+     28.903393172            
+     10.768899879            
+      5.6446212530           
+      2.1678291347           
+      0.80540898341          
+      0.16245500000              
+      0.42022716037E-01             
+5    
+     56.088939191                 
+     15.751908917            
+      5.3115812367           
+      1.7737904917           
+      0.51975583665              
 1
-     0.7270000000
-'COORDINATES FOR CENTRE 1'
-11.294865    7.714406    0.000000
-'Z, N, MAXL AND CARGE FOR CENTRE ONE'
-8,15.9994,4,0
-'BASIS SET FOR CENTRE ONE O-OXYGEN (6-31G*) '
-9
-     11720.00000      
-     1759.000000      
-     400.8000000      
-     113.7000000      
-     37.03000000      
-     13.27000000      
-     5.025000000      
-     1.013000000      
-     0.3023000000     
-4
-    17.7000
-     3.8540
-     1.046000000      
-     0.2753000000     
-1
-     1.185000000     
-1
-1.046000000
-1
-1.185000000
+      2.6140000000              
 'NUMBER OF CLOSED-SHELL ELECTRONS'
-10,0,0 
+30, 0, 0
 'SPECIFY CLOSED AND OPEN SHELLS AND COUPLING'
 0
 'ENTER 1 FOR NEW RUN AND 0 FOR RESTART'
 1
 'LEVEL SHIFT FACTOR IN STAGE 0, 1, AND 2'
--1.0,-1.0,-1.0
+-2.0,-2.0,-2.0
 'STARTING STAGE (0-2)'
 2
 'PRINT LEVEL FROM 1-2'
@@ -67,14 +56,14 @@
 'DAMPING FACTOR AND RELATIVE TRESHOLD FOR INITIATION OF DAMPING'
 0.10D0,1.0D-2
 'ENTER NCORE, MACTVE,NACTVE'
-10,0,0                                                
+30 ,0 ,0
 'ENTER GRID QUALITY FROM 1 (COURSE) to 5 (FINE)'
-3                                          
-'EX-POTENTIAL available: LDA, B88P86,HCTH93,BLYP'
-LXCVWN5
-'fitt' 2=standard:fitt2 4=solo_poisson:fitt3 6=both:fitt2+fitt3
+5
+'EX-POTENTIAL available: LDA, B88P86,HCTH93'
+BLYP
+'Fitt'
 2 0
 'scalapack'
-2 2 32 2.0
+2, 2, 32, 1.2
 'maxit'
-100
+200
