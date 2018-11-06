@@ -144,7 +144,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
      &  '        molecular geometry a: cartesian coordinates         '
        write(6,*)
        write(6,*)
-     &  'centre        x-coordinate    y-coordinate    z-coordinate'
+     &  'center        x-coordinate    y-coordinate    z-coordinate'
        write(6,"(60('='))")
        do nuca = 1,ncent
          write(6,1118) elmnt(iznuc(nuca)),
@@ -197,14 +197,14 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       endif
 
       if (verbose .eq. -1) then 
-        write(6,*) "Initialze the atomic densities on each centre"
+        write(6,*) "Initialze the atomic densities on each center"
       endif
 
       if (irun.eq.1) then
         ioccm0 = nshift + 1
         if (verbose .eq. 1) then
          write(6,*)
-     &    '          initialze the atomic densities on each centre   '
+     &    '          initialze the atomic densities on each center   '
          write(6,*)
          write(6,*)
         endif 
