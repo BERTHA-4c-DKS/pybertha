@@ -5,7 +5,7 @@ import sys
 import re
 
 import os.path
-
+import time
 
 ###############################################################################
 
@@ -114,6 +114,9 @@ class pybertha:
 
     def __reset(self):
 
+        self.__mainruntime = 0.0
+        self.__mainrunctime = 0.0
+
         self.__fittcoefffname = "fitcoeff.txt"
         self.__vctfilename = "vct.txt" 
         self.__ovapfilename = "ovap.txt"
@@ -128,6 +131,12 @@ class pybertha:
         self.__realtime_init = False
 
         self.set_densitydiff (0)
+
+    def get_mainruntime(self):
+        return self.__mainruntime
+
+    def get_mainrunctime(self):
+        return self.__mainrunctime
 
     def set_densitydiff (self, ini):
         self.__bertha.set_densitydiff(ctypes.c_int(ini)) 
@@ -261,6 +270,9 @@ class pybertha:
             in_ovapfilename = ctypes.c_char_p(self.__ovapfilename)
             in_fittfname = ctypes.c_char_p(self.__fittfname)
 
+            start = time.time()
+            cstart = time.clock()
+
             maint = threading.Thread(target=self.__bertha.mainrun, \
                     args=[in_fittcoefffname, \
                           in_vctfilename, \
@@ -274,6 +286,12 @@ class pybertha:
             maint.start()
             while maint.is_alive():
                     maint.join(.1)
+
+            end = time.time()
+            cend = time.clock()
+
+            self.__mainruntime = end - start
+            self.__mainrunctime = cend - cstart
  
             #self.__bertha.mainrun(in_fittcoefffname, in_vctfilename, \
             #        in_ovapfilename, in_fittfname, \

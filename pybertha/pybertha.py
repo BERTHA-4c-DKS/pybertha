@@ -12,6 +12,8 @@ from scipy.linalg import eigh
 sys.path.insert(0, '../src/')
 import berthamod
 
+import time
+
 parser = argparse.ArgumentParser()
 parser.add_argument("-f","--inputfile", help="Specify BERTHA input file (default: input.inp)", required=False, 
         type=str, default="input.inp")
@@ -94,7 +96,20 @@ print "           nopen: ", nopen
 print "     level shift: ", sfact
 print ""
 
+start = time.time()
+cstart = time.clock()
+
 ovapm, eigem, fockm, eigen = bertha.run()
+
+end = time.time()
+cend = time.clock()
+
+print "Totaltime:    ", end - start, " (CPU time: " , cend - cstart, ") s "
+print "MainRun Time: ", bertha.get_mainruntime() , \
+        " (CPU time: " , bertha.get_mainrunctime(), ") s "
+
+sys.stdout.flush()
+
 
 if (fockm is None) or (eigen is None) or (fockm is None) \
         or (eigen is None):
