@@ -117,6 +117,9 @@ class pybertha:
         self.__mainruntime = 0.0
         self.__mainrunctime = 0.0
 
+        self.__focktime = 0.0
+        self.__fockctime = 0.0
+
         self.__fittcoefffname = "fitcoeff.txt"
         self.__vctfilename = "vct.txt" 
         self.__ovapfilename = "ovap.txt"
@@ -137,6 +140,12 @@ class pybertha:
 
     def get_mainrunctime(self):
         return self.__mainrunctime
+
+    def get_focktime(self):
+        return self.__focktime
+
+    def get_focktime(self):
+        return self.__fockctime
 
     def set_densitydiff (self, ini):
         self.__bertha.set_densitydiff(ctypes.c_int(ini)) 
@@ -349,8 +358,17 @@ class pybertha:
             vextbuffer = numpy.zeros((2*ndim*ndim), dtype=numpy.double)
             vextbuffer = numpy.ascontiguousarray(vextbuffer, dtype=numpy.double)
             
+            start = time.time()
+            cstart = time.clock()
+
             self.__bertha.realtime_dipolematrix(direction, normalise, \
                     ctypes.c_void_p(vextbuffer.ctypes.data))
+
+            end = time.time()
+            cend = time.clock()
+
+            self.__focktime = end - start
+            self.__fockctime = cend - cstart
             
             vextm = doublevct_to_complexmat (vextbuffer, ndim)
             if vextm is None:

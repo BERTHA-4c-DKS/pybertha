@@ -609,7 +609,19 @@ def normal_run(args):
     Dp_ti=Dp_t1
     #aggiungere repulsione nucleare
     #Enuc_list.append(-func_t0*Ndip_z+Nuc_rep) #just in case of non-zero nuclear dipole
+    
+    start = time.time()
+    cstart = time.clock()
+
     fockm_ti=bertha.get_realtime_fock(D_ti.T)
+
+    end = time.time()
+    cend = time.clock()
+
+    print "RealTime Fock Time:            ",end-start, " (CPU: ", cend-cstart, " ) s"  
+    print "RealTime Fock Time Without Py: ",bertha.get_focktime(), " (CPU: ", \
+            bertha.get_fockctime(), " ) s"
+    print ""
     ene_list.append(numpy.trace(numpy.matmul(Da,fockm)))
     ene_list.append(numpy.trace(numpy.matmul(D_ti,fockm_ti)))
     
