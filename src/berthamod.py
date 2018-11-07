@@ -22,30 +22,8 @@ def complexmat_to_doublevct (inm):
     cbuffer = numpy.zeros((2*dim*dim), dtype=numpy.double)
     cbuffer = numpy.ascontiguousarray(cbuffer, dtype=numpy.double)
 
-    start = time.time()
-
-    cbuffer1 = numpy.zeros((2*dim*dim), dtype=numpy.double)
-    cbuffer1 = numpy.ascontiguousarray(cbuffer, dtype=numpy.double)
-
-
-    cbuffer1[0::2] = inm.flatten().real
-    cbuffer1[1::2] = inm.flatten().imag
-    end = time.time()
-    print "   Time in 1: ", end-start
-
-    start = time.time()
-    counter = 0
-    for j in range(dim):
-        for i in range(dim):
-            cbuffer[  counter] = inm[j, i].real
-            cbuffer[counter+1] = inm[j, i].imag
-            counter = counter + 2
-    end = time.time()
-    print "   Time in 2: ", end-start
-
-    for j in range(dim*dim*2):
-        if cbuffer[j] != cbuffer1[j] :
-            print "differ"
+    cbuffer[0::2] = inm.flatten().real
+    cbuffer[1::2] = inm.flatten().imag
 
     return cbuffer
 
@@ -56,6 +34,12 @@ def doublevct_to_complexmat (invector, dim):
     if (invector.size != (2*dim*dim)):
         return None
 
+    outm1 = numpy.zeros((dim,dim), dtype=numpy.complex128)
+
+    inmtxreal = numpy.reshape(invector[0::2], (dim,dim))
+    inmtximag = numpy.reshape(invector[1::2], (dim,dim))
+    outm1[:,:] = inmtxreal[:,:] + 1j * inmtximag[:,:]
+
     outm = numpy.zeros((dim,dim), dtype=numpy.complex128)
     counter = 0
     for j in range(dim):
@@ -63,6 +47,10 @@ def doublevct_to_complexmat (invector, dim):
             outm[j, i] = complex(invector[counter], invector[counter+1])
             counter = counter + 2
 
+    for j in range(dim):
+        for i in range(dim):
+            if outm[j, i] != outm1[j, i]:
+                print "Diff"
     return outm
 
 ###############################################################################
