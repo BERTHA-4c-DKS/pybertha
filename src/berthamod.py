@@ -22,12 +22,30 @@ def complexmat_to_doublevct (inm):
     cbuffer = numpy.zeros((2*dim*dim), dtype=numpy.double)
     cbuffer = numpy.ascontiguousarray(cbuffer, dtype=numpy.double)
 
+    start = time.time()
+
+    cbuffer1 = numpy.zeros((2*dim*dim), dtype=numpy.double)
+    cbuffer1 = numpy.ascontiguousarray(cbuffer, dtype=numpy.double)
+
+
+    cbuffer1[0::2] = inm.flatten().real
+    cbuffer1[1::2] = inm.flatten().imag
+    end = time.time()
+    print "   Time in 1: ", end-start
+
+    start = time.time()
     counter = 0
     for j in range(dim):
         for i in range(dim):
             cbuffer[  counter] = inm[j, i].real
             cbuffer[counter+1] = inm[j, i].imag
             counter = counter + 2
+    end = time.time()
+    print "   Time in 2: ", end-start
+
+    for j in range(dim*dim*2):
+        if cbuffer[j] != cbuffer1[j] :
+            print "differ"
 
     return cbuffer
 
@@ -383,7 +401,10 @@ class pybertha:
 
             ndim = self.get_ndim()
 
+            start = time.time()
             cbuffer = complexmat_to_doublevct (eigem)
+            end = time.time()
+            print "Time 1: ", end-start 
 
             start = time.time()
             cstart = time.clock()
@@ -397,9 +418,12 @@ class pybertha:
             self.__focktime = end - start
             self.__fockctime = cend - cstart
 
+            start = time.time()
             fockm = doublevct_to_complexmat (self.__fockbuffer, ndim)
             if fockm is None:
                 raise Error("Error in ovap matrix size")
+            end = time.time()
+            print "Time 2: ", end-start
 
             return fockm
 
