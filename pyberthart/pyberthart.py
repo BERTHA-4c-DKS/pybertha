@@ -86,7 +86,7 @@ def single_point (args, bertha):
     berthacend = time.clock()
    
     print "Single-Point time: ", berthaend - berthastart, \
-                    " (CPU time: " , berthacend - berthacstart, ") s )"
+                    " (CPU time: " , berthacend - berthacstart, ") s "
     
     sys.stdout.flush()
     
