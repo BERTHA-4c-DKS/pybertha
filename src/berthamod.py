@@ -378,10 +378,7 @@ class pybertha:
 
             ndim = self.get_ndim()
 
-            start = time.time()
             cbuffer = complexmat_to_doublevct (eigem)
-            end = time.time()
-            print "Time 1: ", end-start 
 
             start = time.time()
             cstart = time.clock()
@@ -395,12 +392,9 @@ class pybertha:
             self.__focktime = end - start
             self.__fockctime = cend - cstart
 
-            start = time.time()
             fockm = doublevct_to_complexmat (self.__fockbuffer, ndim)
             if fockm is None:
                 raise Error("Error in ovap matrix size")
-            end = time.time()
-            print "Time 2: ", end-start
 
             return fockm
 
