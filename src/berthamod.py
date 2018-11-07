@@ -144,7 +144,7 @@ class pybertha:
     def get_focktime(self):
         return self.__focktime
 
-    def get_focktime(self):
+    def get_fockctime(self):
         return self.__fockctime
 
     def set_densitydiff (self, ini):
