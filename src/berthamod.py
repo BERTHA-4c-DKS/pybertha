@@ -358,18 +358,9 @@ class pybertha:
             vextbuffer = numpy.zeros((2*ndim*ndim), dtype=numpy.double)
             vextbuffer = numpy.ascontiguousarray(vextbuffer, dtype=numpy.double)
             
-            start = time.time()
-            cstart = time.clock()
-
             self.__bertha.realtime_dipolematrix(direction, normalise, \
                     ctypes.c_void_p(vextbuffer.ctypes.data))
-
-            end = time.time()
-            cend = time.clock()
-
-            self.__focktime = end - start
-            self.__fockctime = cend - cstart
-            
+           
             vextm = doublevct_to_complexmat (vextbuffer, ndim)
             if vextm is None:
                 raise Error("Error in vextm matrix size")
@@ -387,10 +378,20 @@ class pybertha:
             cbuffer = complexmat_to_doublevct (eigem)
 
             fockbuffer = numpy.zeros((2*ndim*ndim), dtype=numpy.double)
-            fockbuffer = numpy.ascontiguousarray(fockbuffer, dtype=numpy.double)
+            fockbuffer = numpy.ascontiguousarray(fockbuffer, \
+                    dtype=numpy.double)
+
+            start = time.time()
+            cstart = time.clock()
 
             self.__bertha.realtime_fock(ctypes.c_void_p(cbuffer.ctypes.data), \
                     ctypes.c_void_p(fockbuffer.ctypes.data))
+
+            end = time.time()
+            cend = time.clock()
+
+            self.__focktime = end - start
+            self.__fockctime = cend - cstart
 
             fockm = doublevct_to_complexmat (fockbuffer, ndim)
             if fockm is None:
