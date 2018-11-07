@@ -34,23 +34,12 @@ def doublevct_to_complexmat (invector, dim):
     if (invector.size != (2*dim*dim)):
         return None
 
-    outm1 = numpy.zeros((dim,dim), dtype=numpy.complex128)
+    outm = numpy.zeros((dim,dim), dtype=numpy.complex128)
 
     inmtxreal = numpy.reshape(invector[0::2], (dim,dim))
     inmtximag = numpy.reshape(invector[1::2], (dim,dim))
-    outm1[:,:] = inmtxreal[:,:] + 1j * inmtximag[:,:]
+    outm[:,:] = inmtxreal[:,:] + 1j * inmtximag[:,:]
 
-    outm = numpy.zeros((dim,dim), dtype=numpy.complex128)
-    counter = 0
-    for j in range(dim):
-        for i in range(dim):
-            outm[j, i] = complex(invector[counter], invector[counter+1])
-            counter = counter + 2
-
-    for j in range(dim):
-        for i in range(dim):
-            if outm[j, i] != outm1[j, i]:
-                print "Diff"
     return outm
 
 ###############################################################################
