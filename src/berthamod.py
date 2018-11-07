@@ -347,6 +347,14 @@ class pybertha:
         if self.__init and self.__mainrundone:
             self.__bertha.realtime_init()
             self.__realtime_init = True
+
+            ndim = self.get_ndim()
+
+            self.__fockbuffer = numpy.zeros((2*ndim*ndim), dtype=numpy.double)
+            self.__fockbuffer = numpy.ascontiguousarray(self.__fockbuffer, \
+                    dtype=numpy.double)
+
+
         else:
             raise Error("You should firstly init and perform the run")
 
@@ -377,15 +385,11 @@ class pybertha:
 
             cbuffer = complexmat_to_doublevct (eigem)
 
-            fockbuffer = numpy.zeros((2*ndim*ndim), dtype=numpy.double)
-            fockbuffer = numpy.ascontiguousarray(fockbuffer, \
-                    dtype=numpy.double)
-
             start = time.time()
             cstart = time.clock()
 
             self.__bertha.realtime_fock(ctypes.c_void_p(cbuffer.ctypes.data), \
-                    ctypes.c_void_p(fockbuffer.ctypes.data))
+                    ctypes.c_void_p(self.__fockbuffer.ctypes.data))
 
             end = time.time()
             cend = time.clock()
@@ -393,7 +397,7 @@ class pybertha:
             self.__focktime = end - start
             self.__fockctime = cend - cstart
 
-            fockm = doublevct_to_complexmat (fockbuffer, ndim)
+            fockm = doublevct_to_complexmat (self.__fockbuffer, ndim)
             if fockm is None:
                 raise Error("Error in ovap matrix size")
 
