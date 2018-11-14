@@ -154,7 +154,7 @@ def sin_oc (Fmax, w, t, t0=0.0, s=0.0):
 
 #######################################################################
 
-def cos_env(Fmax, w, t, t0=0.0, n=20):
+def cos_env(Fmax, w, t, t0=0.0, n=20.0):
 
    #define the period (time for an oscillation cycle)
    #n is the number of oscillation cycle in the 
