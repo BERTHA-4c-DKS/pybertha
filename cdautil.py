@@ -36,6 +36,7 @@ def join_cmat(cmata, cmatb, ndimab):
     else:
        print("check cmat_join : wrong ndimtot")
     noccab =  cmata.shape[1] + cmatb.shape[1]
+    print("noccab : %i\n" % noccab)
     cmat_join = numpy.zeros((ndimab,noccab),dtype=numpy.complex128)
     
     ndima = cmata.shape[0]
