@@ -300,6 +300,7 @@ dmat = numpy.matmul(cmatab,numpy.conjugate(cmatab.T))
 #compute density difference
 tmp = dmat -dmat0
 #check the trace of dmat and dmat0
+#TODO add the D_anti contribution
 trdmat = numpy.trace(numpy.matmul(dmat,ovapm))
 trdmat0 = numpy.trace(numpy.matmul(dmat0,ovapm))
 print("Trace of DmatAB %.8f %.8fi\n" % (trdmat.real,trdmat.imag))
