@@ -177,23 +177,28 @@ def analytic(Fmax, w, t, t0=0.0, s=0.0):
 
 #######################################################################
 
-def dipole_selection(dipole,nshift,nocc,k,odbg=sys.stderr,debug=False,a=-1):
-    k = k[1:]
+def dipole_selection(dipole,nshift,nocc,occlist,virtlist,odbg=sys.stderr,debug=False):
+    
+    a= occlist.pop(0)
     if debug:
-       odbg.write("Selected transitions from MOs: %s \n"% str(k))
-
+       odbg.write("Selected occ. Mo: %s \n"% str(occlist))
+       odbg.write("Selected virt. Mo: %s \n"% str(virtlist))
     tmp = dipole[nshift:,nshift:]
     offdiag = numpy.zeros((nshift,nshift),dtype=numpy.complex128)
-    diag = numpy.diagonal(tmp)
-    diagonal = numpy.diagflat(diag)
+    #diag = numpy.diagonal(tmp)
+    #diagonal = numpy.diagflat(diag)
     nvirt = tmp.shape[0]-nocc
     odbg.write("n. virtual orbitals : %i" % nvirt)
     if (a == -1):
-       for b in range(nvirt):
-           for j in  k:
-               offdiag[nocc+b,j] = tmp[nocc+b,j]
-    offdiag=(offdiag+offdiag.T)
-    offdiag+=diagonal
+      for b in range(nvirt):
+        for j in occlist:
+          offdiag[nocc+b,j-1] = tmp[nocc+b,j-1]
+    else:
+      for b in virtlist:
+        for j in  occlist:
+          offdiag[b-1,j-1] = tmp[b-1,j-1]
+    offdiag=(offdiag+numpy.conjugate(offdiag.T))
+    #offdiag+=diagonal
     dipole[nshift:,nshift:] = offdiag
 
     return dipole
