@@ -38,6 +38,14 @@ parser.add_argument("--wrapperso", help="set wrapper SO (default = ../../lib/ber
 
 parser.add_argument("-np", "--npairs", help="Specify the numerber of nocv-pair density (default: 0)", required=False,
            default=0, type=int)
+parser.add_argument("--deltax", help="cube dx step (default = 0.2)", required=False, 
+        type=numpy.float64, default=0.2)
+parser.add_argument("--deltay", help="cube dy step (default = 0.2)", required=False, 
+        type=numpy.float64, default=0.2)
+parser.add_argument("--deltaz", help="cube dz step (default = 0.2)", required=False, 
+        type=numpy.float64, default=0.2)
+parser.add_argument("--lmargin", help="cube margin parameter (default = 10.0)", required=False, 
+        type=numpy.float64, default=10.0)
 args = parser.parse_args()
 
 print "Options: "
@@ -230,9 +238,13 @@ if not os.path.isfile("vctb.out"):
     exit(1)
 
 npairs = args.npairs
+drx = args.deltax
+dry = args.deltay
+drz = args.deltaz
+margin = args.lmargin
 #ovapcmp = berthamod.read_ovapfile ("ovapab.out")
 
-cmatab = berthamod.read_vctfile ("vctab.out")
+cmatab = berthamod.read_vctfile (vctfilename)
 
 cmata = berthamod.read_vctfile ("vcta.out")
 cmatb = berthamod.read_vctfile ("vctb.out")
@@ -288,6 +300,7 @@ dmat = numpy.matmul(cmatab,numpy.conjugate(cmatab.T))
 #compute density difference
 tmp = dmat -dmat0
 #check the trace of dmat and dmat0
+#TODO add the D_anti contribution
 trdmat = numpy.trace(numpy.matmul(dmat,ovapm))
 trdmat0 = numpy.trace(numpy.matmul(dmat0,ovapm))
 print("Trace of DmatAB %.8f %.8fi\n" % (trdmat.real,trdmat.imag))
@@ -330,9 +343,9 @@ for i in range(npairs):
   print("trace of nocv_+%i : %.8f\n" % (j,trace.real))
   deltanocv = eigenval[i]*(d1 - d2)
 
-  bertha.density_to_cube(d1, "nocv-"+str(j)+".cube", margin = 6.05,drx=0.15,dry=0.15,drz=0.15 )  
-  bertha.density_to_cube(d2, "nocv+"+str(j)+".cube", margin = 6.05,drx=0.15,dry=0.15,drz=0.15 )  
-  bertha.density_to_cube(deltanocv, label+".cube", margin = 6.05,drx=0.15,dry=0.15,drz=0.15 )  
+  bertha.density_to_cube(d1.T, "nocv-"+str(j)+".cube", margin, drx, dry, drz )  
+  bertha.density_to_cube(d2.T, "nocv+"+str(j)+".cube", margin, drx, dry, drz )  
+  bertha.density_to_cube(deltanocv.T, label+".cube", margin, drx, dry, drz )  
 bertha.finalize()
 #
 #
