@@ -541,10 +541,14 @@ def normal_run(args):
     if (args.pulse == "analytic"):
         Amp=args.pulseFmax
         dipz_mo=numpy.matmul(numpy.conjugate(C.T),numpy.matmul(dipz_mat,C))
-        molist = args.select.split(";")
-        molist = [int(m) for m in molist]
-        if (molist[0] != -2):
-            dipz_mo=rtutil.dipole_selection(dipz_mo,nshift,nocc,molist,fo,debug)
+        molist = args.select.split("&")
+        occlist = molist[0].split(";")
+        occlist = [int(m) for m in occlist]
+        virtlist = molist[1].split(";")
+        virtlist = [int(m) for m in virtlist]
+
+        if (occlist[0] != -2):
+            dipz_mo=rtutil.dipole_selection(dipz_mo,nshift,nocc,occlist,virtlist,fo,debug)
         print " Perturb with analytic kick "
         u0=rtutil.exp_opmat(dipz_mo,numpy.float_(-Amp),debug,fo)
         Dp_init=numpy.matmul(u0,numpy.matmul(D_0,numpy.conjugate(u0.T)))
@@ -782,8 +786,8 @@ def main():
            type=numpy.float64, default=1.0e-12)
    parser.add_argument("--wrapperso", help="set wrapper SO (default = ../../lib/bertha_wrapper.so)", 
            required=False, type=str, default="../../lib/bertha_wrapper.so")
-   parser.add_argument("--select", help="Specify the occupied MO for selective perturbation (default: -2,0,0)", 
-           default="-2;0;0", type=str)
+   parser.add_argument("--select", help="Specify  occ. and virt. MO for selective perturbation (default: -2; 0 & 0)", 
+           default="-2; 0 & 0", type=str)
    parser.add_argument("--propthresh", help="threshold for midpoint iterative scheme (default = 1.0e-6)", required=False, 
            type=numpy.float64, default=1.0e-6)
    parser.add_argument("--t0", help="Specify the center of gaussian enveloped pulse (default: 0.0)", 
