@@ -1,4 +1,4 @@
-include ../../config.mk
+include ../config.mk
 
 BERTHAWLIB = bertha_wrapper.so
 
@@ -8,11 +8,11 @@ OBJ = bertha_wrapper.o \
 
 all : $(BERTHAWLIB)
 
-FFLAGS+= -fPIC -I../../common -I../../serial
+FFLAGS+= -fPIC -I${BERTHAROOT}/common -I${BERTHAROOT}/serial
 CFLAGS+= -fPIC 
 
 $(BERTHAWLIB): $(OBJ)
-	$(FC) -shared $(OBJ) -o $(BERTHAWLIB) -L../../lib -lbertha -lberthaserial $(LIBS)
+	$(FC) -shared $(OBJ) -o $(BERTHAWLIB) -L${BERTHAROOT}/lib -lbertha -lberthaserial $(LIBS)
 	cp $(BERTHAWLIB) ../../lib
 
 clean:
