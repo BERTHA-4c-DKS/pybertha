@@ -21,6 +21,9 @@ MAJOR=0
 MINOR=1
 PATCH=0
 
+#LIBXC
+LIBXC=yes
+
 BERTHAROOT=/home/redo/Project_Bertha/bertha_ng
 
 ###
@@ -134,6 +137,16 @@ FFLAGS += -fPIC
 ifeq ($(USEINTEL),yes)
   CFLAGS += -DUSEINTELCMP
   FFLAGS += -DUSEINTELCMP
+endif
+
+ifeq ($(LIBXC),yes)
+  # Use libxc of a distribution DIRLIBXC to be set
+  DIRLIBXC = /usr/lib/x86_64-linux-gnu
+  #DIRLIBXC = /usr/local/libxc
+  CFLAGS += -DLIBXC 
+  FFLAGS += -DLIBXC 
+  INCLUDE += -I$(DIRLIBXC)/include
+  LIBS += -L$(DIRLIBXC) -lxc -lxcf90 
 endif
 
 

@@ -785,7 +785,7 @@ def main():
    parser.add_argument("--tresh", help="det treshold (default = 1.0e-12)", required=False, 
            type=numpy.float64, default=1.0e-12)
    parser.add_argument("--wrapperso", help="set wrapper SO (default = ../../lib/bertha_wrapper.so)", 
-           required=False, type=str, default="../../lib/bertha_wrapper.so")
+           required=False, type=str, default="../lib/bertha_wrapper.so")
    parser.add_argument("--select", help="Specify  occ. and virt. MO for selective perturbation (default: -2; 0 & 0)", 
            default="-2; 0 & 0", type=str)
    parser.add_argument("--propthresh", help="threshold for midpoint iterative scheme (default = 1.0e-6)", required=False, 

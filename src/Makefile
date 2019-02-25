@@ -13,7 +13,7 @@ CFLAGS+= -fPIC
 
 $(BERTHAWLIB): $(OBJ)
 	$(FC) -shared $(OBJ) -o $(BERTHAWLIB) -L${BERTHAROOT}/lib -lbertha -lberthaserial $(LIBS)
-	cp $(BERTHAWLIB) ../../lib
+	cp $(BERTHAWLIB) ../lib
 
 clean:
-	rm -f *.o *.mod *__genmod.f90 $(BERTHAWLIB) ../../lib/$(BERTHAWLIB)
+	rm -f *.o *.mod *__genmod.f90 $(BERTHAWLIB) ../lib/$(BERTHAWLIB)
