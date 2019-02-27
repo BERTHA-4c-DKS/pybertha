@@ -534,12 +534,16 @@ class pybertha:
         else:
             return None
 
-    def get_realtime_fock (self, eigem):
+    def get_realtime_fock (self, densm):
+        """
+        *get_realtime_fock* returns the Fock matrix given the density matrix **densm**.
+        """
+
         if self.__realtime_init:
 
             ndim = self.get_ndim()
 
-            cbuffer = complexmat_to_doublevct (eigem)
+            cbuffer = complexmat_to_doublevct (densm)
 
             start = time.time()
             cstart = time.clock()
@@ -562,6 +566,10 @@ class pybertha:
         return None
 
     def finalize(self):
+        """
+        To finalize and free all the allocated memory.
+        """
+
         if self.__realtime_init:
             self.__bertha.realtime_finalize()
         
