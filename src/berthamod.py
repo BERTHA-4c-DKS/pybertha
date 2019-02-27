@@ -307,6 +307,10 @@ class pybertha:
         return self.__dumpfiles
 
     def init (self):
+        """
+        Initialize method, it initializes all the variables and basix data.
+        The user need to call this method before he/she can peform the main run.
+        """
        
         in_fnameinput = ctypes.c_char_p(self.__fnameinput)
 
@@ -316,30 +320,50 @@ class pybertha:
         self.__init = True
 
     def get_ndim(self):
+        """
+        *get_ndim* returns the matrix dimension.
+        """
+
         if self.__init:
             return self.__bertha.get_ndim()
         
         return 0
 
     def get_nshift(self):
+        """
+        *get_nshift* returns the nshift value.
+        """
+
         if self.__init:
             return self.__bertha.get_nshift()
         
         return 0
 
     def get_nocc(self):
+        """
+        *get_nocc* returns the number of occupied spinors.
+        """
+
         if self.__init:
             return self.__bertha.get_nocc()
         
         return 0
 
     def get_nopen(self):
+        """
+        *get_nopen* return number of unoccupied spinors 
+        """
+
         if self.__init:
             return self.__bertha.get_nopen()
         
         return 0
 
     def get_sfact(self):
+        """
+        *get_sfact* returns the level shift parameter.
+        """
+
         self.__bertha.get_sfact.restype = ctypes.c_double
 
         if self.__init:
@@ -349,6 +373,10 @@ class pybertha:
 
     def density_to_cube(self, dens, fname, margin = 10.0, 
             drx = 0.2, dry = 0.2, drz = 0.2):
+        """
+        *density_to_cube* generates a cube file (named: fname) with the 
+        specified density (dens).
+        """
 
         if self.__init:
             in_fittfname = ctypes.c_char_p(self.__fittfname)
@@ -361,6 +389,10 @@ class pybertha:
                 ctypes.c_double(drz), in_fname, in_fittfname)
 
     def run(self):
+        """
+        This is the method to perform the SCF computation.
+        """
+
         if self.__init:
             ndim = self.get_ndim()
 
@@ -430,6 +462,11 @@ class pybertha:
         return None, None, None, None
 
     def get_etotal(self):
+        """
+        *get_etotal* returns etotal so that etotal-(sfact*nocc) is equal to 
+        the total electronic energy.
+        """
+
         self.__bertha.get_etotal.restype = ctypes.c_double
 
         if self.__mainrundone:
@@ -438,6 +475,10 @@ class pybertha:
         return 0.0
 
     def get_erep(self):
+        """
+        It returns nuclear repulsion energy.
+        """
+
         self.__bertha.get_erep.restype = ctypes.c_double
 
         if self.__mainrundone:
@@ -446,6 +487,11 @@ class pybertha:
         return 0.0
 
     def realtime_init(self):
+        """
+        *realtime_init* initializes all the data needed by the 
+        *get_realtime_fock* method.
+        """
+
         if self.__init and self.__mainrundone:
             self.__bertha.realtime_init()
             self.__realtime_init = True
@@ -461,6 +507,14 @@ class pybertha:
             raise Error("You should firstly init and perform the run")
 
     def get_realtime_dipolematrix (self, direction, normalise):
+        """
+        *get_realtime_dipolematrix* computes the **dipolematrix**, the **direction**
+        can be:
+            - 2 = z direction
+            - 3 = y direction
+            - 4 = x direction
+        """
+
         if self.__realtime_init:
 
             ndim = self.get_ndim()
