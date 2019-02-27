@@ -167,66 +167,143 @@ class pybertha:
 
     def set_densitydiff (self, ini):
         """
-        If set to 1 the code will compute the maximum difference (elementwise) of the 
-        density matrix to the iteration n with respect to the one related to the  
-        previous iteration (n-1).
+        Set **densitydiff flag** value.
+        - If set to 1 the code will compute the maximum difference (elementwise) of the 
+          density matrix to the iteration n with respect to the one related to the  
+          previous iteration (n-1).
         """
  
         self.__bertha.set_densitydiff(ctypes.c_int(ini)) 
 
     def get_densitydiff (self):
+        """
+        The *get_densitydiff* returns the **densitydiff flag** value.
+        """
+ 
         self.__bertha.get_densitydiff.restype = ctypes.c_int
  
         return self.__bertha.get_densitydiff()
 
     def set_tresh (self, ini):
+        """
+        Set the SCF convergence threshold. 
+        """
+
         self.__bertha.set_tresh(ctypes.c_double(ini)) 
 
     def get_tresh (self):
+        """
+        The *get_tresh* returns the SCF convergence threshold.
+        """
+
         self.__bertha.get_tresh.restype = ctypes.c_double
  
         return self.__bertha.get_tresh()
 
     def set_fittcoefffname (self, ini):
+        """
+        To specify the filename where the density fitting coefficients will 
+        be written if the **dumpfiles flag** is equal to 1.
+        """
+
         self.__fittcoefffname = ini
 
     def get_fittcoefffname (self):
+        """
+        *get_fittcoefffname* returns the density fitting coefficients filename.
+        """
+
         return self.__fittcoefffname
 
     def set_vctfilename(self, ini):
+        """
+        To specify the filename where the eigenvectors will 
+        be written if **dumpfiles flag** is equal to 1.
+        """
+
         self.__vctfilename = ini
 
     def get_vctfilename(self):
+        """
+        *get_vctfilename* return the eigenvectors filename
+        """
+
         return self.__vctfilename
 
     def set_ovapfilename(self, ini):
+        """
+        To specify the filename where the overlap matrix will 
+        be written if **dumpfiles flag** is equal to 1.
+        """
+
         self.__ovapfilename = ini
 
     def get_ovapfilename(self):
+        """
+        *get_ovapfilename* returns the overlap matrix filename 
+        """
+
         return self.__ovapfilename
 
     def set_fnameinput (self, ini):
+        """
+        To specify the BERTHA input filename. 
+        """
+
         self.__fnameinput = ini
 
     def get_fnameinput (self):
+        """
+        *get_fnameinput* returns the BERTHA input filename.
+        """
+
         return self.__fnameinput
 
     def set_fittfname (self, ini):
+        """
+        To specify the density fitting basis set filename. 
+        """
+
         self.__fittfname = ini
 
     def get_fittfname (self):
+        """
+        *get_fittcoefffname* returns the density fitting basis set filename.
+        """
+
         return self.__fittfname
 
     def set_verbosity (self, ini):
+        """
+        To set the verbosty level:
+            -  0 the program will run in a silent modes
+            - -1 only basic information are printed-out
+            -  1 all the details about the ongoing simlutaion are 
+              printed-out
+        """
+
         self.__verbosity = ini
 
     def get_verbosity (self):
+        """
+        *get_verbosity* return the verbosity level.
+        """
+
         return self.__verbosity
 
     def set_dumpfiles (self, ini):
+        """
+        To specify the dumpfiles flag value:
+            - if flag is 1  
+        """
+
         self.__dumpfiles = ini
 
     def get_dumpfiles (self):
+        """
+        *get_dumpfiles* returns the dumpfiles flag value.
+        """
+
         return self.__dumpfiles
 
     def init (self):
