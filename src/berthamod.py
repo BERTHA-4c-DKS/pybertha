@@ -99,6 +99,9 @@ class Error(Exception):
 class pybertha:
     
     def __init__(self, sopath="./bertha_wrapper.so"):
+        """
+        sopath is needed to specify the bertha_wrapper Shared Object file.
+        """
         soname = sopath
         if (not os.path.isfile(soname) ):
             raise Error("SO %s  does not exist" % soname)
@@ -131,18 +134,44 @@ class pybertha:
         self.set_densitydiff (0)
 
     def get_mainruntime(self):
+        """
+        Returns the wall time to perfom all the SCF iterations, 
+        not including he time needed to copy the arrays.
+        """
+
         return self.__mainruntime
 
     def get_mainrunctime(self):
+        """
+        Returns the CPU time to perfom all the SCF iterations, 
+        not including the time needed to copy the arrays.
+        """
+
         return self.__mainrunctime
 
     def get_focktime(self):
+        """
+        Returns the wall time to perfom get_realtime_fock,
+        not including the time needed to copy the arrays.
+        """
+ 
         return self.__focktime
 
     def get_fockctime(self):
+        """
+        Returns the CPU time to perfom get_realtime_fock,
+        not including the time needed to copy the arrays.
+        """
+ 
         return self.__fockctime
 
     def set_densitydiff (self, ini):
+        """
+        If set to 1 the code will compute the maximum difference (elementwise) of the 
+        density matrix to the iteration n with respect to the one related to the  
+        previous iteration (n-1).
+        """
+ 
         self.__bertha.set_densitydiff(ctypes.c_int(ini)) 
 
     def get_densitydiff (self):
