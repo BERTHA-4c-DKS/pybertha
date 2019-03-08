@@ -100,7 +100,8 @@ class pybertha:
     
     def __init__(self, sopath="./bertha_wrapper.so"):
         """
-        sopath is needed to specify the bertha_wrapper Shared Object file.
+        param: sopath is needed to specify the 
+        bertha_wrapper Shared Object file.
         """
         soname = sopath
         if (not os.path.isfile(soname) ):
@@ -167,11 +168,15 @@ class pybertha:
 
     def set_densitydiff (self, ini):
         """
-        Set **densitydiff flag** value.
-        - If set to 1 the code will compute the maximum difference (elementwise) of the 
-          density matrix to the iteration n with respect to the one related to the  
-          previous iteration (n-1).
+        Set densitydiff flag value.
+        - If set to 1 the code will compute the maximum 
+          difference (elementwise) of the density matrix 
+          to the iteration n with respect to the one 
+          related to the previous iteration (n-1).
         """
+
+        if not isinstance(ini, int):
+            raise TypeError("input must be an integer")
  
         self.__bertha.set_densitydiff(ctypes.c_int(ini)) 
 
@@ -188,6 +193,8 @@ class pybertha:
         """
         Set the SCF convergence threshold. 
         """
+        if not isinstance(ini, float):
+            raise TypeError("input must be a float")
 
         self.__bertha.set_tresh(ctypes.c_double(ini)) 
 
@@ -202,15 +209,21 @@ class pybertha:
 
     def set_fittcoefffname (self, ini):
         """
-        To specify the filename where the density fitting coefficients will 
-        be written if the **dumpfiles flag** is equal to 1.
+        To specify the filename where the density fitting 
+        coefficients will be written if the dumpfiles flag
+        is equal to 1.
         """
+
+        if not isinstance(ini, string):
+            raise TypeError("input must be a string")
+
 
         self.__fittcoefffname = ini
 
     def get_fittcoefffname (self):
         """
-        *get_fittcoefffname* returns the density fitting coefficients filename.
+        get_fittcoefffname returns the density fitting 
+        coefficients filename.
         """
 
         return self.__fittcoefffname
@@ -220,6 +233,10 @@ class pybertha:
         To specify the filename where the eigenvectors will 
         be written if **dumpfiles flag** is equal to 1.
         """
+
+        if not isinstance(ini, string):
+            raise TypeError("input must be a string")
+
 
         self.__vctfilename = ini
 
@@ -236,11 +253,15 @@ class pybertha:
         be written if **dumpfiles flag** is equal to 1.
         """
 
+        if not isinstance(ini, string):
+            raise TypeError("input must be a string")
+
+
         self.__ovapfilename = ini
 
     def get_ovapfilename(self):
         """
-        *get_ovapfilename* returns the overlap matrix filename 
+        get_ovapfilename returns the overlap matrix filename 
         """
 
         return self.__ovapfilename
@@ -250,11 +271,15 @@ class pybertha:
         To specify the BERTHA input filename. 
         """
 
+        if not isinstance(ini, string):
+            raise TypeError("input must be a string")
+
+
         self.__fnameinput = ini
 
     def get_fnameinput (self):
         """
-        *get_fnameinput* returns the BERTHA input filename.
+        get_fnameinput returns the BERTHA input filename.
         """
 
         return self.__fnameinput
@@ -264,11 +289,16 @@ class pybertha:
         To specify the density fitting basis set filename. 
         """
 
+        if not isinstance(ini, string):
+            raise TypeError("input must be a string")
+
+
         self.__fittfname = ini
 
     def get_fittfname (self):
         """
-        *get_fittcoefffname* returns the density fitting basis set filename.
+        get_fittcoefffname returns the density fitting 
+        basis set filename.
         """
 
         return self.__fittfname
@@ -278,15 +308,18 @@ class pybertha:
         To set the verbosty level:
             -  0 the program will run in a silent modes
             - -1 only basic information are printed-out
-            -  1 all the details about the ongoing simlutaion are 
-              printed-out
+            -  1 all the details about the ongoing simlutaion 
+               are printed-out
         """
+
+        if not isinstance(ini, int):
+            raise TypeError("input must be an integer")
 
         self.__verbosity = ini
 
     def get_verbosity (self):
         """
-        *get_verbosity* return the verbosity level.
+        get_verbosity return the verbosity level.
         """
 
         return self.__verbosity
@@ -296,6 +329,9 @@ class pybertha:
         To specify the dumpfiles flag value:
             - if flag is 1  
         """
+
+        if not isinstance(ini, int):
+            raise TypeError("input must be an integer")
 
         self.__dumpfiles = ini
 
@@ -308,8 +344,9 @@ class pybertha:
 
     def init (self):
         """
-        Initialize method, it initializes all the variables and basix data.
-        The user need to call this method before he/she can peform the main run.
+        Initialize method, it initializes all the variables 
+        and basix data. The user need to call this method 
+        before he/she can peform the main run.
         """
        
         in_fnameinput = ctypes.c_char_p(self.__fnameinput)
@@ -321,7 +358,7 @@ class pybertha:
 
     def get_ndim(self):
         """
-        *get_ndim* returns the matrix dimension.
+        get_ndim returns the matrix dimension.
         """
 
         if self.__init:
@@ -331,7 +368,7 @@ class pybertha:
 
     def get_nshift(self):
         """
-        *get_nshift* returns the nshift value.
+        get_nshift returns the nshift value.
         """
 
         if self.__init:
@@ -341,7 +378,7 @@ class pybertha:
 
     def get_nocc(self):
         """
-        *get_nocc* returns the number of occupied spinors.
+        get_nocc returns the number of occupied spinors.
         """
 
         if self.__init:
@@ -374,8 +411,8 @@ class pybertha:
     def density_to_cube(self, dens, fname, margin = 10.0, 
             drx = 0.2, dry = 0.2, drz = 0.2):
         """
-        *density_to_cube* generates a cube file (named: fname) with the 
-        specified density (dens).
+        density_to_cube generates a cube file (named: fname) 
+        with the specified density (dens).
         """
 
         if self.__init:
@@ -463,8 +500,8 @@ class pybertha:
 
     def get_etotal(self):
         """
-        *get_etotal* returns etotal so that etotal-(sfact*nocc) is equal to 
-        the total electronic energy.
+        get_etotal returns etotal so that etotal-(sfact*nocc) 
+        is equal to the total electronic energy.
         """
 
         self.__bertha.get_etotal.restype = ctypes.c_double
@@ -488,8 +525,8 @@ class pybertha:
 
     def realtime_init(self):
         """
-        *realtime_init* initializes all the data needed by the 
-        *get_realtime_fock* method.
+        realtime_init initializes all the data needed by the 
+        get_realtime_fock method.
         """
 
         if self.__init and self.__mainrundone:
@@ -508,8 +545,8 @@ class pybertha:
 
     def get_realtime_dipolematrix (self, direction, normalise):
         """
-        *get_realtime_dipolematrix* computes the **dipolematrix**, the **direction**
-        can be:
+        get_realtime_dipolematrix computes the dipolematrix, 
+        the direction can be:
             - 2 = z direction
             - 3 = y direction
             - 4 = x direction
@@ -536,7 +573,8 @@ class pybertha:
 
     def get_realtime_fock (self, densm):
         """
-        *get_realtime_fock* returns the Fock matrix given the density matrix **densm**.
+        get_realtime_fock returns the Fock matrix given the 
+        density matrix densm.
         """
 
         if self.__realtime_init:
