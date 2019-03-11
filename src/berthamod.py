@@ -176,7 +176,7 @@ class pybertha:
         """
 
         if not isinstance(ini, int):
-            raise TypeError("input must be an integer")
+            raise TypeError("set_densitydiff: input must be an integer")
  
         self.__bertha.set_densitydiff(ctypes.c_int(ini)) 
 
@@ -194,7 +194,7 @@ class pybertha:
         Set the SCF convergence threshold. 
         """
         if not isinstance(ini, float):
-            raise TypeError("input must be a float")
+            raise TypeError("set_tresh: input must be a float")
 
         self.__bertha.set_tresh(ctypes.c_double(ini)) 
 
@@ -215,7 +215,7 @@ class pybertha:
         """
 
         if not isinstance(ini, string):
-            raise TypeError("input must be a string")
+            raise TypeError("set_fittcoefffname: input must be a string")
 
 
         self.__fittcoefffname = ini
@@ -235,7 +235,7 @@ class pybertha:
         """
 
         if not isinstance(ini, string):
-            raise TypeError("input must be a string")
+            raise TypeError("set_vctfilename: input must be a string")
 
 
         self.__vctfilename = ini
@@ -254,7 +254,7 @@ class pybertha:
         """
 
         if not isinstance(ini, string):
-            raise TypeError("input must be a string")
+            raise TypeError("set_ovapfilename: input must be a string")
 
 
         self.__ovapfilename = ini
@@ -272,7 +272,7 @@ class pybertha:
         """
 
         if not isinstance(ini, string):
-            raise TypeError("input must be a string")
+            raise TypeError("set_fnameinput: input must be a string")
 
 
         self.__fnameinput = ini
@@ -290,7 +290,7 @@ class pybertha:
         """
 
         if not isinstance(ini, string):
-            raise TypeError("input must be a string")
+            raise TypeError("set_fittfname: input must be a string")
 
 
         self.__fittfname = ini
@@ -313,7 +313,7 @@ class pybertha:
         """
 
         if not isinstance(ini, int):
-            raise TypeError("input must be an integer")
+            raise TypeError("set_verbosity: input must be an integer")
 
         self.__verbosity = ini
 
@@ -331,7 +331,7 @@ class pybertha:
         """
 
         if not isinstance(ini, int):
-            raise TypeError("input must be an integer")
+            raise TypeError("set_dumpfiles: input must be an integer")
 
         self.__dumpfiles = ini
 
@@ -414,6 +414,24 @@ class pybertha:
         density_to_cube generates a cube file (named: fname) 
         with the specified density (dens).
         """
+
+        if not isinstance(dens, numpy.ndarray):
+            raise TypeError("density_to_cube: input must be a numpy array")
+
+        if not isinstance(fname, string):
+            raise TypeError("density_to_cube: input must be a string")
+
+        if not isinstance(margin, float):
+            raise TypeError("density_to_cube: input must be a float")
+
+        if not isinstance(drx, float):
+            raise TypeError("density_to_cube: input must be a float")
+
+        if not isinstance(dry, float):
+            raise TypeError("density_to_cube: input must be a float")
+
+        if not isinstance(drz, float):
+            raise TypeError("density_to_cube: input must be a float")
 
         if self.__init:
             in_fittfname = ctypes.c_char_p(self.__fittfname)
@@ -552,6 +570,12 @@ class pybertha:
             - 4 = x direction
         """
 
+        if not isinstance(direction, int):
+            raise TypeError("get_realtime_dipolematrix: input must be an integer")
+
+        if not isinstance(normalise, int):
+            raise TypeError("get_realtime_dipolematrix: input must be an integer")
+
         if self.__realtime_init:
 
             ndim = self.get_ndim()
@@ -576,6 +600,9 @@ class pybertha:
         get_realtime_fock returns the Fock matrix given the 
         density matrix densm.
         """
+
+        if not isinstance(densm, numpy.ndarray):
+            raise TypeError("get_realtime_fock: input must be a numpy array")
 
         if self.__realtime_init:
 
