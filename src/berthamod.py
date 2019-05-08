@@ -214,7 +214,7 @@ class pybertha:
         is equal to 1.
         """
 
-        if not isinstance(ini, basestring):
+        if not isinstance(ini, str):
             raise TypeError("set_fittcoefffname: input must be a string")
 
 
@@ -234,7 +234,7 @@ class pybertha:
         be written if **dumpfiles flag** is equal to 1.
         """
 
-        if not isinstance(ini, basestring):
+        if not isinstance(ini, str):
             raise TypeError("set_vctfilename: input must be a string")
 
 
@@ -253,7 +253,7 @@ class pybertha:
         be written if **dumpfiles flag** is equal to 1.
         """
 
-        if not isinstance(ini, basestring):
+        if not isinstance(ini, str):
             raise TypeError("set_ovapfilename: input must be a string")
 
 
@@ -271,7 +271,7 @@ class pybertha:
         To specify the BERTHA input filename. 
         """
 
-        if not isinstance(ini, basestring):
+        if not isinstance(ini, str):
             raise TypeError("set_fnameinput: input must be a string")
 
 
@@ -289,7 +289,7 @@ class pybertha:
         To specify the density fitting basis set filename. 
         """
 
-        if not isinstance(ini, basestring):
+        if not isinstance(ini, str):
             raise TypeError("set_fittfname: input must be a string")
 
 
