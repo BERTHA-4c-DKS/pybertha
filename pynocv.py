@@ -48,13 +48,13 @@ parser.add_argument("--lmargin", help="cube margin parameter (default = 10.0)", 
         type=numpy.float64, default=10.0)
 args = parser.parse_args()
 
-print "Options: "
-print args 
-print ""
-print ""
+print("Options: ")
+print(args) 
+print("")
+print("")
 
 if not os.path.isfile(args.wrapperso):
-    print "SO File ", args.wrapperso, " does not exist"
+    print("SO File ", args.wrapperso, " does not exist")
     exit(1)
 
 bertha = berthamod.pybertha(args.wrapperso)
@@ -65,12 +65,12 @@ ovapfilename = args.ovapfile
 
 fnameinput = args.inputfile
 if not os.path.isfile(fnameinput):
-    print "File ", fnameinput, " does not exist"
+    print("File ", fnameinput, " does not exist")
     exit(1)
 
 fittfname = args.fittfile
 if not os.path.isfile(fittfname):
-    print "File ", fittfname , " does not exist"
+    print("File ", fittfname , " does not exist")
     exit(1)
 
 verbosity = args.verbosity
@@ -96,15 +96,15 @@ nocc = bertha.get_nocc()
 sfact = bertha.get_sfact()
 nopen = bertha.get_nopen()
 
-print "Verbosity       : ", verbosity
-print "Dumpfiles       : ", dumpfiles
-print ""
-print "Matrix dimension: ", ndim
-print "            nocc: ", nocc
-print "          nshift: ", nshift
-print "           nopen: ", nopen
-print "     level shift: ", sfact
-print ""
+print("Verbosity       : ", verbosity)
+print("Dumpfiles       : ", dumpfiles)
+print("")
+print("Matrix dimension: ", ndim)
+print("            nocc: ", nocc)
+print("          nshift: ", nshift)
+print("           nopen: ", nopen)
+print("     level shift: ", sfact)
+print("")
 
 start = time.time()
 cstart = time.clock()
@@ -114,16 +114,16 @@ ovapm, eigem, fockm, eigen = bertha.run()
 end = time.time()
 cend = time.clock()
 
-print "Totaltime:    ", end - start, " (CPU time: " , cend - cstart, ") s "
-print "MainRun Time: ", bertha.get_mainruntime() , \
-        " (CPU time: " , bertha.get_mainrunctime(), ") s "
+print("Totaltime:    ", end - start, " (CPU time: " , cend - cstart, ") s ")
+print("MainRun Time: ", bertha.get_mainruntime() , \
+        " (CPU time: " , bertha.get_mainrunctime(), ") s ")
 
 sys.stdout.flush()
 
 
 if (fockm is None) or (eigen is None) or (fockm is None) \
         or (eigen is None):
-    print "Error in bertha run"
+    print("Error in bertha run")
     exit(-1)
 
 
@@ -138,20 +138,20 @@ for i in range(ndim):
       print ""
 """
 
-print ""
-print "Final results "
+print("")
+print("Final results ")
 for i in range(nocc+nopen):
-    print "eigenvalue %5d %20.8f"%(i+1, eigen[i+nshift]-sfact)
+    print("eigenvalue %5d %20.8f"%(i+1, eigen[i+nshift]-sfact))
     
-print "      lumo       %20.8f"%(eigen[i+nshift+1])
+print("      lumo       %20.8f"%(eigen[i+nshift+1]))
 
 erep = bertha.get_erep()
 etotal = bertha.get_etotal()
 
-print ""
-print "total electronic energy  = %20.8f"%(etotal-(sfact*nocc))
-print "nuclear repulsion energy = %20.8f"%(erep)
-print "total energy             = %20.8f"%(etotal+erep-(sfact*nocc))
+print("")
+print("total electronic energy  = %20.8f"%(etotal-(sfact*nocc)))
+print("nuclear repulsion energy = %20.8f"%(erep))
+print("total energy             = %20.8f"%(etotal+erep-(sfact*nocc)))
 
 #bertha.finalize()
 
@@ -173,13 +173,13 @@ for i in range(nocc):
       print ""
 """
 
-print ""
-print "Compute density matrix "
+print("")
+print("Compute density matrix ")
 density = numpy.matmul(occeigv, numpy.conjugate(occeigv.transpose()), out=None)
 density = numpy.matmul(density, ovapm)
-print "Trace  "
+print("Trace  ")
 trace = density.trace()
-print "(%20.10f, %20.10fi)"%(trace.real, trace.imag)
+print("(%20.10f, %20.10fi)"%(trace.real, trace.imag))
 
 #cmatb = berthamod.read_vctfile ("vctb.out")
 #print("check vctb:  %s\n" %(numpy.allclose(occeigv,cmatb)))
@@ -222,19 +222,19 @@ import cdautil
 from scipy.linalg import eig
 #check vct and ovap abduct
 if not os.path.isfile(vctfilename):
-    print "File ", vctfilename, " does not exist"
+    print("File ", vctfilename, " does not exist")
     exit(1)
 
 if not os.path.isfile(ovapfilename):
-    print "File ", ovapfilename, " does not exist"
+    print("File ", ovapfilename, " does not exist")
     exit(1)
 #check vct of frags
 if not os.path.isfile("vcta.out"):
-    print "File vcta.out does not exist"
+    print("File vcta.out does not exist")
     exit(1)
 
 if not os.path.isfile("vctb.out"):
-    print "File vctb.out does not exist"
+    print("File vctb.out does not exist")
     exit(1)
 
 npairs = args.npairs
@@ -254,7 +254,7 @@ trace = numpy.trace(numpy.matmul(ovapm,density))
 ndimab = cmatab.shape[0]
 noccab = cmatab.shape[1]
 
-print("Trace of DS: %.8f %.8fi\n" % (trace.real, trace.imag))
+print(("Trace of DS: %.8f %.8fi\n" % (trace.real, trace.imag)))
 cmat_join = cdautil.join_cmat(cmata,cmatb,ndimab)
 print("Enter Loewdin")
 print("Compute O")
@@ -266,7 +266,7 @@ print("Compute inverse of O : O^-1")
 oinv = numpy.linalg.inv(O)
 
 print("Compute trace of O^-1\n")
-print("Trace of O^-1 : %.14f, %.14f i\n" % (numpy.trace(oinv).real, numpy.trace(oinv).imag))
+print(("Trace of O^-1 : %.14f, %.14f i\n" % (numpy.trace(oinv).real, numpy.trace(oinv).imag)))
 #print("Check O inversion")
 #test = numpy.matmul(O,oinv)
 #print("O*oinv =  1 : %s\n" % numpy.allclose(test,numpy.eye(test.shape[0]),atol=1.0e-14))
@@ -274,7 +274,7 @@ print("Trace of O^-1 : %.14f, %.14f i\n" % (numpy.trace(oinv).real, numpy.trace(
 try:
     w,z = eig(oinv,left=True,right=False)
 except LinAlgError:
-     print "Error in scipy.linalg.eig of O^-1"
+     print("Error in scipy.linalg.eig of O^-1")
 
 #compute zinv
 zinv = numpy.linalg.inv(z)
@@ -282,13 +282,13 @@ zinv = numpy.linalg.inv(z)
 #test eigenvector
 print("Compute Z x O^-1 x Z^-1 to check eigenvector\n")
 temp = numpy.matmul(z,numpy.matmul(oinv,zinv))
-print("trace of Z x O^-1 x Z^-1 : %.14f, %.14f i\n" % (numpy.trace(temp).real,numpy.trace(temp).imag))
+print(("trace of Z x O^-1 x Z^-1 : %.14f, %.14f i\n" % (numpy.trace(temp).real,numpy.trace(temp).imag)))
 
 val = 0.0 + 0.0j
 
 for i in w:
   val += i
-print("sum of eigs of O^-1: %.14f %.14f\n" % (val.real,val.imag))
+print(("sum of eigs of O^-1: %.14f %.14f\n" % (val.real,val.imag)))
 da = numpy.diagflat(numpy.sqrt(w))
 
 LoewdinMat = numpy.matmul(z,numpy.matmul(da,zinv))
@@ -303,15 +303,15 @@ tmp = dmat -dmat0
 #TODO add the D_anti contribution
 trdmat = numpy.trace(numpy.matmul(dmat,ovapm))
 trdmat0 = numpy.trace(numpy.matmul(dmat0,ovapm))
-print("Trace of DmatAB %.8f %.8fi\n" % (trdmat.real,trdmat.imag))
-print("Trace of Dmat0 %.8f %.8fi\n" % (trdmat0.real,trdmat0.imag))
+print(("Trace of DmatAB %.8f %.8fi\n" % (trdmat.real,trdmat.imag)))
+print(("Trace of Dmat0 %.8f %.8fi\n" % (trdmat0.real,trdmat0.imag)))
 #compute vmat (V = SDS)
 vmat = numpy.matmul(ovapm,numpy.matmul(tmp,ovapm))
 #diagonalize vmat
 try:
     eigenval, zmat = eigh(vmat,ovapm, eigvals_only=False)
 except LinAlgError:
-     print "Error in scipy.linalg.eigh of vmat"
+     print("Error in scipy.linalg.eigh of vmat")
 fo = open("nocv_eigv.txt", "w")
 i = 0
 for j in eigenval:
@@ -324,7 +324,7 @@ for i in range(0,eigenval.shape[0]/2):
 fo.close()
 #check orthormality of zmat coeff
 test=numpy.matmul(numpy.conjugate(zmat.T),numpy.matmul(ovapm,zmat))
-print("NOCV orthonormal: %s\n" % (numpy.allclose(test,numpy.eye(zmat.shape[0]),atol=1.0e-10)))
+print(("NOCV orthonormal: %s\n" % (numpy.allclose(test,numpy.eye(zmat.shape[0]),atol=1.0e-10))))
 #npairs = 2 #to be read from input
 if (npairs > eigenval.shape[0]/2):
   print("Wrong n. of pairs\n")
@@ -335,12 +335,12 @@ for i in range(npairs):
   d1 = numpy.outer(tmp,numpy.conjugate(tmp))
   #check if d1 sum to 1
   trace = numpy.trace(numpy.matmul(d1,ovapm))
-  print("trace of nocv_-%i : %.8f\n" % (j,trace.real))
+  print(("trace of nocv_-%i : %.8f\n" % (j,trace.real)))
   tmp =  zmat[:,-i-1]
   d2 = numpy.outer(tmp,numpy.conjugate(tmp))
   #check if d2 sum to 1
   trace = numpy.trace(numpy.matmul(d2,ovapm))
-  print("trace of nocv_+%i : %.8f\n" % (j,trace.real))
+  print(("trace of nocv_+%i : %.8f\n" % (j,trace.real)))
   deltanocv = eigenval[i]*(d1 - d2)
 
   bertha.density_to_cube(d1.T, "nocv-"+str(j)+".cube", margin, drx, dry, drz )  

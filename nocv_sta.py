@@ -18,7 +18,7 @@ density = numpy.matmul(cmatab,numpy.conjugate(cmatab.T))
 trace = numpy.trace(numpy.matmul(density,ovapcmp.T))
 ndimab = cmatab.shape[0]
 noccab = cmatab.shape[1]
-print("Trace of DS: %.8f %.8fi\n" % (trace.real, trace.imag))
+print(("Trace of DS: %.8f %.8fi\n" % (trace.real, trace.imag)))
 cmat_join = cdautil.join_cmat(cmata,cmatb,ndimab)
 print("Enter Loewdin")
 print("Compute O")
@@ -30,7 +30,7 @@ print("Compute inverse of O : O^-1")
 oinv = numpy.linalg.inv(O)
 
 print("Compute trace of O^-1\n")
-print("Trace of O^-1 : %.14f, %.14f i\n" % (numpy.trace(oinv).real, numpy.trace(oinv).imag))
+print(("Trace of O^-1 : %.14f, %.14f i\n" % (numpy.trace(oinv).real, numpy.trace(oinv).imag)))
 #print("Check O inversion")
 #test = numpy.matmul(O,oinv)
 #print("O*oinv =  1 : %s\n" % numpy.allclose(test,numpy.eye(test.shape[0]),atol=1.0e-14))
@@ -38,7 +38,7 @@ print("Trace of O^-1 : %.14f, %.14f i\n" % (numpy.trace(oinv).real, numpy.trace(
 try:
     w,z = eig(oinv,left=True,right=False)
 except LinAlgError:
-     print "Error in scipy.linalg.eig of O^-1"
+     print("Error in scipy.linalg.eig of O^-1")
 
 #compute zinv
 zinv = numpy.linalg.inv(z)
@@ -46,14 +46,14 @@ zinv = numpy.linalg.inv(z)
 #test eigenvector
 print("Compute Z x O^-1 x Z^-1 to check eigenvector\n")
 temp = numpy.matmul(z,numpy.matmul(oinv,zinv))
-print("trace of Z x O^-1 x Z^-1 : %.14f, %.14f i\n" % (numpy.trace(temp).real,numpy.trace(temp).imag))
+print(("trace of Z x O^-1 x Z^-1 : %.14f, %.14f i\n" % (numpy.trace(temp).real,numpy.trace(temp).imag)))
 D = numpy.sqrt(w)
 
 val = 0.0 + 0.0j
 
 for i in D:
   val += i
-print("sum of D = sqrt(eigs of O^-1): %.14f %.14f\n" % (val.real,val.imag))
+print(("sum of D = sqrt(eigs of O^-1): %.14f %.14f\n" % (val.real,val.imag)))
 da = numpy.diagflat(numpy.sqrt(w))
 
 LoewdinMat = numpy.matmul(z,numpy.matmul(da,zinv))
@@ -67,15 +67,15 @@ tmp = dmat -dmat0
 #check the trace of dmat and dmat0
 trdmat = numpy.trace(numpy.matmul(dmat,ovapcmp.T))
 trdmat0 = numpy.trace(numpy.matmul(dmat0,ovapcmp.T))
-print("Trace of DmatAB %.8f %.8fi\n" % (trdmat.real,trdmat.imag))
-print("Trace of Dmat0 %.8f %.8fi\n" % (trdmat0.real,trdmat0.imag))
+print(("Trace of DmatAB %.8f %.8fi\n" % (trdmat.real,trdmat.imag)))
+print(("Trace of Dmat0 %.8f %.8fi\n" % (trdmat0.real,trdmat0.imag)))
 #compute vmat (V = SDS)
 vmat = numpy.matmul(ovapcmp.T,numpy.matmul(tmp,ovapcmp.T))
 #diagonalize vmat
 try:
     eigenval, zmat = eigh(vmat,ovapcmp.T, eigvals_only=False)
 except LinAlgError:
-     print "Error in scipy.linalg.eigh of vmat"
+     print("Error in scipy.linalg.eigh of vmat")
 fo = open("nocv_eigv.txt", "w")
 i = 0
 for j in eigenval:
@@ -88,4 +88,4 @@ for i in range(0,eigenval.shape[0]/2):
 fo.close()
 #check orthormality of zmat coeff
 test=numpy.matmul(numpy.conjugate(zmat.T),numpy.matmul(ovapcmp.T,zmat))
-print("NOCV orthonormal: %s\n" % (numpy.allclose(test,numpy.eye(zmat.shape[0]),atol=1.0e-10)))
+print(("NOCV orthonormal: %s\n" % (numpy.allclose(test,numpy.eye(zmat.shape[0]),atol=1.0e-10))))
