@@ -349,7 +349,7 @@ class pybertha:
         before he/she can peform the main run.
         """
        
-        in_fnameinput = ctypes.c_char_p(self.__fnameinput)
+        in_fnameinput = ctypes.c_char_p(self.__fnameinput.encode('utf-8'))
 
         self.__bertha.init(in_fnameinput, ctypes.c_int(self.__verbosity), 
                 ctypes.c_int(self.__dumpfiles))
@@ -434,8 +434,8 @@ class pybertha:
             raise TypeError("density_to_cube: input must be a float")
 
         if self.__init:
-            in_fittfname = ctypes.c_char_p(self.__fittfname)
-            in_fname = ctypes.c_char_p(fname)
+            in_fittfname = ctypes.c_char_p(self.__fittfname.encode('utf-8'))
+            in_fname = ctypes.c_char_p(fname.encode('utf-8'))
             
             cbuffer = complexmat_to_doublevct (dens)
             
@@ -463,10 +463,10 @@ class pybertha:
             eigenvctbu = numpy.zeros((2*ndim*ndim), dtype=numpy.double)
             eigenvctbu = numpy.ascontiguousarray(eigenvctbu, dtype=numpy.double)
 
-            in_fittcoefffname = ctypes.c_char_p(self.__fittcoefffname)
-            in_vctfilename = ctypes.c_char_p(self.__vctfilename)
-            in_ovapfilename = ctypes.c_char_p(self.__ovapfilename)
-            in_fittfname = ctypes.c_char_p(self.__fittfname)
+            in_fittcoefffname = ctypes.c_char_p(self.__fittcoefffname.encode('utf-8'))
+            in_vctfilename = ctypes.c_char_p(self.__vctfilename.encode('utf-8'))
+            in_ovapfilename = ctypes.c_char_p(self.__ovapfilename.encode('utf-8'))
+            in_fittfname = ctypes.c_char_p(self.__fittfname.encode('utf-8'))
 
             start = time.time()
             cstart = time.clock()
