@@ -418,7 +418,7 @@ class pybertha:
         if not isinstance(dens, numpy.ndarray):
             raise TypeError("density_to_cube: input must be a numpy array")
 
-        if not isinstance(fname, string):
+        if not isinstance(fname, str):
             raise TypeError("density_to_cube: input must be a string")
 
         if not isinstance(margin, float):
