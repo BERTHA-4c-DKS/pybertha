@@ -143,8 +143,6 @@ print("total electronic energy  = %20.8f"%(etotal-(sfact*nocc)))
 print("nuclear repulsion energy = %20.8f"%(erep))
 print("total energy             = %20.8f"%(etotal+erep-(sfact*nocc)))
 
-bertha.finalize()
-
 occeigv = numpy.zeros((ndim,nocc), dtype=numpy.complex128)
 
 iocc = 0
@@ -170,6 +168,13 @@ density = numpy.matmul(density, ovapm)
 print("Trace  ")
 trace = density.trace()
 print("(%20.10f, %20.10fi)"%(trace.real, trace.imag))
+
+bertha.realtime_init()
+normalise = 1
+epsmat = bertha.get_realtime_epsmatrix (normalise)
+
+bertha.finalize()
+ 
 
 """
 # to check if needed

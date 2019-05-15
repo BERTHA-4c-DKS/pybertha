@@ -736,6 +736,37 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
+      subroutine bertha_realtime_epsmatrix (norm, vext_ptr)
+
+      use realtime
+
+      implicit none
+
+      integer, intent(in) :: norm
+      real (c_double), intent(out) :: vext_ptr(*) 
+
+      integer :: counter, i, j
+      
+      logical :: normalise
+
+      if (norm.eq.1) normalise = .true.
+      if (norm.eq.0) normalise = .false.
+
+      call epsmatrix (normalise)
+
+      counter = 1
+      do i = 1, ndim
+        do j = 1, ndim
+           vext_ptr(counter) = real(vext(i,j))
+           vext_ptr(counter+1) = imag(vext(i,j))
+           counter = counter + 2
+        enddo
+      enddo
+
+      end subroutine bertha_realtime_epsmatrix
+
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
       subroutine bertha_realtime_fock (dens_ptr, fock_ptr)
 
       use fmat, only: fock

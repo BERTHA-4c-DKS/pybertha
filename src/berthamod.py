@@ -595,6 +595,34 @@ class pybertha:
         else:
             return None
 
+
+    def get_realtime_epsmatrix (self, normalise):
+        """
+        """
+
+        if not isinstance(normalise, int):
+            raise TypeError("get_realtime_epsmatrix: input must be an integer")
+
+        if self.__realtime_init:
+
+            ndim = self.get_ndim()
+
+            vextbuffer = numpy.zeros((2*ndim*ndim), dtype=numpy.double)
+            vextbuffer = numpy.ascontiguousarray(vextbuffer, dtype=numpy.double)
+            
+            self.__bertha.realtime_epsmatrix(normalise, \
+                    ctypes.c_void_p(vextbuffer.ctypes.data))
+           
+            vextm = doublevct_to_complexmat (vextbuffer, ndim)
+            if vextm is None:
+                raise Error("Error in vextm matrix size")
+            
+            return vextm
+
+        else:
+            return None
+
+
     def get_realtime_fock (self, densm):
         """
         get_realtime_fock returns the Fock matrix given the 

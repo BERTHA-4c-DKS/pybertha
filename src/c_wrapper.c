@@ -9,6 +9,7 @@
 #define f_bertha_finalize bertha_wrapper_mp_bertha_finalize_
 #define f_bertha_realtime_finalize bertha_wrapper_mp_bertha_realtime_finalize_
 #define f_bertha_realtime_dipolematrix bertha_wrapper_mp_bertha_realtime_dipolematrix_
+#define f_bertha_realtime_epsmatrix bertha_wrapper_mp_bertha_realtime_epsmatrix_
 #define f_bertha_realtime_fock bertha_wrapper_mp_bertha_realtime_fock_
 #define f_bertha_density_to_cube  bertha_wrapper_mp_bertha_density_to_cube_
 
@@ -30,6 +31,7 @@
 #define f_bertha_finalize __bertha_wrapper_MOD_bertha_finalize
 #define f_bertha_realtime_finalize __bertha_wrapper_MOD_bertha_realtime_finalize
 #define f_bertha_realtime_dipolematrix __bertha_wrapper_MOD_bertha_realtime_dipolematrix
+#define f_bertha_realtime_epsmatrix __bertha_wrapper_MOD_bertha_realtime_epsmatrix
 #define f_bertha_realtime_fock __bertha_wrapper_MOD_bertha_realtime_fock
 #define f_bertha_density_to_cube  __bertha_wrapper_MOD_bertha_density_to_cube
 
@@ -55,6 +57,7 @@ void f_bertha_finalize();
 void f_bertha_realtime_finalize();
 void f_bertha_realtime_dipolematrix(int *, 
       int *, double *);
+void f_bertha_realtime_epsmatrix(int *, double *);
 void f_bertha_realtime_fock (double *, double *);
 
 extern int f_ndim,f_nshift, f_nocc, f_nopen, f_densitydiff;
@@ -157,6 +160,14 @@ int realtime_dipolematrix (int direction, int norm,
 {
   f_bertha_realtime_dipolematrix(&direction, 
       &norm, vext_ptr);
+
+  return 0;
+}
+
+int realtime_epsmatrix (int norm, 
+    double * vext_ptr)
+{
+  f_bertha_realtime_epsmatrix(&norm, vext_ptr);
 
   return 0;
 }
