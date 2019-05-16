@@ -596,28 +596,27 @@ class pybertha:
             return None
 
 
-    def get_realtime_epsmatrix (self, normalise):
+    def get_eps (self, x, y, z):
         """
         """
 
-        if not isinstance(normalise, int):
-            raise TypeError("get_realtime_epsmatrix: input must be an integer")
+        if not isinstance(x, float):
+            raise TypeError("get_eps: input must be a float")
 
-        if self.__realtime_init:
+        if not isinstance(y, float):
+            raise TypeError("get_eps: input must be a float")
 
-            ndim = self.get_ndim()
+        if not isinstance(z, float):
+            raise TypeError("get_eps: input must be a float")
 
-            vextbuffer = numpy.zeros((2*ndim*ndim), dtype=numpy.double)
-            vextbuffer = numpy.ascontiguousarray(vextbuffer, dtype=numpy.double)
-            
-            self.__bertha.realtime_epsmatrix(normalise, \
-                    ctypes.c_void_p(vextbuffer.ctypes.data))
+        if self.__init:
+
+            self.__bertha.eps.restype = ctypes.c_double
+
+            eps = self.__bertha.eps(ctypes.c_double(x), ctypes.c_double(y), \
+                    ctypes.c_double(z))
            
-            vextm = doublevct_to_complexmat (vextbuffer, ndim)
-            if vextm is None:
-                raise Error("Error in vextm matrix size")
-            
-            return vextm
+            return eps
 
         else:
             return None

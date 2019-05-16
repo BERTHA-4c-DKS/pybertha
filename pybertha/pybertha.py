@@ -171,7 +171,9 @@ print("(%20.10f, %20.10fi)"%(trace.real, trace.imag))
 
 bertha.realtime_init()
 normalise = 1
-epsmat = bertha.get_realtime_epsmatrix (normalise)
+eps = bertha.get_eps (0.0, 0.0, 0.0)
+
+print (eps)
 
 bertha.finalize()
  
