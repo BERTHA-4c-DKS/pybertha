@@ -469,7 +469,7 @@ class pybertha:
             in_fittfname = ctypes.c_char_p(self.__fittfname.encode('utf-8'))
 
             start = time.time()
-            cstart = time.clock()
+            cstart = time.process_time()
 
             maint = threading.Thread(target=self.__bertha.mainrun, \
                     args=[in_fittcoefffname, \
@@ -486,7 +486,7 @@ class pybertha:
                     maint.join(.1)
 
             end = time.time()
-            cend = time.clock()
+            cend = time.process_time()
 
             self.__mainruntime = end - start
             self.__mainrunctime = cend - cstart
@@ -638,13 +638,13 @@ class pybertha:
             cbuffer = complexmat_to_doublevct (densm)
 
             start = time.time()
-            cstart = time.clock()
+            cstart = time.process_time()
 
             self.__bertha.realtime_fock(ctypes.c_void_p(cbuffer.ctypes.data), \
                     ctypes.c_void_p(self.__fockbuffer.ctypes.data))
 
             end = time.time()
-            cend = time.clock()
+            cend = time.process_time()
 
             self.__focktime = end - start
             self.__fockctime = cend - cstart

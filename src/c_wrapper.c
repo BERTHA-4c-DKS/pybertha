@@ -60,7 +60,7 @@ void f_bertha_realtime_dipolematrix(int *,
 void f_bertha_eps(double *, double *, double *, double *);
 void f_bertha_realtime_fock (double *, double *);
 
-extern int f_ndim,f_nshift, f_nocc, f_nopen, f_densitydiff;
+extern int f_ndim, f_nshift, f_nocc, f_nopen, f_densitydiff;
 extern double f_sfact, f_etotal, f_erep, f_tresh;
 
 // DATA METHODS

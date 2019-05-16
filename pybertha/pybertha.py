@@ -97,12 +97,12 @@ print("     level shift: ", sfact)
 print("")
 
 start = time.time()
-cstart = time.clock()
+cstart = time.process_time() 
 
 ovapm, eigem, fockm, eigen = bertha.run()
 
 end = time.time()
-cend = time.clock()
+cend = time.process_time()
 
 print("Totaltime:    ", end - start, " (CPU time: " , cend - cstart, ") s ")
 print("MainRun Time: ", bertha.get_mainruntime() , \
@@ -171,9 +171,31 @@ print("(%20.10f, %20.10fi)"%(trace.real, trace.imag))
 
 bertha.realtime_init()
 normalise = 1
-eps = bertha.get_eps (0.0, 0.0, 0.0)
 
-print (eps)
+griddim = 50
+
+xmin = 9.0
+xmax = 12.0
+
+ymin = 6.0
+ymax = 10.0
+
+outep = open("eps.txt", "w")
+
+dx = (xmax - xmin)/float(griddim)
+dy = (ymax - ymin)/float(griddim)
+x = xmin
+for i in range(griddim):
+    y = ymin
+    for j in range(griddim):
+        z = 0.0
+
+        eps = bertha.get_eps (x, y, z)
+
+        outep.write (" %10.5e %10.5e %10.5e \n"%(x, y, eps))
+
+        y = y + dy
+    x = x + dx
 
 bertha.finalize()
  
