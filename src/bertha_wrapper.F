@@ -909,6 +909,27 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
+      subroutine bertha_get_coord (i, x, y, z, an)
+
+      implicit none
+
+      real, intent(out) :: x, y, z, an
+      integer, intent(in) :: i
+
+      print *, "Here"
+
+      if ( i .le. ncent) then
+        x = coord(1, i)
+        y = coord(2, i)
+        z = coord(3, i)
+
+        an = znuc(i)
+      endif
+
+      end subroutine bertha_get_coord
+
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
       end module
 
 

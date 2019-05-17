@@ -23,6 +23,9 @@
 #define f_tresh bertha_wrapper_mp_tresh_
 #define f_densitydiff bertha_wrapper_mp_densitydiff_
 
+#define f_ncent spec_mp_ncent_
+#define f_bertha_get_coord bertha_wrapper_mp_bertha_get_coord_
+
 #else
 
 #define f_bertha_init __bertha_wrapper_MOD_bertha_init
@@ -45,6 +48,9 @@
 #define f_tresh __bertha_wrapper_MOD_tresh
 #define f_densitydiff __bertha_wrapper_MOD_densitydiff
 
+#define f_ncent __spec_MOD_ncent_
+#define f_bertha_get_coord __bertha_wrapper_MOD_bertha_get_coord
+
 #endif
 
 void f_bertha_density_to_cube (double *, double *, double *, 
@@ -63,7 +69,17 @@ void f_bertha_realtime_fock (double *, double *);
 extern int f_ndim, f_nshift, f_nocc, f_nopen, f_densitydiff;
 extern double f_sfact, f_etotal, f_erep, f_tresh;
 
+extern int f_ncent;
+void f_bertha_get_coord (int *, double *, double *, double *, double *);
+
 // DATA METHODS
+
+int get_ncent ()
+{
+  int val = f_ncent;
+
+  return val;
+}
 
 int get_densitydiff ()
 {
@@ -146,6 +162,12 @@ int init (char * filename, int verbosity, int dumpfiles)
       &dumpfiles, strlen(filename));
 
   return 0;
+}
+
+void get_coord (int i, double * v)
+{
+  int j = i + 1;
+  f_bertha_get_coord(&j, &v[0], &v[1], &v[2], &v[3]);
 }
 
 int realtime_fock (double * dens_ptr, double * fock_ptr)

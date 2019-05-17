@@ -180,8 +180,17 @@ xmax = 12.0
 ymin = 6.0
 ymax = 10.0
 
+zmax =  7.0
+zmin = -3.0
+
+numofatom = bertha.get_natoms()
+print ("Num of atoms: ",numofatom)
+for i in range(numofatom):
+    print(bertha.get_coords(i))
+
 outep = open("eps.txt", "w")
 
+"""
 dx = (xmax - xmin)/float(griddim)
 dy = (ymax - ymin)/float(griddim)
 x = xmin
@@ -196,6 +205,19 @@ for i in range(griddim):
 
         y = y + dy
     x = x + dx
+"""
+
+dz = (zmax - zmin)/float(griddim)
+z = zmin
+for i in range(griddim):
+
+    eps = bertha.get_eps (0.0, 0.0, z)
+
+    outep.write (" %10.5e %10.5e \n"%(z, eps))
+
+    z = z + dz
+
+
 
 bertha.finalize()
  

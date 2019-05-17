@@ -134,6 +134,15 @@ class pybertha:
 
         self.set_densitydiff (0)
 
+    def get_natoms(self):
+        """
+        Return natoms 
+        """
+
+        self.__bertha.get_ncent.restype = ctypes.c_int
+
+        return self.__bertha.get_ncent()
+
     def get_mainruntime(self):
         """
         Returns the wall time to perfom all the SCF iterations, 
@@ -620,6 +629,24 @@ class pybertha:
 
         else:
             return None
+
+
+    def get_coords (self, i):
+
+        if not isinstance(i, int):
+            raise TypeError("get_coord: input must be an integer")
+
+        if self.__init:
+
+            vec = numpy.zeros(4, dtype=numpy.double)
+            vec = numpy.ascontiguousarray(vec, \
+                    dtype=numpy.double)
+
+            self.__bertha.get_coord(i, ctypes.c_void_p(vec.ctypes.data))
+
+            return vec[0], vec[1], vec[2], vec[3]
+
+        return None
 
 
     def get_realtime_fock (self, densm):
