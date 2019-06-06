@@ -38,13 +38,13 @@ parser.add_argument("--wrapperso", help="set wrapper SO (default = ../../lib/ber
 
 args = parser.parse_args()
 
-print "Options: "
-print args 
-print ""
-print ""
+print("Options: ")
+print(args) 
+print("")
+print("")
 
 if not os.path.isfile(args.wrapperso):
-    print "SO File ", args.wrapperso, " does not exist"
+    print("SO File ", args.wrapperso, " does not exist")
     exit(1)
 
 bertha = berthamod.pybertha(args.wrapperso)
@@ -55,12 +55,12 @@ ovapfilename = args.ovapfile
 
 fnameinput = args.inputfile
 if not os.path.isfile(fnameinput):
-    print "File ", fnameinput, " does not exist"
+    print("File ", fnameinput, " does not exist")
     exit(1)
 
 fittfname = args.fittfile
 if not os.path.isfile(fittfname):
-    print "File ", fittfname , " does not exist"
+    print("File ", fittfname , " does not exist")
     exit(1)
 
 verbosity = args.verbosity
@@ -86,34 +86,34 @@ nocc = bertha.get_nocc()
 sfact = bertha.get_sfact()
 nopen = bertha.get_nopen()
 
-print "Verbosity       : ", verbosity
-print "Dumpfiles       : ", dumpfiles
-print ""
-print "Matrix dimension: ", ndim
-print "            nocc: ", nocc
-print "          nshift: ", nshift
-print "           nopen: ", nopen
-print "     level shift: ", sfact
-print ""
+print("Verbosity       : ", verbosity)
+print("Dumpfiles       : ", dumpfiles)
+print("")
+print("Matrix dimension: ", ndim)
+print("            nocc: ", nocc)
+print("          nshift: ", nshift)
+print("           nopen: ", nopen)
+print("     level shift: ", sfact)
+print("")
 
 start = time.time()
-cstart = time.clock()
+cstart = time.process_time() 
 
 ovapm, eigem, fockm, eigen = bertha.run()
 
 end = time.time()
-cend = time.clock()
+cend = time.process_time()
 
-print "Totaltime:    ", end - start, " (CPU time: " , cend - cstart, ") s "
-print "MainRun Time: ", bertha.get_mainruntime() , \
-        " (CPU time: " , bertha.get_mainrunctime(), ") s "
+print("Totaltime:    ", end - start, " (CPU time: " , cend - cstart, ") s ")
+print("MainRun Time: ", bertha.get_mainruntime() , \
+        " (CPU time: " , bertha.get_mainrunctime(), ") s ")
 
 sys.stdout.flush()
 
 
 if (fockm is None) or (eigen is None) or (fockm is None) \
         or (eigen is None):
-    print "Error in bertha run"
+    print("Error in bertha run")
     exit(-1)
 
 
@@ -128,22 +128,20 @@ for i in range(ndim):
       print ""
 """
 
-print ""
-print "Final results "
+print("")
+print("Final results ")
 for i in range(nocc+nopen):
-    print "eigenvalue %5d %20.8f"%(i+1, eigen[i+nshift]-sfact)
+    print("eigenvalue %5d %20.8f"%(i+1, eigen[i+nshift]-sfact))
     
-print "      lumo       %20.8f"%(eigen[i+nshift+1])
+print("      lumo       %20.8f"%(eigen[i+nshift+1]))
 
 erep = bertha.get_erep()
 etotal = bertha.get_etotal()
 
-print ""
-print "total electronic energy  = %20.8f"%(etotal-(sfact*nocc))
-print "nuclear repulsion energy = %20.8f"%(erep)
-print "total energy             = %20.8f"%(etotal+erep-(sfact*nocc))
-
-bertha.finalize()
+print("")
+print("total electronic energy  = %20.8f"%(etotal-(sfact*nocc)))
+print("nuclear repulsion energy = %20.8f"%(erep))
+print("total energy             = %20.8f"%(etotal+erep-(sfact*nocc)))
 
 occeigv = numpy.zeros((ndim,nocc), dtype=numpy.complex128)
 
@@ -163,13 +161,66 @@ for i in range(nocc):
       print ""
 """
 
-print ""
-print "Compute density matrix "
+print("")
+print("Compute density matrix ")
 density = numpy.matmul(occeigv, numpy.conjugate(occeigv.transpose()), out=None)
 density = numpy.matmul(density, ovapm)
-print "Trace  "
+print("Trace  ")
 trace = density.trace()
-print "(%20.10f, %20.10fi)"%(trace.real, trace.imag)
+print("(%20.10f, %20.10fi)"%(trace.real, trace.imag))
+
+bertha.realtime_init()
+normalise = 1
+
+griddim = 50
+
+xmin = 9.0
+xmax = 12.0
+
+ymin = 6.0
+ymax = 10.0
+
+zmax =  7.0
+zmin = -3.0
+
+numofatom = bertha.get_natoms()
+print ("Num of atoms: ",numofatom)
+for i in range(numofatom):
+    print(bertha.get_coords(i))
+
+outep = open("eps.txt", "w")
+
+"""
+dx = (xmax - xmin)/float(griddim)
+dy = (ymax - ymin)/float(griddim)
+x = xmin
+for i in range(griddim):
+    y = ymin
+    for j in range(griddim):
+        z = 0.0
+
+        eps = bertha.get_eps (x, y, z)
+
+        outep.write (" %10.5e %10.5e %10.5e \n"%(x, y, eps))
+
+        y = y + dy
+    x = x + dx
+"""
+
+dz = (zmax - zmin)/float(griddim)
+z = zmin
+for i in range(griddim):
+
+    eps = bertha.get_eps (0.0, 0.0, z)
+
+    outep.write (" %10.5e %10.5e \n"%(z, eps))
+
+    z = z + dz
+
+
+
+bertha.finalize()
+ 
 
 """
 # to check if needed

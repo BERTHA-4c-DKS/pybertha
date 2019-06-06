@@ -22,7 +22,7 @@ MINOR=1
 PATCH=0
 
 #LIBXC
-LIBXC=yes
+LIBXC=no
 
 BERTHAROOT=/home/redo/Project_Bertha/bertha_ng
 

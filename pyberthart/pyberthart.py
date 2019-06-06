@@ -28,12 +28,12 @@ def single_point (args, bertha):
     
     fnameinput = args.inputfile
     if not os.path.isfile(fnameinput):
-        print "File ", fnameinput, " does not exist"
+        print("File ", fnameinput, " does not exist")
         return None, 
     
     fittfname = args.fittfile
     if not os.path.isfile(fittfname):
-        print "File ", fittfname , " does not exist"
+        print("File ", fittfname , " does not exist")
         return None, 
     
     verbosity = args.verbosity
@@ -62,22 +62,22 @@ def single_point (args, bertha):
     sfact = bertha.get_sfact()
     nopen = bertha.get_nopen()
     
-    print "Verbosity       : ", verbosity
-    print "Dumpfiles       : ", dumpfiles
-    print ""
-    print "Matrix dimension: ", ndim
-    print "            nocc: ", nocc
-    print "          nshift: ", nshift
-    print "           nopen: ", nopen
-    print "     level shift: ", sfact
-    print ""
+    print("Verbosity       : ", verbosity)
+    print("Dumpfiles       : ", dumpfiles)
+    print("")
+    print("Matrix dimension: ", ndim)
+    print("            nocc: ", nocc)
+    print("          nshift: ", nshift)
+    print("           nopen: ", nopen)
+    print("     level shift: ", sfact)
+    print("")
 
     sys.stdout.flush()
     
     ovapm, eigem, fockm, eigen = bertha.run()
     if (fockm is None) or (eigen is None) or (fockm is None) \
             or (eigen is None):
-        print "Error in bertha run"
+        print("Error in bertha run")
         return None, 
     
     bertha.set_densitydiff(0)
@@ -85,27 +85,27 @@ def single_point (args, bertha):
     berthaend = time.time()
     berthacend = time.clock()
    
-    print "Single-Point time: ", berthaend - berthastart, \
-                    " (CPU time: " , berthacend - berthacstart, ") s "
+    print("Single-Point time: ", berthaend - berthastart, \
+                    " (CPU time: " , berthacend - berthacstart, ") s ")
     
     sys.stdout.flush()
     
-    print ""
-    print "Final results "
+    print("")
+    print("Final results ")
     sum=0.0
     for i in range(nocc+nopen):
-        print "eigenvalue %5d %20.8f"%(i+1, eigen[i+nshift]-sfact)
+        print("eigenvalue %5d %20.8f"%(i+1, eigen[i+nshift]-sfact))
         sum+=eigen[i+nshift]-sfact
-    print "      lumo       %20.8f"%(eigen[i+nshift+1])
-    print "      Sum of eigen : ", sum
+    print("      lumo       %20.8f"%(eigen[i+nshift+1]))
+    print("      Sum of eigen : ", sum)
     erep = bertha.get_erep()
     etotal = bertha.get_etotal()
     
-    print ""
-    print "total electronic energy  = %20.8f"%(etotal-(sfact*nocc))
-    print "nuclear repulsion energy = %20.8f"%(erep)
-    print "total energy             = %20.8f"%(etotal+erep-(sfact*nocc))
-    print " "
+    print("")
+    print("total electronic energy  = %20.8f"%(etotal-(sfact*nocc)))
+    print("nuclear repulsion energy = %20.8f"%(erep))
+    print("total energy             = %20.8f"%(etotal+erep-(sfact*nocc)))
+    print(" ")
  
     return ovapm, eigem, fockm, eigen
 
@@ -141,7 +141,7 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
             ndim, debug, fo, pulse, pulseFmax, pulsew, t0, pulseS, propthresh)
     
     if (fock_mid_tmp is None):
-        print "Error accurs in mo_fock_mid_forwd_eval"
+        print("Error accurs in mo_fock_mid_forwd_eval")
         return None, None, None
    
     if debug:
@@ -277,13 +277,13 @@ def restart_run(args):
     args.pulseS = json_data["pulseS"]
     args.t0 = json_data["t0"]
 
-    print "Options: "
-    print args 
-    print ""
-    print ""
+    print("Options: ")
+    print(args) 
+    print("")
+    print("")
 
     if not os.path.isfile(args.wrapperso):
-        print "SO File ", args.wrapperso, " does not exist"
+        print("SO File ", args.wrapperso, " does not exist")
         return False
     
     bertha = berthamod.pybertha(args.wrapperso)
@@ -299,16 +299,16 @@ def restart_run(args):
  
     bertha.realtime_init()
     
-    print "Start RT"
+    print("Start RT")
     
     debug = args.debug
     dt = args.dt
     t_int = args.totaltime
     
-    print "Debug: ", debug
-    print "dt : ", dt
-    print "Total time  : ", t_int
-    print "Number of iterations: ", niter
+    print("Debug: ", debug)
+    print("dt : ", dt)
+    print("Total time  : ", t_int)
+    print("Number of iterations: ", niter)
     
     sys.stdout.flush()
     
@@ -395,8 +395,8 @@ def restart_run(args):
         cend = time.clock()
    
         if (args.iterations):
-            print "Iteration ", j, " of ", niter-1, " ( ", end - start, \
-                    " (CPU time: " , cend - cstart, ") s )"
+            print("Iteration ", j, " of ", niter-1, " ( ", end - start, \
+                    " (CPU time: " , cend - cstart, ") s )")
         else:
             rtutil.progress_bar(j, niter-1)
    
@@ -404,12 +404,12 @@ def restart_run(args):
 
     sys.stdout.flush()
 
-    print ""
-    print ""
-    print "Dump density density.cube"
+    print("")
+    print("")
+    print("Dump density density.cube")
     bertha.density_to_cube(D_ti, "density.cube", margin = 5.0)
     
-    print "Done"
+    print("Done")
 
     sys.stdout.flush()
     
@@ -428,13 +428,13 @@ def restart_run(args):
 
 def normal_run(args):
 
-    print "Options: "
-    print args 
-    print ""
-    print ""
+    print("Options: ")
+    print(args) 
+    print("")
+    print("")
 
     if not os.path.isfile(args.wrapperso):
-        print "SO File ", args.wrapperso, " does not exist"
+        print("SO File ", args.wrapperso, " does not exist")
         return False
     
     bertha = berthamod.pybertha(args.wrapperso)
@@ -449,17 +449,17 @@ def normal_run(args):
     
     bertha.realtime_init()
     
-    print "Start RT"
+    print("Start RT")
     
     debug = args.debug
     dt = args.dt
     t_int = args.totaltime
     niter = int(t_int/dt)
     
-    print "Debug: ", debug
-    print "dt : ", dt
-    print "Total time  : ", t_int
-    print "Number of iterations: ", niter
+    print("Debug: ", debug)
+    print("dt : ", dt)
+    print("Total time  : ", t_int)
+    print("Number of iterations: ", niter)
     
     sys.stdout.flush()
     
@@ -483,7 +483,7 @@ def normal_run(args):
     try: 
         C_inv = numpy.linalg.inv(eigem)
     except LinAlgError:
-        print "Error in numpy.linalg.inv of eigem" 
+        print("Error in numpy.linalg.inv of eigem") 
         return False
     
     if debug:
@@ -549,21 +549,21 @@ def normal_run(args):
 
         if (occlist[0] != -2):
             dipz_mo=rtutil.dipole_selection(dipz_mo,nshift,nocc,occlist,virtlist,fo,debug)
-        print " Perturb with analytic kick "
+        print(" Perturb with analytic kick ")
         u0=rtutil.exp_opmat(dipz_mo,numpy.float_(-Amp),debug,fo)
         Dp_init=numpy.matmul(u0,numpy.matmul(D_0,numpy.conjugate(u0.T)))
         #transform back Dp_int
         Da=numpy.matmul(C,numpy.matmul(Dp_init,numpy.conjugate(C.T)))
         D_0=Dp_init
     
-    print "Start first mo_fock_mid_forwd_eval "
+    print("Start first mo_fock_mid_forwd_eval ")
     
     fock_mid_init = rtutil.mo_fock_mid_forwd_eval(bertha,Da,fockm,0,numpy.float_(dt),\
             dipz_mat,C,C_inv,ovapm,ndim, debug, fo, args.pulse, args.pulseFmax, args.pulsew, args.t0, args.pulseS, 
             args.propthresh)
     
     if (fock_mid_init is None):
-        print "Error accurs in mo_fock_mid_forwd_eval"
+        print("Error accurs in mo_fock_mid_forwd_eval")
         return False
     
     if debug:
@@ -622,15 +622,15 @@ def normal_run(args):
     end = time.time()
     cend = time.clock()
 
-    print "RealTime Fock Time:            ",end-start, " (CPU: ", cend-cstart, " ) s"  
-    print "RealTime Fock Time Without Py: ",bertha.get_focktime(), " (CPU: ", \
-            bertha.get_fockctime(), " ) s"
-    print ""
+    print("RealTime Fock Time:            ",end-start, " (CPU: ", cend-cstart, " ) s")  
+    print("RealTime Fock Time Without Py: ",bertha.get_focktime(), " (CPU: ", \
+            bertha.get_fockctime(), " ) s")
+    print("")
     ene_list.append(numpy.trace(numpy.matmul(Da,fockm)))
     ene_list.append(numpy.trace(numpy.matmul(D_ti,fockm_ti)))
     
-    print "Starting iterations ..."
-    print ""
+    print("Starting iterations ...")
+    print("")
     
     fock_mid_backwd = numpy.copy(fock_mid_init)
 
@@ -714,8 +714,8 @@ def normal_run(args):
         cend = time.clock()
    
         if (args.iterations):
-            print "Iteration ", j, " of ", niter-1, " ( ", end - start, \
-                    " (CPU time: " , cend - cstart, ") s )"
+            print("Iteration ", j, " of ", niter-1, " ( ", end - start, \
+                    " (CPU time: " , cend - cstart, ") s )")
         else:
             rtutil.progress_bar(j, niter-1)
 
@@ -723,12 +723,12 @@ def normal_run(args):
 
     sys.stdout.flush()
 
-    print ""
-    print ""
-    print "Dump density density.cube"
+    print("")
+    print("")
+    print("Dump density density.cube")
     bertha.density_to_cube(D_ti, "density.cube", margin = 5.0)
     
-    print "Done"
+    print("Done")
     
     sys.stdout.flush()
 

@@ -134,6 +134,15 @@ class pybertha:
 
         self.set_densitydiff (0)
 
+    def get_natoms(self):
+        """
+        Return natoms 
+        """
+
+        self.__bertha.get_ncent.restype = ctypes.c_int
+
+        return self.__bertha.get_ncent()
+
     def get_mainruntime(self):
         """
         Returns the wall time to perfom all the SCF iterations, 
@@ -214,7 +223,7 @@ class pybertha:
         is equal to 1.
         """
 
-        if not isinstance(ini, basestring):
+        if not isinstance(ini, str):
             raise TypeError("set_fittcoefffname: input must be a string")
 
 
@@ -234,7 +243,7 @@ class pybertha:
         be written if **dumpfiles flag** is equal to 1.
         """
 
-        if not isinstance(ini, basestring):
+        if not isinstance(ini, str):
             raise TypeError("set_vctfilename: input must be a string")
 
 
@@ -253,7 +262,7 @@ class pybertha:
         be written if **dumpfiles flag** is equal to 1.
         """
 
-        if not isinstance(ini, basestring):
+        if not isinstance(ini, str):
             raise TypeError("set_ovapfilename: input must be a string")
 
 
@@ -271,7 +280,7 @@ class pybertha:
         To specify the BERTHA input filename. 
         """
 
-        if not isinstance(ini, basestring):
+        if not isinstance(ini, str):
             raise TypeError("set_fnameinput: input must be a string")
 
 
@@ -289,7 +298,7 @@ class pybertha:
         To specify the density fitting basis set filename. 
         """
 
-        if not isinstance(ini, basestring):
+        if not isinstance(ini, str):
             raise TypeError("set_fittfname: input must be a string")
 
 
@@ -349,7 +358,7 @@ class pybertha:
         before he/she can peform the main run.
         """
        
-        in_fnameinput = ctypes.c_char_p(self.__fnameinput)
+        in_fnameinput = ctypes.c_char_p(self.__fnameinput.encode('utf-8'))
 
         self.__bertha.init(in_fnameinput, ctypes.c_int(self.__verbosity), 
                 ctypes.c_int(self.__dumpfiles))
@@ -418,7 +427,7 @@ class pybertha:
         if not isinstance(dens, numpy.ndarray):
             raise TypeError("density_to_cube: input must be a numpy array")
 
-        if not isinstance(fname, basestring):
+        if not isinstance(fname, str):
             raise TypeError("density_to_cube: input must be a string")
 
         if not isinstance(margin, float):
@@ -434,8 +443,8 @@ class pybertha:
             raise TypeError("density_to_cube: input must be a float")
 
         if self.__init:
-            in_fittfname = ctypes.c_char_p(self.__fittfname)
-            in_fname = ctypes.c_char_p(fname)
+            in_fittfname = ctypes.c_char_p(self.__fittfname.encode('utf-8'))
+            in_fname = ctypes.c_char_p(fname.encode('utf-8'))
             
             cbuffer = complexmat_to_doublevct (dens)
             
@@ -463,13 +472,13 @@ class pybertha:
             eigenvctbu = numpy.zeros((2*ndim*ndim), dtype=numpy.double)
             eigenvctbu = numpy.ascontiguousarray(eigenvctbu, dtype=numpy.double)
 
-            in_fittcoefffname = ctypes.c_char_p(self.__fittcoefffname)
-            in_vctfilename = ctypes.c_char_p(self.__vctfilename)
-            in_ovapfilename = ctypes.c_char_p(self.__ovapfilename)
-            in_fittfname = ctypes.c_char_p(self.__fittfname)
+            in_fittcoefffname = ctypes.c_char_p(self.__fittcoefffname.encode('utf-8'))
+            in_vctfilename = ctypes.c_char_p(self.__vctfilename.encode('utf-8'))
+            in_ovapfilename = ctypes.c_char_p(self.__ovapfilename.encode('utf-8'))
+            in_fittfname = ctypes.c_char_p(self.__fittfname.encode('utf-8'))
 
             start = time.time()
-            cstart = time.clock()
+            cstart = time.process_time()
 
             maint = threading.Thread(target=self.__bertha.mainrun, \
                     args=[in_fittcoefffname, \
@@ -486,7 +495,7 @@ class pybertha:
                     maint.join(.1)
 
             end = time.time()
-            cend = time.clock()
+            cend = time.process_time()
 
             self.__mainruntime = end - start
             self.__mainrunctime = cend - cstart
@@ -595,6 +604,51 @@ class pybertha:
         else:
             return None
 
+
+    def get_eps (self, x, y, z):
+        """
+        """
+
+        if not isinstance(x, float):
+            raise TypeError("get_eps: input must be a float")
+
+        if not isinstance(y, float):
+            raise TypeError("get_eps: input must be a float")
+
+        if not isinstance(z, float):
+            raise TypeError("get_eps: input must be a float")
+
+        if self.__init:
+
+            self.__bertha.eps.restype = ctypes.c_double
+
+            eps = self.__bertha.eps(ctypes.c_double(x), ctypes.c_double(y), \
+                    ctypes.c_double(z))
+           
+            return eps
+
+        else:
+            return None
+
+
+    def get_coords (self, i):
+
+        if not isinstance(i, int):
+            raise TypeError("get_coord: input must be an integer")
+
+        if self.__init:
+
+            vec = numpy.zeros(4, dtype=numpy.double)
+            vec = numpy.ascontiguousarray(vec, \
+                    dtype=numpy.double)
+
+            self.__bertha.get_coord(i, ctypes.c_void_p(vec.ctypes.data))
+
+            return vec[0], vec[1], vec[2], vec[3]
+
+        return None
+
+
     def get_realtime_fock (self, densm):
         """
         get_realtime_fock returns the Fock matrix given the 
@@ -611,13 +665,13 @@ class pybertha:
             cbuffer = complexmat_to_doublevct (densm)
 
             start = time.time()
-            cstart = time.clock()
+            cstart = time.process_time()
 
             self.__bertha.realtime_fock(ctypes.c_void_p(cbuffer.ctypes.data), \
                     ctypes.c_void_p(self.__fockbuffer.ctypes.data))
 
             end = time.time()
-            cend = time.clock()
+            cend = time.process_time()
 
             self.__focktime = end - start
             self.__fockctime = cend - cstart

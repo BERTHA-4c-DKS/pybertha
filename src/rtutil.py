@@ -58,7 +58,7 @@ def exp_opmat(mat,dt,debug=False,odbg=sys.stderr):
     try: 
        w,v=numpy.linalg.eigh(mat)
     except numpy.linalg.LinAlgError:
-        print "Error in numpy.linalg.eigh of inputted matrix"
+        print("Error in numpy.linalg.eigh of inputted matrix")
         return None
 
     diag=numpy.exp(-1.j*w*dt)

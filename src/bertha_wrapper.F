@@ -736,6 +736,19 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
+      subroutine bertha_eps (x, y, z, val)
+
+      implicit none
+
+      real (c_double), intent(in) :: x, y, z
+      real (c_double), intent(out) :: val
+
+      call eps (x, y, z, val)
+
+      end subroutine bertha_eps
+
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
       subroutine bertha_realtime_fock (dens_ptr, fock_ptr)
 
       use fmat, only: fock
@@ -893,6 +906,27 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       deallocate(v) 
 
       end subroutine bertha_density_to_cube 
+
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
+      subroutine bertha_get_coord (i, x, y, z, an)
+
+      implicit none
+
+      real, intent(out) :: x, y, z, an
+      integer, intent(in) :: i
+
+      print *, "Here"
+
+      if ( i .le. ncent) then
+        x = coord(1, i)
+        y = coord(2, i)
+        z = coord(3, i)
+
+        an = znuc(i)
+      endif
+
+      end subroutine bertha_get_coord
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 

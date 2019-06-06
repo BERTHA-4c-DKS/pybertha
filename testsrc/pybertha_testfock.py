@@ -40,37 +40,37 @@ nocc = bertha.get_nocc()
 sfact = bertha.get_sfact()
 nopen = bertha.get_nopen()
 
-print "Verbosity       : ", verbosity
-print "Dumpfiles       : ", dumpfiles
-print ""
-print "Matrix dimension: ", ndim
-print "            nocc: ", nocc
-print "          nshift: ", nshift
-print "           nopen: ", nopen
-print "     level shift: ", sfact
-print ""
+print("Verbosity       : ", verbosity)
+print("Dumpfiles       : ", dumpfiles)
+print("")
+print("Matrix dimension: ", ndim)
+print("            nocc: ", nocc)
+print("          nshift: ", nshift)
+print("           nopen: ", nopen)
+print("     level shift: ", sfact)
+print("")
 
 ovapm, eigem, fockm, eigen = bertha.run()
-print "fock[0,10] = ", fockm[0,10]
+print("fock[0,10] = ", fockm[0,10])
 if (fockm is None) or (eigen is None) or (fockm is None) \
         or (eigen is None):
-    print "Error in bertha run"
+    print("Error in bertha run")
     exit(-1)
 
-print ""
-print "Final results "
+print("")
+print("Final results ")
 for i in range(nocc+nopen):
-    print "eigenvalue %5d %20.8f"%(i+1, eigen[i+nshift]-sfact)
+    print("eigenvalue %5d %20.8f"%(i+1, eigen[i+nshift]-sfact))
     
-print "      lumo       %20.8f"%(eigen[i+nshift+1])
+print("      lumo       %20.8f"%(eigen[i+nshift+1]))
 
 erep = bertha.get_erep()
 etotal = bertha.get_etotal()
 
-print ""
-print "total electronic energy  = %20.8f"%(etotal-(sfact*nocc))
-print "nuclear repulsion energy = %20.8f"%(erep)
-print "total energy             = %20.8f"%(etotal+erep-(sfact*nocc))
+print("")
+print("total electronic energy  = %20.8f"%(etotal-(sfact*nocc)))
+print("nuclear repulsion energy = %20.8f"%(erep))
+print("total energy             = %20.8f"%(etotal+erep-(sfact*nocc)))
 
 bertha.realtime_init()
 
@@ -92,11 +92,11 @@ for i in range(ndim):
 density=numpy.matmul(occeigv,numpy.conjugate(occeigv.transpose()))
 fockm_test = bertha.get_realtime_fock(density.T)
 trace=numpy.trace(numpy.matmul(density,ovapm))
-print "trace of density dot ovap " , trace
-print "fock_test[0,10] = ", fockm_test[0,10]
+print("trace of density dot ovap " , trace)
+print("fock_test[0,10] = ", fockm_test[0,10])
 diff=fockm-fockm_test
-print "max value of diff" ,numpy.max(diff)
+print("max value of diff" ,numpy.max(diff))
 diff_trace=numpy.trace(numpy.matmul(density.T,diff))
-print 'trace diff_dot_dens: ', diff_trace
+print('trace diff_dot_dens: ', diff_trace)
 bertha.finalize()
 
