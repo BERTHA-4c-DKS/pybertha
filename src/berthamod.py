@@ -417,6 +417,46 @@ class pybertha:
         
         return 0
 
+    def density_to_cube_limit(self, dens, fname, ri, rf, 
+            drx = 0.2, dry = 0.2, drz = 0.2):
+        """
+        density_to_cube_limit generates a cube file (named: fname) 
+        with the specified density (dens).
+        """
+
+        if not (len(ri) == 3):
+             raise TypeError("density_to_cube_limit: ri must be list size 3")
+
+        if not (len(rf) == 3):
+             raise TypeError("density_to_cube_limit: rf must be list size 3")
+
+        if not isinstance(dens, numpy.ndarray):
+            raise TypeError("density_to_cube_limit: input must be a numpy array")
+
+        if not isinstance(fname, str):
+            raise TypeError("density_to_cube_limit: input must be a string")
+
+        if not isinstance(drx, float):
+            raise TypeError("density_to_cube_limit: input must be a float")
+
+        if not isinstance(dry, float):
+            raise TypeError("density_to_cube_limit: input must be a float")
+
+        if not isinstance(drz, float):
+            raise TypeError("density_to_cube_limit: input must be a float")
+
+        if self.__init:
+            in_fittfname = ctypes.c_char_p(self.__fittfname.encode('utf-8'))
+            in_fname = ctypes.c_char_p(fname.encode('utf-8'))
+            
+            cbuffer = complexmat_to_doublevct (dens)
+            
+            self.__bertha.density_to_cube_limit (ctypes.c_void_p(cbuffer.ctypes.data), \
+                ctypes.c_double(ri[0]), ctypes.c_double(ri[1]), ctypes.c_double(ri[2]), \
+                ctypes.c_double(rf[0]), ctypes.c_double(rf[1]), ctypes.c_double(rf[2]), \
+                ctypes.c_double(drx), ctypes.c_double(dry), \
+                ctypes.c_double(drz), in_fname, in_fittfname)
+
     def density_to_cube(self, dens, fname, margin = 10.0, 
             drx = 0.2, dry = 0.2, drz = 0.2):
         """

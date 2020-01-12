@@ -12,6 +12,7 @@
 #define f_bertha_eps bertha_wrapper_mp_bertha_eps_
 #define f_bertha_realtime_fock bertha_wrapper_mp_bertha_realtime_fock_
 #define f_bertha_density_to_cube  bertha_wrapper_mp_bertha_density_to_cube_
+#define f_bertha_density_to_cube_limit bertha_wrapper_mp_bertha_density_to_cube_limit_
 
 #define f_ndim spec_mp_ndim_
 #define f_nshift spec_mp_nshift_
@@ -37,6 +38,7 @@
 #define f_bertha_eps __bertha_wrapper_MOD_bertha_eps
 #define f_bertha_realtime_fock __bertha_wrapper_MOD_bertha_realtime_fock
 #define f_bertha_density_to_cube  __bertha_wrapper_MOD_bertha_density_to_cube
+#define f_bertha_density_to_cube_limit __bertha_wrapper_MOD_bertha_density_to_cube_limit
 
 #define f_ndim __spec_MOD_ndim
 #define f_nshift __spec_MOD_nshift
@@ -55,6 +57,9 @@
 
 void f_bertha_density_to_cube (double *, double *, double *, 
     double *, double*, char *, char *, int, int);
+void f_bertha_density_to_cube_limit (double *, 
+    double *, double *, double *, double *, double *, double *,
+    double *, double *, double*, char *, char *, int, int);
 void f_bertha_init (char *, int *, int *, int);
 void f_bertha_realtime_init ();
 void f_bertha_main (char *, char *, char *, char *, 
@@ -258,6 +263,15 @@ void density_to_cube (double * dens_ptr, double margin, double drx, double dry,
   f_bertha_density_to_cube(dens_ptr, &margin, &drx, &dry, &drz, 
       filename, fittfname, strlen(filename), strlen(fittfname));
 } 
+
+void density_to_cube_limit (double * dens_ptr, double ri1, double ri2, double ri3,
+    double rf1, double rf2, double rf3, double drx, double dry, 
+    double drz, char * filename, char * fittfname)
+{
+  f_bertha_density_to_cube_limit(dens_ptr, &ri1, &ri2, &ri3, 
+      &rf1, &rf2, &rf3, &drx, &dry, &drz, 
+      filename, fittfname, strlen(filename), strlen(fittfname));
+}
 
 int finalize ()
 {

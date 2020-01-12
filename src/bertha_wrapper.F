@@ -930,6 +930,60 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
+      subroutine bertha_density_to_cube_limit (dens_ptr, ri1, ri2, ri3, 
+     >    rf1, rf2, rf3, drx, dry, drz, fname, fittfname)
+
+      implicit none
+
+      character*(*), intent(in) :: fname, fittfname
+      real (c_double), intent(in) :: dens_ptr(*) 
+      real, intent(in) :: drx, dry, drz, margin
+
+      real :: centfun(ncentm)
+      integer :: counter, i, j
+      real, allocatable :: v(:), zz(:)
+
+      real, dimension (3) :: ri, rf, dr
+      integer, dimension (3) :: nr
+
+      counter = 1
+      do i = 1, ndim
+        do j = 1, ndim
+           c(i, j) = cmplx(dens_ptr(counter), dens_ptr(counter+1))
+           counter = counter + 2
+        enddo
+      enddo
+
+      ri(1) = ri1
+      ri(2) = ri2
+      ri(3) = ri3
+
+      rf(1) = rf1
+      rf(2) = rf2
+      rf(3) = rf3
+
+      dr(1) = drx
+      dr(2) = dry 
+      dr(3) = drz
+
+      nr = INT( (rf - ri) / dr + 1.0 )
+
+      call initijkvec()
+      call initfitting(fitcase, nfitt, fittfname)
+      call flabel(centfun)
+      allocate (v(nfitt),zz(nfitt))
+
+      call hden()
+      call v_calculation(nfitt,fitcase,v)
+      call factlu(nfitt,v)
+      call cubefile (ncent,coord,iznuc,v,nfitt,fitcase,
+     +               ri,nr,dr,fname) 
+
+      deallocate(zz)
+      deallocate(v) 
+
+      end subroutine bertha_density_to_cube_limit
+
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
       end module
-
-
