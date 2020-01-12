@@ -24,7 +24,7 @@ PATCH=0
 #LIBXC
 LIBXC=no
 
-BERTHAROOT=/home/redo/Project_Bertha/bertha_ng
+BERTHAROOT=/home/redo/Bertha/bertha_ng
 
 ###
 ## NO BLUEGENE

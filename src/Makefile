@@ -2,9 +2,10 @@ include ../config.mk
 
 BERTHAWLIB = bertha_wrapper.so
 
-OBJ = bertha_wrapper.o \
+OBJ = \
       c_wrapper.o \
-      cubefile.o
+      cubefile.o \
+      bertha_wrapper.o
 
 all : $(BERTHAWLIB)
 

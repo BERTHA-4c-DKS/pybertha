@@ -937,7 +937,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       character*(*), intent(in) :: fname, fittfname
       real (c_double), intent(in) :: dens_ptr(*) 
-      real, intent(in) :: drx, dry, drz, margin
+      real, intent(in) :: drx, dry, drz, ri1, ri2, ri3, rf1, rf2, rf3
 
       real :: centfun(ncentm)
       integer :: counter, i, j
