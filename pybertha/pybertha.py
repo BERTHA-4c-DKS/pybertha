@@ -31,8 +31,8 @@ parser.add_argument("-d", "--debug", help="Debug on, prints debug info to debug_
         default=False, action="store_true")
 parser.add_argument("-v", "--verbosity", help="Verbosity level 0 = minim, -1 = print iteration info, " + 
         "1 = maximum (defaul -1)", required=False, default=-1, type=int)
-parser.add_argument("--tresh", help="det treshold (default = 1.0e-12)", required=False, 
-        type=numpy.float64, default=1.0e-12)
+parser.add_argument("--tresh", help="det treshold (default = 1.0e-11)", required=False, 
+        type=numpy.float64, default=1.0e-11)
 parser.add_argument("--wrapperso", help="set wrapper SO (default = ../../lib/bertha_wrapper.so)", 
         required=False, type=str, default="../lib/bertha_wrapper.so")
 
