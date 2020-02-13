@@ -484,6 +484,16 @@ c        ovap_ptr = c_loc(ovap(1,1))
           enddo
         enddo
 
+#ifdef DUMPFOCKMTX
+        open(unit=44, file="fockmtx.txt")
+        do i = 1,ndim
+          do j = 1,ndim
+            write (44, '(I5,1X,I5,E22.10E4,1X,E22.10E4)' ) i, j, fock(i,j)
+          end do
+        end do
+        close(44)
+#endif
+
         call diagonalizer (eigen)
 
         wtimeio = walltime ()

@@ -9,22 +9,11 @@ DEBUG=no
 # profile yes or no
 PROFILE=no
 
-# shared library
-SHARED=yes
-
 #is used only by serial
 #use Intel compiler
-USEINTEL=yes
+USEINTEL=no
 
-#version
-MAJOR=0
-MINOR=1
-PATCH=0
-
-#LIBXC
-LIBXC=no
-
-BERTHAROOT=/home/redo/Bertha/bertha_ng
+BERTHAROOT=/home/redo/Project_Bertha/bertha_ng
 
 ###
 ## NO BLUEGENE
@@ -128,7 +117,6 @@ else
   LIBS = $(BGQFELAPACK)
 endif
 
-CFLAGS+=-DMAJOR=$(MAJOR) -DMINOR=$(MINOR) -DPATCH=$(PATCH)
 FFLAGS += -I../common 
 
 CFLAGS += -fPIC
@@ -139,16 +127,7 @@ ifeq ($(USEINTEL),yes)
   FFLAGS += -DUSEINTELCMP
 endif
 
-ifeq ($(LIBXC),yes)
-  # Use libxc of a distribution DIRLIBXC to be set
-  DIRLIBXC = /usr/lib/x86_64-linux-gnu
-  #DIRLIBXC = /usr/local/libxc
-  CFLAGS += -DLIBXC 
-  FFLAGS += -DLIBXC 
-  INCLUDE += -I$(DIRLIBXC)/include
-  LIBS += -L$(DIRLIBXC) -lxc -lxcf90 
-endif
-
+FFLAGS += -DDUMPFOCKMTX
 
 MAKE = make
 
