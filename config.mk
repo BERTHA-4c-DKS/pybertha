@@ -11,7 +11,7 @@ PROFILE=no
 
 #is used only by serial
 #use Intel compiler
-USEINTEL=no
+USEINTEL=yes
 
 BERTHAROOT=/home/redo/Project_Bertha/bertha_ng
 
@@ -24,14 +24,22 @@ ifeq ($(FORBGQ),no)
     CC = icc
 
     # intel 
-    BLASLAPACK = -Wl,--start-group  $(MKLROOT)/lib/intel64/libmkl_intel_lp64.a $(MKLROOT)/lib/intel64/libmkl_core.a $(MKLROOT)/lib/intel64/libmkl_sequential.a -Wl,--end-group -lpthread -lm
-#    BLASLAPACK = -Wl,--start-group  $(MKLROOT)/lib/intel64/libmkl_rt.so  -Wl,--end-group -lpthread -lm -ldl
-    SCALDIR=/usr/local/SCALAPACK_intel_14_0_0_ompi2
-    BLACSDIR=/usr/local/BLACS_intel_14_0_0_ompi2
-    SCALAPACK=-L$(SCALDIR) -lscalapack
-    BLACS=$(BLACSDIR)/LIB/blacs_MPI-LINUX-0.a $(BLACSDIR)/LIB/blacsF77init_MPI-LINUX-0.a \
-    	$(BLACSDIR)/LIB/blacs_MPI-LINUX-0.a
+    #BLASLAPACK = -Wl,--start-group  $(MKLROOT)/lib/intel64/libmkl_intel_lp64.a \
+    #      $(MKLROOT)/lib/intel64/libmkl_core.a $(MKLROOT)/lib/intel64/libmkl_sequential.a \
+    #      -Wl,--end-group -lpthread -lm
+    # BLASLAPACK = -Wl,--start-group  $(MKLROOT)/lib/intel64/libmkl_rt.so  -Wl,--end-group -lpthread -lm -ldl
+    # SCALDIR=/usr/local/SCALAPACK_intel_14_0_0_ompi2
+    # BLACSDIR=/usr/local/BLACS_intel_14_0_0_ompi2
+    # SCALAPACK=-L$(SCALDIR) -lscalapack
+    # SCALAPACK=  -L${MKLROOT}/lib/intel64 -lmkl_scalapack_lp64 -lmkl_intel_lp64 -lmkl_sequential \
+    #     -lmkl_core -lmkl_blacs_intelmpi_lp64 -lpthread -lm -ldl
+    #BLACS=$(BLACSDIR)/LIB/blacs_MPI-LINUX-0.a $(BLACSDIR)/LIB/blacsF77init_MPI-LINUX-0.a \
+    # 	$(BLACSDIR)/LIB/blacs_MPI-LINUX-0.a
+    
+    BLASLAPACK =   ${MKLROOT}/lib/intel64/libmkl_blas95_lp64.a ${MKLROOT}/lib/intel64/libmkl_lapack95_lp64.a \
+	-L${MKLROOT}/lib/intel64 -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread -lm -ldl
 
+    
     ifeq ($(PROFILE),yes)
       FFLAGS = -pg
       CFLAGS = -pg
@@ -41,14 +49,16 @@ ifeq ($(FORBGQ),no)
       CFLAGS =
     endif
 
+    FFLAGS+= -I${MKLROOT}/include/intel64/lp64 -mkl=parallel 
+
     INCLUDE = 
 
     ifeq ($(DEBUG),yes)
       FFLAGS += -r8 -check all -check noarg_temp_created -traceback -warn all -O0 -g -132
       CFLAGS += -D_FILE_OFFSET_BITS=64 -O0 -g
     else
-      FFLAGS += -r8 -check all -check noarg_temp_created -traceback -warn all -O2 -132 
-      FFLAGS = -r8 -warn all -O3 -132
+      #FFLAGS += -r8 -check all -check noarg_temp_created -traceback -warn all -O2 -132 
+      FFLAGS += -r8 -warn all -O3 -132
       #FFLAGS += -C -O0 -r8 -warn all -132 -I./$(MODIR)
       CFLAGS += -D_FILE_OFFSET_BITS=64 -O3
     endif
@@ -70,6 +80,7 @@ ifeq ($(FORBGQ),no)
     #BLASLAPACK = -L/home/mat/local/lib -ltmg -lreflapack -lrefblas 
     #SCALAPACK=-L/home/mat/local/lib -lscalapack 
     #BLACS=$(BLACSDIR)/libscalapack.a
+    #SCALAPACK=-L/opt/share/scalapack_gnu -lscalapack
 
     ifeq ($(PROFILE),yes)
       FFLAGS = -pg
