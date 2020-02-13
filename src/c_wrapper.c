@@ -50,7 +50,7 @@
 #define f_tresh __bertha_wrapper_MOD_tresh
 #define f_densitydiff __bertha_wrapper_MOD_densitydiff
 
-#define f_ncent __spec_MOD_ncent_
+#define f_ncent __spec_MOD_ncent
 #define f_bertha_get_coord __bertha_wrapper_MOD_bertha_get_coord
 
 #endif
