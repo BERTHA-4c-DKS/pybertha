@@ -233,7 +233,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         rewind(unit=10)
         read (10, '(I5,I5)') nocc, ndim
         do iocc = nshift+1,nshift+nocc
-          read(10,'(E18.10)') eigen(iocc)
+          read(10,'(E23.15)') eigen(iocc)
           do i=1,ndim
             read(10,'(E17.10,1X,E17.10)') c(i,iocc)
           end do
@@ -505,7 +505,7 @@ c        ovap_ptr = c_loc(ovap(1,1))
 
          write (10, '(I5,I5)') nocc, ndim
          do iocc = nshift+1,nshift+nocc
-           write(10,'(E18.10)') eigen(iocc)
+           write(10,'(E23.15)') eigen(iocc)
            do i=1,ndim
              write(10,'(E17.10,1X,E17.10)') c(i,iocc)
            end do

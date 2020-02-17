@@ -13,6 +13,9 @@ PROFILE=no
 #use Intel compiler
 USEINTEL=yes
 
+#LIBXC
+LIBXC=no
+
 BERTHAROOT=/home/redo/Project_Bertha/bertha_ng
 
 ###
@@ -22,6 +25,15 @@ ifeq ($(FORBGQ),no)
   ifeq ($(USEINTEL),yes)
     FC = ifort
     CC = icc
+
+    ifeq ($(PROFILE),yes)
+      FFLAGS = -pg
+      CFLAGS = -pg
+      LINKFLAGS = -pg
+    else
+      FFLAGS =
+      CFLAGS =
+    endif
 
     # intel 
     #BLASLAPACK = -Wl,--start-group  $(MKLROOT)/lib/intel64/libmkl_intel_lp64.a \
@@ -36,19 +48,16 @@ ifeq ($(FORBGQ),no)
     #BLACS=$(BLACSDIR)/LIB/blacs_MPI-LINUX-0.a $(BLACSDIR)/LIB/blacsF77init_MPI-LINUX-0.a \
     # 	$(BLACSDIR)/LIB/blacs_MPI-LINUX-0.a
     
-    BLASLAPACK =   ${MKLROOT}/lib/intel64/libmkl_blas95_lp64.a ${MKLROOT}/lib/intel64/libmkl_lapack95_lp64.a \
-	-L${MKLROOT}/lib/intel64 -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread -lm -ldl
+    #dynamic 
+    #BLASLAPACK =   ${MKLROOT}/lib/intel64/libmkl_blas95_lp64.a ${MKLROOT}/lib/intel64/libmkl_lapack95_lp64.a \
+    #	-L${MKLROOT}/lib/intel64 -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread -lm -ldl
 
+    #static 
+    BLASLAPACK =  -Wl,--start-group $(MKLROOT)/lib/intel64/libmkl_intel_lp64.a $(MKLROOT)/lib/intel64/libmkl_sequential.a \
+    	$(MKLROOT)/lib/intel64/libmkl_core.a -Wl,--end-group -lpthread
+
+    #BLASLAPACK = -llapack -lblas
     
-    ifeq ($(PROFILE),yes)
-      FFLAGS = -pg
-      CFLAGS = -pg
-      LINKFLAGS = -pg
-    else
-      FFLAGS =
-      CFLAGS =
-    endif
-
     FFLAGS+= -I${MKLROOT}/include/intel64/lp64 -mkl=parallel 
 
     INCLUDE = 
@@ -96,8 +105,8 @@ ifeq ($(FORBGQ),no)
       CFLAGS += -D_FILE_OFFSET_BITS=64 -O0 -g -W -Wall
     else
       #FFLAGS += -finit-local-zero -fdefault-double-8 -fdefault-real-8 -O2 -I./$(MODIR) -W -Wall -ffixed-line-length-132
-      FFLAGS +=  -fdefault-double-8 -fdefault-real-8 -O2 -I./$(MODIR) -W -Wall -ffixed-line-length-132
-      CFLAGS += -D_FILE_OFFSET_BITS=64 -O2 -W -Wall
+      FFLAGS +=  -fdefault-double-8 -fdefault-real-8 -O3 -I./$(MODIR) -W -Wall -ffixed-line-length-132
+      CFLAGS += -D_FILE_OFFSET_BITS=64 -O3 -W -Wall
     endif
 
     LIBS += $(BLASLAPACK)
@@ -132,6 +141,16 @@ FFLAGS += -I../common
 
 CFLAGS += -fPIC
 FFLAGS += -fPIC
+
+ifeq ($(LIBXC),yes)
+  # Use libxc of a distribution DIRLIBXC to be set
+  DIRLIBXC = /usr/lib/x86_64-linux-gnu
+  #DIRLIBXC = /usr/local/libxc
+  CFLAGS += -DLIBXC 
+  FFLAGS += -DLIBXC 
+  INCLUDE += -I$(DIRLIBXC)/include
+  LIBS += -L$(DIRLIBXC) -lxc -lxcf90 
+endif
 
 ifeq ($(USEINTEL),yes)
   CFLAGS += -DUSEINTELCMP
