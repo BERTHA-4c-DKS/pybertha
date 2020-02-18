@@ -116,7 +116,8 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       call getmem ()
 
       if (densitydiff .eq. 1) then 
-        allocate(olddensity(ndim, ndim))
+        allocate(olddensity(ndim, ndim),stat=rc)
+        if (rc.ne.0) call errmsg('error allocating memory')
         olddensity = (0.0, 0.0)
       endif
 
@@ -220,7 +221,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         ioccm0 = ioccm0 - nshift
         call dens()
         if (densitydiff .eq. 1) then 
-          olddensity = c
+          if (allocated(olddensity)) olddensity = c
         endif
 
 
@@ -243,7 +244,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         ioccm0 = nocc
         call dens()
         if (densitydiff .eq. 1) then 
-          olddensity = c
+          if (allocated(olddensity)) olddensity = c
         endif
       end if
 
@@ -253,7 +254,9 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       if (irun.eq.2) then
         ioccm0 = nocc
-        allocate(v(nfitt),zz(nfitt),stat=rc)
+        allocate(v(nfitt),stat=rc)
+        if (rc.ne.0) call errmsg('error allocating memory')
+        allocate(zz(nfitt),stat=rc)
         if (rc.ne.0) call errmsg('error allocating memory')
         open(unit=11, file=fittcoefffname, status='unknown')
         rewind(11)
@@ -279,7 +282,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
         call dens()
         if (densitydiff .eq. 1) then 
-          olddensity = c
+          if (allocated(olddensity)) olddensity = c
         endif
 
       endif
@@ -317,7 +320,9 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         timetomt1 = walltime ()
         ctimetomt1 = cputime ()
 
-        allocate(v(nfitt),zz(nfitt), stat=rc)
+        allocate(v(nfitt),stat=rc)
+        if (rc.ne.0) call errmsg('error allocating memory')
+        allocate(zz(nfitt), stat=rc)
         if (rc.ne.0) call errmsg('error allocating memory')
         call v_calculation(nfitt,fitcase,v)
 
@@ -461,7 +466,8 @@ c        ovap_ptr = c_loc(ovap(1,1))
         ctime1 = cputime ()
 
 
-        if (((iter.gt.1).and.(sfact.ne.(0.0))).or.(irun.eq.0).
+c        if (((iter.gt.1).and.(sfact.ne.(0.0))).or.(irun.eq.0).
+        if (((iter.gt.1).and.(abs(sfact).gt.(1.0d-17))).or.(irun.eq.0).
      >      or.(irun.eq.2))
      >     call shftlv()
         time1 = walltime () - time1
@@ -599,7 +605,7 @@ c        end do
      +       '  maxdiff in density matrix = ',maxdiff, percmaxdiff
           endif
 
-          olddensity = c
+          if (allocated(olddensity)) olddensity = c
         endif
 
         denswalltime = walltime () - denswalltime
@@ -785,7 +791,9 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       fock = czero
       call hden ()
-      allocate(v(nfitt),zz(nfitt), stat=rc)
+      allocate(v(nfitt),stat=rc)
+      if (rc.ne.0) call errmsg('error allocating memory')
+      allocate(zz(nfitt), stat=rc)
       if (rc.ne.0) call errmsg('error allocating memory')
       call v_calculation(nfitt,fitcase,v)
       call factlu(nfitt,v)

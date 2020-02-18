@@ -139,9 +139,9 @@ erep = bertha.get_erep()
 etotal = bertha.get_etotal()
 
 print("")
-print("total electronic energy  = %20.8f"%(etotal-(sfact*nocc)))
-print("nuclear repulsion energy = %20.8f"%(erep))
-print("total energy             = %20.8f"%(etotal+erep-(sfact*nocc)))
+print("total electronic energy  = %30.15f"%(etotal-(sfact*nocc)))
+print("nuclear repulsion energy = %30.15f"%(erep))
+print("total energy             = %30.15f"%(etotal+erep-(sfact*nocc)))
 
 occeigv = numpy.zeros((ndim,nocc), dtype=numpy.complex128)
 
