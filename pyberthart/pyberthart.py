@@ -18,6 +18,58 @@ sys.path.insert(0, "../src")
 import berthamod
 import rtutil
 
+def get_json_data(args, j, niter, ndim, ene_list, \
+        dip_list, D_ti, fock_mid_backwd, dipz_mat, C, \
+        C_inv, ovapm, Dp_ti):
+
+    json_data = {
+            'pulse': args.pulse,
+            'pulseFmax': args.pulseFmax,
+            'pulsew' : args.pulsew,
+            'dt': args.dt,
+            'inputfile': args.inputfile ,
+            "fittfile": args.fittfile ,
+            "fitcoefffile": args.fitcoefffile ,
+            "vctfile": args.vctfile ,
+            "ovapfile": args.ovapfile ,
+            "dumpfiles": args.dumpfiles ,
+            "totaltime": args.totaltime ,
+            "debug": args.debug ,
+            "verbosity": args.verbosity ,
+            "iterations": args.iterations ,
+            "select": args.select, 
+            "select_pert": args.select_pert, 
+            "propthresh": args.propthresh,
+            "tresh": args.tresh ,
+            "pulseS": args.pulseS ,
+            "t0": args.t0 , 
+            "wrapperso": args.wrapperso ,
+            "dumprestartnum": args.wrapperso ,
+            'j': j,
+            'niter': niter,
+            'ndim' : ndim,
+            'ene_list_REAL': numpy.real(ene_list).tolist(),
+            'ene_list_IMAG': numpy.imag(ene_list).tolist(),
+            'dip_list_REAL': numpy.real(dip_list).tolist(),
+            'dip_list_IMAG': numpy.imag(dip_list).tolist(),
+            'D_ti_REAL' : numpy.real(D_ti).tolist(),
+            'D_ti_IMAG' : numpy.imag(D_ti).tolist(),
+            'fock_mid_backwd_REAL' : numpy.real(fock_mid_backwd).tolist(),
+            'fock_mid_backwd_IMAG' : numpy.imag(fock_mid_backwd).tolist(),
+            'dipz_mat_REAL': numpy.real(dipz_mat).tolist(),
+            'dipz_mat_IMAG': numpy.imag(dipz_mat).tolist(),
+            'C_REAL': numpy.real(C).tolist(), 
+            'C_IMAG': numpy.imag(C).tolist(),
+            'C_inv_REAL': numpy.real(C_inv).tolist(),
+            'C_inv_IMAG': numpy.imag(C_inv).tolist(),
+            'ovapm_REAL': numpy.real(ovapm).tolist(),
+            'ovapm_IMAG': numpy.imag(ovapm).tolist(),
+            'Dp_ti_REAL': numpy.real(Dp_ti).tolist(),
+            'Dp_ti_IMAG': numpy.imag(Dp_ti).tolist(),
+            }
+
+    return json_data
+
 ##########################################################################################
 
 def single_point (args, bertha):
@@ -133,7 +185,8 @@ def check_and_covert (mat_REAL, mat_IMAG, ndim):
 
 def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t0,
         fo, D_ti, fock_mid_backwd, dt, dipz_mat, C, C_inv, ovapm, 
-        ndim, debug, Dp_ti, dip_list, ene_list, weight_list=0, select="-2 ; 0 & 0"):
+        ndim, debug, Dp_ti, dip_list, ene_list, weight_list=None, 
+        select="-2 ; 0 & 0"):
 
   
     fock_mid_tmp = rtutil.mo_fock_mid_forwd_eval(bertha, numpy.copy(D_ti), \
@@ -182,7 +235,8 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
             nshift = ndim/2
             dipz_mo = numpy.matmul(numpy.conjugate(C.T),numpy.matmul(dipz_mat,C))
             res=rtutil.dipoleanalysis(dipz_mo,Dp_ti_dt,occlist,virtlist,int(nshift),fo,debug)
-            weight_list.append(res)
+            if (weight_list != None):
+                weight_list.append(res)
     if debug:
       fo.write("Dipole: %.12e\n"%(numpy.trace(numpy.matmul(dipz_mat,D_ti_dt)).real))
    
@@ -342,7 +396,7 @@ def restart_run(args):
                 args.pulse, args.pulseFmax, args.pulsew, args.propthresh, 
                 args.pulseS, args.t0, fo, D_ti, 
                 fock_mid_backwd, dt, dipz_mat, C, C_inv, ovapm, 
-                ndim, debug, Dp_ti, dip_list, ene_list)
+                ndim, debug, Dp_ti, dip_list, ene_list, weight_list, args.select)
 
         if fock_mid_backwd is None:
             return False
@@ -355,51 +409,9 @@ def restart_run(args):
                 
                 encoder.FLOAT_REPR = lambda o: format(o, '.25E')
 
-                json_data = {
-                        'pulse': args.pulse,
-                        'pulseFmax': args.pulseFmax,
-                        'pulsew' : args.pulsew,
-                        'dt': args.dt,
-                        'inputfile': args.inputfile ,
-                        "fittfile": args.fittfile ,
-                        "fitcoefffile": args.fitcoefffile ,
-                        "vctfile": args.vctfile ,
-                        "ovapfile": args.ovapfile ,
-                        "dumpfiles": args.dumpfiles ,
-                        "totaltime": args.totaltime ,
-                        "debug": args.debug ,
-                        "verbosity": args.verbosity ,
-                        "iterations": args.iterations ,
-                        "select": args.select, 
-                        "select_pert": args.select_pert, 
-                        "propthresh": args.propthresh,
-                        "tresh": args.tresh ,
-                        "pulseS": args.pulseS ,
-                        "t0": args.t0 , 
-                        "wrapperso": args.wrapperso ,
-                        "dumprestartnum": args.wrapperso ,
-                        'j': j,
-                        'niter': niter,
-                        'ndim' : ndim,
-                        'ene_list_REAL': numpy.real(ene_list).tolist(),
-                        'ene_list_IMAG': numpy.imag(ene_list).tolist(),
-                        'dip_list_REAL': numpy.real(dip_list).tolist(),
-                        'dip_list_IMAG': numpy.imag(dip_list).tolist(),
-                        'D_ti_REAL' : numpy.real(D_ti).tolist(),
-                        'D_ti_IMAG' : numpy.imag(D_ti).tolist(),
-                        'fock_mid_backwd_REAL' : numpy.real(fock_mid_backwd).tolist(),
-                        'fock_mid_backwd_IMAG' : numpy.imag(fock_mid_backwd).tolist(),
-                        'dipz_mat_REAL': numpy.real(dipz_mat).tolist(),
-                        'dipz_mat_IMAG': numpy.imag(dipz_mat).tolist(),
-                        'C_REAL': numpy.real(C).tolist(), 
-                        'C_IMAG': numpy.imag(C).tolist(),
-                        'C_inv_REAL': numpy.real(C_inv).tolist(),
-                        'C_inv_IMAG': numpy.imag(C_inv).tolist(),
-                        'ovapm_REAL': numpy.real(ovapm).tolist(),
-                        'ovapm_IMAG': numpy.imag(ovapm).tolist(),
-                        'Dp_ti_REAL': numpy.real(Dp_ti).tolist(),
-                        'Dp_ti_IMAG': numpy.imag(Dp_ti).tolist(),
-                        }
+                json_data = get_json_data(args, j, niter, ndim, ene_list, 
+                        dip_list, D_ti, fock_mid_backwd, dipz_mat, C, 
+                        C_inv, ovapm, Dp_ti)
 
                 with open(args.restartfile, 'w') as fp:
                     json.dump(json_data, fp, sort_keys=True, indent=4)
@@ -410,8 +422,8 @@ def restart_run(args):
         cend = time.process_time() 
    
         if (args.iterations):
-            print("Iteration ", j, " of ", niter-1, " ( ", end - start, \
-                    " (CPU time: " , cend - cstart, ") s )")
+            print("Iteration %10d"%j , " of %10d"%(niter-1), " ( %15.5f"%(end - start), \
+                    " (CPU time: %15.5f"%(cend - cstart), ") s )")
         else:
             rtutil.progress_bar(j, niter-1)
    
@@ -578,8 +590,6 @@ def normal_run(args):
         #transform back Dp_int
         Da=numpy.matmul(C,numpy.matmul(Dp_init,numpy.conjugate(C.T)))
         D_0=Dp_init
-    
-    
 
     print("Start first mo_fock_mid_forwd_eval ")
     
@@ -680,6 +690,8 @@ def normal_run(args):
                 args.pulseS, args.t0, fo, D_ti, 
                 fock_mid_backwd, dt, dipz_mat, C, C_inv, ovapm, 
                 ndim, debug, Dp_ti, dip_list, ene_list, weight_list, args.select)
+
+        print(weight_list)
         
         if fock_mid_backwd is None:
             return False
@@ -692,51 +704,9 @@ def normal_run(args):
                 
                 encoder.FLOAT_REPR = lambda o: format(o, '.25E')
 
-                json_data = {
-                        'pulse': args.pulse,
-                        'pulseFmax': args.pulseFmax,
-                        'pulsew' : args.pulsew,
-                        'dt': args.dt,
-                        'inputfile': args.inputfile ,
-                        "fittfile": args.fittfile ,
-                        "fitcoefffile": args.fitcoefffile ,
-                        "vctfile": args.vctfile ,
-                        "ovapfile": args.ovapfile ,
-                        "dumpfiles": args.dumpfiles ,
-                        "totaltime": args.totaltime ,
-                        "debug": args.debug ,
-                        "verbosity": args.verbosity ,
-                        "iterations": args.iterations ,
-                        "select": args.select,
-                        "select_pert" : args.select_pert,
-                        "propthresh": args.propthresh,
-                        "tresh": args.tresh ,
-                        "pulseS": args.pulseS ,
-                        "t0": args.t0 ,
-                        "wrapperso": args.wrapperso ,
-                        "dumprestartnum": args.wrapperso ,
-                        'j': j,
-                        'niter': niter,
-                        'ndim' : ndim,
-                        'ene_list_REAL': numpy.real(ene_list).tolist(),
-                        'ene_list_IMAG': numpy.imag(ene_list).tolist(),
-                        'dip_list_REAL': numpy.real(dip_list).tolist(),
-                        'dip_list_IMAG': numpy.imag(dip_list).tolist(),
-                        'D_ti_REAL' : numpy.real(D_ti).tolist(),
-                        'D_ti_IMAG' : numpy.imag(D_ti).tolist(),
-                        'fock_mid_backwd_REAL' : numpy.real(fock_mid_backwd).tolist(),
-                        'fock_mid_backwd_IMAG' : numpy.imag(fock_mid_backwd).tolist(),
-                        'dipz_mat_REAL': numpy.real(dipz_mat).tolist(),
-                        'dipz_mat_IMAG': numpy.imag(dipz_mat).tolist(),
-                        'C_REAL': numpy.real(C).tolist(), 
-                        'C_IMAG': numpy.imag(C).tolist(),
-                        'C_inv_REAL': numpy.real(C_inv).tolist(),
-                        'C_inv_IMAG': numpy.imag(C_inv).tolist(),
-                        'ovapm_REAL': numpy.real(ovapm).tolist(),
-                        'ovapm_IMAG': numpy.imag(ovapm).tolist(),
-                        'Dp_ti_REAL': numpy.real(Dp_ti).tolist(),
-                        'Dp_ti_IMAG': numpy.imag(Dp_ti).tolist(),
-                        }
+                json_data = get_json_data(args, j, niter, ndim, ene_list, 
+                        dip_list, D_ti, fock_mid_backwd, dipz_mat, C, 
+                        C_inv, ovapm, Dp_ti)
 
                 with open(args.restartfile, 'w') as fp:
                     json.dump(json_data, fp, sort_keys=True, indent=4)
@@ -747,7 +717,7 @@ def normal_run(args):
         cend = time.process_time() 
    
         if (args.iterations):
-            print("Iteration ", j, " of ", niter-1, " ( %15.5f"%(end - start), \
+            print("Iteration %10d"%j, " of %10d"%(niter-1), " ( %15.5f"%(end - start), \
                     " (CPU time: %15.5f"%(cend - cstart), ") s )")
         else:
             rtutil.progress_bar(j, niter-1)
@@ -773,7 +743,9 @@ def normal_run(args):
     numpy.savetxt('ene.txt',numpy.c_[t_point.real,numpy.array(ene_list).real], fmt='%.12e')
     if (args.pulse == "analytic"):
         if (occlist[0] != -2):
-            numpy.savetxt('weighted_dip.txt',numpy.c_[t_point.real,numpy.array(weight_list).real], fmt='%.12e')
+            numpy.savetxt('weighted_dip.txt', \
+                    numpy.c_[t_point.real,numpy.array(weight_list).real], \
+                    fmt='%.12e')
     print(numpy.array(weight_list).shape)
     bertha.finalize()
 
