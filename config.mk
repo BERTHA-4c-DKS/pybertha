@@ -14,9 +14,9 @@ PROFILE=no
 USEINTEL=no
 
 #LIBXC
-LIBXC=no
+LIBXC=yes
 
-BERTHAROOT=/home/redo/Project_Bertha/bertha_ng
+BERTHAROOT=/home/matteod/build/master
 
 ###
 ## NO BLUEGENE

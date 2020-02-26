@@ -205,6 +205,29 @@ def dipole_selection(dipole,nshift,nocc,occlist,virtlist,odbg=sys.stderr,debug=F
 
 #######################################################################
 
+def dipoleanalysis(dipole,dmat,occlist,virtlist,nshift,odbg=sys.stderr,debug=False):
+#def dipoleanalysis(dipole,dmat,nocc,occlist,virtlist,nshift,odbg=sys.stderr,debug=False):
+    
+    shortl=occlist[1:]
+    tot = len(shortl)*len(virtlist)
+    if debug:
+       odbg.write("Selected occ. Mo: %s \n"% str(shortl))
+       odbg.write("Selected virt. Mo: %s \n"% str(virtlist))
+    #if (a == -1): #HOMO-LUMO 
+    #  i = nshift+nocc
+    #  a = nshift+nocc+1
+    #  res = dipole[i-1,a-1]*dmat[a-1,i-1] + dipole[a-1,i-1]*dmat[i-1,a-1]
+    #else:
+    res = numpy.zeros(tot,dtype=numpy.complex128)
+    count = 0
+    for i in shortl:
+      for j in virtlist:    
+         res[count] = dipole[i+nshift-1,j+nshift-1]*dmat[j+nshift-1,i+nshift-1] + dipole[j+nshift-1,i+nshift-1]*dmat[i+nshift-1,j+nshift-1]
+         count +=1
+    return res
+
+#######################################################################
+
 funcswitcher = {
     "kick": kick,
     "gauss_env": gauss_env,

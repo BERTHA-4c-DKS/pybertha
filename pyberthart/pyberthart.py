@@ -133,7 +133,7 @@ def check_and_covert (mat_REAL, mat_IMAG, ndim):
 
 def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t0,
         fo, D_ti, fock_mid_backwd, dt, dipz_mat, C, C_inv, ovapm, 
-        ndim, debug, Dp_ti, dip_list, ene_list):
+        ndim, debug, Dp_ti, dip_list, ene_list, weight_list=0, select="-2 ; 0 & 0"):
 
   
     fock_mid_tmp = rtutil.mo_fock_mid_forwd_eval(bertha, numpy.copy(D_ti), \
@@ -170,6 +170,19 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
       fo.write('  Trace of D_ti_dt %.8f\n' % numpy.trace(Dp_ti_dt).real)
     #dipole expectation for D_ti_dt
     dip_list.append(numpy.trace(numpy.matmul(dipz_mat,D_ti_dt)))
+
+    if (pulse == "analytic"):
+        molist = select.split("&")
+        occlist = molist[0].split(";")
+        occlist = [int(m) for m in occlist]
+        virtlist = molist[1].split(";")
+        virtlist = [int(m) for m in virtlist]
+        if (occlist[0] != -2):
+            #dipole analysis
+            nshift = ndim/2
+            dipz_mo = numpy.matmul(numpy.conjugate(C.T),numpy.matmul(dipz_mat,C))
+            res=rtutil.dipoleanalysis(dipz_mo,Dp_ti_dt,occlist,virtlist,int(nshift),fo,debug)
+            weight_list.append(res)
     if debug:
       fo.write("Dipole: %.12e\n"%(numpy.trace(numpy.matmul(dipz_mat,D_ti_dt)).real))
    
@@ -270,6 +283,7 @@ def restart_run(args):
     args.verbosity = json_data["verbosity"]
     args.iterations = json_data["iterations"]
     args.select = json_data["select"]
+    args.select_pert = json_data["select_pert"]
     args.propthresh = json_data["propthresh"]
     args.tresh = json_data["tresh"]
     args.wrapperso = json_data["wrapperso"]
@@ -357,6 +371,7 @@ def restart_run(args):
                         "verbosity": args.verbosity ,
                         "iterations": args.iterations ,
                         "select": args.select, 
+                        "select_pert": args.select_pert, 
                         "propthresh": args.propthresh,
                         "tresh": args.tresh ,
                         "pulseS": args.pulseS ,
@@ -407,7 +422,7 @@ def restart_run(args):
     print("")
     print("")
     print("Dump density density.cube")
-    bertha.density_to_cube(D_ti, "density.cube", margin = 5.0)
+    bertha.density_to_cube(D_ti.T, "density.cube", margin = 5.0)
     
     print("Done")
 
@@ -465,6 +480,7 @@ def normal_run(args):
     
     ene_list = []
     dip_list = []
+    weight_list = []
     imp_list = []
     Enuc_list = []
     
@@ -519,6 +535,12 @@ def normal_run(args):
     
     Da = numpy.matmul(occeigv,numpy.conjugate(occeigv.transpose()))
     
+    print("")
+    print("Dump ground state density density0.cube")
+    bertha.density_to_cube(Da.T, "density0.cube",margin=5.0)
+    
+    print("Done")
+
     if debug:
       #check trace(S Da)
       trace_ds = numpy.trace(numpy.matmul(Da,ovapm))
@@ -526,7 +548,7 @@ def normal_run(args):
       fo.write("Density matrix trace at  t0: %.12e %.12e \n"%(trace_ds.real,trace_ds.imag))
       fo.write("Trace of fock*density at t0: %.12e %.12e \n"%(trace_dsfock.real, trace_dsfock.imag))
     
-    direction = 2
+    direction = 4
     normalise = 1
     dipz_mat = bertha.get_realtime_dipolematrix (direction, normalise)
     
@@ -538,17 +560,18 @@ def normal_run(args):
             (mdiff.real, mdiff.imag))
       fo.write("Fockm (t=0) is hermitian: %s \n"%numpy.allclose(fockm,fockmh,atol=1.e-15))
     
+    molist = args.select.split("&")
+    occlist = molist[0].split(";")
+    occlist = [int(m) for m in occlist]
+    virtlist = molist[1].split(";")
+    virtlist = [int(m) for m in virtlist]
+    
     if (args.pulse == "analytic"):
         Amp=args.pulseFmax
-        dipz_mo=numpy.matmul(numpy.conjugate(C.T),numpy.matmul(dipz_mat,C))
-        molist = args.select.split("&")
-        occlist = molist[0].split(";")
-        occlist = [int(m) for m in occlist]
-        virtlist = molist[1].split(";")
-        virtlist = [int(m) for m in virtlist]
-
-        if (occlist[0] != -2):
+        if args.select_pert:
             dipz_mo=rtutil.dipole_selection(dipz_mo,nshift,nocc,occlist,virtlist,fo,debug)
+
+        dipz_mo=numpy.matmul(numpy.conjugate(C.T),numpy.matmul(dipz_mat,C))
         print(" Perturb with analytic kick ")
         u0=rtutil.exp_opmat(dipz_mo,numpy.float_(-Amp),debug,fo)
         Dp_init=numpy.matmul(u0,numpy.matmul(D_0,numpy.conjugate(u0.T)))
@@ -556,6 +579,8 @@ def normal_run(args):
         Da=numpy.matmul(C,numpy.matmul(Dp_init,numpy.conjugate(C.T)))
         D_0=Dp_init
     
+    
+
     print("Start first mo_fock_mid_forwd_eval ")
     
     fock_mid_init = rtutil.mo_fock_mid_forwd_eval(bertha,Da,fockm,0,numpy.float_(dt),\
@@ -596,7 +621,14 @@ def normal_run(args):
     
     dip_list.append(numpy.trace(numpy.matmul(Da,dipz_mat)))
     dip_list.append(numpy.trace(numpy.matmul(D_t1,dipz_mat)))
-    if debug:
+    if (args.pulse == "analytic"):
+      if (occlist[0] != -2):
+          #dipoleanalysis
+          res=rtutil.dipoleanalysis(dipz_mo,D_0,occlist,virtlist,nshift,fo,debug)
+          weight_list.append(res)            
+          res=rtutil.dipoleanalysis(dipz_mo,Dp_t1,occlist,virtlist,nshift,fo,debug)
+          weight_list.append(res)            
+    if debug:                              
       fo.write("Dipole: %.12e\n"%(numpy.trace(numpy.matmul(Da,dipz_mat))).real)
       fo.write("Dipole: %.12e\n"%(numpy.trace(numpy.matmul(D_t1,dipz_mat))).real)
     
@@ -647,8 +679,8 @@ def normal_run(args):
                 args.pulse, args.pulseFmax, args.pulsew, args.propthresh,
                 args.pulseS, args.t0, fo, D_ti, 
                 fock_mid_backwd, dt, dipz_mat, C, C_inv, ovapm, 
-                ndim, debug, Dp_ti, dip_list, ene_list)
-
+                ndim, debug, Dp_ti, dip_list, ene_list, weight_list, args.select)
+        
         if fock_mid_backwd is None:
             return False
 
@@ -676,6 +708,7 @@ def normal_run(args):
                         "verbosity": args.verbosity ,
                         "iterations": args.iterations ,
                         "select": args.select,
+                        "select_pert" : args.select_pert,
                         "propthresh": args.propthresh,
                         "tresh": args.tresh ,
                         "pulseS": args.pulseS ,
@@ -726,7 +759,7 @@ def normal_run(args):
     print("")
     print("")
     print("Dump density density.cube")
-    bertha.density_to_cube(D_ti, "density.cube", margin = 5.0)
+    bertha.density_to_cube(D_ti.T, "density.cube", margin = 5.0)
     
     print("Done")
     
@@ -738,7 +771,10 @@ def normal_run(args):
     t_point = numpy.linspace(0.0, niter*dt, niter+1)
     numpy.savetxt('dipole.txt',numpy.c_[t_point.real,numpy.array(dip_list).real], fmt='%.12e')
     numpy.savetxt('ene.txt',numpy.c_[t_point.real,numpy.array(ene_list).real], fmt='%.12e')
-    
+    if (args.pulse == "analytic"):
+        if (occlist[0] != -2):
+            numpy.savetxt('weighted_dip.txt',numpy.c_[t_point.real,numpy.array(weight_list).real], fmt='%.12e')
+    print(numpy.array(weight_list).shape)
     bertha.finalize()
 
     return True
@@ -788,6 +824,8 @@ def main():
            required=False, type=str, default="../lib/bertha_wrapper.so")
    parser.add_argument("--select", help="Specify  occ. and virt. MO for selective perturbation (default: -2; 0 & 0)", 
            default="-2; 0 & 0", type=str)
+   parser.add_argument("--select_pert", help="Turn on selective perturbation mode", required=False,
+           default=False, action="store_true")
    parser.add_argument("--propthresh", help="threshold for midpoint iterative scheme (default = 1.0e-6)", required=False, 
            type=numpy.float64, default=1.0e-6)
    parser.add_argument("--t0", help="Specify the center of gaussian enveloped pulse (default: 0.0)", 
