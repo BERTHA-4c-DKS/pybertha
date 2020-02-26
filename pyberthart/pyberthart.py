@@ -580,10 +580,13 @@ def normal_run(args):
     
     if (args.pulse == "analytic"):
         Amp=args.pulseFmax
+
+        # to check 
+        dipz_mo=numpy.matmul(numpy.conjugate(C.T),numpy.matmul(dipz_mat,C))
+
         if args.select_pert:
             dipz_mo=rtutil.dipole_selection(dipz_mo,nshift,nocc,occlist,virtlist,fo,debug)
 
-        dipz_mo=numpy.matmul(numpy.conjugate(C.T),numpy.matmul(dipz_mat,C))
         print(" Perturb with analytic kick ")
         u0=rtutil.exp_opmat(dipz_mo,numpy.float_(-Amp),debug,fo)
         Dp_init=numpy.matmul(u0,numpy.matmul(D_0,numpy.conjugate(u0.T)))
