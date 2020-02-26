@@ -107,12 +107,12 @@ print("     level shift: ", sfact)
 print("")
 
 start = time.time()
-cstart = time.clock()
+cstart = time.process_time() 
 
 ovapm, eigem, fockm, eigen = bertha.run()
 
 end = time.time()
-cend = time.clock()
+cend = time.process_time() 
 
 print("Totaltime:    ", end - start, " (CPU time: " , cend - cstart, ") s ")
 print("MainRun Time: ", bertha.get_mainruntime() , \
