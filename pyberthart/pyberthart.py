@@ -52,7 +52,7 @@ def single_point (args, bertha):
     bertha.set_densitydiff(1)
 
     berthastart = time.time()
-    berthacstart = time.clock()
+    berthacstart = time.process_time() 
     
     bertha.init()
     
@@ -83,7 +83,7 @@ def single_point (args, bertha):
     bertha.set_densitydiff(0)
 
     berthaend = time.time()
-    berthacend = time.clock()
+    berthacend = time.process_time() 
    
     print("Single-Point time: ", berthaend - berthastart, \
                     " (CPU time: " , berthacend - berthacstart, ") s ")
@@ -336,7 +336,7 @@ def restart_run(args):
         sys.stdout.flush()
 
         start = time.time()
-        cstart = time.clock()
+        cstart = time.process_time() 
     
         fock_mid_backwd, D_ti, Dp_ti = main_loop(j, niter, bertha, 
                 args.pulse, args.pulseFmax, args.pulsew, args.propthresh, 
@@ -407,7 +407,7 @@ def restart_run(args):
                 dumpcounter = 0
                 
         end = time.time()
-        cend = time.clock()
+        cend = time.process_time() 
    
         if (args.iterations):
             print("Iteration ", j, " of ", niter-1, " ( ", end - start, \
@@ -647,16 +647,16 @@ def normal_run(args):
     #Enuc_list.append(-func_t0*Ndip_z+Nuc_rep) #just in case of non-zero nuclear dipole
     
     start = time.time()
-    cstart = time.clock()
+    cstart = time.process_time() 
 
     fockm_ti=bertha.get_realtime_fock(D_ti.T)
 
     end = time.time()
-    cend = time.clock()
+    cend = time.process_time() 
 
-    print("RealTime Fock Time:            ",end-start, " (CPU: ", cend-cstart, " ) s")  
-    print("RealTime Fock Time Without Py: ",bertha.get_focktime(), " (CPU: ", \
-            bertha.get_fockctime(), " ) s")
+    print("RealTime Fock Time:            %15.5f"%(end-start), " (CPU: %15.5f"%(cend-cstart), " ) s")  
+    print("RealTime Fock Time Without Py: %15.5f"%(bertha.get_focktime()), \
+            " (CPU: %15.5f"%(bertha.get_fockctime()), " ) s")
     print("")
     ene_list.append(numpy.trace(numpy.matmul(Da,fockm)))
     ene_list.append(numpy.trace(numpy.matmul(D_ti,fockm_ti)))
@@ -673,7 +673,7 @@ def normal_run(args):
         sys.stdout.flush()
 
         start = time.time()
-        cstart = time.clock()
+        cstart = time.process_time() 
     
         fock_mid_backwd, D_ti, Dp_ti = main_loop(j, niter, bertha, 
                 args.pulse, args.pulseFmax, args.pulsew, args.propthresh,
@@ -744,11 +744,11 @@ def normal_run(args):
                 dumpcounter = 0
 
         end = time.time()
-        cend = time.clock()
+        cend = time.process_time() 
    
         if (args.iterations):
-            print("Iteration ", j, " of ", niter-1, " ( ", end - start, \
-                    " (CPU time: " , cend - cstart, ") s )")
+            print("Iteration ", j, " of ", niter-1, " ( %15.5f"%(end - start), \
+                    " (CPU time: %15.5f"%(cend - cstart), ") s )")
         else:
             rtutil.progress_bar(j, niter-1)
 
