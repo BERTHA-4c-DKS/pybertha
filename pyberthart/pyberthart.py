@@ -18,9 +18,11 @@ sys.path.insert(0, "../src")
 import berthamod
 import rtutil
 
+##########################################################################################
+
 def get_json_data(args, j, niter, ndim, ene_list, \
         dip_list, D_ti, fock_mid_backwd, dipz_mat, C, \
-        C_inv, ovapm, Dp_ti):
+        C_inv, ovapm, Dp_ti, weight_list):
 
     json_data = {
             'pulse': args.pulse,
@@ -66,6 +68,8 @@ def get_json_data(args, j, niter, ndim, ene_list, \
             'ovapm_IMAG': numpy.imag(ovapm).tolist(),
             'Dp_ti_REAL': numpy.real(Dp_ti).tolist(),
             'Dp_ti_IMAG': numpy.imag(Dp_ti).tolist(),
+            'weight_list_REAL': numpy.array(weight_list).real.tolist(),
+            'weight_list_IMAG': numpy.array(weight_list).imag.tolist()
             }
 
     return json_data
@@ -287,7 +291,7 @@ def restart_run(args):
     Dp_ti_IMAG = numpy.float_(json_data["Dp_ti_IMAG"])
     D_ti_REAL = numpy.float_(json_data["D_ti_REAL"])
     D_ti_IMAG = numpy.float_(json_data["D_ti_IMAG"])
-
+ 
     fock_mid_backwd = check_and_covert (fock_mid_backwd_REAL ,
             fock_mid_backwd_IMAG, ndim)
     dipz_mat = check_and_covert (dipz_mat_REAL, dipz_mat_IMAG, ndim)
@@ -315,6 +319,24 @@ def restart_run(args):
             ene_list_IMAG[i])))
         dip_list.append(numpy.complex128(complex(dip_list_REAL[i],
             dip_list_IMAG[i])))
+
+    weight_list_REAL = numpy.float_(json_data["weight_list_REAL"])
+    weight_list_IMAG = numpy.float_(json_data["weight_list_IMAG"])
+
+    weight_list = []
+
+    if len(weight_list_REAL) != len(weight_list_IMAG):
+        print("ERROR in weight_list size")
+        exit(1)
+
+    for i in range(len(weight_list_REAL)):
+        if len(weight_list_REAL[i]) != len(weight_list_IMAG[i]):
+            print("ERROR in weight_list size")
+            exit(1)
+
+        for j in range(len(weight_list_REAL[i])):
+            weight_list.append(numpy.complex128(complex(weight_list_REAL[i][j],
+                weight_list_IMAG[i][j])))
 
     args.pulse = json_data['pulse']
     args.pulseFmax = json_data['pulseFmax']
@@ -344,6 +366,12 @@ def restart_run(args):
     args.wrapperso = json_data["dumprestartnum"]
     args.pulseS = json_data["pulseS"]
     args.t0 = json_data["t0"]
+
+    molist = args.select.split("&")
+    occlist = molist[0].split(";")
+    occlist = [int(m) for m in occlist]
+    virtlist = molist[1].split(";")
+    virtlist = [int(m) for m in virtlist]
 
     print("Options: ")
     print(args) 
@@ -393,7 +421,7 @@ def restart_run(args):
         cstart = time.process_time() 
     
         fock_mid_backwd, D_ti, Dp_ti = main_loop(j, niter, bertha, 
-                args.pulse, args.pulseFmax, args.pulsew, args.propthresh, 
+                args.pulse, args.pulseFmax, args.pulsew, args.propthresh,
                 args.pulseS, args.t0, fo, D_ti, 
                 fock_mid_backwd, dt, dipz_mat, C, C_inv, ovapm, 
                 ndim, debug, Dp_ti, dip_list, ene_list, weight_list, args.select)
@@ -411,22 +439,22 @@ def restart_run(args):
 
                 json_data = get_json_data(args, j, niter, ndim, ene_list, 
                         dip_list, D_ti, fock_mid_backwd, dipz_mat, C, 
-                        C_inv, ovapm, Dp_ti)
+                        C_inv, ovapm, Dp_ti, weight_list)
 
                 with open(args.restartfile, 'w') as fp:
                     json.dump(json_data, fp, sort_keys=True, indent=4)
 
                 dumpcounter = 0
-                
+
         end = time.time()
         cend = time.process_time() 
    
         if (args.iterations):
-            print("Iteration %10d"%j , " of %10d"%(niter-1), " ( %15.5f"%(end - start), \
+            print("Iteration %10d"%j, " of %10d"%(niter-1), " ( %15.5f"%(end - start), \
                     " (CPU time: %15.5f"%(cend - cstart), ") s )")
         else:
             rtutil.progress_bar(j, niter-1)
-   
+
         sys.stdout.flush()
 
     sys.stdout.flush()
@@ -437,16 +465,21 @@ def restart_run(args):
     bertha.density_to_cube(D_ti.T, "density.cube", margin = 5.0)
     
     print("Done")
-
-    sys.stdout.flush()
     
+    sys.stdout.flush()
+
     if debug:
         fo.close()
     
     t_point = numpy.linspace(0.0, niter*dt, niter+1)
     numpy.savetxt('dipole.txt',numpy.c_[t_point.real,numpy.array(dip_list).real], fmt='%.12e')
     numpy.savetxt('ene.txt',numpy.c_[t_point.real,numpy.array(ene_list).real], fmt='%.12e')
-    
+    if (args.pulse == "analytic"):
+        if (occlist[0] != -2):
+            numpy.savetxt('weighted_dip.txt', \
+                    numpy.c_[t_point.real,numpy.array(weight_list).real], \
+                    fmt='%.12e')
+    #print(numpy.array(weight_list).shape)
     bertha.finalize()
 
     return True
@@ -694,8 +727,6 @@ def normal_run(args):
                 fock_mid_backwd, dt, dipz_mat, C, C_inv, ovapm, 
                 ndim, debug, Dp_ti, dip_list, ene_list, weight_list, args.select)
 
-        print(weight_list)
-        
         if fock_mid_backwd is None:
             return False
 
@@ -709,7 +740,7 @@ def normal_run(args):
 
                 json_data = get_json_data(args, j, niter, ndim, ene_list, 
                         dip_list, D_ti, fock_mid_backwd, dipz_mat, C, 
-                        C_inv, ovapm, Dp_ti)
+                        C_inv, ovapm, Dp_ti, weight_list)
 
                 with open(args.restartfile, 'w') as fp:
                     json.dump(json_data, fp, sort_keys=True, indent=4)
