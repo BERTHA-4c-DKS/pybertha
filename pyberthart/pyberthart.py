@@ -780,7 +780,7 @@ def normal_run(args):
             numpy.savetxt('weighted_dip.txt', \
                     numpy.c_[t_point.real,numpy.array(weight_list).real], \
                     fmt='%.12e')
-    print(numpy.array(weight_list).shape)
+    #print(numpy.array(weight_list).shape)
     bertha.finalize()
 
     return True
