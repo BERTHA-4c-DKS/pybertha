@@ -47,6 +47,7 @@ def get_json_data(args, j, niter, ndim, ene_list, \
             "t0": args.t0 , 
             "wrapperso": args.wrapperso ,
             "dumprestartnum": args.wrapperso ,
+            "direction": args.direction ,
             'j': j,
             'niter': niter,
             'ndim' : ndim,
@@ -267,6 +268,86 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
 
 ##########################################################################################
 
+def run_iterations_from_to (startiter, niter, bertha, args, fock_mid_backwd, dt, \
+        dipz_mat, C, C_inv, ovapm, ndim, debug, Dp_ti, dip_list, ene_list, weight_list, \
+        fo, D_ti, occlist):
+
+    dumpcounter = 0
+    
+    for j in range(startiter, niter):
+
+        sys.stdout.flush()
+
+        start = time.time()
+        cstart = time.process_time() 
+    
+        fock_mid_backwd, D_ti, Dp_ti = main_loop(j, niter, bertha, 
+                args.pulse, args.pulseFmax, args.pulsew, args.propthresh,
+                args.pulseS, args.t0, fo, D_ti, 
+                fock_mid_backwd, dt, dipz_mat, C, C_inv, ovapm, 
+                ndim, debug, Dp_ti, dip_list, ene_list, weight_list, args.select)
+
+        if fock_mid_backwd is None:
+            return False
+
+        dumpcounter += 1
+
+        if args.dumprestartnum > 0:
+            if (dumpcounter == args.dumprestartnum) or \
+                    (j == niter-1):
+                
+                encoder.FLOAT_REPR = lambda o: format(o, '.25E')
+
+                json_data = get_json_data(args, j, niter, ndim, ene_list, 
+                        dip_list, D_ti, fock_mid_backwd, dipz_mat, C, 
+                        C_inv, ovapm, Dp_ti, weight_list)
+
+                with open(args.restartfile, 'w') as fp:
+                    json.dump(json_data, fp, sort_keys=True, indent=4)
+
+                dumpcounter = 0
+
+        end = time.time()
+        cend = time.process_time() 
+   
+        if (args.iterations):
+            print("Iteration %10d"%j, " of %10d"%(niter-1), " ( %15.5f"%(end - start), \
+                    " (CPU time: %15.5f"%(cend - cstart), ") s )")
+        else:
+            rtutil.progress_bar(j, niter-1)
+
+        sys.stdout.flush()
+
+    sys.stdout.flush()
+
+    print("")
+    print("")
+    print("Dump density density.cube")
+    bertha.density_to_cube(D_ti.T, "density.cube", margin = 5.0)
+    
+    print("Done")
+    
+    sys.stdout.flush()
+
+    if debug:
+        fo.close()
+    
+    t_point = numpy.linspace(0.0, niter*dt, niter+1)
+    numpy.savetxt('dipole.txt',numpy.c_[t_point.real,numpy.array(dip_list).real], fmt='%.12e')
+    numpy.savetxt('ene.txt',numpy.c_[t_point.real,numpy.array(ene_list).real], fmt='%.12e')
+    if (args.pulse == "analytic"):
+        if (occlist[0] != -2):
+            numpy.savetxt('weighted_dip.txt', \
+                    numpy.c_[t_point.real,numpy.array(weight_list).real], \
+                    fmt='%.12e')
+    #print(numpy.array(weight_list).shape)
+    bertha.finalize()
+
+    return True
+
+
+##########################################################################################
+
 def restart_run(args):
     
     fp = open(args.restartfile, 'r')
@@ -348,6 +429,7 @@ def restart_run(args):
     args.vctfile = json_data["vctfile"]
     args.ovapfile = json_data["ovapfile"]
     args.dumpfiles = json_data["dumpfiles"]
+    args.direction = json_data["direction"]
     
     totaltime = json_data["totaltime"]
     if args.totaltime < totaltime:
@@ -412,78 +494,10 @@ def restart_run(args):
     if debug:
         fo = open("debug_info.txt", "w")
     
-    dumpcounter = 0
-    for j in range(jstart+1, niter):
-
-        sys.stdout.flush()
-
-        start = time.time()
-        cstart = time.process_time() 
-    
-        fock_mid_backwd, D_ti, Dp_ti = main_loop(j, niter, bertha, 
-                args.pulse, args.pulseFmax, args.pulsew, args.propthresh,
-                args.pulseS, args.t0, fo, D_ti, 
-                fock_mid_backwd, dt, dipz_mat, C, C_inv, ovapm, 
-                ndim, debug, Dp_ti, dip_list, ene_list, weight_list, args.select)
-
-        if fock_mid_backwd is None:
-            return False
-
-        dumpcounter += 1
-
-        if args.dumprestartnum > 0:
-            if (dumpcounter == args.dumprestartnum) or \
-                    (j == niter-1):
-                
-                encoder.FLOAT_REPR = lambda o: format(o, '.25E')
-
-                json_data = get_json_data(args, j, niter, ndim, ene_list, 
-                        dip_list, D_ti, fock_mid_backwd, dipz_mat, C, 
-                        C_inv, ovapm, Dp_ti, weight_list)
-
-                with open(args.restartfile, 'w') as fp:
-                    json.dump(json_data, fp, sort_keys=True, indent=4)
-
-                dumpcounter = 0
-
-        end = time.time()
-        cend = time.process_time() 
-   
-        if (args.iterations):
-            print("Iteration %10d"%j, " of %10d"%(niter-1), " ( %15.5f"%(end - start), \
-                    " (CPU time: %15.5f"%(cend - cstart), ") s )")
-        else:
-            rtutil.progress_bar(j, niter-1)
-
-        sys.stdout.flush()
-
-    sys.stdout.flush()
-
-    print("")
-    print("")
-    print("Dump density density.cube")
-    bertha.density_to_cube(D_ti.T, "density.cube", margin = 5.0)
-    
-    print("Done")
-    
-    sys.stdout.flush()
-
-    if debug:
-        fo.close()
-    
-    t_point = numpy.linspace(0.0, niter*dt, niter+1)
-    numpy.savetxt('dipole.txt',numpy.c_[t_point.real,numpy.array(dip_list).real], fmt='%.12e')
-    numpy.savetxt('ene.txt',numpy.c_[t_point.real,numpy.array(ene_list).real], fmt='%.12e')
-    if (args.pulse == "analytic"):
-        if (occlist[0] != -2):
-            numpy.savetxt('weighted_dip.txt', \
-                    numpy.c_[t_point.real,numpy.array(weight_list).real], \
-                    fmt='%.12e')
-    #print(numpy.array(weight_list).shape)
-    bertha.finalize()
-
-    return True
-
+    return run_iterations_from_to (jstart+1, niter, bertha, args, fock_mid_backwd, \
+            dt, dipz_mat, C, C_inv, ovapm, ndim, debug, Dp_ti, dip_list, ene_list, \
+            weight_list, fo, D_ti, occlist)
+ 
 ##########################################################################################
 
 def normal_run(args):
@@ -593,7 +607,7 @@ def normal_run(args):
       fo.write("Density matrix trace at  t0: %.12e %.12e \n"%(trace_ds.real,trace_ds.imag))
       fo.write("Trace of fock*density at t0: %.12e %.12e \n"%(trace_dsfock.real, trace_dsfock.imag))
     
-    direction = 4
+    direction = args.direction
     normalise = 1
     dipz_mat = bertha.get_realtime_dipolematrix (direction, normalise)
     
@@ -712,79 +726,10 @@ def normal_run(args):
     
     fock_mid_backwd = numpy.copy(fock_mid_init)
 
-    dumpcounter = 0
+    return run_iterations_from_to (1, niter, bertha, args, fock_mid_backwd, \
+            dt, dipz_mat, C, C_inv, ovapm, ndim, debug, Dp_ti, dip_list, ene_list, \
+            weight_list, fo, D_ti, occlist)
     
-    for j in range(1,niter):
-
-        sys.stdout.flush()
-
-        start = time.time()
-        cstart = time.process_time() 
-    
-        fock_mid_backwd, D_ti, Dp_ti = main_loop(j, niter, bertha, 
-                args.pulse, args.pulseFmax, args.pulsew, args.propthresh,
-                args.pulseS, args.t0, fo, D_ti, 
-                fock_mid_backwd, dt, dipz_mat, C, C_inv, ovapm, 
-                ndim, debug, Dp_ti, dip_list, ene_list, weight_list, args.select)
-
-        if fock_mid_backwd is None:
-            return False
-
-        dumpcounter += 1
-
-        if args.dumprestartnum > 0:
-            if (dumpcounter == args.dumprestartnum) or \
-                    (j == niter-1):
-                
-                encoder.FLOAT_REPR = lambda o: format(o, '.25E')
-
-                json_data = get_json_data(args, j, niter, ndim, ene_list, 
-                        dip_list, D_ti, fock_mid_backwd, dipz_mat, C, 
-                        C_inv, ovapm, Dp_ti, weight_list)
-
-                with open(args.restartfile, 'w') as fp:
-                    json.dump(json_data, fp, sort_keys=True, indent=4)
-
-                dumpcounter = 0
-
-        end = time.time()
-        cend = time.process_time() 
-   
-        if (args.iterations):
-            print("Iteration %10d"%j, " of %10d"%(niter-1), " ( %15.5f"%(end - start), \
-                    " (CPU time: %15.5f"%(cend - cstart), ") s )")
-        else:
-            rtutil.progress_bar(j, niter-1)
-
-        sys.stdout.flush()
-
-    sys.stdout.flush()
-
-    print("")
-    print("")
-    print("Dump density density.cube")
-    bertha.density_to_cube(D_ti.T, "density.cube", margin = 5.0)
-    
-    print("Done")
-    
-    sys.stdout.flush()
-
-    if debug:
-        fo.close()
-    
-    t_point = numpy.linspace(0.0, niter*dt, niter+1)
-    numpy.savetxt('dipole.txt',numpy.c_[t_point.real,numpy.array(dip_list).real], fmt='%.12e')
-    numpy.savetxt('ene.txt',numpy.c_[t_point.real,numpy.array(ene_list).real], fmt='%.12e')
-    if (args.pulse == "analytic"):
-        if (occlist[0] != -2):
-            numpy.savetxt('weighted_dip.txt', \
-                    numpy.c_[t_point.real,numpy.array(weight_list).real], \
-                    fmt='%.12e')
-    #print(numpy.array(weight_list).shape)
-    bertha.finalize()
-
-    return True
-
 ##########################################################################################
 
 def main():
@@ -838,6 +783,8 @@ def main():
            default=0.0, type=numpy.float64)
    parser.add_argument("--pulseS", help="Specify the pulse s-parameter: for gaussian enveloped pulse, " + 
            "'s' is sqrt(variance) (default: 0.0)", default=0.0, type=numpy.float64)
+   parser.add_argument("--direction", help="Specify the pulse direction 2=x,3=y,4=z ", default=4, type=int)
+
 
    parser.add_argument("--restartfile", help="set a restart file (default: restart_pybertha.json)", 
            required=False, type=str, default="restart_pybertha.json")
