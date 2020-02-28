@@ -69,8 +69,8 @@ def get_json_data(args, j, niter, ndim, ene_list, \
             'ovapm_IMAG': numpy.imag(ovapm).tolist(),
             'Dp_ti_REAL': numpy.real(Dp_ti).tolist(),
             'Dp_ti_IMAG': numpy.imag(Dp_ti).tolist(),
-            'weight_list_REAL': numpy.array(weight_list).real.tolist(),
-            'weight_list_IMAG': numpy.array(weight_list).imag.tolist()
+            'weight_list_REAL': numpy.real(numpy.array(weight_list)).tolist(),
+            'weight_list_IMAG': numpy.imag(numpy.array(weight_list)).tolist()
             }
 
     return json_data
@@ -414,9 +414,13 @@ def restart_run(args):
             print("ERROR in weight_list size")
             exit(1)
 
+        row = numpy.zeros(len(weight_list_REAL[i]), dtype=numpy.complex128)
+
         for j in range(len(weight_list_REAL[i])):
-            weight_list.append(numpy.complex128(complex(weight_list_REAL[i][j],
-                weight_list_IMAG[i][j])))
+            row[j] = numpy.complex128(complex(weight_list_REAL[i][j],
+                weight_list_IMAG[i][j]))
+
+        weight_list.append(row)
 
     args.pulse = json_data['pulse']
     args.pulseFmax = json_data['pulseFmax']
