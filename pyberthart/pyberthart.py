@@ -142,8 +142,8 @@ def single_point (args, bertha):
     berthaend = time.time()
     berthacend = time.process_time() 
    
-    print("Single-Point time: ", berthaend - berthastart, \
-                    " (CPU time: " , berthacend - berthacstart, ") s ")
+    print("Single-Point time: %15.5f"%(berthaend - berthastart), \
+                    " (CPU time: %15.5f"%(berthacend - berthacstart), ") s ")
     
     sys.stdout.flush()
     
