@@ -614,6 +614,7 @@ class pybertha:
         """
         get_realtime_dipolematrix computes the dipolematrix, 
         the direction can be:
+            - 0 = all three directions
             - 2 = z direction
             - 3 = y direction
             - 4 = x direction
@@ -621,6 +622,10 @@ class pybertha:
 
         if not isinstance(direction, int):
             raise TypeError("get_realtime_dipolematrix: input must be an integer")
+
+        if (direction != 0) and (direction != 2) and (direction != 3) and \
+                (direction != 4):
+            raise TypeError("get_realtime_dipolematrix: input must be 0 or 2 or 3 or 4")
 
         if not isinstance(normalise, int):
             raise TypeError("get_realtime_dipolematrix: input must be an integer")
@@ -631,13 +636,39 @@ class pybertha:
 
             vextbuffer = numpy.zeros((2*ndim*ndim), dtype=numpy.double)
             vextbuffer = numpy.ascontiguousarray(vextbuffer, dtype=numpy.double)
-            
-            self.__bertha.realtime_dipolematrix(direction, normalise, \
+
+            if direction == 0:
+
+                self.__bertha.realtime_dipolematrix(4, normalise, \
                     ctypes.c_void_p(vextbuffer.ctypes.data))
-           
-            vextm = doublevct_to_complexmat (vextbuffer, ndim)
-            if vextm is None:
-                raise Error("Error in vextm matrix size")
+
+                vextmx = doublevct_to_complexmat (vextbuffer, ndim)
+                if vextmx is None:
+                    raise Error("Error in vextm matrix size")
+
+                self.__bertha.realtime_dipolematrix(3, normalise, \
+                    ctypes.c_void_p(vextbuffer.ctypes.data))
+
+                vextmy = doublevct_to_complexmat (vextbuffer, ndim)
+                if vextmy is None:
+                    raise Error("Error in vextm matrix size")
+
+                self.__bertha.realtime_dipolematrix(2, normalise, \
+                    ctypes.c_void_p(vextbuffer.ctypes.data))
+
+                vextmz = doublevct_to_complexmat (vextbuffer, ndim)
+                if vextmz is None:
+                    raise Error("Error in vextm matrix size")
+
+                return (vextmx, vextmy, vextmz)
+
+            else:
+                self.__bertha.realtime_dipolematrix(direction, normalise, \
+                    ctypes.c_void_p(vextbuffer.ctypes.data))
+
+                vextm = doublevct_to_complexmat (vextbuffer, ndim)
+                if vextm is None:
+                    raise Error("Error in vextm matrix size")
             
             return vextm
 

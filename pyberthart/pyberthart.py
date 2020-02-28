@@ -21,7 +21,7 @@ import rtutil
 ##########################################################################################
 
 def get_json_data(args, j, niter, ndim, ene_list, \
-        dip_list, D_ti, fock_mid_backwd, dipz_mat, C, \
+        dip_list, D_ti, fock_mid_backwd, dip_mat, C, \
         C_inv, ovapm, Dp_ti, weight_list):
 
     json_data = {
@@ -59,8 +59,8 @@ def get_json_data(args, j, niter, ndim, ene_list, \
             'D_ti_IMAG' : numpy.imag(D_ti).tolist(),
             'fock_mid_backwd_REAL' : numpy.real(fock_mid_backwd).tolist(),
             'fock_mid_backwd_IMAG' : numpy.imag(fock_mid_backwd).tolist(),
-            'dipz_mat_REAL': numpy.real(dipz_mat).tolist(),
-            'dipz_mat_IMAG': numpy.imag(dipz_mat).tolist(),
+            'dip_mat_REAL': numpy.real(dip_mat).tolist(),
+            'dip_mat_IMAG': numpy.imag(dip_mat).tolist(),
             'C_REAL': numpy.real(C).tolist(), 
             'C_IMAG': numpy.imag(C).tolist(),
             'C_inv_REAL': numpy.real(C_inv).tolist(),
@@ -189,13 +189,13 @@ def check_and_covert (mat_REAL, mat_IMAG, ndim):
 ##########################################################################################
 
 def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t0,
-        fo, D_ti, fock_mid_backwd, dt, dipz_mat, C, C_inv, ovapm, 
+        fo, D_ti, fock_mid_backwd, dt, dip_mat, C, C_inv, ovapm, 
         ndim, debug, Dp_ti, dip_list, ene_list, weight_list=None, 
         select="-2 ; 0 & 0"):
 
   
     fock_mid_tmp = rtutil.mo_fock_mid_forwd_eval(bertha, numpy.copy(D_ti), \
-            fock_mid_backwd, j, numpy.float_(dt), dipz_mat, C, C_inv, ovapm, \
+            fock_mid_backwd, j, numpy.float_(dt), dip_mat, C, C_inv, ovapm, \
             ndim, debug, fo, pulse, pulseFmax, pulsew, t0, pulseS, propthresh)
     
     if (fock_mid_tmp is None):
@@ -227,7 +227,7 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
     if debug:
       fo.write('  Trace of D_ti_dt %.8f\n' % numpy.trace(Dp_ti_dt).real)
     #dipole expectation for D_ti_dt
-    dip_list.append(numpy.trace(numpy.matmul(dipz_mat,D_ti_dt)))
+    dip_list.append(numpy.trace(numpy.matmul(dip_mat,D_ti_dt)))
 
     if (pulse == "analytic"):
         molist = select.split("&")
@@ -238,12 +238,12 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
         if (occlist[0] != -2):
             #dipole analysis
             nshift = ndim/2
-            dipz_mo = numpy.matmul(numpy.conjugate(C.T),numpy.matmul(dipz_mat,C))
+            dipz_mo = numpy.matmul(numpy.conjugate(C.T),numpy.matmul(dip_mat,C))
             res=rtutil.dipoleanalysis(dipz_mo,Dp_ti_dt,occlist,virtlist,int(nshift),fo,debug)
             if (weight_list != None):
                 weight_list.append(res)
     if debug:
-      fo.write("Dipole: %.12e\n"%(numpy.trace(numpy.matmul(dipz_mat,D_ti_dt)).real))
+      fo.write("Dipole: %.12e\n"%(numpy.trace(numpy.matmul(dip_mat,D_ti_dt)).real))
    
     #Energy expectation value at t = t_i_dt 
     fockm_ti_dt = bertha.get_realtime_fock(D_ti_dt.T)
@@ -269,7 +269,7 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
 ##########################################################################################
 
 def run_iterations_from_to (startiter, niter, bertha, args, fock_mid_backwd, dt, \
-        dipz_mat, C, C_inv, ovapm, ndim, debug, Dp_ti, dip_list, ene_list, weight_list, \
+        dip_mat, C, C_inv, ovapm, ndim, debug, Dp_ti, dip_list, ene_list, weight_list, \
         fo, D_ti, occlist):
 
     dumpcounter = 0
@@ -284,7 +284,7 @@ def run_iterations_from_to (startiter, niter, bertha, args, fock_mid_backwd, dt,
         fock_mid_backwd, D_ti, Dp_ti = main_loop(j, niter, bertha, 
                 args.pulse, args.pulseFmax, args.pulsew, args.propthresh,
                 args.pulseS, args.t0, fo, D_ti, 
-                fock_mid_backwd, dt, dipz_mat, C, C_inv, ovapm, 
+                fock_mid_backwd, dt, dip_mat, C, C_inv, ovapm, 
                 ndim, debug, Dp_ti, dip_list, ene_list, weight_list, args.select)
 
         if fock_mid_backwd is None:
@@ -299,7 +299,7 @@ def run_iterations_from_to (startiter, niter, bertha, args, fock_mid_backwd, dt,
                 encoder.FLOAT_REPR = lambda o: format(o, '.25E')
 
                 json_data = get_json_data(args, j, niter, ndim, ene_list, 
-                        dip_list, D_ti, fock_mid_backwd, dipz_mat, C, 
+                        dip_list, D_ti, fock_mid_backwd, dip_mat, C, 
                         C_inv, ovapm, Dp_ti, weight_list)
 
                 with open(args.restartfile, 'w') as fp:
@@ -345,7 +345,6 @@ def run_iterations_from_to (startiter, niter, bertha, args, fock_mid_backwd, dt,
 
     return True
 
-
 ##########################################################################################
 
 def restart_run(args):
@@ -360,8 +359,8 @@ def restart_run(args):
 
     fock_mid_backwd_REAL = numpy.float_(json_data["fock_mid_backwd_REAL"])
     fock_mid_backwd_IMAG = numpy.float_(json_data["fock_mid_backwd_IMAG"])
-    dipz_mat_REAL = numpy.float_(json_data["dipz_mat_REAL"])
-    dipz_mat_IMAG = numpy.float_(json_data["dipz_mat_IMAG"])
+    dip_mat_REAL = numpy.float_(json_data["dip_mat_REAL"])
+    dip_mat_IMAG = numpy.float_(json_data["dip_mat_IMAG"])
     C_REAL = numpy.float_(json_data["C_REAL"])
     C_IMAG = numpy.float_(json_data["C_IMAG"])
     C_inv_REAL = numpy.float_(json_data["C_inv_REAL"])
@@ -375,7 +374,7 @@ def restart_run(args):
  
     fock_mid_backwd = check_and_covert (fock_mid_backwd_REAL ,
             fock_mid_backwd_IMAG, ndim)
-    dipz_mat = check_and_covert (dipz_mat_REAL, dipz_mat_IMAG, ndim)
+    dip_mat = check_and_covert (dip_mat_REAL, dip_mat_IMAG, ndim)
     C = check_and_covert (C_REAL, C_IMAG, ndim)
     C_inv = check_and_covert (C_inv_REAL, C_inv_IMAG, ndim)
     ovapm = check_and_covert (ovapm_REAL, ovapm_IMAG, ndim)
@@ -495,7 +494,7 @@ def restart_run(args):
         fo = open("debug_info.txt", "w")
     
     return run_iterations_from_to (jstart+1, niter, bertha, args, fock_mid_backwd, \
-            dt, dipz_mat, C, C_inv, ovapm, ndim, debug, Dp_ti, dip_list, ene_list, \
+            dt, dip_mat, C, C_inv, ovapm, ndim, debug, Dp_ti, dip_list, ene_list, \
             weight_list, fo, D_ti, occlist)
  
 ##########################################################################################
@@ -607,9 +606,18 @@ def normal_run(args):
       fo.write("Density matrix trace at  t0: %.12e %.12e \n"%(trace_ds.real,trace_ds.imag))
       fo.write("Trace of fock*density at t0: %.12e %.12e \n"%(trace_dsfock.real, trace_dsfock.imag))
     
-    direction = args.direction
     normalise = 1
-    dipz_mat = bertha.get_realtime_dipolematrix (direction, normalise)
+    dip_mat = None
+
+    dipx_mat, dipy_mat, dipz_mat = \
+            bertha.get_realtime_dipolematrix (0, normalise)
+
+    if (args.direction == 4):
+        dip_mat = dipz_mat
+    elif (args.direction == 3):
+        dip_mat = dipy_mat
+    elif (args.direction == 2):
+        dip_mat = dipx_mat
     
     if debug:
       fockmh = numpy.conjugate(fockm.T)
@@ -629,7 +637,7 @@ def normal_run(args):
         Amp=args.pulseFmax
 
         # to check 
-        dipz_mo=numpy.matmul(numpy.conjugate(C.T),numpy.matmul(dipz_mat,C))
+        dipz_mo=numpy.matmul(numpy.conjugate(C.T),numpy.matmul(dip_mat,C))
 
         if args.select_pert:
             dipz_mo=rtutil.dipole_selection(dipz_mo,nshift,nocc,occlist,virtlist,fo,debug)
@@ -644,7 +652,7 @@ def normal_run(args):
     print("Start first mo_fock_mid_forwd_eval ")
     
     fock_mid_init = rtutil.mo_fock_mid_forwd_eval(bertha,Da,fockm,0,numpy.float_(dt),\
-            dipz_mat,C,C_inv,ovapm,ndim, debug, fo, args.pulse, args.pulseFmax, args.pulsew, args.t0, args.pulseS, 
+            dip_mat,C,C_inv,ovapm,ndim, debug, fo, args.pulse, args.pulseFmax, args.pulsew, args.t0, args.pulseS, 
             args.propthresh)
     
     if (fock_mid_init is None):
@@ -679,8 +687,8 @@ def normal_run(args):
       mdiff = numpy.max(diff)
       fo.write("Max diff density: %.12e %.12e \n"%(mdiff.real, mdiff.imag))
     
-    dip_list.append(numpy.trace(numpy.matmul(Da,dipz_mat)))
-    dip_list.append(numpy.trace(numpy.matmul(D_t1,dipz_mat)))
+    dip_list.append(numpy.trace(numpy.matmul(Da,dip_mat)))
+    dip_list.append(numpy.trace(numpy.matmul(D_t1,dip_mat)))
     if (args.pulse == "analytic"):
       if (occlist[0] != -2):
           #dipoleanalysis
@@ -689,8 +697,8 @@ def normal_run(args):
           res=rtutil.dipoleanalysis(dipz_mo,Dp_t1,occlist,virtlist,nshift,fo,debug)
           weight_list.append(res)            
     if debug:                              
-      fo.write("Dipole: %.12e\n"%(numpy.trace(numpy.matmul(Da,dipz_mat))).real)
-      fo.write("Dipole: %.12e\n"%(numpy.trace(numpy.matmul(D_t1,dipz_mat))).real)
+      fo.write("Dipole: %.12e\n"%(numpy.trace(numpy.matmul(Da,dip_mat))).real)
+      fo.write("Dipole: %.12e\n"%(numpy.trace(numpy.matmul(D_t1,dip_mat))).real)
     
     if debug:
       tfock = numpy.trace(numpy.matmul(D_t1,fockm))
@@ -727,7 +735,7 @@ def normal_run(args):
     fock_mid_backwd = numpy.copy(fock_mid_init)
 
     return run_iterations_from_to (1, niter, bertha, args, fock_mid_backwd, \
-            dt, dipz_mat, C, C_inv, ovapm, ndim, debug, Dp_ti, dip_list, ene_list, \
+            dt, dip_mat, C, C_inv, ovapm, ndim, debug, Dp_ti, dip_list, ene_list, \
             weight_list, fo, D_ti, occlist)
     
 ##########################################################################################
@@ -783,8 +791,8 @@ def main():
            default=0.0, type=numpy.float64)
    parser.add_argument("--pulseS", help="Specify the pulse s-parameter: for gaussian enveloped pulse, " + 
            "'s' is sqrt(variance) (default: 0.0)", default=0.0, type=numpy.float64)
-   parser.add_argument("--direction", help="Specify the pulse direction 2=x,3=y,4=z ", default=4, type=int)
-
+   parser.add_argument("--direction", help="Specify the pulse direction (2 = z, 3 = y, 4 = x) ", 
+           default=4, type=int)
 
    parser.add_argument("--restartfile", help="set a restart file (default: restart_pybertha.json)", 
            required=False, type=str, default="restart_pybertha.json")
