@@ -615,13 +615,13 @@ def normal_run(args):
 
     dipx_mat, dipy_mat, dipz_mat = \
             bertha.get_realtime_dipolematrix (0, normalise)
-
+    
     if (args.direction == 4):
-        dip_mat = dipz_mat
+        dip_mat = dipx_mat
     elif (args.direction == 3):
         dip_mat = dipy_mat
     elif (args.direction == 2):
-        dip_mat = dipx_mat
+        dip_mat = dipz_mat
     
     if debug:
       fockmh = numpy.conjugate(fockm.T)
