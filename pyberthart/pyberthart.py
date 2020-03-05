@@ -42,7 +42,7 @@ def get_json_data(args, j, niter, ndim, ene_list, \
             "select": args.select, 
             "select_pert": args.select_pert, 
             "propthresh": args.propthresh,
-            "tresh": args.tresh ,
+            "thresh": args.thresh ,
             "pulseS": args.pulseS ,
             "t0": args.t0 , 
             "wrapperso": args.wrapperso ,
@@ -101,7 +101,7 @@ def single_point (args, bertha):
     bertha.set_vctfilename(vctfilename)
     bertha.set_fnameinput(fnameinput)
     bertha.set_fittfname(fittfname)
-    bertha.set_tresh(args.tresh)
+    bertha.set_thresh(args.thresh)
     
     bertha.set_verbosity(verbosity)
     bertha.set_dumpfiles(dumpfiles)
@@ -446,7 +446,7 @@ def restart_run(args):
     args.select = json_data["select"]
     args.select_pert = json_data["select_pert"]
     args.propthresh = json_data["propthresh"]
-    args.tresh = json_data["tresh"]
+    args.thresh = json_data["thresh"]
     args.wrapperso = json_data["wrapperso"]
     args.wrapperso = json_data["dumprestartnum"]
     args.pulseS = json_data["pulseS"]
@@ -781,7 +781,7 @@ def main():
            "1 = maximum (defaul -1)", required=False, default=-1, type=int)
    parser.add_argument("--iterations", help="Use iteration number instead of progressbar",
            required=False, default=False, action="store_true")
-   parser.add_argument("--tresh", help="det treshold (default = 1.0e-12)", required=False, 
+   parser.add_argument("--thresh", help="det threshold (default = 1.0e-12)", required=False, 
            type=numpy.float64, default=1.0e-12)
    parser.add_argument("--wrapperso", help="set wrapper SO (default = ../../lib/bertha_wrapper.so)", 
            required=False, type=str, default="../lib/bertha_wrapper.so")

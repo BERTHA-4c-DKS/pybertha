@@ -21,7 +21,7 @@
 #define f_sfact shiftr_mp_sfact_
 #define f_etotal energy_mp_etotal_
 #define f_erep bertha_wrapper_mp_erep_
-#define f_tresh bertha_wrapper_mp_tresh_
+#define f_thresh bertha_wrapper_mp_thresh_
 #define f_densitydiff bertha_wrapper_mp_densitydiff_
 
 #define f_ncent spec_mp_ncent_
@@ -47,7 +47,7 @@
 #define f_sfact __shiftr_MOD_sfact
 #define f_etotal __energy_MOD_etotal
 #define f_erep __bertha_wrapper_MOD_erep
-#define f_tresh __bertha_wrapper_MOD_tresh
+#define f_thresh __bertha_wrapper_MOD_thresh
 #define f_densitydiff __bertha_wrapper_MOD_densitydiff
 
 #define f_ncent __spec_MOD_ncent
@@ -72,7 +72,7 @@ void f_bertha_eps(double *, double *, double *, double *);
 void f_bertha_realtime_fock (double *, double *);
 
 extern int f_ndim, f_nshift, f_nocc, f_nopen, f_densitydiff;
-extern double f_sfact, f_etotal, f_erep, f_tresh;
+extern double f_sfact, f_etotal, f_erep, f_thresh;
 
 extern int f_ncent;
 void f_bertha_get_coord (int *, double *, double *, double *, double *);
@@ -98,16 +98,16 @@ void set_densitydiff (int val)
   f_densitydiff = val;
 }
 
-double get_tresh ()
+double get_thresh ()
 {
-  double val = f_tresh;
+  double val = f_thresh;
 
   return val;
 }
 
-void set_tresh (double val)
+void set_thresh (double val)
 {
-  f_tresh = val;
+  f_thresh = val;
 }
 
 int get_ndim ()

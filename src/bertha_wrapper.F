@@ -20,7 +20,7 @@
 
       integer :: intype, fitcase, testfit, igrid, iprint, mactve,
      +           maxit, nactve, ncore, nfitt, densitydiff
-      real :: amass(ncentm), sfact1, sfact2, erep, tresh
+      real :: amass(ncentm), sfact1, sfact2, erep, thresh
       character(len=7) :: expo
 
       contains
@@ -89,8 +89,8 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       real :: monoelectronenergy, centfun(ncentm), 
      + dist, r1x, r1y, r1z, d1, r2x, 
-     + r2y, r2z, d2, scprod, ang, diff, eold, oldecoul, rtresh1, 
-     + rtresh2, efittcoulplusexc, efittcoul, etemp, excfit, 
+     + r2y, r2z, d2, scprod, ang, diff, eold, oldecoul, rthresh1, 
+     + rthresh2, efittcoulplusexc, efittcoul, etemp, excfit, 
      + exc, cputime11, timetomt1, ffre,
      + ctimetomt1, timetomt2, ctimetomt2, wtimeiter, 
      + ctimeiter, ctime1, time1, ffim, ecoul
@@ -290,8 +290,8 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       diff = 1.0
       eold = 1.0
       oldecoul = 1.0
-      rtresh1 = 0.00001
-      rtresh2 = 0.0000001
+      rthresh1 = 0.00001
+      rthresh2 = 0.0000001
 
   777 format
      > ("=============================================================")
@@ -575,7 +575,7 @@ c        end do
         endif
 
         diff = abs(eold-etotal)/(abs(etotal)+1.0)
-        if (diff.lt.tresh.and.iall.eq.2) then
+        if (diff.lt.thresh.and.iall.eq.2) then
           goto 2000
         else
           continue
@@ -615,10 +615,10 @@ c        end do
  3457   format ('Time for dens walltime                   ', f10.2,
      +          '  cputime ', f10.2, /)
 
-        if (diff.lt.rtresh1.and.iall.eq.0) then
+        if (diff.lt.rthresh1.and.iall.eq.0) then
           iall = 1
           sfact = sfact1
-        else if (diff.lt.rtresh2.and.iall.eq.1) then
+        else if (diff.lt.rthresh2.and.iall.eq.1) then
           iall = 2
           sfact = sfact2
         end if

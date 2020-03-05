@@ -198,23 +198,23 @@ class pybertha:
  
         return self.__bertha.get_densitydiff()
 
-    def set_tresh (self, ini):
+    def set_thresh (self, ini):
         """
         Set the SCF convergence threshold. 
         """
         if not isinstance(ini, float):
-            raise TypeError("set_tresh: input must be a float")
+            raise TypeError("set_thresh: input must be a float")
 
-        self.__bertha.set_tresh(ctypes.c_double(ini)) 
+        self.__bertha.set_thresh(ctypes.c_double(ini)) 
 
-    def get_tresh (self):
+    def get_thresh (self):
         """
-        The *get_tresh* returns the SCF convergence threshold.
+        The *get_thresh* returns the SCF convergence threshold.
         """
 
-        self.__bertha.get_tresh.restype = ctypes.c_double
+        self.__bertha.get_thresh.restype = ctypes.c_double
  
-        return self.__bertha.get_tresh()
+        return self.__bertha.get_thresh()
 
     def set_fittcoefffname (self, ini):
         """
