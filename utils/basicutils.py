@@ -3,10 +3,18 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
+import sys
+sys.path.insert(0, "/home/redo/Sources/GridDataFormats/")
+
 from gridData import OpenDX
 from ase.io.cube import read_cube
 
-def cubetodx(infname, outfname):
+def cubetodx(infname, outfname, valperl = 3, scientfn=False):
+
+     OpenDX.global_values_per_line.append(valperl)
+     if scientfn:
+         OpenDX.global_float_format.append("e")
+         OpenDX.global_float_precision.append(8)
 
      conv = 0.529177
 
