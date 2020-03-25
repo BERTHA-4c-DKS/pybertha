@@ -76,7 +76,7 @@ cmd.pseudoatom('xatom', pos=[2.5,0,0], label="x")
 cmd.pseudoatom('yatom', pos=[0,2.5,0], label="y")
 cmd.pseudoatom('zatom', pos=[0,0,5.5], label="z")
 
-cmd.set('ray_opaque_background', 'off')
+cmd.set('ray_opaque_background', 'on')
 cmd.set('transparency', 0.50)
 
 cmd.set_view ('\
