@@ -46,8 +46,15 @@ def cubetodx(infname, outfname, valperl = 3, scientfn=False):
 
 def exportheatmap(occups, virtua, valuesin, xlabel = "Occ", \
             ylabel = "Virt", title = "Analysis of ...", \
-            outfname = "test.jpg", norm = 1.0):
+            outfname = "test.jpg", norm = 1.0, scale = None):
 
+
+    vmin=None
+    vmax=None
+ 
+    if scale is not None:
+        vmin = scale[0]
+        vmax = scale[1]
 
     values = np.divide(valuesin, norm)
 
@@ -69,7 +76,8 @@ def exportheatmap(occups, virtua, valuesin, xlabel = "Occ", \
     #ax.set_yticks(virtua)
     #ax.axis('off')
     
-    sns.heatmap(df, annot=labels, fmt="", cmap="Blues", \
+    sns.heatmap(df, vmin, vmax, \
+            annot=labels, fmt="", cmap="RdBu", \
             linewidths=1, linecolor='black',ax=ax)
     
     plt.xlabel(xlabel)
