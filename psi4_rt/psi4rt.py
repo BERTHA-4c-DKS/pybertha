@@ -68,6 +68,8 @@ imp_opts, calc_params = util.set_params()
 
 if imp_opts['imp_type'] == 'analytic' :
     analytic = True
+else:
+    analytic = False
 #dt in a.u
 dt =  calc_params['delta_t']
 #time_int in atomic unit

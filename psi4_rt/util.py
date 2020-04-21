@@ -135,7 +135,7 @@ def gauss_env (Fmax, w, t, t0=3.0, s=0.2):
     #Fmax : the maximum amplitude of the field
     #t0 :center of Gaussian envelope (in au time)
 
-    func=Fmax*numpy.exp(-(t-t0)**2.0/(2.0*s**2.0))*numpy.sin(w*t)
+    func=Fmax*np.exp(-(t-t0)**2.0/(2.0*s**2.0))*np.sin(w*t)
 
     return func
 
@@ -143,19 +143,19 @@ def gauss_env (Fmax, w, t, t0=3.0, s=0.2):
 
 def envelope (Fmax, w, t, t0=0.0, s=0.0):
 
-   if (t >= 0.0 and t<= 2.00*numpy.pi/w):
-      Amp =(w*t/(2.00*numpy.pi))*Fmax
-   elif (t > 2.00*numpy.pi/w and t < 4.00*numpy.pi/w):
+   if (t >= 0.0 and t<= 2.00*np.pi/w):
+      Amp =(w*t/(2.00*np.pi))*Fmax
+   elif (t > 2.00*np.pi/w and t < 4.00*np.pi/w):
       Amp = Fmax
-   elif ( t >= 4.00*numpy.pi/w and t <= 6.00*numpy.pi/w):
-      Amp = (3.00 -w*t/(2.00*numpy.pi))*Fmax
-   elif ( t > 6.00*numpy.pi/w):
+   elif ( t >= 4.00*np.pi/w and t <= 6.00*np.pi/w):
+      Amp = (3.00 -w*t/(2.00*np.pi))*Fmax
+   elif ( t > 6.00*np.pi/w):
       Amp = 0.0
    else :
 
       Amp = 0.0
 
-   func = Amp*numpy.sin(w*t)
+   func = Amp*np.sin(w*t)
 
    return func
 
@@ -164,12 +164,12 @@ def envelope (Fmax, w, t, t0=0.0, s=0.0):
 def sin_oc (Fmax, w, t, t0=0.0, s=0.0):
 
    # 1-oscillation-cycle sinusoid
-   if (t >= 0.0 and t<= 2.00*numpy.pi/w):
+   if (t >= 0.0 and t<= 2.00*np.pi/w):
       Amp = Fmax
    else:
       Amp = 0.0
 
-   func = Amp*numpy.sin(w*t)
+   func = Amp*np.sin(w*t)
 
    return func
 
@@ -180,10 +180,10 @@ def cos_env(Fmax, w, t, t0=0.0, s=20.0):
    #define the period (time for an oscillation cycle)
    #n is the number of oscillation cycles in the
    # envelope
-   oc=2.00*numpy.pi/w
+   oc=2.00*np.pi/w
    n=oc*s/2.0
    if (abs(t-s)<= s):
-      func=numpy.sin(w*t)*Fmax*(numpy.cos(numpy.pi/2.0/n*(n-t)))**2.0
+      func=np.sin(w*t)*Fmax*(np.cos(np.pi/2.0/n*(n-t)))**2.0
    else:
       func=0.0
 
