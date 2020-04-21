@@ -1,0 +1,341 @@
+   => Loading Basis Set <=
+
+    Name: DEF2-SVP
+    Role: ORBITAL
+    Keyword: BASIS
+    atoms 1   entry O          line   130 file /home/matteod/local/pyintel/psi4/share/psi4/basis/def2-svp.gbs 
+    atoms 2-3 entry H          line    15 file /home/matteod/local/pyintel/psi4/share/psi4/basis/def2-svp.gbs 
+
+  -AO BASIS SET INFORMATION:
+    Name                   = DEF2-SVP
+    Blend                  = DEF2-SVP
+    Total number of shells = 12
+    Number of primitives   = 22
+    Number of AO           = 25
+    Number of SO           = 24
+    Maximum AM             = 2
+    Spherical Harmonics    = TRUE
+
+  -Contraction Scheme:
+    Atom   Type   All Primitives // Shells:
+   ------ ------ --------------------------
+       1     O     7s 4p 1d // 3s 2p 1d 
+       2     H     4s 1p // 2s 1p 
+       3     H     4s 1p // 2s 1p 
+
+  ==> AO Basis Functions <==
+
+    [ DEF2-SVP ]
+    spherical
+    ****
+    O   1
+    S   5 1.00
+                      2266.17677850          -0.00534318
+                       340.87010191          -0.03989004
+                        77.36313517          -0.17853912
+                        21.47964494          -0.46427685
+                         6.65894331          -0.44309745
+    S   1 1.00
+                         0.80975976           1.00000000
+    S   1 1.00
+                         0.25530772           1.00000000
+    P   3 1.00
+                        17.72150432           0.04339457
+                         3.86355054           0.23094121
+                         1.04809209           0.51375311
+    P   1 1.00
+                         0.27641544           1.00000000
+    D   1 1.00
+                         1.20000000           1.00000000
+    ****
+    H   2
+    S   3 1.00
+                        13.01070100           0.01968216
+                         1.96225720           0.13796524
+                         0.44453796           0.47831935
+    S   1 1.00
+                         0.12194962           1.00000000
+    P   1 1.00
+                         0.80000000           1.00000000
+    ****
+    H   3
+    S   3 1.00
+                        13.01070100           0.01968216
+                         1.96225720           0.13796524
+                         0.44453796           0.47831935
+    S   1 1.00
+                         0.12194962           1.00000000
+    P   1 1.00
+                         0.80000000           1.00000000
+    ****
+
+
+*** tstart() called on jack
+*** at Tue Apr 21 09:22:52 2020
+
+   => Loading Basis Set <=
+
+    Name: DEF2-SVP
+    Role: ORBITAL
+    Keyword: BASIS
+    atoms 1   entry O          line   130 file /home/matteod/local/pyintel/psi4/share/psi4/basis/def2-svp.gbs 
+    atoms 2-3 entry H          line    15 file /home/matteod/local/pyintel/psi4/share/psi4/basis/def2-svp.gbs 
+
+
+         ---------------------------------------------------------
+                                   SCF
+            by Justin Turney, Rob Parrish, Andy Simmonett
+                             and Daniel Smith
+                              RKS Reference
+                        1 Threads,   1907 MiB Core
+         ---------------------------------------------------------
+
+  ==> Geometry <==
+
+    Molecular point group: c1
+    Full point group: Cs
+
+    Geometry (in Angstrom), charge = 0, multiplicity = 1:
+
+       Center              X                  Y                   Z               Mass       
+    ------------   -----------------  -----------------  -----------------  -----------------
+         O            0.000000000000    -0.000014000000    -0.348240000000    15.994914619560
+         H            0.000000000000     0.760011000000    -0.932852000000     1.007825032070
+         H            0.000000000000    -0.759996000000    -0.932908000000     1.007825032070
+
+  Running in c1 symmetry.
+
+  Rotational constants: A =     14.47939  B =      4.56368  C =      3.46999 [cm^-1]
+  Rotational constants: A = 434081.09820  B = 136815.56259  C = 104027.67040 [MHz]
+  Nuclear repulsion =    9.178262791403904
+
+  Charge       = 0
+  Multiplicity = 1
+  Electrons    = 10
+  Nalpha       = 5
+  Nbeta        = 5
+
+  ==> Algorithm <==
+
+  SCF Algorithm Type is DIRECT.
+  DIIS enabled.
+  MOM disabled.
+  Fractional occupation disabled.
+  Guess Type is SAD.
+  Energy threshold   = 1.00e-08
+  Density threshold  = 1.00e-08
+  Integral threshold = 0.00e+00
+
+  ==> Primary Basis <==
+
+  Basis Set: DEF2-SVP
+    Blend: DEF2-SVP
+    Number of shells: 12
+    Number of basis function: 24
+    Number of Cartesian functions: 25
+    Spherical Harmonics?: true
+    Max angular momentum: 2
+
+  ==> DFT Potential <==
+
+   => Composite Functional: BLYP <= 
+
+    BLYP GGA Exchange-Correlation Functional
+
+    P.J. Stephens et. al., J. Phys. Chem., 98, 11623-11627, 1994
+    B. Miehlich et. al., Chem. Phys. Lett., 157(3), 200-206 1989
+
+
+    Deriv               =              1
+    GGA                 =           TRUE
+    Meta                =          FALSE
+
+    Exchange Hybrid     =          FALSE
+    MP2 Hybrid          =          FALSE
+
+   => Exchange Functionals <=
+
+    1.0000     XC_GGA_X_B88
+
+   => Correlation Functionals <=
+
+    1.0000     XC_GGA_C_LYP
+
+   => Molecular Quadrature <=
+
+    Radial Scheme       =          BECKE
+    Pruning Scheme      =           FLAT
+    Nuclear Scheme      =       TREUTLER
+
+    BS radius alpha     =              1
+    Pruning alpha       =              1
+    Radial Points       =             75
+    Spherical Points    =            434
+    Total Points        =          81677
+    Total Blocks        =            634
+    Max Points          =            256
+    Max Functions       =             24
+
+  ==> Pre-Iterations <==
+
+   -------------------------------------------------------
+    Irrep   Nso     Nmo     Nalpha   Nbeta   Ndocc  Nsocc
+   -------------------------------------------------------
+     A         24      24       0       0       0       0
+   -------------------------------------------------------
+    Total      24      24       5       5       5       0
+   -------------------------------------------------------
+
+  ==> Integral Setup <==
+
+  ==> DirectJK: Integral-Direct J/K Matrices <==
+
+    J tasked:                  Yes
+    K tasked:                   No
+    wK tasked:                  No
+    Integrals threads:           1
+    Schwarz Cutoff:          1E-12
+
+  Minimum eigenvalue in the overlap matrix is 3.7731480932E-02.
+  Using Symmetric Orthogonalization.
+
+  SCF Guess: Superposition of Atomic Densities via on-the-fly atomic UHF.
+
+  ==> Iterations <==
+
+                        Total Energy        Delta E     RMS |[F,P]|
+
+   @RKS iter   0:   -76.34342174995214   -7.63434e+01   6.44009e-02 
+   @RKS iter   1:   -76.24732026947740    9.61015e-02   2.04211e-02 
+   @RKS iter   2:   -76.04797304110586    1.99347e-01   3.60917e-02 DIIS
+   @RKS iter   3:   -76.33637268088148   -2.88400e-01   8.08122e-04 DIIS
+   @RKS iter   4:   -76.33653800257358   -1.65322e-04   1.64958e-04 DIIS
+   @RKS iter   5:   -76.33654312130452   -5.11873e-06   2.48648e-05 DIIS
+   @RKS iter   6:   -76.33654325937277   -1.38068e-07   3.65400e-06 DIIS
+   @RKS iter   7:   -76.33654326228515   -2.91237e-09   5.38741e-07 DIIS
+   @RKS iter   8:   -76.33654326236336   -7.82165e-11   4.37284e-08 DIIS
+   @RKS iter   9:   -76.33654326236405   -6.82121e-13   3.27787e-09 DIIS
+  Energy converged.
+
+
+  ==> Post-Iterations <==
+
+    Orbital Energies [Eh]
+    ---------------------
+
+    Doubly Occupied:                                                      
+
+       1A    -18.761572     2A     -0.882892     3A     -0.455661  
+       4A     -0.298656     5A     -0.224049  
+
+    Virtual:                                                              
+
+       6A      0.023602     7A      0.101553     8A      0.521334  
+       9A      0.573398    10A      0.864354    11A      0.865991  
+      12A      0.955329    13A      1.044596    14A      1.296610  
+      15A      1.368289    16A      1.503814    17A      1.731204  
+      18A      2.151066    19A      2.191328    20A      2.883084  
+      21A      2.934059    22A      3.110568    23A      3.420602  
+      24A      3.730794  
+
+    Final Occupation by Irrep:
+              A 
+    DOCC [     5 ]
+
+  @RKS Final Energy:   -76.33654326236405
+
+   => Energetics <=
+
+    Nuclear Repulsion Energy =              9.1782627914039043
+    One-Electron Energy =                -123.0789036576086204
+    Two-Electron Energy =                  46.9003984719798837
+    DFT Exchange-Correlation Energy =      -9.3363008681392277
+    Empirical Dispersion Energy =           0.0000000000000000
+    VV10 Nonlocal Energy =                  0.0000000000000000
+    Total Energy =                        -76.3365432623640601
+
+Computation Completed
+
+
+Properties will be evaluated at   0.000000,   0.000000,   0.000000 [a0]
+
+Properties computed using the SCF density matrix
+
+  Nuclear Dipole Moment: [e a0]
+     X:     0.0000      Y:    -0.0002      Z:    -8.7904
+
+  Electronic Dipole Moment: [e a0]
+     X:    -0.0000      Y:     0.0002      Z:     8.0395
+
+  Dipole Moment: [e a0]
+     X:    -0.0000      Y:     0.0000      Z:    -0.7509     Total:     0.7509
+
+  Dipole Moment: [D]
+     X:    -0.0000      Y:     0.0001      Z:    -1.9086     Total:     1.9086
+
+
+*** tstop() called on jack at Tue Apr 21 09:22:53 2020
+Module time:
+	user time   =       0.96 seconds =       0.02 minutes
+	system time =       0.01 seconds =       0.00 minutes
+	total time  =          1 seconds =       0.02 minutes
+Total time:
+	user time   =       0.96 seconds =       0.02 minutes
+	system time =       0.01 seconds =       0.00 minutes
+	total time  =          1 seconds =       0.02 minutes
+  ==> One Electron Grid Properties (v2.0) <==
+
+  ==> CubicScalarGrid <==
+
+    Filepath     = .
+    Total Points =          3667410
+    XYZ Blocking =               10
+    X Points     =              141
+    Y Points     =              170
+    Z Points     =              153
+    X Spacing    =        1.000E-01
+    Y Spacing    =        1.000E-01
+    Z Spacing    =        1.000E-01
+    X Minimum    =       -7.000E+00
+    Y Minimum    =       -8.450E+00
+    Z Minimum    =       -8.811E+00
+    X Maximum    =        7.000E+00
+    Y Maximum    =        8.450E+00
+    Z Maximum    =        6.389E+00
+
+  Basis Set: DEF2-SVP
+    Blend: DEF2-SVP
+    Number of shells: 12
+    Number of basis function: 24
+    Number of Cartesian functions: 25
+    Spherical Harmonics?: true
+    Max angular momentum: 2
+
+  ==> One Electron Grid Properties (v2.0) <==
+
+  ==> CubicScalarGrid <==
+
+    Filepath     = .
+    Total Points =          3667410
+    XYZ Blocking =               10
+    X Points     =              141
+    Y Points     =              170
+    Z Points     =              153
+    X Spacing    =        1.000E-01
+    Y Spacing    =        1.000E-01
+    Z Spacing    =        1.000E-01
+    X Minimum    =       -7.000E+00
+    Y Minimum    =       -8.450E+00
+    Z Minimum    =       -8.811E+00
+    X Maximum    =        7.000E+00
+    Y Maximum    =        8.450E+00
+    Z Maximum    =        6.389E+00
+
+  Basis Set: DEF2-SVP
+    Blend: DEF2-SVP
+    Number of shells: 12
+    Number of basis function: 24
+    Number of Cartesian functions: 25
+    Spherical Harmonics?: true
+    Max angular momentum: 2
+

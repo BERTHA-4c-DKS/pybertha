@@ -1,0 +1,19 @@
+
+  Memory set to   1.863 GiB by Python driver.
+O 0.000000 -0.000014 -0.348240
+H 0.000000 0.760011 -0.932852
+H 0.000000 -0.759996 -0.932908
+symmetry c1
+no_reorient
+no_com
+blyp
+
+Number of occupied orbitals: 5
+Number of basis functions: 24
+
+Size of the ERI tensor will be 0.00 GB.
+10000
+analytic : 1
+Perturb density with analytic delta
+Entering in the first step of propagation
+F_t0 is equal to wfn.Fa() : False

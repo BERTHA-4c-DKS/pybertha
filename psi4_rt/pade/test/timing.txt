@@ -1,0 +1,1 @@
+time for 10001 time iterations : (3573.523 s, 3573.484 s)

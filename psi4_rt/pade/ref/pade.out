@@ -1,0 +1,18 @@
+dt: 0.10000000
+limit : 10000, frequency : 0.7350, gamma 3.000e-04, damping : exp, nbins: 10000         Fmax: 1.00000000,preproc_zero: True, inputfile: dipole-zz.txt, outfile: zz_w.txt
+
+Sampling points: 10000
+
+n : 5000
+number of sampling point : 10000
+b dim: 5001
+10000
+Frequency selected values of S(w)
+Dipole strength funcion values for selected freqs
+
+3.674930360070e-01 4.482104291092e-06
+
+0.000000000000e+00 0.000000000000e+00
+
+0.000000000000e+00 0.000000000000e+00
+
