@@ -52,15 +52,10 @@ if __name__ == "__main__":
     os.environ['PSIPATH']=args.psi4basis
     sys.path.append(os.environ['PSIPATH'])
     
-    
     debug = args.debug
-    
     fgeom = args.geom
-    
     basis_set = args.obs
-    
     direction = args.axis
-    
     HL = args.principal
     
     if args.puream:
@@ -98,7 +93,7 @@ if __name__ == "__main__":
     #basis set options etc
     psi4.set_options({'basis': basis_set,
                       'puream': use_am,
-    #                  'DF_BASIS_SCF' : 'cc-pvqz-jkfit',
+                      #'DF_BASIS_SCF' : 'cc-pvqz-jkfit',
                       'dft_radial_scheme' : 'becke',
                       #'dft_radial_points': 49,
                       'dft_spherical_points' : 434,
@@ -114,7 +109,6 @@ if __name__ == "__main__":
                       'CUBIC_GRID_SPACING' : [0.1,0.1,0.1],
                       'e_convergence': 1e-8,
                       'd_convergence': 1e-8})
-    
     
     #geometry set
     geom,mol=util.set_input(fgeom)
@@ -185,7 +179,8 @@ if __name__ == "__main__":
     memory_footprint = I_Size * 1.5
     if I_Size > numpy_memory:
         psi4.core.clean()
-        raise Exception("Estimated memory utilization (%4.2f GB) exceeds numpy_memory limit of %4.2f GB." % (memory_footprint, numpy_memory))
+        raise Exception("Estimated memory utilization (%4.2f GB) " +\
+                "exceeds numpy_memory limit of %4.2f GB." % (memory_footprint, numpy_memory))
     #Get Eri (2-electron repulsion integrals)
     I=np.array(mints.ao_eri())
     

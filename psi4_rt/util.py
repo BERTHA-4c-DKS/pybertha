@@ -90,6 +90,7 @@ def get_Fock(D, Hcore, I, f_type, basisset):
     return J_ene,Exc,F
 
 ##################################################################
+
 def set_params(filename="input.inp"):
 
     my_dict = {}
@@ -111,6 +112,7 @@ def set_params(filename="input.inp"):
     calc_params['func_type'] =my_dict['func_type'] 
     calc_params['method']=my_dict['method_type']
     return imp_params,calc_params
+
 ##################################################################
 
 def kick (Fmax, w, t, t0=0.0, s=0.0):
@@ -153,7 +155,6 @@ def envelope (Fmax, w, t, t0=0.0, s=0.0):
    elif ( t > 6.00*np.pi/w):
       Amp = 0.0
    else :
-
       Amp = 0.0
 
    func = Amp*np.sin(w*t)
@@ -247,19 +248,19 @@ def mo_fock_mid_forwd_eval(D_ti,fock_mid_ti_backwd,i,delta_t,H,I,dipole,\
         u=exp_opmat(fockp_guess,delta_t)
         #u=scipy.linalg.expm(-1.j*fockp_guess*delta_t) ! alternative routine
         test=np.matmul(u,np.conjugate(u.T))
-    #print('U is unitary? %s' % (np.allclose(test,np.eye(u.shape[0]))))
+        #print('U is unitary? %s' % (np.allclose(test,np.eye(u.shape[0]))))
         if (not np.allclose(test,np.eye(u.shape[0]))):
             Id=np.eye(u.shape[0])
             diff_u=test-Id
             norm_diff=np.linalg.norm(diff_u,'fro')
             print('from fock_mid:U deviates from unitarity, |UU^-1 -I| %.8f' % norm_diff)
-    #evolve Dp_ti using u and obtain Dp_ti_dt (i.e Dp(ti+dt)). u i s built from the guess fock
-    #density in the orthonormal basis
+        #evolve Dp_ti using u and obtain Dp_ti_dt (i.e Dp(ti+dt)). u i s built from the guess fock
+        #density in the orthonormal basis
         tmpd=np.matmul(Dp_ti,np.conjugate(u.T))
         Dp_ti_dt=np.matmul(u,tmpd)
-    #backtrasform Dp_ti_dt
+        #backtrasform Dp_ti_dt
         D_ti_dt=np.matmul(C,np.matmul(Dp_ti_dt,np.conjugate(C.T)))
-    #build the correspondig Fock : fock_ti+dt
+        #build the correspondig Fock : fock_ti+dt
         
         dum1,dum2,fock_mtx=get_Fock(D_ti_dt,H,I,f_type,basisset)
         #update t_arg+=delta_t
@@ -267,7 +268,7 @@ def mo_fock_mid_forwd_eval(D_ti,fock_mid_ti_backwd,i,delta_t,H,I,dipole,\
                         imp_opts['t0'], imp_opts['s'])
         fock_ti_dt_ao=fock_mtx -(dipole*pulse_dt)
         fock_inter= 0.5*fock_ti_ao + 0.5*fock_ti_dt_ao
-    #update fock_guess
+        #update fock_guess
         fock_guess=np.copy(fock_inter)
         if k >1:
         #test on the norm: compare the density at current step and previous step
