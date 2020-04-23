@@ -252,8 +252,8 @@ if __name__ == "__main__":
     
     C_inv=np.linalg.inv(C)
     print('Entering in the first step of propagation')
-    start =time.time()
-    cstart =time.clock()
+    start = time.time()
+    cstart = time.process_time()
     J0,Exc0,func_t0,F_t0,fock_mid_init=util.mo_fock_mid_forwd_eval(Da,wfn.Fa(),\
                                                      0,np.float_(dt),H,I,dip_mat,C,C_inv,S,nbf,imp_opts,func,fo,basisset)
     
@@ -367,8 +367,8 @@ if __name__ == "__main__":
         fock_mid_backwd=np.copy(fock_mid_tmp)
     
     fo.close()
-    end=time.time()
-    cend = time.clock()
+    end = time.time()
+    cend = time.process_time
     ftime  = open("timing.txt", "w")
     ftime.write("time for %i time iterations : (%.3f s, %.3f s)\n" %(niter+1,end-start,cend-cstart))
     ftime.close()
