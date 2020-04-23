@@ -38,7 +38,9 @@ if __name__ == "__main__":
             default="", type=str)
     parser.add_argument("--psi4basis", help="Add psi4 basis set rootdir", required=False, 
             default="/home/redo/anaconda3/pkgs/psi4-1.3.2+ecbda83-py37h31b3128_0/share/psi4/basis", type=str)
-    
+    parser.add_argument("--input-param-file", help="Add input parameters filename [default=\"input.inp\"]", 
+            required=False, default="input.inp", type=str, dest='inputfname')
+ 
     
     args = parser.parse_args()
     
@@ -77,7 +79,7 @@ if __name__ == "__main__":
       if debug:
         print("Selected transitions from %s to %s MOs"% (str(occlist), str(virtlist)))
     
-    imp_opts, calc_params = util.set_params()
+    imp_opts, calc_params = util.set_params(args.inputfname)
     
     if imp_opts['imp_type'] == 'analytic' :
         analytic = True

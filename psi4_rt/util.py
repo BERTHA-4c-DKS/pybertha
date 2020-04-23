@@ -90,9 +90,10 @@ def get_Fock(D, Hcore, I, f_type, basisset):
     return J_ene,Exc,F
 
 ##################################################################
-def set_params():
+def set_params(filename="input.inp"):
+
     my_dict = {}
-    with open('input.inp') as fileobj:
+    with open(filename) as fileobj:
       for line in fileobj:
         key, value = line.split(":")
         my_dict[key.strip()] = value.strip()
@@ -190,13 +191,13 @@ def cos_env(Fmax, w, t, t0=0.0, s=20.0):
    return func
 
 ##################################################################
+
 def analytic(Fmax, w, t, t0=0.0, s=0.0):
 
    func = 0.0
 
    return func
 
-##################################################################
 ##################################################################
 
 funcswitcher = {
@@ -285,8 +286,8 @@ def mo_fock_mid_forwd_eval(D_ti,fock_mid_ti_backwd,i,delta_t,H,I,dipole,\
         if k > 20:
          raise Exception("Numember of iterations exceeded (k>20)")
     return J_i,Exc_i,pulse,fock_ti_ao,fock_inter
-##################################################################
 
+##################################################################
 # analysis based on MO-weighted dipole
 
 def dipoleanalysis(dipole,dmat,nocc,occlist,virtlist,debug=False,HL=False):
