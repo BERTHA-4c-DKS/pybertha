@@ -1,0 +1,9 @@
+To use cnaconda python
+
+conda update psi4 -c psi4
+conda create -n p4env psi4 -c psi4
+
+and thus:
+
+conda activate p4env
+
