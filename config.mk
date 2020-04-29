@@ -16,7 +16,7 @@ USEINTEL=no
 #LIBXC
 LIBXC=no
 
-BERTHAROOT=/home/redo/Project_Bertha/bertha_ng
+BERTHAROOT=/home/redo/Sources/bertha_ng
 
 ###
 ## NO BLUEGENE

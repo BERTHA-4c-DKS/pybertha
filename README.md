@@ -10,4 +10,4 @@ Leonardo Belpassi, Matteo De Santis, Harry M. Quiney, Francesco Tarantelli, Lori
 Journal of Chemical Physics, 2020, 152, 16, to be published
 
 
-
+In the lib dir you'll find the SO compiled for Linux Ubuntu 18.04.4 LTS
