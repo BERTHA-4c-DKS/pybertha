@@ -12,6 +12,10 @@ import util
 import scipy
 import time
 
+sys.path.insert(0, "../src")
+import rtutil
+
+
 if __name__ == "__main__":
 
     ####################################
@@ -19,8 +23,10 @@ if __name__ == "__main__":
     ####################################
     parser = argparse.ArgumentParser()
     
-    parser.add_argument("-d", "--debug", help="Debug on, prints debug info to err.txt", required=False,
+    parser.add_argument("-d", "--debug", help="Debug on, prints extra debug info to the first --debug-filename", required=False,
             default=False, action="store_true")
+    parser.add_argument("--debug-filenames", help="Debug filename [default=\"err.txt;test.dat\"]", required=False,
+            default="err.txt;test.dat", type=str, dest="dbgfnames")
     parser.add_argument("-p", "--principal", help="Turn on homo-lumo weighted dipole moment", required=False,
             default=False, action="store_true")
     parser.add_argument("-a", "--axis", help="The axis of  electric field direction (x = 0, y = 1, z = 2, default 2)",
@@ -40,9 +46,26 @@ if __name__ == "__main__":
             default="/home/redo/anaconda3/pkgs/psi4-1.3.2+ecbda83-py37h31b3128_0/share/psi4/basis", type=str)
     parser.add_argument("--input-param-file", help="Add input parameters filename [default=\"input.inp\"]", 
             required=False, default="input.inp", type=str, dest='inputfname')
-    
+    parser.add_argument("--cube-filenames", help="Specify cube filenames " + \
+            "[default=\"Da0.cube;Db0.cube;Dt0.cube;Ds0.cube\"]", \
+            required=False, default="Da0.cube;Db0.cube;Dt0.cube;Ds0.cube", type=str, dest='cubefilenames')
+    parser.add_argument("--iterations", help="Use iteration number instead of progressbar",
+            required=False, default=False, action="store_true")
+ 
     args = parser.parse_args()
-    
+
+    cfnames = args.cubefilenames.split(";")
+
+    if len(cfnames) != 4:
+        print("Error in --cube-filenames, you need to specify 4 filenames")
+        exit(1)
+
+    dbgfnames = args.dbgfnames.split(";")
+
+    if len(dbgfnames) != 2:
+        print("Error in --debug-filenames, you need to specify 2 filenames")
+        exit(1)
+
     if args.psi4root != "":
         sys.path.append(args.psi4root)
     
@@ -89,7 +112,7 @@ if __name__ == "__main__":
     #memory
     psi4.set_memory(int(2e9))
     #output
-    psi4.core.set_output_file('test.dat', False)
+    psi4.core.set_output_file(dbgfnames[1], False)
     #basis set options etc
     psi4.set_options({'basis': basis_set,
                       'puream': use_am,
@@ -121,7 +144,7 @@ if __name__ == "__main__":
     ndocc=mol_wfn.nalpha()
     nbeta=mol_wfn.nbeta()
     if (ndocc != nbeta):
-        print('not close-shell')
+        print('Not close-shell')
     
     #initialize mints object
     mints = psi4.core.MintsHelper(mol_wfn.basisset())
@@ -151,12 +174,12 @@ if __name__ == "__main__":
         ene, wfn = psi4.energy('scf',dft_functional=svwn5_func,return_wfn=True)
     else:
         ene, wfn = psi4.energy(calc_params['func_type'],return_wfn=True)
-    print(calc_params['func_type']) 
+    print("Using ", calc_params['func_type']) 
     psi4.cubeprop(wfn)
-    os.rename("Da.cube","Da0.cube")
-    os.rename("Db.cube","Db0.cube")
-    os.rename("Dt.cube","Dt0.cube")
-    os.rename("Ds.cube","Ds0.cube")
+    os.rename("Da.cube",cfnames[0])
+    os.rename("Db.cube",cfnames[1])
+    os.rename("Dt.cube",cfnames[2])
+    os.rename("Ds.cube",cfnames[3])
     #C coefficients
     C=np.array(wfn.Ca())  
     
@@ -198,7 +221,7 @@ if __name__ == "__main__":
     
     Nuc_rep = mol.nuclear_repulsion_energy()
     Enuc_list = []
-    print(niter)
+    print("Number of iterations ", niter)
     Dp_0= D_0
     #set the functional type
     if (calc_params['func_type'] == 'svwn5'):
@@ -207,7 +230,7 @@ if __name__ == "__main__":
        func = calc_params['func_type']
     # the basisset object
     basisset = mol_wfn.basisset()
-    print("analytic : %i" % analytic)
+    #print("analytic : %i" % analytic)
     if (analytic):
         print('Perturb density with analytic delta')
         # set the perturbed density -> exp(-ikP)D_0exp(+ikP)
@@ -231,7 +254,7 @@ if __name__ == "__main__":
         #print('trace D(0+): %.8f' % np.trace(Dp_init).real)       
         #print(testene+Nuc_rep)                                    
 
-    fo = open("err.txt", "w")
+    fo = open(dbgfnames[0], "w")
     
     #containers
     ene_list = []
@@ -308,6 +331,7 @@ if __name__ == "__main__":
         fo.write('Trace of SD.imag %.14f\n' % np.trace(np.matmul(S,D_ti.imag)))
         fo.write('Dipole %.8f %.15f\n' % (0.000, 2.00*dip_list[0].real))
     
+    print("Start main iterations \n")
     for j in range(1,niter+1):
         J_i,Exc_i,func_ti,F_ti,fock_mid_tmp=util.mo_fock_mid_forwd_eval(np.copy(D_ti),\
                 fock_mid_backwd,j,np.float_(dt),H,I,dip_mat,C,C_inv,S,nbf,\
@@ -337,7 +361,6 @@ if __name__ == "__main__":
         #dipole expectation for D_ti
         dip_list.append(np.trace(np.matmul(dip_mat,D_ti)))
         
-        #for debug
         if debug:
             fo.write('Dipole  %.8f %.15f\n' % (j*dt, 2.00*dip_list[j].real))
     
@@ -362,13 +385,17 @@ if __name__ == "__main__":
         Dp_ti=np.copy(Dp_ti_dt)
         #update fock_mid_backwd for the next step
         fock_mid_backwd=np.copy(fock_mid_tmp)
-    
+
+        if args.iterations:
+            print ("Iter %10d od %10d"%(j,niter))
+        else:
+            rtutil.progress_bar(j, niter)
+
+    print("")
     fo.close()
     end = time.time()
-    cend = time.process_time
-    ftime  = open("timing.txt", "w")
-    ftime.write("time for %i time iterations : (%.3f s, %.3f s)\n" %(niter+1,end-start,cend-cstart))
-    ftime.close()
+    cend = time.process_time()
+    print("Time for %10d time iterations : (%.5f s, %.5f s)\n" %(niter+1,end-start,cend-cstart))
     t_point=np.linspace(0.0,niter*dt,niter+1)
     dip_t=2.00*np.array(dip_list).real + Ndip_dir
     ene_t=np.array(ene_list).real+Nuc_rep

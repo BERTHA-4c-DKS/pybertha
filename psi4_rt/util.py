@@ -1,6 +1,11 @@
 import numpy as np
 import psi4
+import sys
+
 from pkg_resources import parse_version
+
+sys.path.insert(0, "../src")
+import rtutil
 
 ##################################################################
 
@@ -20,6 +25,7 @@ def set_input(fgeom):
 ##################################################################
 
 def exp_opmat(mat,dt):
+
     #first find eigenvectors and eigenvalues of F mat
     try:
        w,v=np.linalg.eigh(mat)
@@ -115,109 +121,12 @@ def set_params(filename="input.inp"):
 
 ##################################################################
 
-def kick (Fmax, w, t, t0=0.0, s=0.0):
-
-    w = 0.0
-    func = 0.0
-    if t > 0:
-      func = 0.0
-    elif (t == 0.0):
-      func = Fmax
-    else:
-      return None
-      # t out of range
-
-    return func
-
-##################################################################
-
-def gauss_env (Fmax, w, t, t0=3.0, s=0.2):
-
-    #s : sqrt(variance) of gaussian envelop
-    #w : the frequency of the carrier
-    #Fmax : the maximum amplitude of the field
-    #t0 :center of Gaussian envelope (in au time)
-
-    func=Fmax*np.exp(-(t-t0)**2.0/(2.0*s**2.0))*np.sin(w*t)
-
-    return func
-
-##################################################################
-
-def envelope (Fmax, w, t, t0=0.0, s=0.0):
-
-   if (t >= 0.0 and t<= 2.00*np.pi/w):
-      Amp =(w*t/(2.00*np.pi))*Fmax
-   elif (t > 2.00*np.pi/w and t < 4.00*np.pi/w):
-      Amp = Fmax
-   elif ( t >= 4.00*np.pi/w and t <= 6.00*np.pi/w):
-      Amp = (3.00 -w*t/(2.00*np.pi))*Fmax
-   elif ( t > 6.00*np.pi/w):
-      Amp = 0.0
-   else :
-      Amp = 0.0
-
-   func = Amp*np.sin(w*t)
-
-   return func
-
-##################################################################
-
-def sin_oc (Fmax, w, t, t0=0.0, s=0.0):
-
-   # 1-oscillation-cycle sinusoid
-   if (t >= 0.0 and t<= 2.00*np.pi/w):
-      Amp = Fmax
-   else:
-      Amp = 0.0
-
-   func = Amp*np.sin(w*t)
-
-   return func
-
-##################################################################
-
-def cos_env(Fmax, w, t, t0=0.0, s=20.0):
-
-   #define the period (time for an oscillation cycle)
-   #n is the number of oscillation cycles in the
-   # envelope
-   oc=2.00*np.pi/w
-   n=oc*s/2.0
-   if (abs(t-s)<= s):
-      func=np.sin(w*t)*Fmax*(np.cos(np.pi/2.0/n*(n-t)))**2.0
-   else:
-      func=0.0
-
-   return func
-
-##################################################################
-
-def analytic(Fmax, w, t, t0=0.0, s=0.0):
-
-   func = 0.0
-
-   return func
-
-##################################################################
-
-funcswitcher = {
-    "kick": kick,
-    "gauss_env": gauss_env,
-    "envelope": envelope,
-    "sin_oc": sin_oc,
-    "cos_env": cos_env,
-    "analytic": analytic
-     }
-   
-##################################################################
-
 def mo_fock_mid_forwd_eval(D_ti,fock_mid_ti_backwd,i,delta_t,H,I,dipole,\
                                C,C_inv,S,nbf,imp_opts,f_type,fout,basisset):
 
     t_arg=np.float_(i)*np.float_(delta_t)
     
-    func = funcswitcher.get(imp_opts['imp_type'], lambda: kick)
+    func = rtutil.funcswitcher.get(imp_opts['imp_type'], lambda: rtutil.kick)
     
     pulse = func(imp_opts['Fmax'], imp_opts['w'], t_arg,\
                         imp_opts['t0'], imp_opts['s'])
@@ -253,7 +162,7 @@ def mo_fock_mid_forwd_eval(D_ti,fock_mid_ti_backwd,i,delta_t,H,I,dipole,\
             Id=np.eye(u.shape[0])
             diff_u=test-Id
             norm_diff=np.linalg.norm(diff_u,'fro')
-            print('from fock_mid:U deviates from unitarity, |UU^-1 -I| %.8f' % norm_diff)
+            fout.write('fock_mid:U deviates from unitarity, |UU^-1 -I| %.8f' % norm_diff)
         #evolve Dp_ti using u and obtain Dp_ti_dt (i.e Dp(ti+dt)). u i s built from the guess fock
         #density in the orthonormal basis
         tmpd=np.matmul(Dp_ti,np.conjugate(u.T))
@@ -306,4 +215,5 @@ def dipoleanalysis(dipole,dmat,nocc,occlist,virtlist,debug=False,HL=False):
         for j in virtlist:
            res[count] = dipole[i-1,j-1]*dmat[j-1,i-1] + dipole[j-1,i-1]*dmat[i-1,j-1]
            count +=1
+
     return res
