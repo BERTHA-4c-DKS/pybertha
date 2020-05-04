@@ -15,6 +15,68 @@ import time
 sys.path.insert(0, "../src")
 import rtutil
 
+####################################################################################
+
+def main_loop (D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, C, C_inv, S, nbf, \
+        imp_opts, func, fo, basisset, Dp_ti, weighted_dip, dip_list, ene_list, \
+        imp_list):
+
+    J_i,Exc_i,func_ti,F_ti,fock_mid_tmp=util.mo_fock_mid_forwd_eval(D_ti,\
+                fock_mid_backwd,j,dt,H,I,dip_mat,C,C_inv,S,nbf,\
+                imp_opts,func,fo,basisset)
+        
+    Ah=np.conjugate(fock_mid_tmp.T)
+    fo.write('Fock_mid hermitian: %s\n' % np.allclose(fock_mid_tmp,Ah))
+    #transform fock_mid_init in MO basis
+    fockp_mid_tmp=np.matmul(np.conjugate(C.T),np.matmul(fock_mid_tmp,C))
+    u=util.exp_opmat(np.copy(fockp_mid_tmp),dt)
+    #u=scipy.linalg.expm(-1.0j*fockp_mid_tmp*dt)
+    #check u is unitary
+    test_u=np.matmul(u,np.conjugate(u.T))
+    if (not np.allclose(np.eye(u.shape[0]),test_u)):
+        print('U is not unitary\n')
+    
+    #check the trace of density to evolve
+    fo.write('tr of density to evolve: %.8f\n' % np.trace(Dp_ti).real)
+    
+    #evolve the density in orthonormal basis
+    temp=np.matmul(Dp_ti,np.conjugate(u.T))
+    Dp_ti_dt=np.matmul(u,temp)
+    
+    #backtransform Dp_ti_dt
+    D_ti_dt=np.matmul(C,np.matmul(Dp_ti_dt,np.conjugate(C.T)))
+    fo.write('%.8f\n' % np.trace(Dp_ti_dt).real)
+    #dipole expectation for D_ti
+    dip_list.append(np.trace(np.matmul(dip_mat,D_ti)))
+    
+    if debug:
+        fo.write('Dipole  %.8f %.15f\n' % (j*dt, 2.00*dip_list[j].real))
+    
+    if (do_weighted == -2):
+        #weighted dipole 
+        res = util.dipoleanalysis(dipmo_mat,Dp_ti,ndocc,occlist,virtlist,debug,HL)
+        weighted_dip.append(res)
+    #Energy expectation value at t = t_i 
+    Enuc_list.append(-func_ti*Ndip_dir+Nuc_rep) #just in case of non-zero nuclear dipole
+    if (func=='hf'):
+        ene_list.append(np.trace(np.matmul(D_ti,(H+F_ti))))
+    else:
+        ene_list.append(2.00*np.trace(np.matmul(D_ti,H))+J_i+Exc_i-np.trace(np.matmul(D_ti,(func_ti*dip_mat))))
+    imp_list.append(func_ti)
+    
+    #update D_ti and Dp_ti for the next step
+    
+    if debug :
+        fo.write('here I update the matrices Dp_ti and D_ti\n')
+    
+    D_ti=np.copy(D_ti_dt)
+    Dp_ti=np.copy(Dp_ti_dt)
+    #update fock_mid_backwd for the next step
+    fock_mid_backwd=np.copy(fock_mid_tmp)
+
+    return fock_mid_backwd, D_ti, Dp_ti
+
+####################################################################################
 
 if __name__ == "__main__":
 
@@ -49,21 +111,28 @@ if __name__ == "__main__":
     parser.add_argument("--cube-filenames", help="Specify cube filenames " + \
             "[default=\"Da0.cube;Db0.cube;Dt0.cube;Ds0.cube\"]", \
             required=False, default="Da0.cube;Db0.cube;Dt0.cube;Ds0.cube", type=str, dest='cubefilenames')
+    parser.add_argument("--out-filenames", help="Specify cout filenames " + \
+            "[default=\"dipole.txt;imp.txt;ene.txt;weighteddip.txt\"]", \
+            required=False, default="dipole.txt;imp.txt;ene.txt;weighteddip.txt", type=str, dest='outfilenames')
+
     parser.add_argument("--iterations", help="Use iteration number instead of progressbar",
             required=False, default=False, action="store_true")
  
     args = parser.parse_args()
 
     cfnames = args.cubefilenames.split(";")
-
     if len(cfnames) != 4:
         print("Error in --cube-filenames, you need to specify 4 filenames")
         exit(1)
 
     dbgfnames = args.dbgfnames.split(";")
-
     if len(dbgfnames) != 2:
         print("Error in --debug-filenames, you need to specify 2 filenames")
+        exit(1)
+
+    outfnames = args.outfilenames.split(";")
+    if len(outfnames) != 4:
+        print("Error in --out-filenames, you need to specify 4 filenames")
         exit(1)
 
     if args.psi4root != "":
@@ -104,7 +173,7 @@ if __name__ == "__main__":
         analytic = False
 
     #dt in a.u
-    dt = calc_params['delta_t']
+    dt = np.float_(calc_params['delta_t'])
     #time_int in atomic unit
     time_int = calc_params['time_int']
     niter = int(time_int/dt)
@@ -272,7 +341,7 @@ if __name__ == "__main__":
     start = time.time()
     cstart = time.process_time()
     J0,Exc0,func_t0,F_t0,fock_mid_init=util.mo_fock_mid_forwd_eval(Da,wfn.Fa(),\
-            0,np.float_(dt),H,I,dip_mat,C,C_inv,S,nbf,imp_opts,func,fo,basisset)
+            0,dt,H,I,dip_mat,C,C_inv,S,nbf,imp_opts,func,fo,basisset)
     
     #check the Fock
     if debug :
@@ -289,7 +358,7 @@ if __name__ == "__main__":
     fockp_mid_init = np.matmul(np.conjugate(C.T),np.matmul(fock_mid_init,C))
     
     #u=scipy.linalg.expm(-1.j*fockp_mid_init*dt)
-    u = util.exp_opmat(fockp_mid_init,np.float_(dt))
+    u = util.exp_opmat(fockp_mid_init,dt)
     
     temp = np.matmul(Dp_0,np.conjugate(u.T))
     
@@ -333,64 +402,16 @@ if __name__ == "__main__":
     
     print("Start main iterations \n")
     for j in range(1,niter+1):
-        J_i,Exc_i,func_ti,F_ti,fock_mid_tmp=util.mo_fock_mid_forwd_eval(np.copy(D_ti),\
-                fock_mid_backwd,j,np.float_(dt),H,I,dip_mat,C,C_inv,S,nbf,\
-                imp_opts,func,fo,basisset)
-        
-        Ah=np.conjugate(fock_mid_tmp.T)
-        fo.write('Fock_mid hermitian: %s\n' % np.allclose(fock_mid_tmp,Ah))
-        #transform fock_mid_init in MO basis
-        fockp_mid_tmp=np.matmul(np.conjugate(C.T),np.matmul(fock_mid_tmp,C))
-        u=util.exp_opmat(np.copy(fockp_mid_tmp),np.float_(dt))
-        #u=scipy.linalg.expm(-1.0j*fockp_mid_tmp*dt)
-        #check u is unitary
-        test_u=np.matmul(u,np.conjugate(u.T))
-        if (not np.allclose(np.eye(u.shape[0]),test_u)):
-            print('U is not unitary\n')
-        
-        #check the trace of density to evolve
-        fo.write('tr of density to evolve: %.8f\n' % np.trace(Dp_ti).real)
-        
-        #evolve the density in orthonormal basis
-        temp=np.matmul(Dp_ti,np.conjugate(u.T))
-        Dp_ti_dt=np.matmul(u,temp)
-    
-        #backtransform Dp_ti_dt
-        D_ti_dt=np.matmul(C,np.matmul(Dp_ti_dt,np.conjugate(C.T)))
-        fo.write('%.8f\n' % np.trace(Dp_ti_dt).real)
-        #dipole expectation for D_ti
-        dip_list.append(np.trace(np.matmul(dip_mat,D_ti)))
-        
-        if debug:
-            fo.write('Dipole  %.8f %.15f\n' % (j*dt, 2.00*dip_list[j].real))
-    
-        if (do_weighted == -2):
-            #weighted dipole 
-            res = util.dipoleanalysis(dipmo_mat,Dp_ti,ndocc,occlist,virtlist,debug,HL)
-            weighted_dip.append(res)
-        #Energy expectation value at t = t_i 
-        Enuc_list.append(-func_ti*Ndip_dir+Nuc_rep) #just in case of non-zero nuclear dipole
-        if (func=='hf'):
-            ene_list.append(np.trace(np.matmul(D_ti,(H+F_ti))))
-        else:
-            ene_list.append(2.00*np.trace(np.matmul(D_ti,H))+J_i+Exc_i-np.trace(np.matmul(D_ti,(func_ti*dip_mat))))
-        imp_list.append(func_ti)
-       
-        #update D_ti and Dp_ti for the next step
-        
-        if debug :
-            fo.write('here I update the matrices Dp_ti and D_ti\n')
-        
-        D_ti=np.copy(D_ti_dt)
-        Dp_ti=np.copy(Dp_ti_dt)
-        #update fock_mid_backwd for the next step
-        fock_mid_backwd=np.copy(fock_mid_tmp)
+        fock_mid_backwd, D_ti, Dp_ti = main_loop (D_ti, fock_mid_backwd, j, dt, \
+                H, I, dip_mat, C, C_inv, S, nbf, imp_opts, func, fo, basisset, \
+                Dp_ti, weighted_dip, dip_list, ene_list, imp_list)
 
         if args.iterations:
             print ("Iter %10d od %10d"%(j,niter))
         else:
             rtutil.progress_bar(j, niter)
 
+    print("")
     print("")
     fo.close()
     end = time.time()
@@ -400,15 +421,16 @@ if __name__ == "__main__":
     dip_t=2.00*np.array(dip_list).real + Ndip_dir
     ene_t=np.array(ene_list).real+Nuc_rep
     imp_t=np.array(imp_list)
-    
+
+    print("Dumping output files")
     if (do_weighted == -2):
         wd_dip=2.00*np.array(weighted_dip).real
-        np.savetxt('weighteddip.txt', np.c_[t_point,wd_dip], \
+        np.savetxt(outfnames[3], np.c_[t_point,wd_dip], \
                 fmt='%.12e')
     
-    np.savetxt('dipole.txt', np.c_[t_point,dip_t], fmt='%.12e')
-    np.savetxt('imp.txt', np.c_[t_point,imp_t], fmt='%.12e')
-    np.savetxt('ene.txt', np.c_[t_point,ene_t], fmt='%.12e')
+    np.savetxt(outfnames[0], np.c_[t_point,dip_t], fmt='%.12e')
+    np.savetxt(outfnames[1], np.c_[t_point,imp_t], fmt='%.12e')
+    np.savetxt(outfnames[2], np.c_[t_point,ene_t], fmt='%.12e')
     wfn.Da().copy(psi4.core.Matrix.from_array(D_ti.real))
     wfn.Db().copy(psi4.core.Matrix.from_array(D_ti.real))
     psi4.cubeprop(wfn)
