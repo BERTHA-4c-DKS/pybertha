@@ -15,6 +15,19 @@ import time
 sys.path.insert(0, "../src")
 import rtutil
 
+##########################################################################################
+
+def get_json_data(args, D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, C, C_inv, S, nbf, \
+        imp_opts, func, fo, basisset, Dp_ti, weighted_dip, dip_list, ene_list, \
+        imp_list):
+
+    json_data = {}
+
+    for arg in vars(args):
+        json_data[arg] = getattr(args, arg)
+
+    return json_data
+        
 ####################################################################################
 
 def main_loop (D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, C, C_inv, S, nbf, \
@@ -405,6 +418,12 @@ if __name__ == "__main__":
         fock_mid_backwd, D_ti, Dp_ti = main_loop (D_ti, fock_mid_backwd, j, dt, \
                 H, I, dip_mat, C, C_inv, S, nbf, imp_opts, func, fo, basisset, \
                 Dp_ti, weighted_dip, dip_list, ene_list, imp_list)
+        
+        jason_data = get_json_data(args, D_ti, fock_mid_backwd, j, dt, H, I, \
+                dip_mat, C, C_inv, S, nbf, imp_opts, func, fo, basisset, Dp_ti, \
+                weighted_dip, dip_list, ene_list, imp_list)
+
+        print(jason_data)
 
         if args.iterations:
             print ("Iter %10d od %10d"%(j,niter))

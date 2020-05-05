@@ -24,30 +24,11 @@ def get_json_data(args, j, niter, ndim, ene_list, \
         dip_list, D_ti, fock_mid_backwd, dip_mat, C, \
         C_inv, ovapm, Dp_ti, weight_list):
 
-    json_data = {
-            'pulse': args.pulse,
-            'pulseFmax': args.pulseFmax,
-            'pulsew' : args.pulsew,
-            'dt': args.dt,
-            'inputfile': args.inputfile ,
-            "fittfile": args.fittfile ,
-            "fitcoefffile": args.fitcoefffile ,
-            "vctfile": args.vctfile ,
-            "ovapfile": args.ovapfile ,
-            "dumpfiles": args.dumpfiles ,
-            "totaltime": args.totaltime ,
-            "debug": args.debug ,
-            "verbosity": args.verbosity ,
-            "iterations": args.iterations ,
-            "select": args.select, 
-            "select_pert": args.select_pert, 
-            "propthresh": args.propthresh,
-            "thresh": args.thresh ,
-            "pulseS": args.pulseS ,
-            "t0": args.t0 , 
-            "wrapperso": args.wrapperso ,
-            "dumprestartnum": args.wrapperso ,
-            "direction": args.direction ,
+    json_data = {}
+    for arg in vars(args):
+        json_data[arg] = getattr(args, arg)
+
+    othervals = {
             'j': j,
             'niter': niter,
             'ndim' : ndim,
@@ -72,6 +53,8 @@ def get_json_data(args, j, niter, ndim, ene_list, \
             'weight_list_REAL': numpy.real(numpy.array(weight_list)).tolist(),
             'weight_list_IMAG': numpy.imag(numpy.array(weight_list)).tolist()
             }
+
+    json_data.update(othervals)
 
     return json_data
 
@@ -448,7 +431,7 @@ def restart_run(args):
     args.propthresh = json_data["propthresh"]
     args.thresh = json_data["thresh"]
     args.wrapperso = json_data["wrapperso"]
-    args.wrapperso = json_data["dumprestartnum"]
+    args.dumprestartnum = json_data["dumprestartnum"]
     args.pulseS = json_data["pulseS"]
     args.t0 = json_data["t0"]
 
