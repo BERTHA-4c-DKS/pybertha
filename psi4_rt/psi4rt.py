@@ -6,25 +6,73 @@
 # parameters in input : set imp_type as "kick"
 import os
 import sys
+import util
+import time
+import scipy
 import argparse
 import numpy as np
-import util
-import scipy
-import time
+
+import json
+from json import encoder
 
 sys.path.insert(0, "../src")
 import rtutil
 
 ##########################################################################################
 
+def is_jsonable(x):
+    
+    try:
+        json.dumps(x)
+        return True
+    except:
+        return False
+
+##########################################################################################
+
 def get_json_data(args, D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, C, C_inv, S, nbf, \
-        imp_opts, func, fo, basisset, Dp_ti, weighted_dip, dip_list, ene_list, \
-        imp_list):
+        imp_opts, func, basisset, Dp_ti, weighted_dip, dip_list, ene_list, \
+        imp_list, dipmo_mat, ndocc, occlist, virtlist, debug, HL):
 
     json_data = {}
 
+    # in such a way some values is duobled to be improved  (see HL or debug)
     for arg in vars(args):
         json_data[arg] = getattr(args, arg)
+
+    othervalues = {
+        "j" : j, 
+        "dt" : dt, 
+        "D_ti": D_ti.tolist(),
+        "fock_mid_backwd": fock_mid_backwd.tolist(), 
+        "H" : H.tolist(), 
+        "I" : I.tolist(), 
+        "dip_mat" : dip_mat.tolist(), 
+        "C" : C.tolist(), 
+        "C_inv" : C_inv.tolist(), 
+        "S" : S.tolist(), 
+        "nbf" : nbf, 
+        "func" : func,
+        "Dp_ti" : Dp_ti.tolist(), 
+        "weighted_dip" : weighted_dip, 
+        "dip_list" : dip_list, 
+        "ene_list" : ene_list, 
+        "imp_list" : imp_list, 
+        "dipmo_mat" : dipmo_mat.tolist(), 
+        "ndocc" : ndocc, 
+        "occlist" : occlist, 
+        "virtlist" : virtlist, 
+        "debug" : debug, 
+        "HL" : HL,
+        "imp_opts" : imp_opts, 
+        "basisset" : basisset
+        }
+
+    json_data.update(othervalues)
+
+    # check if it is seralizable
+    for key in json_data:
+        print(key, " ==> ", type(json_data[key]), is_jsonable(json_data[key]))
 
     return json_data
         
@@ -32,7 +80,7 @@ def get_json_data(args, D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, C, C_inv, S
 
 def main_loop (D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, C, C_inv, S, nbf, \
         imp_opts, func, fo, basisset, Dp_ti, weighted_dip, dip_list, ene_list, \
-        imp_list):
+        imp_list, dipmo_mat, ndocc, occlist, virtlist, debug, HL):
 
     J_i,Exc_i,func_ti,F_ti,fock_mid_tmp=util.mo_fock_mid_forwd_eval(D_ti,\
                 fock_mid_backwd,j,dt,H,I,dip_mat,C,C_inv,S,nbf,\
@@ -130,6 +178,8 @@ if __name__ == "__main__":
 
     parser.add_argument("--iterations", help="Use iteration number instead of progressbar",
             required=False, default=False, action="store_true")
+    parser.add_argument("--restartfile", help="set a restart file (default: restart_psi4rt.json)", 
+           required=False, type=str, default="restart_psi4rt.json")
  
     args = parser.parse_args()
 
@@ -417,13 +467,16 @@ if __name__ == "__main__":
     for j in range(1,niter+1):
         fock_mid_backwd, D_ti, Dp_ti = main_loop (D_ti, fock_mid_backwd, j, dt, \
                 H, I, dip_mat, C, C_inv, S, nbf, imp_opts, func, fo, basisset, \
-                Dp_ti, weighted_dip, dip_list, ene_list, imp_list)
+                Dp_ti, weighted_dip, dip_list, ene_list, imp_list, dipmo_mat, \
+                ndocc, occlist, virtlist, debug, HL)
         
-        jason_data = get_json_data(args, D_ti, fock_mid_backwd, j, dt, H, I, \
-                dip_mat, C, C_inv, S, nbf, imp_opts, func, fo, basisset, Dp_ti, \
-                weighted_dip, dip_list, ene_list, imp_list)
+        #json_data = get_json_data(args, D_ti, fock_mid_backwd, j, dt, H, I, \
+        #        dip_mat, C, C_inv, S, nbf, imp_opts, func, basisset, Dp_ti, \
+        #        weighted_dip, dip_list, ene_list, imp_list, dipmo_mat, \
+        #        ndocc, occlist, virtlist, debug, HL)
 
-        print(jason_data)
+        #with open(args.restartfile, 'w') as fp:
+        #    json.dump(json_data, fp, sort_keys=True, indent=4)
 
         if args.iterations:
             print ("Iter %10d od %10d"%(j,niter))
@@ -450,6 +503,8 @@ if __name__ == "__main__":
     np.savetxt(outfnames[0], np.c_[t_point,dip_t], fmt='%.12e')
     np.savetxt(outfnames[1], np.c_[t_point,imp_t], fmt='%.12e')
     np.savetxt(outfnames[2], np.c_[t_point,ene_t], fmt='%.12e')
+
+
     wfn.Da().copy(psi4.core.Matrix.from_array(D_ti.real))
     wfn.Db().copy(psi4.core.Matrix.from_array(D_ti.real))
     psi4.cubeprop(wfn)
