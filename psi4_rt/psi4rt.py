@@ -13,6 +13,7 @@ import argparse
 import numpy as np
 
 import json
+import pickle 
 from json import encoder
 
 sys.path.insert(0, "../src")
@@ -31,7 +32,7 @@ def is_jsonable(x):
 ##########################################################################################
 
 def get_json_data(args, D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, C, C_inv, S, nbf, \
-        imp_opts, func, basisset, Dp_ti, weighted_dip, dip_list, ene_list, \
+        imp_opts, func, Dp_ti, weighted_dip, dip_list, ene_list, \
         imp_list, dipmo_mat, ndocc, occlist, virtlist, debug, HL):
 
     json_data = {}
@@ -43,8 +44,6 @@ def get_json_data(args, D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, C, C_inv, S
     othervalues = {
         "j" : j, 
         "dt" : dt, 
-        "D_ti": D_ti.tolist(),
-        "fock_mid_backwd": fock_mid_backwd.tolist(), 
         "H" : H.tolist(), 
         "I" : I.tolist(), 
         "dip_mat" : dip_mat.tolist(), 
@@ -53,10 +52,7 @@ def get_json_data(args, D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, C, C_inv, S
         "S" : S.tolist(), 
         "nbf" : nbf, 
         "func" : func,
-        "Dp_ti" : Dp_ti.tolist(), 
         "weighted_dip" : weighted_dip, 
-        "dip_list" : dip_list, 
-        "ene_list" : ene_list, 
         "imp_list" : imp_list, 
         "dipmo_mat" : dipmo_mat.tolist(), 
         "ndocc" : ndocc, 
@@ -64,15 +60,26 @@ def get_json_data(args, D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, C, C_inv, S
         "virtlist" : virtlist, 
         "debug" : debug, 
         "HL" : HL,
-        "imp_opts" : imp_opts, 
-        "basisset" : basisset
+        "imp_opts" : imp_opts,
+        'ene_list_REAL': np.real(ene_list).tolist(),
+        'ene_list_IMAG': np.imag(ene_list).tolist(),
+        'dip_list_REAL': np.real(dip_list).tolist(),
+        'dip_list_IMAG': np.imag(dip_list).tolist(),
+        'D_ti_REAL' : np.real(D_ti).tolist(),
+        'D_ti_IMAG' : np.imag(D_ti).tolist(),
+        'fock_mid_backwd_REAL' : np.real(fock_mid_backwd).tolist(),
+        'fock_mid_backwd_IMAG' : np.imag(fock_mid_backwd).tolist(),
+        'Dp_ti_REAL': np.real(Dp_ti).tolist(),
+        'Dp_ti_IMAG': np.imag(Dp_ti).tolist(),
+        #"basisset" : basisset,
         }
 
     json_data.update(othervalues)
 
-    # check if it is seralizable
-    for key in json_data:
-        print(key, " ==> ", type(json_data[key]), is_jsonable(json_data[key]))
+    #check if it is seralizable
+    #for key in json_data:
+    #    if not is_jsonable(json_data[key]):
+    #        print(key, " ==> ", type(json_data[key]), is_jsonable(json_data[key]))
 
     return json_data
         
@@ -178,8 +185,8 @@ if __name__ == "__main__":
 
     parser.add_argument("--iterations", help="Use iteration number instead of progressbar",
             required=False, default=False, action="store_true")
-    parser.add_argument("--restartfile", help="set a restart file (default: restart_psi4rt.json)", 
-           required=False, type=str, default="restart_psi4rt.json")
+    parser.add_argument("--restartfile", help="set a restart file (default: restart_psi4rt.json;restart_bs.pkl)", 
+           required=False, type=str, default="restart_psi4rt.json;restart_bs.pkl")
  
     args = parser.parse_args()
 
@@ -196,6 +203,11 @@ if __name__ == "__main__":
     outfnames = args.outfilenames.split(";")
     if len(outfnames) != 4:
         print("Error in --out-filenames, you need to specify 4 filenames")
+        exit(1)
+
+    restartfnames = args.restartfile.split(";")
+    if len(restartfnames) != 2:
+        print("Error in --restartfnames, you need to specify 2 filenames")
         exit(1)
 
     if args.psi4root != "":
@@ -462,7 +474,7 @@ if __name__ == "__main__":
         fo.write('Trace of SD.real %.14f\n' % np.trace(np.matmul(S,D_ti.real)))
         fo.write('Trace of SD.imag %.14f\n' % np.trace(np.matmul(S,D_ti.imag)))
         fo.write('Dipole %.8f %.15f\n' % (0.000, 2.00*dip_list[0].real))
-    
+
     print("Start main iterations \n")
     for j in range(1,niter+1):
         fock_mid_backwd, D_ti, Dp_ti = main_loop (D_ti, fock_mid_backwd, j, dt, \
@@ -470,13 +482,22 @@ if __name__ == "__main__":
                 Dp_ti, weighted_dip, dip_list, ene_list, imp_list, dipmo_mat, \
                 ndocc, occlist, virtlist, debug, HL)
         
-        #json_data = get_json_data(args, D_ti, fock_mid_backwd, j, dt, H, I, \
-        #        dip_mat, C, C_inv, S, nbf, imp_opts, func, basisset, Dp_ti, \
-        #        weighted_dip, dip_list, ene_list, imp_list, dipmo_mat, \
-        #        ndocc, occlist, virtlist, debug, HL)
+        json_data = get_json_data(args, D_ti, fock_mid_backwd, j, dt, H, I, \
+                dip_mat, C, C_inv, S, nbf, imp_opts, func, Dp_ti, \
+                weighted_dip, dip_list, ene_list, imp_list, dipmo_mat, \
+                ndocc, occlist, virtlist, debug, HL)
 
-        #with open(args.restartfile, 'w') as fp:
-        #    json.dump(json_data, fp, sort_keys=True, indent=4)
+        with open(restartfnames[0], 'w') as fp:
+            json.dump(json_data, fp, sort_keys=True, indent=4)
+
+        with open(restartfnames[1], 'wb') as fp:
+            pickle.dump(basisset, fp)
+
+
+        # in case of of the loop
+        #mol_wfn.to_file("test.fschk")
+
+        exit()
 
         if args.iterations:
             print ("Iter %10d od %10d"%(j,niter))
