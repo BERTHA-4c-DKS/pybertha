@@ -31,9 +31,10 @@ def is_jsonable(x):
 
 ##########################################################################################
 
-def get_json_data(args, D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, C, C_inv, S, nbf, \
-        imp_opts, func, Dp_ti, weighted_dip, dip_list, ene_list, \
-        imp_list, dipmo_mat, ndocc, occlist, virtlist, debug, HL):
+def get_json_data(args, D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, \
+        C, C_inv, S, nbf, imp_opts, func, Dp_ti, weighted_dip, dip_list, \
+        ene_list, imp_list, dipmo_mat, ndocc, occlist, virtlist, debug, HL, \
+        psi4options, geom, do_weighted, Enuc_list):
 
     json_data = {}
 
@@ -43,6 +44,9 @@ def get_json_data(args, D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, C, C_inv, S
 
     othervalues = {
         "j" : j, 
+        "do_weighted" : do_weighted,
+        "geom" : geom,
+        "psi4options": psi4options,
         "dt" : dt, 
         "H" : H.tolist(), 
         "I" : I.tolist(), 
@@ -60,6 +64,7 @@ def get_json_data(args, D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, C, C_inv, S
         "virtlist" : virtlist, 
         "debug" : debug, 
         "HL" : HL,
+        "Enuc_list" : Enuc_list,
         "imp_opts" : imp_opts,
         'ene_list_REAL': np.real(ene_list).tolist(),
         'ene_list_IMAG': np.imag(ene_list).tolist(),
@@ -70,8 +75,7 @@ def get_json_data(args, D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, C, C_inv, S
         'fock_mid_backwd_REAL' : np.real(fock_mid_backwd).tolist(),
         'fock_mid_backwd_IMAG' : np.imag(fock_mid_backwd).tolist(),
         'Dp_ti_REAL': np.real(Dp_ti).tolist(),
-        'Dp_ti_IMAG': np.imag(Dp_ti).tolist(),
-        #"basisset" : basisset,
+        'Dp_ti_IMAG': np.imag(Dp_ti).tolist()
         }
 
     json_data.update(othervalues)
@@ -87,7 +91,8 @@ def get_json_data(args, D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, C, C_inv, S
 
 def main_loop (D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, C, C_inv, S, nbf, \
         imp_opts, func, fo, basisset, Dp_ti, weighted_dip, dip_list, ene_list, \
-        imp_list, dipmo_mat, ndocc, occlist, virtlist, debug, HL):
+        imp_list, dipmo_mat, ndocc, occlist, virtlist, debug, HL, do_weighted, \
+        Enuc_list):
 
     J_i,Exc_i,func_ti,F_ti,fock_mid_tmp=util.mo_fock_mid_forwd_eval(D_ti,\
                 fock_mid_backwd,j,dt,H,I,dip_mat,C,C_inv,S,nbf,\
@@ -146,49 +151,7 @@ def main_loop (D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, C, C_inv, S, nbf, \
 
 ####################################################################################
 
-if __name__ == "__main__":
-
-    ####################################
-    # parse arguments from std input
-    ####################################
-    parser = argparse.ArgumentParser()
-    
-    parser.add_argument("-d", "--debug", help="Debug on, prints extra debug info to the first --debug-filename", required=False,
-            default=False, action="store_true")
-    parser.add_argument("--debug-filenames", help="Debug filename [default=\"err.txt;test.dat\"]", required=False,
-            default="err.txt;test.dat", type=str, dest="dbgfnames")
-    parser.add_argument("-p", "--principal", help="Turn on homo-lumo weighted dipole moment", required=False,
-            default=False, action="store_true")
-    parser.add_argument("-a", "--axis", help="The axis of  electric field direction (x = 0, y = 1, z = 2, default 2)",
-            default=2, type = int)
-    parser.add_argument("--select", help="Specify the occ-virt MO weighted dipole moment. " + \
-            "(-2; 0 & 0 to activate) (default: 0; 0 & 0)",
-            default="0; 0 & 0", type=str)
-    parser.add_argument("-g","--geom", help="Specify geometry file", required=True, 
-            type=str, default="geom.xyz")
-    parser.add_argument("-o","--obs", help="Specify the orbital basis set", required=False, 
-            type=str, default="cc-pvdz")
-    parser.add_argument("--puream", help="Use pure am basis set", required=False, 
-            default=False, action="store_true" )
-    parser.add_argument("--psi4root", help="Add psi4 rootdir if needed", required=False, 
-            default="", type=str)
-    parser.add_argument("--psi4basis", help="Add psi4 basis set rootdir", required=False, 
-            default="/home/redo/anaconda3/pkgs/psi4-1.3.2+ecbda83-py37h31b3128_0/share/psi4/basis", type=str)
-    parser.add_argument("--input-param-file", help="Add input parameters filename [default=\"input.inp\"]", 
-            required=False, default="input.inp", type=str, dest='inputfname')
-    parser.add_argument("--cube-filenames", help="Specify cube filenames " + \
-            "[default=\"Da0.cube;Db0.cube;Dt0.cube;Ds0.cube\"]", \
-            required=False, default="Da0.cube;Db0.cube;Dt0.cube;Ds0.cube", type=str, dest='cubefilenames')
-    parser.add_argument("--out-filenames", help="Specify cout filenames " + \
-            "[default=\"dipole.txt;imp.txt;ene.txt;weighteddip.txt\"]", \
-            required=False, default="dipole.txt;imp.txt;ene.txt;weighteddip.txt", type=str, dest='outfilenames')
-
-    parser.add_argument("--iterations", help="Use iteration number instead of progressbar",
-            required=False, default=False, action="store_true")
-    parser.add_argument("--restartfile", help="set a restart file (default: restart_psi4rt.json;restart_bs.pkl)", 
-           required=False, type=str, default="restart_psi4rt.json;restart_bs.pkl")
- 
-    args = parser.parse_args()
+def normal_run_init (args):
 
     cfnames = args.cubefilenames.split(";")
     if len(cfnames) != 4:
@@ -204,20 +167,7 @@ if __name__ == "__main__":
     if len(outfnames) != 4:
         print("Error in --out-filenames, you need to specify 4 filenames")
         exit(1)
-
-    restartfnames = args.restartfile.split(";")
-    if len(restartfnames) != 2:
-        print("Error in --restartfnames, you need to specify 2 filenames")
-        exit(1)
-
-    if args.psi4root != "":
-        sys.path.append(args.psi4root)
-    
-    import psi4
-    
-    os.environ['PSIPATH']=args.psi4basis
-    sys.path.append(os.environ['PSIPATH'])
-    
+   
     debug = args.debug
     fgeom = args.geom
     basis_set = args.obs
@@ -235,6 +185,35 @@ if __name__ == "__main__":
     do_weighted = occlist.pop(0)
     virtlist = molist[1].split(";")
     virtlist = [int(m) for m in virtlist]
+
+    psi4options = {'basis': basis_set,
+                   'puream': use_am,
+                   #'DF_BASIS_SCF' : 'cc-pvqz-jkfit',
+                   'dft_radial_scheme' : 'becke',
+                   #'dft_radial_points': 49,
+                   'dft_spherical_points' : 434,
+                   #'dft_spherical_points': 146,     # Often needed
+                   #'dft_radial_points': 55,         # Often needed
+                   #'dft_radial_scheme': 'treutler',   # Rarely needed
+                   #'dft_nuclear_scheme': 'treutler',  # Rarely needed
+                   'scf_type': 'direct',
+                   'DF_SCF_GUESS': 'False',
+                   'cubeprop_tasks': ['density'],
+                   'CUBIC_GRID_OVERAGE' : [7.0,7.0,7.0],
+                   'CUBEPROP_ISOCONTOUR_THRESHOLD' : 1.0,
+                   'CUBIC_GRID_SPACING' : [0.1,0.1,0.1],
+                   'e_convergence': 1e-8,
+                   'd_convergence': 1e-8}
+
+    svwn5_func = {
+        "name": "SVWN5",
+        "x_functionals": {
+            "LDA_X": {}
+        },
+        "c_functionals": {
+            "LDA_C_VWN": {}
+        }
+    }
     
     if (do_weighted == -2):
         if debug:
@@ -258,27 +237,9 @@ if __name__ == "__main__":
     #output
     psi4.core.set_output_file(dbgfnames[1], False)
     #basis set options etc
-    psi4.set_options({'basis': basis_set,
-                      'puream': use_am,
-                      #'DF_BASIS_SCF' : 'cc-pvqz-jkfit',
-                      'dft_radial_scheme' : 'becke',
-                      #'dft_radial_points': 49,
-                      'dft_spherical_points' : 434,
-                      #'dft_spherical_points': 146,     # Often needed
-                      #'dft_radial_points': 55,         # Often needed
-                      #'dft_radial_scheme': 'treutler',   # Rarely needed
-                      #'dft_nuclear_scheme': 'treutler',  # Rarely needed
-                      'scf_type': 'direct',
-                      'DF_SCF_GUESS': 'False',
-                      'cubeprop_tasks': ['density'],
-                      'CUBIC_GRID_OVERAGE' : [7.0,7.0,7.0],
-                      'CUBEPROP_ISOCONTOUR_THRESHOLD' : 1.0,
-                      'CUBIC_GRID_SPACING' : [0.1,0.1,0.1],
-                      'e_convergence': 1e-8,
-                      'd_convergence': 1e-8})
-    
+    psi4.set_options(psi4options)
     #geometry set
-    geom,mol = util.set_input(fgeom)
+    geom, mol = util.set_input(fgeom)
     numpy_memory = 8
     #build dummy wfn
     mol_wfn = psi4.core.Wavefunction.build( \
@@ -302,15 +263,7 @@ if __name__ == "__main__":
     dip_mat=np.copy(dipole[direction])
     H = T+V
     #internal defined functional 
-    svwn5_func = {
-        "name": "SVWN5",
-        "x_functionals": {
-            "LDA_X": {}
-        },
-        "c_functionals": {
-            "LDA_C_VWN": {}
-        }
-    }
+
     #compute ground state wfn (for additional quantities)
     if (calc_params['func_type']=='hf'):
         ene, wfn = psi4.energy('scf',return_wfn=True)
@@ -413,8 +366,6 @@ if __name__ == "__main__":
     
     C_inv=np.linalg.inv(C)
     print('Entering in the first step of propagation')
-    start = time.time()
-    cstart = time.process_time()
     J0,Exc0,func_t0,F_t0,fock_mid_init=util.mo_fock_mid_forwd_eval(Da,wfn.Fa(),\
             0,dt,H,I,dip_mat,C,C_inv,S,nbf,imp_opts,func,fo,basisset)
     
@@ -474,30 +425,172 @@ if __name__ == "__main__":
         fo.write('Trace of SD.real %.14f\n' % np.trace(np.matmul(S,D_ti.real)))
         fo.write('Trace of SD.imag %.14f\n' % np.trace(np.matmul(S,D_ti.imag)))
         fo.write('Dipole %.8f %.15f\n' % (0.000, 2.00*dip_list[0].real))
+        
+    return D_ti, fock_mid_backwd, dt, H, I, dip_mat, C, C_inv, S, nbf, \
+            imp_opts, func, fo, basisset, Dp_ti, weighted_dip, dip_list, \
+            ene_list, imp_list, dipmo_mat, ndocc, occlist, virtlist, debug, \
+            HL, Ndip_dir, Nuc_rep, niter, do_weighted, Enuc_list, psi4options, \
+            geom, outfnames, wfn
+
+####################################################################################
+
+def restart_init (args):
+
+    return None
+
+
+####################################################################################
+
+if __name__ == "__main__":
+
+    ####################################
+    # parse arguments from std input
+    ####################################
+    parser = argparse.ArgumentParser()
+    
+    parser.add_argument("-d", "--debug", help="Debug on, prints extra debug info to the first --debug-filename", required=False,
+            default=False, action="store_true")
+    parser.add_argument("--debug-filenames", help="Debug filename [default=\"err.txt;test.dat\"]", required=False,
+            default="err.txt;test.dat", type=str, dest="dbgfnames")
+    parser.add_argument("-p", "--principal", help="Turn on homo-lumo weighted dipole moment", required=False,
+            default=False, action="store_true")
+    parser.add_argument("-a", "--axis", help="The axis of  electric field direction (x = 0, y = 1, z = 2, default 2)",
+            default=2, type = int)
+    parser.add_argument("--select", help="Specify the occ-virt MO weighted dipole moment. " + \
+            "(-2; 0 & 0 to activate) (default: 0; 0 & 0)",
+            default="0; 0 & 0", type=str)
+    parser.add_argument("-g","--geom", help="Specify geometry file", required=True, 
+            type=str, default="geom.xyz")
+    parser.add_argument("-o","--obs", help="Specify the orbital basis set", required=False, 
+            type=str, default="cc-pvdz")
+    parser.add_argument("--puream", help="Use pure am basis set", required=False, 
+            default=False, action="store_true" )
+    parser.add_argument("--psi4root", help="Add psi4 rootdir if needed", required=False, 
+            default="", type=str)
+    parser.add_argument("--psi4basis", help="Add psi4 basis set rootdir", required=False, 
+            default="/home/redo/anaconda3/pkgs/psi4-1.3.2+ecbda83-py37h31b3128_0/share/psi4/basis", type=str)
+    parser.add_argument("--input-param-file", help="Add input parameters filename [default=\"input.inp\"]", 
+            required=False, default="input.inp", type=str, dest='inputfname')
+    parser.add_argument("--cube-filenames", help="Specify cube filenames " + \
+            "[default=\"Da0.cube;Db0.cube;Dt0.cube;Ds0.cube\"]", \
+            required=False, default="Da0.cube;Db0.cube;Dt0.cube;Ds0.cube", type=str, dest='cubefilenames')
+    parser.add_argument("--out-filenames", help="Specify cout filenames " + \
+            "[default=\"dipole.txt;imp.txt;ene.txt;weighteddip.txt\"]", \
+            required=False, default="dipole.txt;imp.txt;ene.txt;weighteddip.txt", type=str, dest='outfilenames')
+    parser.add_argument("--iterations", help="Use iteration number instead of progressbar",
+            required=False, default=False, action="store_true")
+    parser.add_argument("--restartfile", help="set a restart file (default: restart_psi4rt.json)", 
+            required=False, type=str, default="restart_psi4rt.json")
+    parser.add_argument("--dumprestartnum", help="dump restart file every N iterations (default: -1)",
+            required=False, type=int, default=-1)
+    parser.add_argument("--restart", help="restart run from file",
+            required=False, default=False, action="store_true")
+ 
+ 
+    args = parser.parse_args()
+
+    fock_mid_backwd = None
+    weighted_dip = None
+    do_weighted = None
+    dipmo_mat = None
+    Enuc_list = None
+    outfnames = None
+    Ndip_dir = None
+    basisset = None
+    dip_list = None
+    ene_list = None
+    imp_list = None
+    virtlist = None
+    imp_opts = None
+    Nuc_rep = None
+    occlist = None
+    dip_mat = None
+    ndocc = None
+    debug = None
+    C_inv = None
+    Dp_ti = None
+    niter = None 
+    func = None
+    D_ti = None
+    geom = None 
+    nbf = None
+    wfn = None 
+    HL = None
+    fo = None
+    dt = None
+    H = None
+    I = None
+    C = None
+    S = None
+
+    if args.psi4root != "":
+        sys.path.append(args.psi4root)
+    
+    import psi4
+    
+    os.environ['PSIPATH'] = args.psi4basis
+    sys.path.append(os.environ['PSIPATH'])
+
+    if args.restart:
+        D_ti, fock_mid_backwd, dt, H, I, dip_mat, \
+                C, C_inv, S, nbf, imp_opts, func, fo, \
+                basisset, Dp_ti, weighted_dip, dip_list, \
+                ene_list, imp_list, dipmo_mat, ndocc, occlist, \
+                virtlist, debug, HL, Ndip_dir, Nuc_rep, niter, do_weighted, \
+                Enuc_list, psi4options, geom, outfnames, wfn \
+                = restart_init(args)
+    else:
+        D_ti, fock_mid_backwd, dt, H, I, dip_mat, \
+                C, C_inv, S, nbf, imp_opts, func, fo, \
+                basisset, Dp_ti, weighted_dip, dip_list, \
+                ene_list, imp_list, dipmo_mat, ndocc, occlist, \
+                virtlist, debug, HL, Ndip_dir, Nuc_rep, niter, do_weighted, \
+                Enuc_list, psi4options, geom, outfnames, wfn \
+                = normal_run_init (args)
+
+    start = time.time()
+    cstart = time.process_time()
 
     print("Start main iterations \n")
+    dumpcounter = 0
     for j in range(1,niter+1):
         fock_mid_backwd, D_ti, Dp_ti = main_loop (D_ti, fock_mid_backwd, j, dt, \
                 H, I, dip_mat, C, C_inv, S, nbf, imp_opts, func, fo, basisset, \
                 Dp_ti, weighted_dip, dip_list, ene_list, imp_list, dipmo_mat, \
-                ndocc, occlist, virtlist, debug, HL)
-        
-        json_data = get_json_data(args, D_ti, fock_mid_backwd, j, dt, H, I, \
-                dip_mat, C, C_inv, S, nbf, imp_opts, func, Dp_ti, \
-                weighted_dip, dip_list, ene_list, imp_list, dipmo_mat, \
-                ndocc, occlist, virtlist, debug, HL)
+                ndocc, occlist, virtlist, debug, HL, do_weighted, Enuc_list)
 
-        with open(restartfnames[0], 'w') as fp:
-            json.dump(json_data, fp, sort_keys=True, indent=4)
+        dumpcounter += 1
 
-        with open(restartfnames[1], 'wb') as fp:
-            pickle.dump(basisset, fp)
+        if args.dumprestartnum > 0:
+            if (dumpcounter == args.dumprestartnum) or \
+                    (j == niter):
+                
+                encoder.FLOAT_REPR = lambda o: format(o, '.25E')
 
+                json_data = get_json_data(args, D_ti, \
+                        fock_mid_backwd, j, dt, H, I, \
+                        dip_mat, C, C_inv, S, nbf, imp_opts, \
+                        func, Dp_ti, weighted_dip, dip_list, \
+                        ene_list, imp_list, dipmo_mat, \
+                        ndocc, occlist, virtlist, debug, HL, \
+                        psi4options, geom, do_weighted, Enuc_list)
 
+                with open(args.restartfile, 'w') as fp:
+                    json.dump(json_data, fp, sort_keys=True, indent=4)
+
+                dumpcounter = 0
+
+        # to restart
+        #mol = psi4.geometry(geom) 
+        #psi4.set_options(psi4options)
+        #mol_wfn = psi4.core.Wavefunction.build( \
+        #    mol,psi4.core.get_global_option('basis'))
+        #basisset = mol_wfn.basisset()
+
+        #exit()
+  
         # in case of of the loop
         #mol_wfn.to_file("test.fschk")
-
-        exit()
 
         if args.iterations:
             print ("Iter %10d od %10d"%(j,niter))
@@ -512,7 +605,7 @@ if __name__ == "__main__":
     print("Time for %10d time iterations : (%.5f s, %.5f s)\n" %(niter+1,end-start,cend-cstart))
     t_point=np.linspace(0.0,niter*dt,niter+1)
     dip_t=2.00*np.array(dip_list).real + Ndip_dir
-    ene_t=np.array(ene_list).real+Nuc_rep
+    ene_t=np.array(ene_list).real + Nuc_rep
     imp_t=np.array(imp_list)
 
     print("Dumping output files")
@@ -524,7 +617,6 @@ if __name__ == "__main__":
     np.savetxt(outfnames[0], np.c_[t_point,dip_t], fmt='%.12e')
     np.savetxt(outfnames[1], np.c_[t_point,imp_t], fmt='%.12e')
     np.savetxt(outfnames[2], np.c_[t_point,ene_t], fmt='%.12e')
-
 
     wfn.Da().copy(psi4.core.Matrix.from_array(D_ti.real))
     wfn.Db().copy(psi4.core.Matrix.from_array(D_ti.real))
