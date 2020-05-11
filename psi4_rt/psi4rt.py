@@ -21,6 +21,48 @@ import rtutil
 
 ##########################################################################################
 
+def vctto_npcmplxarray (realp, imagp):
+
+    list_REAL = np.float_(realp)
+    list_IMAG = np.float_(imagp)
+
+    if len(list_REAL) != len(list_IMAG):
+        return None
+
+    rlist = []
+    for i in range(len(list_REAL)):
+        rlist.append(np.complex128(complex(list_REAL[i], list_IMAG[i])))
+
+    return rlist
+
+##########################################################################################
+
+def mtxto_npcmplxarray (realp, imagp):
+
+    list_REAL = np.float_(realp)
+    list_IMAG = np.float_(imagp)
+
+    if len(list_REAL) != len(list_IMAG):
+        return None
+
+    rlist = []
+
+    for i in range(len(list_REAL)):
+        if len(list_REAL[i]) != len(list_IMAG[i]):
+            return None
+        
+        row = np.zeros(len(list_REAL[i]), dtype=np.complex128)
+
+        for j in range(len(list_REAL[i])):
+            row[j] = np.complex128(complex(list_REAL[i][j],
+                list_IMAG[i][j]))
+                
+        rlist.append(row)
+
+    return rlist
+
+##########################################################################################
+
 def is_jsonable(x):
     
     try:
@@ -34,16 +76,18 @@ def is_jsonable(x):
 def get_json_data(args, D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, \
         C, C_inv, S, nbf, imp_opts, func, Dp_ti, weighted_dip, dip_list, \
         ene_list, imp_list, dipmo_mat, ndocc, occlist, virtlist, debug, HL, \
-        psi4options, geom, do_weighted, Enuc_list):
+        psi4options, geom, do_weighted, Enuc_list, imp_params, calc_params):
 
     json_data = {}
 
     # in such a way some values is duobled to be improved  (see HL or debug)
     for arg in vars(args):
-        json_data[arg] = getattr(args, arg)
+        json_data["args."+arg] = getattr(args, arg)
 
     othervalues = {
         "j" : j, 
+        "imp_params" : imp_params, 
+        "calc_params" : calc_params,
         "do_weighted" : do_weighted,
         "geom" : geom,
         "psi4options": psi4options,
@@ -430,14 +474,121 @@ def normal_run_init (args):
             imp_opts, func, fo, basisset, Dp_ti, weighted_dip, dip_list, \
             ene_list, imp_list, dipmo_mat, ndocc, occlist, virtlist, debug, \
             HL, Ndip_dir, Nuc_rep, niter, do_weighted, Enuc_list, psi4options, \
-            geom, outfnames, wfn
+            geom, outfnames, wfn, imp_params, calc_params
 
 ####################################################################################
 
 def restart_init (args):
 
-    return None
+    fp = open(args.restartfile, 'r')
+    json_data = json.load(fp)
+    fp.close()
 
+    # in such a way some values is duobled to be improved  (see HL or debug)
+    #for arg in vars(args):
+    #    if arg != "restart" and arg != "debug":
+    #        toexe = "args." + arg + " = json_data[\"args."+arg+"\"]" 
+    #        eval(toexe)
+
+    args.debug = json_data["args.debug"]
+    args.dbgfnames = json_data["args.dbgfnames"]
+    args.principal = json_data["args.principal"]
+    args.axis = json_data["args.axis"]
+    args.select = json_data["args.select"]
+    args.geom = json_data["args.geom"]
+    args.obs = json_data["args.obs"]
+    args.puream = json_data["args.puream"]
+    args.psi4root = json_data["args.psi4root"]
+    args.psi4basis = json_data["args.psi4basis"]
+    args.inputfname = json_data["args.inputfname"]
+    args.cubefilenames = json_data["args.cubefilenames"]
+    args.outfilenames = json_data["args.outfilenames"]
+    args.iterations = json_data["args.iterations"]
+    args.restartfile = json_data["args.restartfile"]
+    args.dumprestartnum = json_data["args.dumprestartnum"]
+    #args.restart 
+
+    imp_opts_new, calc_params_new = \
+            util.set_params(args.inputfname)
+
+    fock_mid_backwd = None
+    weighted_dip = None
+    do_weighted = None
+    calc_params = None
+    imp_params = None  
+    dipmo_mat = None
+    Enuc_list = None
+    outfnames = None
+    Ndip_dir = None
+    dip_list = None
+    ene_list = None
+    imp_list = None
+    virtlist = None
+    imp_opts = None
+    Nuc_rep = None
+    occlist = None
+    dip_mat = None
+    ndocc = None
+    debug = None
+    C_inv = None
+    Dp_ti = None
+    niter = None 
+    func = None
+    D_ti = None
+    geom = None 
+    nbf = None
+    wfn = None 
+    HL = None
+    fo = None
+    dt = None
+    H = None
+    I = None
+    C = None
+    S = None
+
+    j            = json_data["j"]
+    imp_params   = json_data["imp_params"] 
+    calc_params  = json_data["calc_params"]
+    do_weighted  = json_data["do_weighted"]
+    geom         = json_data["geom"] 
+    psi4options  = json_data["psi4options"]
+    dt           = json_data["dt"]
+    nbf          = json_data["nbf"] 
+    func         = json_data["func"] 
+    imp_list     = json_data["imp_list"] 
+    ndocc        = json_data["ndocc"] 
+    occlist      = json_data["occlist"] 
+    virtlist     = json_data["virtlist"] 
+    debug        = json_data["debug"]
+    HL           = json_data["HL"] 
+    Enuc_list    = json_data["Enuc_list"] 
+    imp_opts     = json_data["imp_opts"] 
+    weighted_dip = json_data["weighted_dip"] 
+
+    dipmo_mat = np.asarray(json_data["dipmo_mat"])
+    H = np.asarray(json_data["H"])
+    I = np.asarray(json_data["I"])
+    dip_mat = np.asarray(json_data["dip_mat"])
+    C = np.asarray(json_data["C"])
+    C_inv = np.asarray(json_data["C_inv"])
+    S = np.asarray(json_data["S"])
+
+    ene_list = vctto_npcmplxarray (json_data["ene_list_REAL"], \
+            json_data["ene_list_IMAG"])
+    dip_list = vctto_npcmplxarray (json_data["dip_list_REAL"], \
+            json_data["dip_list_IMAG"])
+
+    D_ti = np.array(mtxto_npcmplxarray (json_data["D_ti_REAL"], \
+            json_data["D_ti_IMAG"]))
+    Dp_ti = np.array(mtxto_npcmplxarray (json_data["Dp_ti_REAL"], \
+            json_data["Dp_ti_IMAG"]))
+    fock_mid_backwd = np.array(mtxto_npcmplxarray (json_data["fock_mid_backwd_REAL"], \
+            json_data["fock_mid_backwd_IMAG"]))
+
+    return D_ti, fock_mid_backwd, dt, H, I, dip_mat, C, C_inv, S, nbf, imp_opts, func, fo, \
+           Dp_ti, weighted_dip, dip_list, ene_list, imp_list, dipmo_mat, ndocc, occlist, \
+           virtlist, debug, HL, Ndip_dir, Nuc_rep, niter, do_weighted, Enuc_list, psi4options, \
+           geom, outfnames, wfn, imp_params, calc_params
 
 ####################################################################################
 
@@ -486,12 +637,13 @@ if __name__ == "__main__":
     parser.add_argument("--restart", help="restart run from file",
             required=False, default=False, action="store_true")
  
- 
     args = parser.parse_args()
 
     fock_mid_backwd = None
     weighted_dip = None
     do_weighted = None
+    calc_params = None
+    imp_params = None  
     dipmo_mat = None
     Enuc_list = None
     outfnames = None
@@ -534,18 +686,24 @@ if __name__ == "__main__":
     if args.restart:
         D_ti, fock_mid_backwd, dt, H, I, dip_mat, \
                 C, C_inv, S, nbf, imp_opts, func, fo, \
-                basisset, Dp_ti, weighted_dip, dip_list, \
+                Dp_ti, weighted_dip, dip_list, \
                 ene_list, imp_list, dipmo_mat, ndocc, occlist, \
                 virtlist, debug, HL, Ndip_dir, Nuc_rep, niter, do_weighted, \
-                Enuc_list, psi4options, geom, outfnames, wfn \
+                Enuc_list, psi4options, geom, outfnames, wfn, imp_params, calc_params \
                 = restart_init(args)
+
+        mol = psi4.geometry(geom)
+        psi4.set_options(psi4options)
+        mol_wfn = psi4.core.Wavefunction.build( \
+                mol,psi4.core.get_global_option('basis'))
+        basisset = mol_wfn.basisset()
     else:
         D_ti, fock_mid_backwd, dt, H, I, dip_mat, \
                 C, C_inv, S, nbf, imp_opts, func, fo, \
                 basisset, Dp_ti, weighted_dip, dip_list, \
                 ene_list, imp_list, dipmo_mat, ndocc, occlist, \
                 virtlist, debug, HL, Ndip_dir, Nuc_rep, niter, do_weighted, \
-                Enuc_list, psi4options, geom, outfnames, wfn \
+                Enuc_list, psi4options, geom, outfnames, wfn, imp_params, calc_params \
                 = normal_run_init (args)
 
     start = time.time()
@@ -573,24 +731,13 @@ if __name__ == "__main__":
                         func, Dp_ti, weighted_dip, dip_list, \
                         ene_list, imp_list, dipmo_mat, \
                         ndocc, occlist, virtlist, debug, HL, \
-                        psi4options, geom, do_weighted, Enuc_list)
+                        psi4options, geom, do_weighted, Enuc_list, \
+                        imp_params, calc_params)
 
                 with open(args.restartfile, 'w') as fp:
                     json.dump(json_data, fp, sort_keys=True, indent=4)
 
                 dumpcounter = 0
-
-        # to restart
-        #mol = psi4.geometry(geom) 
-        #psi4.set_options(psi4options)
-        #mol_wfn = psi4.core.Wavefunction.build( \
-        #    mol,psi4.core.get_global_option('basis'))
-        #basisset = mol_wfn.basisset()
-
-        #exit()
-  
-        # in case of of the loop
-        #mol_wfn.to_file("test.fschk")
 
         if args.iterations:
             print ("Iter %10d od %10d"%(j,niter))

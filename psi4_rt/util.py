@@ -18,7 +18,7 @@ def set_input(fgeom):
     geomobj +=str(line)
   geomobj += "symmetry c1" +"\n" +"no_reorient" +"\n" +"no_com"
   print(geomobj)
-  mol =psi4.geometry(geomobj)
+  mol = psi4.geometry(geomobj)
   f.close()
   return geomobj, mol
 
