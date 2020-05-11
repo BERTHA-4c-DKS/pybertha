@@ -76,7 +76,8 @@ def is_jsonable(x):
 def get_json_data(args, D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, \
         C, C_inv, S, nbf, imp_opts, func, Dp_ti, weighted_dip, dip_list, \
         ene_list, imp_list, dipmo_mat, ndocc, occlist, virtlist, debug, HL, \
-        psi4options, geom, do_weighted, Enuc_list, imp_params, calc_params):
+        psi4options, geom, do_weighted, Enuc_list, imp_params, calc_params, \
+        Ndip_dir, Nuc_rep):
 
     json_data = {}
 
@@ -86,6 +87,8 @@ def get_json_data(args, D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, \
 
     othervalues = {
         "j" : j, 
+        "Nuc_rep" : Nuc_rep,
+        "Ndip_dir" : Ndip_dir,
         "imp_params" : imp_params, 
         "calc_params" : calc_params,
         "do_weighted" : do_weighted,
@@ -136,7 +139,7 @@ def get_json_data(args, D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, \
 def main_loop (D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, C, C_inv, S, nbf, \
         imp_opts, func, fo, basisset, Dp_ti, weighted_dip, dip_list, ene_list, \
         imp_list, dipmo_mat, ndocc, occlist, virtlist, debug, HL, do_weighted, \
-        Enuc_list):
+        Enuc_list, Ndip_dir, Nuc_rep):
 
     J_i,Exc_i,func_ti,F_ti,fock_mid_tmp=util.mo_fock_mid_forwd_eval(D_ti,\
                 fock_mid_backwd,j,dt,H,I,dip_mat,C,C_inv,S,nbf,\
@@ -508,9 +511,6 @@ def restart_init (args):
     args.dumprestartnum = json_data["args.dumprestartnum"]
     #args.restart 
 
-    imp_opts_new, calc_params_new = \
-            util.set_params(args.inputfname)
-
     fock_mid_backwd = None
     weighted_dip = None
     do_weighted = None
@@ -564,6 +564,14 @@ def restart_init (args):
     Enuc_list    = json_data["Enuc_list"] 
     imp_opts     = json_data["imp_opts"] 
     weighted_dip = json_data["weighted_dip"] 
+    Ndip_dir     = json_data["Ndip_dir"]
+    Nuc_rep      = json_data["Nuc_rep"]
+
+    imp_opts_new, calc_params_new = \
+            util.set_params(args.inputfname)
+
+    time_int = calc_params_new['time_int']
+    niter = int(time_int/dt)
 
     dipmo_mat = np.asarray(json_data["dipmo_mat"])
     H = np.asarray(json_data["H"])
@@ -584,6 +592,23 @@ def restart_init (args):
             json_data["Dp_ti_IMAG"]))
     fock_mid_backwd = np.array(mtxto_npcmplxarray (json_data["fock_mid_backwd_REAL"], \
             json_data["fock_mid_backwd_IMAG"]))
+
+    cfnames = args.cubefilenames.split(";")
+    if len(cfnames) != 4:
+        print("Error in --cube-filenames, you need to specify 4 filenames")
+        exit(1)
+
+    dbgfnames = args.dbgfnames.split(";")
+    if len(dbgfnames) != 2:
+        print("Error in --debug-filenames, you need to specify 2 filenames")
+        exit(1)
+
+    outfnames = args.outfilenames.split(";")
+    if len(outfnames) != 4:
+        print("Error in --out-filenames, you need to specify 4 filenames")
+        exit(1)
+
+    fo = open(dbgfnames[0], "w")
 
     return D_ti, fock_mid_backwd, dt, H, I, dip_mat, C, C_inv, S, nbf, imp_opts, func, fo, \
            Dp_ti, weighted_dip, dip_list, ene_list, imp_list, dipmo_mat, ndocc, occlist, \
@@ -715,7 +740,8 @@ if __name__ == "__main__":
         fock_mid_backwd, D_ti, Dp_ti = main_loop (D_ti, fock_mid_backwd, j, dt, \
                 H, I, dip_mat, C, C_inv, S, nbf, imp_opts, func, fo, basisset, \
                 Dp_ti, weighted_dip, dip_list, ene_list, imp_list, dipmo_mat, \
-                ndocc, occlist, virtlist, debug, HL, do_weighted, Enuc_list)
+                ndocc, occlist, virtlist, debug, HL, do_weighted, Enuc_list, \
+                Ndip_dir, Nuc_rep)
 
         dumpcounter += 1
 
@@ -732,7 +758,7 @@ if __name__ == "__main__":
                         ene_list, imp_list, dipmo_mat, \
                         ndocc, occlist, virtlist, debug, HL, \
                         psi4options, geom, do_weighted, Enuc_list, \
-                        imp_params, calc_params)
+                        imp_params, calc_params, Ndip_dir, Nuc_rep)
 
                 with open(args.restartfile, 'w') as fp:
                     json.dump(json_data, fp, sort_keys=True, indent=4)
