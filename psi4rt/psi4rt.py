@@ -740,14 +740,14 @@ if __name__ == "__main__":
                 Enuc_list, psi4options, geom, outfnames, wfn, imp_params, calc_params \
                 = normal_run_init (args)
 
-        jstart = 1
+        jstart = 0
 
     start = time.time()
     cstart = time.process_time()
 
     print("Start main iterations \n")
     dumpcounter = 0
-    for j in range(jstart,niter+1):
+    for j in range(jstart+1,niter+1):
         fock_mid_backwd, D_ti, Dp_ti = main_loop (D_ti, fock_mid_backwd, j, dt, \
                 H, I, dip_mat, C, C_inv, S, nbf, imp_opts, func, fo, basisset, \
                 Dp_ti, weighted_dip, dip_list, ene_list, imp_list, dipmo_mat, \
@@ -802,6 +802,7 @@ if __name__ == "__main__":
     np.savetxt(outfnames[1], np.c_[t_point,imp_t], fmt='%.12e')
     np.savetxt(outfnames[2], np.c_[t_point,ene_t], fmt='%.12e')
 
-    wfn.Da().copy(psi4.core.Matrix.from_array(D_ti.real))
-    wfn.Db().copy(psi4.core.Matrix.from_array(D_ti.real))
-    psi4.cubeprop(wfn)
+    if not args.restart:
+        wfn.Da().copy(psi4.core.Matrix.from_array(D_ti.real))
+        wfn.Db().copy(psi4.core.Matrix.from_array(D_ti.real))
+        psi4.cubeprop(wfn)
