@@ -220,14 +220,14 @@ for i in range(ndim):
 # NOCV analysis start here  ! check matrix from ovap file, transposition needed
 import cdautil
 from scipy.linalg import eig
-#check vct and ovap abduct
-if not os.path.isfile(vctfilename):
-    print("File ", vctfilename, " does not exist")
-    exit(1)
+#check vct and ovap abduct !REMOVE
+#if not os.path.isfile(vctfilename):
+#    print("File ", vctfilename, " does not exist")
+#    exit(1)
 
-if not os.path.isfile(ovapfilename):
-    print("File ", ovapfilename, " does not exist")
-    exit(1)
+#if not os.path.isfile(ovapfilename):
+#    print("File ", ovapfilename, " does not exist")
+#    exit(1)
 #check vct of frags
 if not os.path.isfile("vcta.out"):
     print("File vcta.out does not exist")
@@ -244,7 +244,8 @@ drz = args.deltaz
 margin = args.lmargin
 #ovapcmp = berthamod.read_ovapfile ("ovapab.out")
 
-cmatab = berthamod.read_vctfile (vctfilename)
+#cmatab = berthamod.read_vctfile (vctfilename)
+cmatab = occeigv
 
 cmata = berthamod.read_vctfile ("vcta.out")
 cmatb = berthamod.read_vctfile ("vctb.out")
