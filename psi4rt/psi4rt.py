@@ -286,6 +286,7 @@ def normal_run_init (args):
     #basis set options etc
     psi4.set_options(psi4options)
     #geometry set
+    print("Reaading geometry from ", fgeom)
     geom, mol = util.set_input(fgeom)
     numpy_memory = 8
     #build dummy wfn
@@ -637,7 +638,7 @@ if __name__ == "__main__":
     parser.add_argument("--select", help="Specify the occ-virt MO weighted dipole moment. " + \
             "(-2; 0 & 0 to activate) (default: 0; 0 & 0)",
             default="0; 0 & 0", type=str)
-    parser.add_argument("-g","--geom", help="Specify geometry file", required=True, 
+    parser.add_argument("-g","--geom", help="Specify geometry file", required=False, 
             type=str, default="geom.xyz")
     parser.add_argument("-o","--obs", help="Specify the orbital basis set", required=False, 
             type=str, default="cc-pvdz")
@@ -710,7 +711,7 @@ if __name__ == "__main__":
     os.environ['PSIPATH'] = args.psi4basis
     sys.path.append(os.environ['PSIPATH'])
 
-    j = None 
+    jstart = None 
 
     if args.restart:
         D_ti, fock_mid_backwd, dt, H, I, dip_mat, \
@@ -721,11 +722,15 @@ if __name__ == "__main__":
                 Enuc_list, psi4options, geom, outfnames, wfn, imp_params, calc_params, j \
                 = restart_init(args)
 
+        print(j, niter)
+
         mol = psi4.geometry(geom)
         psi4.set_options(psi4options)
         mol_wfn = psi4.core.Wavefunction.build( \
                 mol,psi4.core.get_global_option('basis'))
         basisset = mol_wfn.basisset()
+
+        jstart = j
     else:
         D_ti, fock_mid_backwd, dt, H, I, dip_mat, \
                 C, C_inv, S, nbf, imp_opts, func, fo, \
@@ -735,12 +740,14 @@ if __name__ == "__main__":
                 Enuc_list, psi4options, geom, outfnames, wfn, imp_params, calc_params \
                 = normal_run_init (args)
 
+        jstart = 1
+
     start = time.time()
     cstart = time.process_time()
 
     print("Start main iterations \n")
     dumpcounter = 0
-    for j in range(1,niter+1):
+    for j in range(jstart,niter+1):
         fock_mid_backwd, D_ti, Dp_ti = main_loop (D_ti, fock_mid_backwd, j, dt, \
                 H, I, dip_mat, C, C_inv, S, nbf, imp_opts, func, fo, basisset, \
                 Dp_ti, weighted_dip, dip_list, ene_list, imp_list, dipmo_mat, \
