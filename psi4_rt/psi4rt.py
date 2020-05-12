@@ -546,6 +546,8 @@ def restart_init (args):
     C = None
     S = None
 
+    j = None 
+
     j            = json_data["j"]
     imp_params   = json_data["imp_params"] 
     calc_params  = json_data["calc_params"]
@@ -613,7 +615,7 @@ def restart_init (args):
     return D_ti, fock_mid_backwd, dt, H, I, dip_mat, C, C_inv, S, nbf, imp_opts, func, fo, \
            Dp_ti, weighted_dip, dip_list, ene_list, imp_list, dipmo_mat, ndocc, occlist, \
            virtlist, debug, HL, Ndip_dir, Nuc_rep, niter, do_weighted, Enuc_list, psi4options, \
-           geom, outfnames, wfn, imp_params, calc_params
+           geom, outfnames, wfn, imp_params, calc_params, j
 
 ####################################################################################
 
@@ -708,13 +710,15 @@ if __name__ == "__main__":
     os.environ['PSIPATH'] = args.psi4basis
     sys.path.append(os.environ['PSIPATH'])
 
+    j = None 
+
     if args.restart:
         D_ti, fock_mid_backwd, dt, H, I, dip_mat, \
                 C, C_inv, S, nbf, imp_opts, func, fo, \
                 Dp_ti, weighted_dip, dip_list, \
                 ene_list, imp_list, dipmo_mat, ndocc, occlist, \
                 virtlist, debug, HL, Ndip_dir, Nuc_rep, niter, do_weighted, \
-                Enuc_list, psi4options, geom, outfnames, wfn, imp_params, calc_params \
+                Enuc_list, psi4options, geom, outfnames, wfn, imp_params, calc_params, j \
                 = restart_init(args)
 
         mol = psi4.geometry(geom)
