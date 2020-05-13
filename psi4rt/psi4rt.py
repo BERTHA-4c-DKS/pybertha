@@ -103,7 +103,6 @@ def get_json_data(args, D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, \
         "S" : S.tolist(), 
         "nbf" : nbf, 
         "func" : func,
-        "weighted_dip" : weighted_dip, 
         "imp_list" : imp_list, 
         "dipmo_mat" : dipmo_mat.tolist(), 
         "ndocc" : ndocc, 
@@ -117,6 +116,8 @@ def get_json_data(args, D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, \
         'ene_list_IMAG': np.imag(ene_list).tolist(),
         'dip_list_REAL': np.real(dip_list).tolist(),
         'dip_list_IMAG': np.imag(dip_list).tolist(),
+        'weighted_dip_REAL': np.real(weighted_dip).tolist(),
+        'weighted_dip_IMAG': np.imag(weighted_dip).tolist(),
         'D_ti_REAL' : np.real(D_ti).tolist(),
         'D_ti_IMAG' : np.imag(D_ti).tolist(),
         'fock_mid_backwd_REAL' : np.real(fock_mid_backwd).tolist(),
@@ -128,9 +129,11 @@ def get_json_data(args, D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, \
     json_data.update(othervalues)
 
     #check if it is seralizable
-    #for key in json_data:
-    #    if not is_jsonable(json_data[key]):
-    #        print(key, " ==> ", type(json_data[key]), is_jsonable(json_data[key]))
+    for key in json_data:
+        if not is_jsonable(json_data[key]):
+            print("This ", key, " is not serializable ", type(json_data[key]), \
+                    is_jsonable(json_data[key]))
+            print (weighted_dip)
 
     return json_data
         
@@ -588,6 +591,8 @@ def restart_init (args):
             json_data["ene_list_IMAG"])
     dip_list = vctto_npcmplxarray (json_data["dip_list_REAL"], \
             json_data["dip_list_IMAG"])
+    weighted_dip = vctto_npcmplxarray (json_data["weighted_dip_REAL"], \
+            json_data["weighted_dip_IMAG"])
 
     D_ti = np.array(mtxto_npcmplxarray (json_data["D_ti_REAL"], \
             json_data["D_ti_IMAG"]))
