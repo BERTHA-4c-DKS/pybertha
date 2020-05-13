@@ -6,7 +6,6 @@
 # parameters in input : set imp_type as "kick"
 import os
 import sys
-import util
 import time
 import scipy
 import argparse
@@ -16,8 +15,6 @@ import json
 import pickle 
 from json import encoder
 
-sys.path.insert(0, "../src")
-import rtutil
 
 ##########################################################################################
 
@@ -651,6 +648,8 @@ if __name__ == "__main__":
             default=False, action="store_true" )
     parser.add_argument("--psi4root", help="Add psi4 rootdir if needed", required=False, 
             default="", type=str)
+    parser.add_argument("--pybertharoot", help="Add pybertha rootdir if needed", required=False, 
+            default="", type=str)
     parser.add_argument("--psi4basis", help="Add psi4 basis set rootdir", required=False, 
             default="/home/redo/anaconda3/pkgs/psi4-1.3.2+ecbda83-py37h31b3128_0/share/psi4/basis", type=str)
     parser.add_argument("--input-param-file", help="Add input parameters filename [default=\"input.inp\"]", 
@@ -710,8 +709,17 @@ if __name__ == "__main__":
 
     if args.psi4root != "":
         sys.path.append(args.psi4root)
-    
+    elif "PSI4ROOT" in os.environ:
+        sys.path.append(os.environ['PSI4ROOT'])
+
+    if args.pybertharoot != "":
+        sys.path.insert(0, args.pybertharoot+"/src")
+    elif "PYBERTHAROOT" in os.environ:
+        sys.path.append(os.environ['PYBERTHAROOT']+"/src")
+        
+    import rtutil
     import psi4
+    import util
     
     os.environ['PSIPATH'] = args.psi4basis
     sys.path.append(os.environ['PSIPATH'])

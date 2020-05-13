@@ -4,7 +4,6 @@ import sys
 
 from pkg_resources import parse_version
 
-sys.path.insert(0, "../src")
 import rtutil
 
 ##################################################################
