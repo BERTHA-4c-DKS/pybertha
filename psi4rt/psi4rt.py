@@ -761,25 +761,25 @@ if __name__ == "__main__":
 
         dumpcounter += 1
 
-        if args.dumprestartnum > 0:
-            if (dumpcounter == args.dumprestartnum) or \
-                    (j == niter):
-                
-                encoder.FLOAT_REPR = lambda o: format(o, '.25E')
+        #if args.dumprestartnum > 0:
+        if (dumpcounter == args.dumprestartnum) or \
+                (j == niter):
+            
+            encoder.FLOAT_REPR = lambda o: format(o, '.25E')
 
-                json_data = get_json_data(args, D_ti, \
-                        fock_mid_backwd, j, dt, H, I, \
-                        dip_mat, C, C_inv, S, nbf, imp_opts, \
-                        func, Dp_ti, weighted_dip, dip_list, \
-                        ene_list, imp_list, dipmo_mat, \
-                        ndocc, occlist, virtlist, debug, HL, \
-                        psi4options, geom, do_weighted, Enuc_list, \
-                        imp_params, calc_params, Ndip_dir, Nuc_rep)
+            json_data = get_json_data(args, D_ti, \
+                    fock_mid_backwd, j, dt, H, I, \
+                    dip_mat, C, C_inv, S, nbf, imp_opts, \
+                    func, Dp_ti, weighted_dip, dip_list, \
+                    ene_list, imp_list, dipmo_mat, \
+                    ndocc, occlist, virtlist, debug, HL, \
+                    psi4options, geom, do_weighted, Enuc_list, \
+                    imp_params, calc_params, Ndip_dir, Nuc_rep)
 
-                with open(args.restartfile, 'w') as fp:
-                    json.dump(json_data, fp, sort_keys=True, indent=4)
+            with open(args.restartfile, 'w') as fp:
+                json.dump(json_data, fp, sort_keys=True, indent=4)
 
-                dumpcounter = 0
+            dumpcounter = 0
 
         if args.iterations:
             print ("Iter %10d od %10d"%(j,niter))
