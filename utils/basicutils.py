@@ -80,8 +80,11 @@ def exportheatmap(occups, virtua, valuesin, xlabel = "Occ", \
             annot=labels, fmt="", cmap="RdBu", \
             linewidths=1, linecolor='black',ax=ax)
     
-    plt.xlabel(xlabel)
-    plt.ylabel(ylabel)
+    axis_font = {'fontname':'Arial', 'size':'14'}
+    plt.xlabel(xlabel,**axis_font)
+    plt.ylabel(ylabel,**axis_font)
+    plt.yticks(fontsize=14) 
+    plt.xticks(fontsize=14) 
     
     #plt.show()
     fig.savefig('test.jpg')

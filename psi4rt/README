@@ -1,4 +1,4 @@
-To use cnaconda python
+To use anaconda python
 
 conda update psi4 -c psi4
 conda create -n p4env psi4 -c psi4
