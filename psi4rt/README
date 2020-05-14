@@ -9,4 +9,5 @@ conda activate p4env
 
 to clean after run:
 
-rm -rf *.cube psi.*.clean test.dat timer.dat dipole.txt ene.txt err.txt imp.txt timing.tx
+rm -rf *.cube psi.*.clean test.dat timer.dat dipole.txt ene.txt err.txt imp.txt timing.txt weighteddip.txt 
+
