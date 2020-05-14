@@ -566,7 +566,6 @@ def restart_init (args):
     HL           = json_data["HL"] 
     Enuc_list    = json_data["Enuc_list"] 
     imp_opts     = json_data["imp_opts"] 
-    weighted_dip = json_data["weighted_dip"] 
     Ndip_dir     = json_data["Ndip_dir"]
     Nuc_rep      = json_data["Nuc_rep"]
 
