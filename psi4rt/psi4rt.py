@@ -587,7 +587,8 @@ def restart_init (args):
             json_data["ene_list_IMAG"])
     dip_list = vctto_npcmplxarray (json_data["dip_list_REAL"], \
             json_data["dip_list_IMAG"])
-    weighted_dip = vctto_npcmplxarray (json_data["weighted_dip_REAL"], \
+
+    weighted_dip = mtxto_npcmplxarray (json_data["weighted_dip_REAL"], \
             json_data["weighted_dip_IMAG"])
 
     D_ti = np.array(mtxto_npcmplxarray (json_data["D_ti_REAL"], \
