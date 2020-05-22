@@ -1,0 +1,28 @@
+
+Total time taken for setup: 0.017 seconds
+Total time[time()] for SCF iterations: 15.752 seconds 
+
+Total time[clock()] for SCF iterations: 15.750 seconds 
+
+Time[time()] for pre-propagation vemb calculation : 0.877 seconds 
+
+Time[clock()] for pre-propagation vemb calculation : 0.880 seconds 
+
+time and ctime to map D on grid: 0.000 , 0.000 seconds 
+
+time and ctime to map D on grid through MOs: 0.008 , 0.010 seconds 
+
+time and ctime to import D in PyADF : 0.000 , 0.000 seconds 
+
+time and ctime for Xfun : 0.328 , 0.330 seconds 
+
+time and ctime for Vemb matricial repr. : 0.541 , 0.540 seconds 
+
+Cumulative time[time()] due to vemb calculation : 0.000 seconds 
+
+Cumulative time[clock()] due to vemb calculation : 0.000 seconds 
+
+Cumulative time[time()] due to 6000 iter : 5.71271790e+03 seconds 
+
+Cumulative time[clock()] due to 6000 iter : 5.71259000e+03 seconds 
+

@@ -1,0 +1,7 @@
+   => BlockOPoints: 32640 Points <=
+
+    Center = <  1.133E+03,  1.133E+03,  1.133E+03>, R =   1.730E+06
+
+    19     Significant Shells.
+    41     Significant Functions.
+

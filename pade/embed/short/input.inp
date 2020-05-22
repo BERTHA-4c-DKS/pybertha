@@ -1,0 +1,11 @@
+time_int: 10.0
+delta_t : 0.1
+calc_flag :1
+i_rest : 0
+F_max : 0.00001
+freq_carrier : 0.1
+sigma : 0.48
+t0 : 0.1
+imp_type : analytic
+func_type : blyp
+method_type : me

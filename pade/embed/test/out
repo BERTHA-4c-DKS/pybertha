@@ -1,0 +1,609 @@
+
+*** tstart() called on bwmcc19
+*** at Wed May 20 07:33:13 2020
+
+   => Loading Basis Set <=
+
+    Name: AUG-CC-PVDZ
+    Role: ORBITAL
+    Keyword: BASIS
+    atoms 1   entry O          line   250 file /usr/local/psi4/share/psi4/basis/aug-cc-pvdz.gbs 
+    atoms 2-3 entry H          line    36 file /usr/local/psi4/share/psi4/basis/aug-cc-pvdz.gbs 
+
+    There are an even number of electrons - assuming singlet.
+    Specify the multiplicity in the molecule input block.
+
+
+         ---------------------------------------------------------
+                                   SCF
+            by Justin Turney, Rob Parrish, Andy Simmonett
+                             and Daniel Smith
+                              RKS Reference
+                        1 Threads,    500 MiB Core
+         ---------------------------------------------------------
+
+  ==> Geometry <==
+
+    Molecular point group: c1
+    Full point group: C1
+
+    Geometry (in Angstrom), charge = 0, multiplicity = 1:
+
+       Center              X                  Y                   Z               Mass       
+    ------------   -----------------  -----------------  -----------------  -----------------
+         O            1.568501000000     0.105892000000     0.000005000000    15.994914619560
+         H            0.606736000000    -0.033962000000    -0.000628000000     1.007825032070
+         H            1.940519000000    -0.780005000000     0.000222000000     1.007825032070
+
+  Running in c1 symmetry.
+
+  Rotational constants: A =     22.04061  B =      0.38713  C =      0.38044 [cm^-1]
+  Rotational constants: A = 660760.96480  B =  11605.75674  C =  11405.42939 [MHz]
+  Nuclear repulsion =    9.108127843867019
+
+  Charge       = 0
+  Multiplicity = 1
+  Electrons    = 10
+  Nalpha       = 5
+  Nbeta        = 5
+
+  ==> Algorithm <==
+
+  SCF Algorithm Type is DIRECT.
+  DIIS enabled.
+  MOM disabled.
+  Fractional occupation disabled.
+  Guess Type is SAD.
+  Energy threshold   = 1.00e-08
+  Density threshold  = 1.00e-08
+  Integral threshold = 0.00e+00
+
+  ==> Primary Basis <==
+
+  Basis Set: AUG-CC-PVDZ
+    Blend: AUG-CC-PVDZ
+    Number of shells: 19
+    Number of basis function: 41
+    Number of Cartesian functions: 43
+    Spherical Harmonics?: true
+    Max angular momentum: 2
+
+  ==> DFT Potential <==
+
+   => Composite Functional: BLYP <= 
+
+    BLYP GGA Exchange-Correlation Functional
+
+    P.J. Stephens et. al., J. Phys. Chem., 98, 11623-11627, 1994
+    B. Miehlich et. al., Chem. Phys. Lett., 157(3), 200-206 1989
+
+
+    Deriv               =              1
+    GGA                 =           TRUE
+    Meta                =          FALSE
+
+    Exchange Hybrid     =          FALSE
+    MP2 Hybrid          =          FALSE
+
+   => Exchange Functionals <=
+
+    1.0000     XC_GGA_X_B88
+
+   => Correlation Functionals <=
+
+    1.0000     XC_GGA_C_LYP
+
+   => Molecular Quadrature <=
+
+    Radial Scheme       =          BECKE
+    Pruning Scheme      =           FLAT
+    Nuclear Scheme      =       TREUTLER
+
+    BS radius alpha     =              1
+    Pruning alpha       =              1
+    Radial Points       =             75
+    Spherical Points    =            434
+    Total Points        =          86390
+    Total Blocks        =            705
+    Max Points          =            256
+    Max Functions       =             41
+
+  ==> Pre-Iterations <==
+
+   -------------------------------------------------------
+    Irrep   Nso     Nmo     Nalpha   Nbeta   Ndocc  Nsocc
+   -------------------------------------------------------
+     A         41      41       0       0       0       0
+   -------------------------------------------------------
+    Total      41      41       5       5       5       0
+   -------------------------------------------------------
+
+  ==> Integral Setup <==
+
+  ==> DirectJK: Integral-Direct J/K Matrices <==
+
+    J tasked:                  Yes
+    K tasked:                   No
+    wK tasked:                  No
+    Integrals threads:           1
+    Schwarz Cutoff:          1E-12
+
+  Minimum eigenvalue in the overlap matrix is 2.7617761095E-03.
+  Using Symmetric Orthogonalization.
+
+  SCF Guess: Superposition of Atomic Densities via on-the-fly atomic UHF.
+
+  ==> Iterations <==
+
+                        Total Energy        Delta E     RMS |[F,P]|
+
+   @RKS iter   0:   -76.37516665405835   -7.63752e+01   3.80541e-02 
+   @RKS iter   1:   -76.33792536742500    3.72413e-02   1.16405e-02 
+   @RKS iter   2:   -75.91130809654790    4.26617e-01   2.74172e-02 DIIS
+   @RKS iter   3:   -76.42622640602599   -5.14918e-01   5.92691e-04 DIIS
+   @RKS iter   4:   -76.42654916337652   -3.22757e-04   1.49391e-04 DIIS
+   @RKS iter   5:   -76.42656223525600   -1.30719e-05   3.81641e-05 DIIS
+   @RKS iter   6:   -76.42656324728875   -1.01203e-06   1.88953e-06 DIIS
+   @RKS iter   7:   -76.42656324963147   -2.34272e-09   1.73130e-07 DIIS
+   @RKS iter   8:   -76.42656324965336   -2.18847e-11   3.74647e-08 DIIS
+   @RKS iter   9:   -76.42656324965424   -8.81073e-13   3.61234e-09 DIIS
+
+  ==> Post-Iterations <==
+
+    Orbital Energies [Eh]
+    ---------------------
+
+    Doubly Occupied:                                                      
+
+       1A    -18.810531     2A     -0.926332     3A     -0.480593  
+       4A     -0.340369     5A     -0.263657  
+
+    Virtual:                                                              
+
+       6A     -0.039709     7A      0.013144     8A      0.085955  
+       9A      0.104434    10A      0.114346    11A      0.127350  
+      12A      0.162489    13A      0.202584    14A      0.255219  
+      15A      0.268427    16A      0.296991    17A      0.417464  
+      18A      0.471202    19A      0.492167    20A      0.589628  
+      21A      0.700512    22A      0.865393    23A      0.878910  
+      24A      0.914178    25A      1.012452    26A      1.128127  
+      27A      1.167064    28A      1.250922    29A      1.678737  
+      30A      1.696669    31A      1.789399    32A      2.055163  
+      33A      2.057217    34A      2.200247    35A      2.332126  
+      36A      2.577838    37A      3.201526    38A      3.214051  
+      39A      3.226913    40A      3.522463    41A      3.775793  
+
+    Final Occupation by Irrep:
+              A 
+    DOCC [     5 ]
+
+  Energy converged.
+
+  @RKS Final Energy:   -76.42656324965424
+
+   => Energetics <=
+
+    Nuclear Repulsion Energy =              9.1081278438670186
+    One-Electron Energy =                -122.7497948949144586
+    Two-Electron Energy =                  46.5072502484833876
+    DFT Exchange-Correlation Energy =      -9.2921464470901896
+    Empirical Dispersion Energy =           0.0000000000000000
+    VV10 Nonlocal Energy =                  0.0000000000000000
+    Total Energy =                        -76.4265632496542366
+
+
+
+Properties will be evaluated at   0.000000,   0.000000,   0.000000 [a0]
+
+Properties computed using the SCF density matrix
+
+  Nuclear Dipole Moment: [e a0]
+     X:    28.5259      Y:     0.0627      Z:    -0.0007
+
+  Electronic Dipole Moment: [e a0]
+     X:   -28.8765      Y:    -0.6770      Z:     0.0004
+
+  Dipole Moment: [e a0]
+     X:    -0.3506      Y:    -0.6143      Z:    -0.0002     Total:     0.7073
+
+  Dipole Moment: [D]
+     X:    -0.8911      Y:    -1.5615      Z:    -0.0006     Total:     1.7978
+
+
+*** tstop() called on bwmcc19 at Wed May 20 07:33:17 2020
+Module time:
+	user time   =       3.04 seconds =       0.05 minutes
+	system time =       0.07 seconds =       0.00 minutes
+	total time  =          4 seconds =       0.07 minutes
+Total time:
+	user time   =       3.04 seconds =       0.05 minutes
+	system time =       0.07 seconds =       0.00 minutes
+	total time  =          4 seconds =       0.07 minutes
+  ==> One Electron Grid Properties (v2.0) <==
+
+  ==> CubicScalarGrid <==
+
+    Filepath     = .
+    Total Points =          3746812
+    XYZ Blocking =               10
+    X Points     =              167
+    Y Points     =              158
+    Z Points     =              142
+    X Spacing    =        1.000E-01
+    Y Spacing    =        1.000E-01
+    Z Spacing    =        1.000E-01
+    X Minimum    =       -5.893E+00
+    Y Minimum    =       -8.487E+00
+    Z Minimum    =       -7.050E+00
+    X Maximum    =        1.071E+01
+    Y Maximum    =        7.213E+00
+    Z Maximum    =        7.050E+00
+
+  Basis Set: AUG-CC-PVDZ
+    Blend: AUG-CC-PVDZ
+    Number of shells: 19
+    Number of basis function: 41
+    Number of Cartesian functions: 43
+    Spherical Harmonics?: true
+    Max angular momentum: 2
+
+   => Loading Basis Set <=
+
+    Name: AUG-CC-PVDZ
+    Role: ORBITAL
+    Keyword: BASIS
+    atoms 1   entry O          line   250 file /usr/local/psi4/share/psi4/basis/aug-cc-pvdz.gbs 
+    atoms 2-3 entry H          line    36 file /usr/local/psi4/share/psi4/basis/aug-cc-pvdz.gbs 
+
+   => Loading Basis Set <=
+
+    Name: AUG-CC-PVDZ
+    Role: ORBITAL
+    Keyword: BASIS
+    atoms 1   entry O          line   250 file /usr/local/psi4/share/psi4/basis/aug-cc-pvdz.gbs 
+    atoms 2-3 entry H          line    36 file /usr/local/psi4/share/psi4/basis/aug-cc-pvdz.gbs 
+
+  ==> DirectJK: Integral-Direct J/K Matrices <==
+
+    J tasked:                  Yes
+    K tasked:                  Yes
+    wK tasked:                  No
+    Integrals threads:           1
+    Schwarz Cutoff:          1E-12
+
+  ==> One Electron Grid Properties (v2.0) <==
+
+  ==> CubicScalarGrid <==
+
+    Filepath     = .
+    Total Points =          3746812
+    XYZ Blocking =               10
+    X Points     =              167
+    Y Points     =              158
+    Z Points     =              142
+    X Spacing    =        1.000E-01
+    Y Spacing    =        1.000E-01
+    Z Spacing    =        1.000E-01
+    X Minimum    =       -5.893E+00
+    Y Minimum    =       -8.487E+00
+    Z Minimum    =       -7.050E+00
+    X Maximum    =        1.071E+01
+    Y Maximum    =        7.213E+00
+    Z Maximum    =        7.050E+00
+
+  Basis Set: AUG-CC-PVDZ
+    Blend: AUG-CC-PVDZ
+    Number of shells: 19
+    Number of basis function: 41
+    Number of Cartesian functions: 43
+    Spherical Harmonics?: true
+    Max angular momentum: 2
+
+      O     1.568501    0.105892    0.000005
+      H     0.606736   -0.033962   -0.000628
+      H     1.940519   -0.780005    0.000222
+symmetry c1
+no_reorient
+no_com
+ --------------------------------------------------
+ Running ADF single point job
+
+   Molecule
+   ========
+
+  Cartesian coordinates: 
+    1)        N       -1.39559       -0.02156        0.00004    
+    2)        H       -1.62981        0.96110       -0.10622    
+    3)        H       -1.86277       -0.51254       -0.75597    
+    4)        H       -1.83355       -0.33077        0.86231    
+
+
+   Settings
+   ========
+
+   Relativistic options:  Non-Relativistic 
+
+   XC functional   : GGA BLYP
+   Integration     : accint 4.0    
+   SCF convergence : 1.0e-08 
+
+   TAPE21 will be saved
+   TAPE10 will be saved
+
+
+   Options
+   =======
+
+   NOSYMFIT
+
+   Output will be written to :  pyadf_joboutput.30646.out
+
+ Running main job ...
+
+ Done with ADF single point job
+
+ Results file id is  0
+
+ --------------------------------------------------
+ Running ADF single point job
+
+   Molecule
+   ========
+
+  Cartesian coordinates: 
+    1)        O        1.56850        0.10589        0.00001    
+    2)        H        0.60674       -0.03396       -0.00063    
+    3)        H        1.94052       -0.78000        0.00022    
+    4)        N       -1.39559       -0.02156        0.00004    
+    5)        H       -1.62981        0.96110       -0.10622    
+    6)        H       -1.86277       -0.51254       -0.75597    
+    7)        H       -1.83355       -0.33077        0.86231    
+
+
+   Settings
+   ========
+
+   Relativistic options:  Non-Relativistic 
+
+   XC functional   : GGA BLYP
+   Integration     : accint 4.0    
+   SCF convergence : 1.0e-08 
+
+   TAPE21 will be saved
+   TAPE10 will be saved
+
+
+   Options
+   =======
+
+   NOSYMFIT
+
+   Output will be written to :  pyadf_joboutput.30646.out
+
+ Running main job ...
+
+ Done with ADF single point job
+
+ Results file id is  1
+
+get gs density
+Build phi matrix
+n points: 32640
+
+Embed_xcfun: a module to calculate FDE embedding potentialswith density functionals
+
+Using the XCFun library, version  1.99
+XCFun DFT library Copyright 2009-2011 Ulf Ekstrom and contributors.
+See http://dftlibs.org/xcfun/ for more information.
+
+This is free software; see the source code for copying conditions.
+There is ABSOLUTELY NO WARRANTY; not even for MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. For details see the documentation.
+Scientific users of this library should cite
+U. Ekstrom, L. Visscher, R. Bast, A. J. Thorvaldsen and K. Ruud;
+J.Chem.Theor.Comp. 2010, DOI: 10.1021/ct100117s
+
+
+Currently defined kinetic energy functional:
+            tfk with weight 1.000000
+
+Currently defined exchange-correlation functional:
+            lda with weight 1.000000
+
+
+functional is of  LDA  class
+functional is of  LDA  class
+
+Subsystem A:
+time to map active density on grid : 0.001
+Integrated number of electrons for subsystem A: 10.00006936
+ --------------------------------------------------
+ Running DENSF job
+
+   SCF taken from ADF job  0  (results id)
+
+   Fragment used:  Active
+
+   Calculated property :  density dens Options: {'fit': False}
+
+   Output will be written to :  pyadf_joboutput.30646.out
+
+ Running main job ...
+
+ Done with DENSF job
+
+ Results file id is  2
+
+ --------------------------------------------------
+ Running DENSF job
+
+   SCF taken from ADF job  0  (results id)
+
+   Fragment used:  Active
+
+   Calculated property :  density grad Options: {'fit': False}
+
+   Output will be written to :  pyadf_joboutput.30646.out
+
+ Running main job ...
+
+ Done with DENSF job
+
+ Results file id is  3
+
+ --------------------------------------------------
+ Running DENSF job
+
+   SCF taken from ADF job  0  (results id)
+
+   Fragment used:  Active
+
+   Calculated property :  density hess Options: {'fit': False}
+
+   Output will be written to :  pyadf_joboutput.30646.out
+
+ Running main job ...
+
+ Done with DENSF job
+
+ Results file id is  4
+
+ --------------------------------------------------
+ Running DENSF job
+
+   SCF taken from ADF job  0  (results id)
+
+   Fragment used:  Active
+
+   Calculated property :  potential nuc Options: {}
+
+   Output will be written to :  pyadf_joboutput.30646.out
+
+ Running main job ...
+
+ Done with DENSF job
+
+ Results file id is  5
+
+ --------------------------------------------------
+ Running DENSF job
+
+   SCF taken from ADF job  0  (results id)
+
+   Fragment used:  Active
+
+   Calculated property :  potential coul Options: {}
+
+   Output will be written to :  pyadf_joboutput.30646.out
+
+ Running main job ...
+
+ Done with DENSF job
+
+ Results file id is  6
+
+1. Evaluation of the embedding potential in two steps:
+   a. getting the non-additive potential
+   b. adding the electrostatic potential
+
+
+Number of occupied orbitals: 5
+
+Number of basis functions:   41
+
+
+Start SCF iterations:
+
+
+SCF Iteration   1: Energy = -76.4265632496542366   dE = -7.64266E+01   dRMS = 9.21474E-04   Pz = 2.22094E-04
+SCF Iteration   2: Energy = -76.4238872516632739   dE =  2.67600E-03   dRMS = 6.26140E-04   Pz = 2.03482E-04
+SCF Iteration   3: Energy = -76.4250426470677127   dE = -1.15540E-03   dRMS = 4.16376E-04   Pz = 2.18147E-04
+SCF Iteration   4: Energy = -76.4251099128908038   dE = -6.72658E-05   dRMS = 1.29501E-04   Pz = 2.15313E-04
+SCF Iteration   5: Energy = -76.4250928477132447   dE =  1.70652E-05   dRMS = 9.76343E-06   Pz = 2.14364E-04
+SCF Iteration   6: Energy = -76.4250883293899648   dE =  4.51832E-06   dRMS = 1.23739E-06   Pz = 2.14512E-04
+SCF Iteration   7: Energy = -76.4250880012783824   dE =  3.28112E-07   dRMS = 1.50124E-07   Pz = 2.14497E-04
+SCF Iteration   8: Energy = -76.4250879622326238   dE =  3.90458E-08   dRMS = 1.16615E-08   Pz = 2.14500E-04
+SCF Iteration   9: Energy = -76.4250879632237741   dE = -9.91150E-10   dRMS = 1.01919E-09   Pz = 2.14500E-04
+norm_D at OUT_ITER(0): 0.000000370321
+
+
+   b. adding the electrostatic potential
+Outer iteration 0 : DONE
+
+SCF Iteration   1: Energy = -76.4250879632237741   dE = -9.91150E-10   dRMS = 1.14778E-05   Pz = 2.14500E-04
+SCF Iteration   2: Energy = -76.4250879641302276   dE = -9.06454E-10   dRMS = 1.14777E-05   Pz = 2.14500E-04
+SCF Iteration   3: Energy = -76.4250879642669361   dE = -1.36708E-10   dRMS = 1.14777E-05   Pz = 2.14500E-04
+SCF Iteration   4: Energy = -76.4250879642501673   dE =  1.67688E-11   dRMS = 1.14777E-05   Pz = 2.14500E-04
+SCF Iteration   5: Energy = -76.4250879638499612   dE =  4.00206E-10   dRMS = 1.14778E-05   Pz = 2.14500E-04
+SCF Iteration   6: Energy = -76.4250879625633388   dE =  1.28662E-09   dRMS = 1.14786E-05   Pz = 2.14500E-04
+SCF Iteration   7: Energy = -76.4250879639742209   dE = -1.41088E-09   dRMS = 1.14777E-05   Pz = 2.14500E-04
+SCF Iteration   8: Energy = -76.4251075702590299   dE = -1.96063E-05   dRMS = 2.87750E-06   Pz = 2.14269E-04
+SCF Iteration   9: Energy = -76.4251080508014127   dE = -4.80542E-07   dRMS = 1.15540E-07   Pz = 2.14507E-04
+SCF Iteration  10: Energy = -76.4251081028935886   dE = -5.20922E-08   dRMS = 1.35942E-08   Pz = 2.14452E-04
+SCF Iteration  11: Energy = -76.4251080927060258   dE =  1.01876E-08   dRMS = 8.38429E-10   Pz = 2.14470E-04
+SCF Iteration  12: Energy = -76.4251080920615493   dE =  6.44476E-10   dRMS = 1.74476E-10   Pz = 2.14467E-04
+norm_D at OUT_ITER(1): 0.000000025873
+
+
+   b. adding the electrostatic potential
+Outer iteration 1 : DONE
+
+SCF Iteration   1: Energy = -76.4251080920615493   dE =  6.44476E-10   dRMS = 2.78291E-07   Pz = 2.14467E-04
+SCF Iteration   2: Energy = -76.4251080918050434   dE =  2.56506E-10   dRMS = 2.78058E-07   Pz = 2.14468E-04
+SCF Iteration   3: Energy = -76.4251080918824357   dE = -7.73923E-11   dRMS = 2.78128E-07   Pz = 2.14468E-04
+SCF Iteration   4: Energy = -76.4251080921495998   dE = -2.67164E-10   dRMS = 2.78270E-07   Pz = 2.14468E-04
+SCF Iteration   5: Energy = -76.4251081055923009   dE = -1.34427E-08   dRMS = 2.85573E-07   Pz = 2.14468E-04
+SCF Iteration   6: Energy = -76.4251080921809205   dE =  1.34114E-08   dRMS = 2.78274E-07   Pz = 2.14468E-04
+SCF Iteration   7: Energy = -76.4251080921808921   dE =  2.84217E-14   dRMS = 2.78274E-07   Pz = 2.14468E-04
+SCF Iteration   8: Energy = -76.4251080921809205   dE = -2.84217E-14   dRMS = 2.78274E-07   Pz = 2.14468E-04
+SCF Iteration   9: Energy = -76.4251075801966522   dE =  5.11984E-07   dRMS = 7.55362E-10   Pz = 2.14464E-04
+SCF Iteration  10: Energy = -76.4251075795372401   dE =  6.59412E-10   dRMS = 5.33537E-10   Pz = 2.14474E-04
+norm_D at OUT_ITER(2): 0.000000028561
+
+norm_D : 0.000027476461
+
+norm_v : 0.000120720487
+
+
+   b. adding the electrostatic potential
+Outer iteration 2 : DONE
+
+SCF Iteration   1: Energy = -76.4251075795372401   dE =  6.59412E-10   dRMS = 7.22539E-09   Pz = 2.14474E-04
+norm_D at OUT_ITER(3): 0.000000028561
+
+norm_D : 0.000000000000
+
+norm_v : 0.000003213732
+
+
+   b. adding the electrostatic potential
+Outer iteration 3 : DONE
+
+SCF Iteration   1: Energy = -76.4251075795372401   dE =  6.59412E-10   dRMS = 7.22539E-09   Pz = 2.14474E-04
+norm_D at OUT_ITER(4): 0.000000028561
+
+Final DFT energy: -76.4251075795372401 hartree
+
+twoel energy: 46.5243424366179923 hartree
+
+xc energy: -9.2911840822934852 hartree
+
+Ndip : 28.52591297, 0.06268033, -0.00069164
+
+D and Dtest : True
+
+
+Number of occupied orbitals: 5
+Number of basis functions: 41
+
+Size of the ERI tensor will be 0.02 GB.
+CC^-1 = 1 : True
+
+C(.H)SC = 1 : True
+
+Perturb density with analytic delta
+Here the calculation of vemb(D_pol) starts
+   b. adding the electrostatic potential
+Entering in the first step of propagation
+Total number of Vemb eval 6000
+

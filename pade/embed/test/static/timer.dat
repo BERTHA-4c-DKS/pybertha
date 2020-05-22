@@ -1,0 +1,66 @@
+
+Host: bwmcc19
+
+Timers On : Thu May 21 06:41:51 2020
+Timers Off: Thu May 21 08:18:29 2020
+
+Wall Time:     5797.49 seconds
+
+V: Grid                     :   1338.583u      0.200s    803.261w  18037 calls
+HF: Form H                  :      0.000u      0.000s      0.010w      1 calls
+HF: Form S/X                :      0.000u      0.000s      0.001w      1 calls
+HF: Guess                   :      0.133u      0.000s      0.081w      1 calls
+SAD Guess                   :      0.133u      0.000s      0.080w      1 calls
+HF: Form G                  :      4.333u      0.083s      2.649w     10 calls
+RV: Form V                  :   7635.400u    147.100s   4669.426w  18046 calls
+Properties                  :   3024.017u     59.317s   1857.085w 12722430 calls
+Functional                  :   3171.433u     60.417s   1941.462w 12722430 calls
+V_xc                        :   1269.350u     23.267s    788.222w 12722430 calls
+JK: D                       :      0.000u      0.000s      0.001w     43 calls
+JK: USO2AO                  :      0.000u      0.000s      0.000w     43 calls
+JK: JK                      :      4.367u      0.000s      2.680w     43 calls
+JK: AO2USO                  :      0.000u      0.000s      0.000w     43 calls
+HF: Form F                  :      0.000u      0.000s      0.000w     10 calls
+HF: DIIS                    :      0.000u      0.000s      0.002w     10 calls
+DIISManager::add_entry      :      0.000u      0.000s      0.000w      9 calls
+DIISManager::extrapolate    :      0.000u      0.000s      0.001w      8 calls
+bMatrix setup               :      0.000u      0.000s      0.000w      8 calls
+bMatrix pseudoinverse       :      0.000u      0.000s      0.000w      8 calls
+New vector                  :      0.000u      0.000s      0.000w      8 calls
+HF: Form C                  :      0.000u      0.000s      0.003w     10 calls
+HF: Form D                  :      0.000u      0.000s      0.000w     10 calls
+
+-----------------------------------------------------------
+V: Grid                     :   1338.583u      0.200s    803.261w  18037 calls
+HF: Form H                  :      0.000u      0.000s      0.010w      1 calls
+HF: Form S/X                :      0.000u      0.000s      0.001w      1 calls
+HF: Guess                   :      0.133u      0.000s      0.081w      1 calls
+| SAD Guess                 :      0.133u      0.000s      0.080w      1 calls
+HF: Form G                  :      4.333u      0.083s      2.649w     10 calls
+| RV: Form V                :      3.317u      0.083s      2.019w     10 calls
+| | Properties              :      1.733u      0.033s      1.041w   7050 calls
+| | Functional              :      0.900u      0.033s      0.496w   7050 calls
+| | V_xc                    :      0.500u      0.000s      0.437w   7050 calls
+| JK: D                     :      0.000u      0.000s      0.000w     10 calls
+| JK: USO2AO                :      0.000u      0.000s      0.000w     10 calls
+| JK: JK                    :      1.017u      0.000s      0.629w     10 calls
+| JK: AO2USO                :      0.000u      0.000s      0.000w     10 calls
+HF: Form F                  :      0.000u      0.000s      0.000w     10 calls
+HF: DIIS                    :      0.000u      0.000s      0.002w     10 calls
+| DIISManager::add_entry    :      0.000u      0.000s      0.000w      9 calls
+| DIISManager::extrapolate  :      0.000u      0.000s      0.001w      8 calls
+| | bMatrix setup           :      0.000u      0.000s      0.000w      8 calls
+| | bMatrix pseudoinverse   :      0.000u      0.000s      0.000w      8 calls
+| | New vector              :      0.000u      0.000s      0.000w      8 calls
+HF: Form C                  :      0.000u      0.000s      0.003w     10 calls
+HF: Form D                  :      0.000u      0.000s      0.000w     10 calls
+JK: D                       :      0.000u      0.000s      0.001w     33 calls
+JK: USO2AO                  :      0.000u      0.000s      0.000w     33 calls
+JK: JK                      :      3.350u      0.000s      2.051w     33 calls
+JK: AO2USO                  :      0.000u      0.000s      0.000w     33 calls
+RV: Form V                  :   7632.083u    147.017s   4667.407w  18036 calls
+| Properties                :   3022.283u     59.283s   1856.044w 12715380 calls
+| Functional                :   3170.533u     60.383s   1940.967w 12715380 calls
+| V_xc                      :   1268.850u     23.267s    787.785w 12715380 calls
+
+***********************************************************

@@ -1,0 +1,1318 @@
+total time :  10.00 
+dt : 0.100 
+Fmax : 0.00001000
+FDE : True
+Split_scf : True
+Vemb update : True
+  period :  0.10
+converged after 1 interpolations
+i is: 0
+norm is: 0.000000070088
+Trace(D)(t+dt) : 5.00000000
+Fock_mid hermitian: True
+U is unitary :True
+5.00000000
+Trace of DS 5.00000000
+Trace of SD.real 5.00000000000001
+Trace of SD.imag 0.00000000000000
+Dipole 0.00000000 0.000428948795178
+converged after 1 interpolations
+i is: 1
+norm is: 0.000000048679
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  0.10000000 0.000436768519404
+Vemb up : 1.000 %
+converged after 1 interpolations
+i is: 2
+norm is: 0.000000026101
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  0.20000000 0.000443808962391
+Vemb up : 2.000 %
+converged after 1 interpolations
+i is: 3
+norm is: 0.000000010366
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  0.30000000 0.000450677661985
+Vemb up : 3.000 %
+converged after 1 interpolations
+i is: 4
+norm is: 0.000000061175
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  0.40000000 0.000456954166552
+Vemb up : 4.000 %
+converged after 1 interpolations
+i is: 5
+norm is: 0.000000014539
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  0.50000000 0.000461800208508
+Vemb up : 5.000 %
+converged after 1 interpolations
+i is: 6
+norm is: 0.000000022019
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  0.60000000 0.000465921542150
+Vemb up : 6.000 %
+converged after 1 interpolations
+i is: 7
+norm is: 0.000000049811
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  0.70000000 0.000469424004383
+Vemb up : 7.000 %
+converged after 1 interpolations
+i is: 8
+norm is: 0.000000008692
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  0.80000000 0.000471573114342
+Vemb up : 8.000 %
+converged after 1 interpolations
+i is: 9
+norm is: 0.000000044235
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  0.90000000 0.000473071327955
+Vemb up : 9.000 %
+converged after 1 interpolations
+i is: 10
+norm is: 0.000000026693
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  1.00000000 0.000474433087278
+Vemb up : 10.000 %
+converged after 1 interpolations
+i is: 11
+norm is: 0.000000006982
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  1.10000000 0.000474973994390
+Vemb up : 11.000 %
+converged after 1 interpolations
+i is: 12
+norm is: 0.000000057685
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  1.20000000 0.000475141849749
+Vemb up : 12.000 %
+converged after 1 interpolations
+i is: 13
+norm is: 0.000000013227
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  1.30000000 0.000475591089166
+Vemb up : 13.000 %
+converged after 1 interpolations
+i is: 14
+norm is: 0.000000010213
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  1.40000000 0.000475595608085
+Vemb up : 14.000 %
+converged after 1 interpolations
+i is: 15
+norm is: 0.000000048585
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  1.50000000 0.000475193403978
+Vemb up : 15.000 %
+converged after 1 interpolations
+i is: 16
+norm is: 0.000000012578
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  1.60000000 0.000475021241299
+Vemb up : 16.000 %
+converged after 1 interpolations
+i is: 17
+norm is: 0.000000034302
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  1.70000000 0.000474382582649
+Vemb up : 17.000 %
+converged after 1 interpolations
+i is: 18
+norm is: 0.000000028399
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  1.80000000 0.000472998442009
+Vemb up : 18.000 %
+converged after 1 interpolations
+i is: 19
+norm is: 0.000000016110
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  1.90000000 0.000471531492458
+Vemb up : 19.000 %
+converged after 1 interpolations
+i is: 20
+norm is: 0.000000050448
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  2.00000000 0.000469521288999
+Vemb up : 20.000 %
+converged after 1 interpolations
+i is: 21
+norm is: 0.000000016832
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  2.10000000 0.000466593642656
+Vemb up : 21.000 %
+converged after 1 interpolations
+i is: 22
+norm is: 0.000000006300
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  2.20000000 0.000463519371722
+Vemb up : 22.000 %
+converged after 1 interpolations
+i is: 23
+norm is: 0.000000045175
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  2.30000000 0.000460196961051
+Vemb up : 23.000 %
+converged after 1 interpolations
+i is: 24
+norm is: 0.000000017518
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  2.40000000 0.000456265149851
+Vemb up : 24.000 %
+converged after 1 interpolations
+i is: 25
+norm is: 0.000000020496
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  2.50000000 0.000452531001848
+Vemb up : 25.000 %
+converged after 1 interpolations
+i is: 26
+norm is: 0.000000029213
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  2.60000000 0.000449154661524
+Vemb up : 26.000 %
+converged after 1 interpolations
+i is: 27
+norm is: 0.000000023454
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  2.70000000 0.000445703229582
+Vemb up : 27.000 %
+converged after 1 interpolations
+i is: 28
+norm is: 0.000000038503
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  2.80000000 0.000442816186442
+Vemb up : 28.000 %
+converged after 1 interpolations
+i is: 29
+norm is: 0.000000021073
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  2.90000000 0.000440714200730
+Vemb up : 29.000 %
+converged after 1 interpolations
+i is: 30
+norm is: 0.000000015544
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  3.00000000 0.000438779620963
+Vemb up : 30.000 %
+converged after 1 interpolations
+i is: 31
+norm is: 0.000000037952
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  3.10000000 0.000437354354215
+Vemb up : 31.000 %
+converged after 1 interpolations
+i is: 32
+norm is: 0.000000024463
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  3.20000000 0.000436643310842
+Vemb up : 32.000 %
+converged after 1 interpolations
+i is: 33
+norm is: 0.000000006803
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  3.30000000 0.000435894304953
+Vemb up : 33.000 %
+converged after 1 interpolations
+i is: 34
+norm is: 0.000000027966
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  3.40000000 0.000435223832364
+Vemb up : 34.000 %
+converged after 1 interpolations
+i is: 35
+norm is: 0.000000031102
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  3.50000000 0.000434935569623
+Vemb up : 35.000 %
+converged after 1 interpolations
+i is: 36
+norm is: 0.000000024528
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  3.60000000 0.000434337301782
+Vemb up : 36.000 %
+converged after 1 interpolations
+i is: 37
+norm is: 0.000000025204
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  3.70000000 0.000433482327380
+Vemb up : 37.000 %
+converged after 1 interpolations
+i is: 38
+norm is: 0.000000023654
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  3.80000000 0.000432908076676
+Vemb up : 38.000 %
+converged after 1 interpolations
+i is: 39
+norm is: 0.000000026806
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  3.90000000 0.000432121006671
+Vemb up : 39.000 %
+converged after 1 interpolations
+i is: 40
+norm is: 0.000000034029
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  4.00000000 0.000431147286607
+Vemb up : 40.000 %
+converged after 1 interpolations
+i is: 41
+norm is: 0.000000005046
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  4.10000000 0.000430719923601
+Vemb up : 41.000 %
+converged after 1 interpolations
+i is: 42
+norm is: 0.000000022357
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  4.20000000 0.000430499559307
+Vemb up : 42.000 %
+converged after 1 interpolations
+i is: 43
+norm is: 0.000000043345
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  4.30000000 0.000430340622507
+Vemb up : 43.000 %
+converged after 1 interpolations
+i is: 44
+norm is: 0.000000017280
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  4.40000000 0.000430977676531
+Vemb up : 44.000 %
+converged after 1 interpolations
+i is: 45
+norm is: 0.000000024726
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  4.50000000 0.000432102269432
+Vemb up : 45.000 %
+converged after 1 interpolations
+i is: 46
+norm is: 0.000000036033
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  4.60000000 0.000433247089544
+Vemb up : 46.000 %
+converged after 1 interpolations
+i is: 47
+norm is: 0.000000020302
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  4.70000000 0.000434997351642
+Vemb up : 47.000 %
+converged after 1 interpolations
+i is: 48
+norm is: 0.000000037968
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  4.80000000 0.000437077733477
+Vemb up : 48.000 %
+converged after 1 interpolations
+i is: 49
+norm is: 0.000000013903
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  4.90000000 0.000438737794345
+Vemb up : 49.000 %
+converged after 1 interpolations
+i is: 50
+norm is: 0.000000017834
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  5.00000000 0.000440436712517
+Vemb up : 50.000 %
+converged after 1 interpolations
+i is: 51
+norm is: 0.000000051205
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  5.10000000 0.000442106306758
+Vemb up : 51.000 %
+converged after 1 interpolations
+i is: 52
+norm is: 0.000000011089
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  5.20000000 0.000442922188608
+Vemb up : 52.000 %
+converged after 1 interpolations
+i is: 53
+norm is: 0.000000022283
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  5.30000000 0.000443319826571
+Vemb up : 53.000 %
+converged after 1 interpolations
+i is: 54
+norm is: 0.000000046631
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  5.40000000 0.000443606883312
+Vemb up : 54.000 %
+converged after 1 interpolations
+i is: 55
+norm is: 0.000000016222
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  5.50000000 0.000443063043808
+Vemb up : 55.000 %
+converged after 1 interpolations
+i is: 56
+norm is: 0.000000036764
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  5.60000000 0.000442085623933
+Vemb up : 56.000 %
+converged after 1 interpolations
+i is: 57
+norm is: 0.000000024939
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  5.70000000 0.000441328244770
+Vemb up : 57.000 %
+converged after 1 interpolations
+i is: 58
+norm is: 0.000000015348
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  5.80000000 0.000440182261258
+Vemb up : 58.000 %
+converged after 1 interpolations
+i is: 59
+norm is: 0.000000051488
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  5.90000000 0.000438830289267
+Vemb up : 59.000 %
+converged after 1 interpolations
+i is: 60
+norm is: 0.000000006304
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  6.00000000 0.000438061022862
+Vemb up : 60.000 %
+converged after 1 interpolations
+i is: 61
+norm is: 0.000000020603
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  6.10000000 0.000437297886285
+Vemb up : 61.000 %
+converged after 1 interpolations
+i is: 62
+norm is: 0.000000049261
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  6.20000000 0.000436341306367
+Vemb up : 62.000 %
+converged after 1 interpolations
+i is: 63
+norm is: 0.000000007951
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  6.30000000 0.000435925685597
+Vemb up : 63.000 %
+converged after 1 interpolations
+i is: 64
+norm is: 0.000000035431
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  6.40000000 0.000435528098591
+Vemb up : 64.000 %
+converged after 1 interpolations
+i is: 65
+norm is: 0.000000030413
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  6.50000000 0.000434596600175
+Vemb up : 65.000 %
+converged after 1 interpolations
+i is: 66
+norm is: 0.000000010277
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  6.60000000 0.000433789669476
+Vemb up : 66.000 %
+converged after 1 interpolations
+i is: 67
+norm is: 0.000000050093
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  6.70000000 0.000432810374081
+Vemb up : 67.000 %
+converged after 1 interpolations
+i is: 68
+norm is: 0.000000012070
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  6.80000000 0.000430965141911
+Vemb up : 68.000 %
+converged after 1 interpolations
+i is: 69
+norm is: 0.000000016419
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  6.90000000 0.000428910854208
+Vemb up : 69.000 %
+converged after 1 interpolations
+i is: 70
+norm is: 0.000000048767
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  7.00000000 0.000426740906865
+Vemb up : 70.000 %
+converged after 1 interpolations
+i is: 71
+norm is: 0.000000003289
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  7.10000000 0.000423812483190
+Vemb up : 71.000 %
+converged after 1 interpolations
+i is: 72
+norm is: 0.000000030831
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  7.20000000 0.000420768455203
+Vemb up : 72.000 %
+converged after 1 interpolations
+i is: 73
+norm is: 0.000000032272
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  7.30000000 0.000418068787140
+Vemb up : 73.000 %
+converged after 1 interpolations
+i is: 74
+norm is: 0.000000004910
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  7.40000000 0.000415145694203
+Vemb up : 74.000 %
+converged after 1 interpolations
+i is: 75
+norm is: 0.000000045627
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  7.50000000 0.000412470268446
+Vemb up : 75.000 %
+converged after 1 interpolations
+i is: 76
+norm is: 0.000000016934
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  7.60000000 0.000410668919373
+Vemb up : 76.000 %
+converged after 1 interpolations
+i is: 77
+norm is: 0.000000010399
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  7.70000000 0.000409165364791
+Vemb up : 77.000 %
+converged after 1 interpolations
+i is: 78
+norm is: 0.000000045637
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  7.80000000 0.000408094869905
+Vemb up : 78.000 %
+converged after 1 interpolations
+i is: 79
+norm is: 0.000000010439
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  7.90000000 0.000408060838302
+Vemb up : 79.000 %
+converged after 1 interpolations
+i is: 80
+norm is: 0.000000023322
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  8.00000000 0.000408461368718
+Vemb up : 80.000 %
+converged after 1 interpolations
+i is: 81
+norm is: 0.000000031540
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  8.10000000 0.000409091654198
+Vemb up : 81.000 %
+converged after 1 interpolations
+i is: 82
+norm is: 0.000000009483
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  8.20000000 0.000410497402954
+Vemb up : 82.000 %
+converged after 1 interpolations
+i is: 83
+norm is: 0.000000038376
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  8.30000000 0.000412166483258
+Vemb up : 83.000 %
+converged after 1 interpolations
+i is: 84
+norm is: 0.000000018462
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  8.40000000 0.000413703478310
+Vemb up : 84.000 %
+converged after 1 interpolations
+i is: 85
+norm is: 0.000000005301
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  8.50000000 0.000415665209646
+Vemb up : 85.000 %
+converged after 1 interpolations
+i is: 86
+norm is: 0.000000040609
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  8.60000000 0.000417761853981
+Vemb up : 86.000 %
+converged after 1 interpolations
+i is: 87
+norm is: 0.000000015653
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  8.70000000 0.000419546638499
+Vemb up : 87.000 %
+converged after 1 interpolations
+i is: 88
+norm is: 0.000000011844
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  8.80000000 0.000421602088266
+Vemb up : 88.000 %
+converged after 1 interpolations
+i is: 89
+norm is: 0.000000030591
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  8.90000000 0.000423868803169
+Vemb up : 89.000 %
+converged after 1 interpolations
+i is: 90
+norm is: 0.000000018950
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  9.00000000 0.000425857352401
+Vemb up : 90.000 %
+converged after 1 interpolations
+i is: 91
+norm is: 0.000000028336
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  9.10000000 0.000428078450989
+Vemb up : 91.000 %
+converged after 1 interpolations
+i is: 92
+norm is: 0.000000021692
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  9.20000000 0.000430599687843
+Vemb up : 92.000 %
+converged after 1 interpolations
+i is: 93
+norm is: 0.000000015363
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  9.30000000 0.000432826338071
+Vemb up : 93.000 %
+converged after 1 interpolations
+i is: 94
+norm is: 0.000000033433
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  9.40000000 0.000435094187936
+Vemb up : 94.000 %
+converged after 1 interpolations
+i is: 95
+norm is: 0.000000022454
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  9.50000000 0.000437530161426
+Vemb up : 95.000 %
+converged after 1 interpolations
+i is: 96
+norm is: 0.000000003641
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  9.60000000 0.000439447614147
+Vemb up : 96.000 %
+converged after 1 interpolations
+i is: 97
+norm is: 0.000000028611
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  9.70000000 0.000441020524988
+Vemb up : 97.000 %
+converged after 1 interpolations
+i is: 98
+norm is: 0.000000028257
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  9.80000000 0.000442494695006
+Vemb up : 98.000 %
+converged after 1 interpolations
+i is: 99
+norm is: 0.000000017973
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  9.90000000 0.000443220955738
+Vemb up : 99.000 %
+converged after 1 interpolations
+i is: 100
+norm is: 0.000000025433
+Trace(D)(t+dt) : 5.00000000
+5.00000000
+Fock_mid hermitian: True
+tr of density to evolve: 5.00000000
+5.00000000
+here I update the matrices Dp_ti and D_ti
+5.00000000
+5.00000000
+Dipole  10.00000000 0.000443312133833
+Vemb up : 100.000 %
