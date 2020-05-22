@@ -121,7 +121,13 @@ def set_params(filename="input.inp"):
 ##################################################################
 
 def mo_fock_mid_forwd_eval(D_ti,fock_mid_ti_backwd,i,delta_t,H,I,dipole,\
-                               C,C_inv,S,nbf,imp_opts,f_type,fout,basisset,extpot=0):
+                               C,C_inv,S,nbf,imp_opts,f_type,fout,basisset,\
+                               extpotin = None):
+
+    extpot = extpotin
+    
+    if extpotin == None:
+        extpot = 0
 
     t_arg=np.float_(i)*np.float_(delta_t)
     
@@ -147,6 +153,7 @@ def mo_fock_mid_forwd_eval(D_ti,fock_mid_ti_backwd,i,delta_t,H,I,dipole,\
     dens_test=np.zeros(Dp_ti.shape)
 
     # set guess for initial fock matrix
+    fock_guess = None 
     fock_guess = 2.00*( fock_ti_ao + extpot ) - fock_mid_ti_backwd
     #if i==0:
     #   print('Fock_guess for i =0 is Fock_0: %s' % np.allclose(fock_guess,fock_ti_ao))

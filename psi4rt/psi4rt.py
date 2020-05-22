@@ -74,7 +74,7 @@ def get_json_data(args, D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, \
         C, C_inv, S, nbf, imp_opts, func, Dp_ti, weighted_dip, dip_list, \
         ene_list, imp_list, dipmo_mat, ndocc, occlist, virtlist, debug, HL, \
         psi4options, geom, do_weighted, Enuc_list, imp_params, calc_params, \
-        Ndip_dir, Nuc_rep, extpot=0):
+        Ndip_dir, Nuc_rep, extpot = None):
 
     json_data = {}
 
@@ -120,10 +120,12 @@ def get_json_data(args, D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, \
         'fock_mid_backwd_REAL' : np.real(fock_mid_backwd).tolist(),
         'fock_mid_backwd_IMAG' : np.imag(fock_mid_backwd).tolist(),
         'Dp_ti_REAL': np.real(Dp_ti).tolist(),
-        'Dp_ti_IMAG': np.imag(Dp_ti).tolist(),
-        'extpot_REAL': np.real(extpot).tolist(),
-        'extpot_IMAG': np.imag(extpot).tolist(),
+        'Dp_ti_IMAG': np.imag(Dp_ti).tolist()
         }
+
+    if extpot != None:
+        json_data['extpot_REAL'] = np.real(extpot).tolist()
+        json_data['extpot_IMAG'] = np.imag(extpot).tolist()
 
     json_data.update(othervalues)
 
@@ -141,7 +143,7 @@ def get_json_data(args, D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, \
 def main_loop (D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, C, C_inv, S, nbf, \
         imp_opts, func, fo, basisset, Dp_ti, weighted_dip, dip_list, ene_list, \
         imp_list, dipmo_mat, ndocc, occlist, virtlist, debug, HL, do_weighted, \
-        Enuc_list, Ndip_dir, Nuc_rep, extpot=0):
+        Enuc_list, Ndip_dir, Nuc_rep, extpot):
 
     J_i,Exc_i,func_ti,F_ti,fock_mid_tmp=util.mo_fock_mid_forwd_eval(D_ti,\
                 fock_mid_backwd,j,dt,H,I,dip_mat,C,C_inv,S,nbf,\
@@ -515,7 +517,6 @@ def restart_init (args):
     #args.restart 
 
     fock_mid_backwd = None
-    extpot = None
     weighted_dip = None
     do_weighted = None
     calc_params = None
@@ -532,6 +533,7 @@ def restart_init (args):
     Nuc_rep = None
     occlist = None
     dip_mat = None
+    extpot = None
     ndocc = None
     debug = None
     C_inv = None
@@ -616,12 +618,16 @@ def restart_init (args):
         print("Error in --out-filenames, you need to specify 4 filenames")
         exit(1)
 
+    if "extpot_REAL" in json_data and "extpot_IMAG" in json_data:
+        extpot = np.array(mtxto_npcmplxarray (json_data["extpot_REAL"], \
+                json_data["extpot_IMAG"]))
+ 
     fo = open(dbgfnames[0], "w")
 
     return D_ti, fock_mid_backwd, dt, H, I, dip_mat, C, C_inv, S, nbf, imp_opts, func, fo, \
            Dp_ti, weighted_dip, dip_list, ene_list, imp_list, dipmo_mat, ndocc, occlist, \
            virtlist, debug, HL, Ndip_dir, Nuc_rep, niter, do_weighted, Enuc_list, psi4options, \
-           geom, outfnames, wfn, imp_params, calc_params, j
+           geom, outfnames, wfn, imp_params, calc_params, j, extpot
 
 ####################################################################################
 
@@ -675,7 +681,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     fock_mid_backwd = None
-    extpot = None
     weighted_dip = None
     do_weighted = None
     calc_params = None
@@ -693,6 +698,7 @@ if __name__ == "__main__":
     Nuc_rep = None
     occlist = None
     dip_mat = None
+    extpot = None
     ndocc = None
     debug = None
     C_inv = None
@@ -736,8 +742,8 @@ if __name__ == "__main__":
                 Dp_ti, weighted_dip, dip_list, \
                 ene_list, imp_list, dipmo_mat, ndocc, occlist, \
                 virtlist, debug, HL, Ndip_dir, Nuc_rep, niter, do_weighted, \
-                Enuc_list, psi4options, geom, outfnames, wfn, imp_params, calc_params, j \
-                = restart_init(args)
+                Enuc_list, psi4options, geom, outfnames, wfn, imp_params, calc_params, j, \
+                extpot = restart_init(args)
 
         print(j, niter)
 
@@ -769,7 +775,7 @@ if __name__ == "__main__":
                 H, I, dip_mat, C, C_inv, S, nbf, imp_opts, func, fo, basisset, \
                 Dp_ti, weighted_dip, dip_list, ene_list, imp_list, dipmo_mat, \
                 ndocc, occlist, virtlist, debug, HL, do_weighted, Enuc_list, \
-                Ndip_dir, Nuc_rep)
+                Ndip_dir, Nuc_rep, extpot)
 
         dumpcounter += 1
 
@@ -786,7 +792,7 @@ if __name__ == "__main__":
                     ene_list, imp_list, dipmo_mat, \
                     ndocc, occlist, virtlist, debug, HL, \
                     psi4options, geom, do_weighted, Enuc_list, \
-                    imp_params, calc_params, Ndip_dir, Nuc_rep)
+                    imp_params, calc_params, Ndip_dir, Nuc_rep, extpot)
 
             with open(args.restartfile, 'w') as fp:
                 json.dump(json_data, fp, sort_keys=True, indent=4)
