@@ -74,7 +74,7 @@ def get_json_data(args, D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, \
         C, C_inv, S, nbf, imp_opts, func, Dp_ti, weighted_dip, dip_list, \
         ene_list, imp_list, dipmo_mat, ndocc, occlist, virtlist, debug, HL, \
         psi4options, geom, do_weighted, Enuc_list, imp_params, calc_params, \
-        Ndip_dir, Nuc_rep):
+        Ndip_dir, Nuc_rep, extpot=0):
 
     json_data = {}
 
@@ -120,7 +120,9 @@ def get_json_data(args, D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, \
         'fock_mid_backwd_REAL' : np.real(fock_mid_backwd).tolist(),
         'fock_mid_backwd_IMAG' : np.imag(fock_mid_backwd).tolist(),
         'Dp_ti_REAL': np.real(Dp_ti).tolist(),
-        'Dp_ti_IMAG': np.imag(Dp_ti).tolist()
+        'Dp_ti_IMAG': np.imag(Dp_ti).tolist(),
+        'extpot_REAL': np.real(extpot).tolist(),
+        'extpot_IMAG': np.imag(extpot).tolist(),
         }
 
     json_data.update(othervalues)
@@ -139,11 +141,11 @@ def get_json_data(args, D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, \
 def main_loop (D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, C, C_inv, S, nbf, \
         imp_opts, func, fo, basisset, Dp_ti, weighted_dip, dip_list, ene_list, \
         imp_list, dipmo_mat, ndocc, occlist, virtlist, debug, HL, do_weighted, \
-        Enuc_list, Ndip_dir, Nuc_rep):
+        Enuc_list, Ndip_dir, Nuc_rep, extpot=0):
 
     J_i,Exc_i,func_ti,F_ti,fock_mid_tmp=util.mo_fock_mid_forwd_eval(D_ti,\
                 fock_mid_backwd,j,dt,H,I,dip_mat,C,C_inv,S,nbf,\
-                imp_opts,func,fo,basisset)
+                imp_opts,func,fo,basisset, extpot)
         
     Ah=np.conjugate(fock_mid_tmp.T)
     fo.write('Fock_mid hermitian: %s\n' % np.allclose(fock_mid_tmp,Ah))
@@ -513,6 +515,7 @@ def restart_init (args):
     #args.restart 
 
     fock_mid_backwd = None
+    extpot = None
     weighted_dip = None
     do_weighted = None
     calc_params = None
@@ -672,6 +675,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     fock_mid_backwd = None
+    extpot = None
     weighted_dip = None
     do_weighted = None
     calc_params = None

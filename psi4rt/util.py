@@ -121,7 +121,7 @@ def set_params(filename="input.inp"):
 ##################################################################
 
 def mo_fock_mid_forwd_eval(D_ti,fock_mid_ti_backwd,i,delta_t,H,I,dipole,\
-                               C,C_inv,S,nbf,imp_opts,f_type,fout,basisset):
+                               C,C_inv,S,nbf,imp_opts,f_type,fout,basisset,extpot=0):
 
     t_arg=np.float_(i)*np.float_(delta_t)
     
@@ -147,7 +147,7 @@ def mo_fock_mid_forwd_eval(D_ti,fock_mid_ti_backwd,i,delta_t,H,I,dipole,\
     dens_test=np.zeros(Dp_ti.shape)
 
     # set guess for initial fock matrix
-    fock_guess = 2.00*fock_ti_ao - fock_mid_ti_backwd
+    fock_guess = 2.00*( fock_ti_ao + extpot ) - fock_mid_ti_backwd
     #if i==0:
     #   print('Fock_guess for i =0 is Fock_0: %s' % np.allclose(fock_guess,fock_ti_ao))
     #transform fock_guess in MO basis
@@ -175,7 +175,7 @@ def mo_fock_mid_forwd_eval(D_ti,fock_mid_ti_backwd,i,delta_t,H,I,dipole,\
         pulse_dt = func(imp_opts['Fmax'], imp_opts['w'], t_arg+delta_t,\
                         imp_opts['t0'], imp_opts['s'])
         fock_ti_dt_ao=fock_mtx -(dipole*pulse_dt)
-        fock_inter= 0.5*fock_ti_ao + 0.5*fock_ti_dt_ao
+        fock_inter= 0.5*fock_ti_ao + 0.5*fock_ti_dt_ao + extpot
         #update fock_guess
         fock_guess=np.copy(fock_inter)
         if k >1:
