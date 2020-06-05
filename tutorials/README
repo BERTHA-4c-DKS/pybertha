@@ -1,0 +1,23 @@
+Numerical data and post-processing material:
+"Environmental effects with Frozen Density Embedding in Real-Time Time-Dependent 
+Density Functional Theory using localized basis functions"
+
+iso_acetone contains:
+ x,y,z subdirectories of the individual x-y-z-boost calculations.
+ Data and post-processing instructons for the
+ absorption spectrum of isolated acetone molecule 
+
+emb_acetone contains:
+ data/x,data/y,data/z  subdirectories of the individual x-y-z-boost calculations.
+ Data and post-processing instructons for the
+ absorption spectrum of embedded acetone molecule in the water cluster.
+
+w_in_w_source contains:
+ iso,w1_iter,w2_iter,w3_iter_w4_iter,w5_iter
+ subdirectories of z-boost calculations for isolated water
+ and embedded water (1 up to 5 embedding water molecules)
+ Data and post-processing instruction to obtain spectra.
+
+comp_constrain contains:
+ Fig7 and Fig8 data and post-processing instructions
+ to obtain Figs. 7 and 8 of Section 4.5
