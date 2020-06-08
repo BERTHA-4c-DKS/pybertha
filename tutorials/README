@@ -2,6 +2,9 @@ Numerical data and post-processing material:
 "Environmental effects with Frozen Density Embedding in Real-Time Time-Dependent 
 Density Functional Theory using localized basis functions"
 
+Matteo De Santis, Leonardo Belpassi, Christoph R. Jacob, André Severo Pereira Gomes
+Francesco Tarantelli, Lucas Visscher, Loriano Storchi
+
 iso_acetone contains:
  x,y,z subdirectories of the individual x-y-z-boost calculations.
  Data and post-processing instructons for the
