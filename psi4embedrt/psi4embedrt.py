@@ -1,6 +1,11 @@
 import sys
 import time
 import os
+
+sys.path.append("/usr/local/xcfun_py3/lib64/python")
+sys.path.append("/usr/local/PyADF-myfork/src/")
+sys.path.append("/usr/local/psi4/lib/")
+
 import psi4
 import util
 import rtutil
@@ -8,13 +13,10 @@ import numpy as np
 import fde_util
 import argparse
 
-sys.path.append("/usr/local/xcfun_py3/lib64/python")
-sys.path.append("/usr/local/PyADF-myfork/src/")
-sys.path.append("/usr/local/psi4/lib/")
-os.environ['RTHOME'] = "/home/mdesantis/pybertha/psi4rt"
+os.environ['RTHOME'] = "/home/redo/pybertha/psi4rt"
 sys.path.append(os.environ['PYBERTHAROOT']+"/src")
 sys.path.append(os.environ['RTHOME'])
-os.environ['PSIPATH']="/home/mdesantis/basis"
+os.environ['PSIPATH']="/usr/local/psi4/share/psi4/basis"
 sys.path.append(os.environ['PSIPATH'])
 
 parser = argparse.ArgumentParser()
