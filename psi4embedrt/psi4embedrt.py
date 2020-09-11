@@ -1,6 +1,13 @@
 import sys
 import time
 import os
+import psi4
+import util
+import rtutil
+import numpy as np
+import fde_util
+import argparse
+
 sys.path.append("/usr/local/xcfun_py3/lib64/python")
 sys.path.append("/usr/local/PyADF-myfork/src/")
 sys.path.append("/usr/local/psi4/lib/")
@@ -9,12 +16,6 @@ sys.path.append(os.environ['PYBERTHAROOT']+"/src")
 sys.path.append(os.environ['RTHOME'])
 os.environ['PSIPATH']="/home/mdesantis/basis"
 sys.path.append(os.environ['PSIPATH'])
-import psi4
-import util
-import rtutil
-import numpy as np
-import fde_util
-import argparse
 
 parser = argparse.ArgumentParser()
 
