@@ -16,7 +16,7 @@ USEINTEL=no
 #LIBXC
 LIBXC=no
 
-BERTHAROOT=/home/redo/bertha_ng
+BERTHAROOT=/home/redo/BERTHAEmb/bertha_ng
 
 ###
 ## NO BLUEGENE
