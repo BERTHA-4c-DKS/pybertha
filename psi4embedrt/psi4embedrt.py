@@ -50,7 +50,7 @@ parser.add_argument("-g1","--geom_act", help="Specify geometry file for active s
 parser.add_argument("-g2","--geom_env", help="Specify geometry file for environment", required=True, 
         type=str, default="geom2.xyz")
 
-parser.add_argument("-w","--wkd", help="Specify the working dir", required=True, 
+parser.add_argument("-w","--wkd", help="Specify the working dir", required=False, 
         type=str, default="./")
 
 parser.add_argument("-o","--obs", help="Specify the orbital basis set", required=False, 
