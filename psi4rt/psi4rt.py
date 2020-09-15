@@ -717,6 +717,10 @@ if __name__ == "__main__":
     C = None
     S = None
 
+    os.environ['PSI4ROOT']="/home/redo/BERTHAEmb/psi4conda/lib/python3.7"
+    os.environ['PYBERTHAROOT'] = "/home/redo/BERTHAEmb/pybertha/"
+
+
     if args.psi4root != "":
         sys.path.append(args.psi4root)
     elif "PSI4ROOT" in os.environ:

@@ -122,11 +122,15 @@ def set_params(filename="input.inp"):
 
 def mo_fock_mid_forwd_eval(D_ti,fock_mid_ti_backwd,i,delta_t,H,I,dipole,\
                                C,C_inv,S,nbf,imp_opts,f_type,fout,basisset,\
-                               extpotin = [None]):
+                               extpotin = np.array([None])):
 
     extpot = extpotin
     
-    if extpotin.all() == None:
+    if hasattr(extpotin, "__len__"):
+      if extpotin.all() == None:
+        extpot = 0
+    else:
+      if extpotin == None:
         extpot = 0
 
     t_arg=np.float_(i)*np.float_(delta_t)
