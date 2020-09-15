@@ -11,3 +11,11 @@ to clean after run:
 
 rm -rf *.cube psi.*.clean test.dat timer.dat dipole.txt ene.txt err.txt imp.txt timing.txt weighteddip.txt 
 
+
+psi4 can ben installed also following the embedding recipes . After you need to edit, maybe, the
+two ENV variable in the source code :
+
+    os.environ['PSI4ROOT']="/home/redo/BERTHAEmb/psi4conda/lib/python3.7"
+    os.environ['PYBERTHAROOT'] = "/home/redo/BERTHAEmb/pybertha/"
+
+
