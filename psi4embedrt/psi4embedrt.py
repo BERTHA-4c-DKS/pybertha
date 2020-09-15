@@ -393,7 +393,8 @@ for OUT_ITER in range(0,maxiter):
         restricted = True
         #XC potential
         restricted = True
-        sup = psi4.driver.dft_funcs.build_superfunctional(func, restricted)[0]
+        #sup = psi4.driver.dft_funcs.build_superfunctional(func, restricted)[0]
+        sup = psi4.driver.dft.build_superfunctional(func, restricted)[0]
         sup.set_deriv(2)
         sup.allocate()
         vname = "RV"
