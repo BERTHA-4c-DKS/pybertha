@@ -26,47 +26,38 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument("-d", "--debug", help="Debug on, prints debug info to err.txt", required=False,
         default=False, action="store_true")
-
 parser.add_argument("-f", "--fde", help="FDE on", required=False,
         default=False, action="store_true")
-
 parser.add_argument("-fcorr", "--fdecorr", help="FDE long range correction on", required=False,
         default=False, action="store_true")
 parser.add_argument("--sscf", help="SplitSCF for ground state FDE on", required=False,
         default=False, action="store_true")
-
 parser.add_argument("-i", "--iterative", help="Vemb is updated during propagation", required=False,
         default=False, action="store_true")
-
 parser.add_argument("-a", "--axis", help="The axis of  electric field direction (x = 0, y = 1, z = 2, default 2)",
         default=2, type = int)
-
 parser.add_argument("-p", "--period", help="Time period of Vemb update during propagation",
         default=0.1, type = float)
-
 parser.add_argument("-g1","--geom_act", help="Specify geometry file for active subsystem", required=True, 
         type=str, default="geom1.xyz")
-
 parser.add_argument("-g2","--geom_env", help="Specify geometry file for environment", required=True, 
         type=str, default="geom2.xyz")
-
 parser.add_argument("-w","--wkd", help="Specify the working dir", required=False, 
         type=str, default="./")
-
 parser.add_argument("-o","--obs", help="Specify the orbital basis set", required=False, 
         type=str, default="aug-cc-pvdz")
-
 parser.add_argument("-o1","--obs1", help="Specify the orbital basis set", required=False, 
         type=str, default="AUG/ADZP")
 parser.add_argument("--select", help="Specify the occ-virt MO weighted dipole moment. (-2; 0 & 0 to activate) (default: 0; 0 & 0)",
         default="0; 0 & 0", type=str)
-
 parser.add_argument("--adf_func", help="Specify the function for the environment density", required=False, 
         type=str, default="BLYP")
 parser.add_argument("--grid_opts", help="Set the type of integration grid (1,2,3) 1) adffragmentsjob grid (default), 2) supramolecular grid, 3) active system grid",
         default=1, type = int)
 parser.add_argument("--acc_int", help="Set integration accuracy (default 4.0)",
         default=4.0, type = float)
+parser.add_argument("--inputfile", help="Set input filename, [default = input.inp]",
+        default="input.inp")
 #more option to be added
 
 args = parser.parse_args() #temporary
@@ -79,7 +70,7 @@ debug = args.debug
 
 #basis_set : defined from input
 
-imp_opts, calc_params = util.set_params()
+imp_opts, calc_params = util.set_params(args.inputfile)
 func=calc_params['func_type'] # from input.inp. default : blyp
 geom,mol = fde_util.set_input(geomA,basis_set)
 if args.fde:
@@ -375,7 +366,7 @@ ftime.write('\nTotal time taken for setup: %.3f seconds\n' % (time.time() - t))
 
 print('\nStart SCF iterations:\n\n')
 start = time.time()
-cstart = time.clock()
+cstart = time.process_time()
 #outer loop
 for OUT_ITER in range(0,maxiter):
     
@@ -516,7 +507,7 @@ for OUT_ITER in range(0,maxiter):
 #end outer loop
 
 end = time.time()
-cend = time.clock()
+cend = time.process_time()
 ftime.write('Total time[time()] for SCF iterations: %.3f seconds \n\n' % (-start + end))
 ftime.write('Total time[clock()] for SCF iterations: %.3f seconds \n\n' % (-cstart + cend))
 
@@ -683,31 +674,31 @@ if (analytic):
 if args.fde:
   print("Here the calculation of vemb(D_pol) starts")
   start=time.time()
-  cstart =time.clock()
+  cstart =time.process_time()
   #if needed elpot of the active system can be built on the fly
   #end_v=time.time()
-  #cend_v=time.clock()
+  #cend_v=time.process_time()
   #cdiff_v = end_v -start
   #diff_v = cend_v -cstart
   #phi matrix already built
 
   #export D to grid repres.
   start_d2g=time.time()
-  cstart_d2g=time.clock()
+  cstart_d2g=time.process_time()
   #temp = 2.0 * np.einsum('pm,mn,pn->p', phi, D, phi)
   #rho[:,0] = temp
   end_d2g=time.time()
-  cend_d2g=time.clock()
+  cend_d2g=time.process_time()
   diff_d2g = end_d2g- start_d2g 
   cdiff_d2g = cend_d2g- cstart_d2g 
   #
   #def denstogrid(phi,D,S):
   start_dg=time.time()
-  cstart_dg=time.clock()
+  cstart_dg=time.process_time()
   temp = 2.0 * fde_util.denstogrid( phi, np.array(D), S,ndocc)
   rho[:,0] = temp
   end_dg=time.time()
-  cend_dg=time.clock()
+  cend_dg=time.process_time()
   diff_dg = end_dg- start_dg 
   cdiff_dg = cend_dg- cstart_dg 
   ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### 
@@ -716,26 +707,26 @@ if args.fde:
 
   #print("Subsystem A:")
   start_pyin=time.time()
-  cstart_pyin=time.clock()
+  cstart_pyin=time.process_time()
   dens_gf = GridFunctionFactory.newGridFunction(agrid,np.ascontiguousarray(rho[:,0]), gf_type="density") 
   density_h2o = GridFunctionContainer([dens_gf, densgrad, denshess]) #refresh container
   #nel_h2o = density_h2o[0].integral()
   #print("Integrated number of electrons for subsystem A: %.8f" % nel_h2o)
   #print() 
   end_pyin =time.time()
-  cend_pyin =time.clock()
+  cend_pyin =time.process_time()
   diff_pyin = end_pyin -start_pyin
   cdiff_pyin = cend_pyin -cstart_pyin
 
   start_xfun=time.time()
-  cstart_xfun=time.clock()
+  cstart_xfun=time.process_time()
   nadpot_h2o = embed_eval.get_nad_pot(density_h2o, isolated_dens_nh3)
 
   print("   b. adding the electrostatic potential")
 
   embpot_A_2 = isolated_elpot_nh3 + nadpot_h2o
   end_xfun=time.time()
-  cend_xfun=time.clock()
+  cend_xfun=time.process_time()
   diff_xfun = end_xfun-start_xfun
   cdiff_xfun = cend_xfun-cstart_xfun
 
@@ -744,20 +735,20 @@ if args.fde:
   #print("   c. Exporting the potential to file")
   pot = embpot_A_2.get_values()
   #start_v2f=time.time()
-  #cstart_v2f=time.clock()
+  #cstart_v2f=time.process_time()
   #GridFunctionWriter.write_cube(embpot_A_2,filename=os.path.join("./", 'EMBPOT_PYEMBED_ADFGRID_H2O.cube'),add_comment=False)
   #end_v2f=time.time()
-  #cend_v2f=time.clock()
+  #cend_v2f=time.process_time()
   #diff_v2f = end_v2f-start_v2f
   #cdiff_v2f = cend_v2f-cstart_v2f
   #transform EMBPOT_PYEMB_ADFGRID_H2O in basis set representation
   start_2mat=time.time()
-  cstart_2mat=time.clock()
+  cstart_2mat=time.process_time()
   vemb = fde_util.embpot2mat(phi,nbas,pot,ws,lpos)
   
   #vemb = np.copy(res) #in case we want to use the previous vemb
   end = time.time()
-  cend = time.clock()
+  cend = time.process_time()
   ftime.write('Time[time()] for pre-propagation vemb calculation : %.3f seconds \n\n' % (end-start))
   ftime.write('Time[clock()] for pre-propagation vemb calculation : %.3f seconds \n\n' % (cend-cstart))
   #ftime.write('time and ctime for calculation of electrostatic potential (grid_esp) : %.3f , %.3f seconds \n\n' % (diff_v,cdiff_v))
@@ -770,6 +761,7 @@ if args.fde:
   
 else:
   vemb = np.zeros_like(D)
+
 print('Entering in the first step of propagation')
 
 J0,Exc0,func_t0,F_t0,fock_mid_init=util.mo_fock_mid_forwd_eval(np.array(D),F,\
@@ -830,14 +822,14 @@ if debug :
 ct_acc= 0.0
 t_acc= 0.0
 start_tot = time.time()
-cstart_tot =time.clock()
+cstart_tot =time.process_time()
 vcount = 0.0
 for j in range(1,niter+1):
     # now we have to update vemb :(
     if (args.fde and args.iterative):
       if ( ( j % int(args.period/dt) ) == 0.0 ):
         start_fde = time.time()
-        cstart_fde = time.clock()
+        cstart_fde = time.process_time()
         #get elpot
         #if needed elpot of active system can be built on the fly
  
@@ -878,7 +870,7 @@ for j in range(1,niter+1):
         #transform EMBPOT_PYEMB_ADFGRID_H2O in basis set representation
         vemb = fde_util.embpot2mat(phi,nbas,pot,ws,lpos)
         end_fde = time.time()
-        cend_fde = time.clock()
+        cend_fde = time.process_time()
         diff = -start_fde  + end_fde
         cdiff = -cstart_fde + cend_fde
         t_acc += diff
@@ -940,7 +932,7 @@ for j in range(1,niter+1):
     fock_mid_backwd=np.copy(fock_mid_tmp)
 
 end_tot = time.time()
-cend_tot =time.clock()
+cend_tot =time.process_time()
 ftime.write('Cumulative time[time()] due to vemb calculation : %.3f seconds \n\n' % (t_acc))
 ftime.write('Cumulative time[clock()] due to vemb calculation : %.3f seconds \n\n' % (ct_acc))
 ftime.write('Cumulative time[time()] due to %i iter : %.8e seconds \n\n' % ((niter),(end_tot-start_tot)))
