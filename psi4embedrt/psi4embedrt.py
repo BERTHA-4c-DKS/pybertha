@@ -928,6 +928,9 @@ for j in range(1,niter+1):
       fo.write('%.8f\n' % np.trace(np.matmul(S,D_ti)).real)
       fo.write('Dipole  %.8f %.15f\n' % (j*dt, 2.00*dip_list[j].real))
       fo.write('Vemb up : %3.3f %s\n' % (vcount/(time_int/args.period)*100.,'%'))
+
+    fo.flush()
+
     #update fock_mid_backwd for the next step
     fock_mid_backwd=np.copy(fock_mid_tmp)
 
