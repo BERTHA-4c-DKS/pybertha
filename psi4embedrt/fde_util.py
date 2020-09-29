@@ -1,7 +1,12 @@
 import sys
+
+sys.path.append("/home/redo/BERTHAEmb/xcfun/build/lib64/python")
+sys.path.append("/home/redo/BERTHAEmb/psi4conda/lib/python3.7")
+sys.path.append("/home/redo/BERTHAEmb/pybertha/psi4rt")
+sys.path.append("/home/redo/BERTHAEmb/pybertha/src")
+sys.path.append("/home/redo/BERTHAEmb/pyadf/src")
+
 import os
-sys.path.append("/usr/local/PyADF-myfork/src/")
-sys.path.append("/usr/local/psi4/lib/")
 import psi4
 import scipy.linalg
 import numpy as np
