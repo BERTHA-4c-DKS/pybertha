@@ -1,6 +1,8 @@
+import os
 import sys
 import time
-import os
+import shutil
+import os.path
 
 sys.path.append("/home/redo/BERTHAEmb/xcfun/build/lib64/python")
 sys.path.append("/home/redo/BERTHAEmb/psi4conda/lib/python3.7")
@@ -72,13 +74,13 @@ if __name__ == "__main__":
     debug = args.debug 
     
     #basis_set : defined from input
+
+    print("Read input ... ")
     
     imp_opts, calc_params = util.set_params(args.inputfile)
     func = calc_params['func_type'] # from input.inp. default : blyp
     geom,mol = fde_util.set_input(geomA,basis_set)
     
-    exit(1)
-
     if args.fde:
     
       ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
@@ -120,28 +122,49 @@ if __name__ == "__main__":
       # getting a grid from adf. Alternative options:  i) use adffragmentsjob grid | deafult
       #                                               ii) use the total sys (env+act)  grid
       #                                              iii) use the active sys grid
-      r_isolated_enviro = pyadf.adfsinglepointjob(m_enviro, basis_active, settings=adf_settings, options=['NOSYMFIT']).run()
-      if args.grid_opts == 1:
-          frags = [ pyadf.fragment(None,  [m_active]),
-                  pyadf.fragment(r_isolated_enviro, [m_enviro], isfrozen=True) ]
-          fde_res = pyadf.adffragmentsjob(frags, basis_active, settings=adf_settings, options=['NOSYMFIT'])
-          fde_res=fde_res.run()
-          agrid = pyadf.adfgrid(fde_res)
-      elif args.grid_opts == 2:
-          r_tot = pyadf.adfsinglepointjob(m_tot, basis_active, settings=adf_settings, options=['NOSYMFIT']).run()
-          agrid = pyadf.adfgrid(r_tot)
-      elif args.grid_opts == 3:
-          r_act = pyadf.adfsinglepointjob(m_active, basis_active, settings=adf_settings, options=['NOSYMFIT']).run()
-          agrid = pyadf.adfgrid(r_act)
-      elif args.grid_opts == 4:
-          adf_settings.set_functional("BLYP")
-          frags = [ pyadf.fragment(None,  [m_active]),
-                  pyadf.fragment(r_isolated_enviro, [m_enviro], isfrozen=True) ]
-          fde_res = pyadf.adffragmentsjob(frags, basis="AUG/ADZP", settings=adf_settings, fde=fde_act_opts, options=['NOSYMFIT\n EXCITATIONS\n  ONLYSING\n  LOWEST 2\nEND'])
-          fde_res=fde_res.run()
-          agrid = pyadf.adfgrid(fde_res)
-      
-      GridWriter.write_xyzw(grid=agrid,filename=os.path.join("./", 'ADFGRID'),add_comment=False)
+      print("Running ADF single-point...")
+      adfoufname = "./adf.out"
+      if os.path.isfile(adfoufname):
+        print("  Removing "+ adfoufname )
+        os.remove(adfoufname)
+      resdir = "./resultfiles"
+      if os.path.isdir(resdir):
+        print ("  Removing "+ resdir )
+        shutil.rmtree(resdir)
+
+      import io
+      from contextlib import redirect_stdout
+
+      f = io.StringIO()
+      with redirect_stdout(f):
+        r_isolated_enviro = pyadf.adfsinglepointjob(m_enviro, basis_active, \
+          settings=adf_settings, options=['NOSYMFIT']).run()
+
+        if args.grid_opts == 1:
+            frags = [ pyadf.fragment(None,  [m_active]),
+                    pyadf.fragment(r_isolated_enviro, [m_enviro], isfrozen=True) ]
+            fde_res = pyadf.adffragmentsjob(frags, basis_active, settings=adf_settings, options=['NOSYMFIT'])
+            fde_res=fde_res.run()
+            agrid = pyadf.adfgrid(fde_res)
+        elif args.grid_opts == 2:
+            r_tot = pyadf.adfsinglepointjob(m_tot, basis_active, settings=adf_settings, options=['NOSYMFIT']).run()
+            agrid = pyadf.adfgrid(r_tot)
+        elif args.grid_opts == 3:
+            r_act = pyadf.adfsinglepointjob(m_active, basis_active, settings=adf_settings, options=['NOSYMFIT']).run()
+            agrid = pyadf.adfgrid(r_act)
+        elif args.grid_opts == 4:
+            adf_settings.set_functional("BLYP")
+            frags = [ pyadf.fragment(None,  [m_active]),
+                    pyadf.fragment(r_isolated_enviro, [m_enviro], isfrozen=True) ]
+            fde_res = pyadf.adffragmentsjob(frags, basis="AUG/ADZP", settings=adf_settings, fde=fde_act_opts, options=['NOSYMFIT\n EXCITATIONS\n  ONLYSING\n  LOWEST 2\nEND'])
+            fde_res=fde_res.run()
+            agrid = pyadf.adfgrid(fde_res)
+        
+        GridWriter.write_xyzw(grid=agrid,filename=os.path.join("./", 'ADFGRID'),add_comment=False)
+
+      fp = open(adfoufname, "w")
+      fp.write(f.getvalue())
+      fp.close()
          
       ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
       # Preliminary step for psi4
@@ -149,7 +172,8 @@ if __name__ == "__main__":
     
       xs,ys,zs,ws,prop = fde_util.read_gridfunction("ADFGRID")
     
-      print("get gs density")
+      print("Getting gs density")
+      #exit(1)
       #Vvals, wfn_scf = fde_util.get_elpot(xs,ys,zs)
       ene,wfn_scf = psi4.energy(func,return_wfn=True)
       psi4.cubeprop(wfn_scf)
@@ -159,6 +183,7 @@ if __name__ == "__main__":
       os.rename("Ds.cube","Ds0.cube")
     else :
       ene, wfn_scf = psi4.energy(func,return_wfn=True)
+
     D = np.array(wfn_scf.Da())
     C0 = np.array(wfn_scf.Ca()) #unpolarized MOs - for later use
     Dref = np.copy(D)
