@@ -73,7 +73,7 @@ def set_input(fgeom,basis_set):
    for line in f:
     geomobj +=str(line)
   geomobj += "symmetry c1" +"\n" +"no_reorient" +"\n" +"no_com"
-  print(geomobj)
+  #print(geomobj)
   mol =psi4.geometry(geomobj)
   f.close()
   psi4.set_options({'BASIS': basis_set,

@@ -74,9 +74,11 @@ if __name__ == "__main__":
     #basis_set : defined from input
     
     imp_opts, calc_params = util.set_params(args.inputfile)
-    func=calc_params['func_type'] # from input.inp. default : blyp
+    func = calc_params['func_type'] # from input.inp. default : blyp
     geom,mol = fde_util.set_input(geomA,basis_set)
     
+    exit(1)
+
     if args.fde:
     
       ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
