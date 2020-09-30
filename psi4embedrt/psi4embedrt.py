@@ -24,6 +24,65 @@ sys.path.append(os.environ['PYBERTHAROOT']+"/src")
 sys.path.append(os.environ['RTHOME'])
 sys.path.append(os.environ['PSIPATH'])
 
+import io
+import threading
+
+from contextlib import redirect_stdout
+
+########################################################################################################
+
+def drain_pipe():
+
+  global captured_stdout
+  while True:
+    data = os.read(stdout_pipe[0], 1024)
+    if not data:
+      break
+    captured_stdout.append(data.decode("utf-8"))
+
+########################################################################################################
+
+def init_stdout_redirect ():
+
+    global stdout_fileno 
+    global stdout_save 
+    global stdout_pipe
+    global captured_stdout
+    
+    captured_stdout = []
+
+    stdout_fileno = sys.stdout.fileno()
+    stdout_save = os.dup(stdout_fileno)
+    stdout_pipe = os.pipe()
+    
+    os.dup2(stdout_pipe[1], stdout_fileno)
+    os.close(stdout_pipe[1])
+
+########################################################################################################
+
+def finalize_stdout_redirect (fname, writef=False):
+
+    global stdout_fileno 
+    global stdout_save 
+    global stdout_pipe 
+    global captured_stdout
+      
+    os.close(stdout_pipe[0])
+    os.dup2(stdout_save, stdout_fileno)
+    os.close(stdout_save)
+
+    fp = None
+    if writef:
+      fp = open(psioufname, "w")
+    else:
+      fp = open(psioufname, "a")
+
+    for line in captured_stdout:
+      fp.write(line)
+    fp.close()
+
+########################################################################################################
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
@@ -81,11 +140,16 @@ if __name__ == "__main__":
     func = calc_params['func_type'] # from input.inp. default : blyp
     geom,mol = fde_util.set_input(geomA,basis_set)
     
+    ene = None 
+    wfn_scf = None
+    adfoufname = "./adf.out"
+    psioufname = "./psi4.out"
+
     if args.fde:
     
       ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
       #ADF part
-    
+
       import pyadf 
       import pyadf.PyEmbed
     
@@ -123,17 +187,13 @@ if __name__ == "__main__":
       #                                               ii) use the total sys (env+act)  grid
       #                                              iii) use the active sys grid
       print("Running ADF single-point...")
-      adfoufname = "./adf.out"
       if os.path.isfile(adfoufname):
         print("  Removing "+ adfoufname )
         os.remove(adfoufname)
-      resdir = "./resultfiles"
-      if os.path.isdir(resdir):
-        print ("  Removing "+ resdir )
-        shutil.rmtree(resdir)
-
-      import io
-      from contextlib import redirect_stdout
+      for resdir in ["./resultfiles", "./jobtempdir"]:
+        if os.path.isdir(resdir):
+          print ("  Removing "+ resdir )
+          shutil.rmtree(resdir)
 
       f = io.StringIO()
       with redirect_stdout(f):
@@ -165,6 +225,7 @@ if __name__ == "__main__":
       fp = open(adfoufname, "w")
       fp.write(f.getvalue())
       fp.close()
+      print("ADF out  " + adfoufname)
          
       ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
       # Preliminary step for psi4
@@ -173,16 +234,42 @@ if __name__ == "__main__":
       xs,ys,zs,ws,prop = fde_util.read_gridfunction("ADFGRID")
     
       print("Getting gs density")
-      #exit(1)
       #Vvals, wfn_scf = fde_util.get_elpot(xs,ys,zs)
-      ene,wfn_scf = psi4.energy(func,return_wfn=True)
+      if os.path.isfile(psioufname):
+        print("  Removing "+ psioufname )
+        os.remove(psioufname)
+      
+      init_stdout_redirect ()
+      t = threading.Thread(target=drain_pipe)
+      t.start()
+
+      ene, wfn_scf = psi4.energy(func,return_wfn=True)
       psi4.cubeprop(wfn_scf)
+
+      os.close(stdout_fileno)
+      t.join()
+      finalize_stdout_redirect(psioufname, True)
+      print("PSI4 out  " + psioufname)
+
       os.rename("Da.cube","Da0.cube")
       os.rename("Db.cube","Db0.cube")
       os.rename("Dt.cube","Dt0.cube")
       os.rename("Ds.cube","Ds0.cube")
     else :
+      init_stdout_redirect ()
+      t = threading.Thread(target=drain_pipe)
+      t.start()
+
       ene, wfn_scf = psi4.energy(func,return_wfn=True)
+
+      os.close(stdout_fileno)
+      t.join()
+      finalize_stdout_redirect(psioufname, True)
+      print("PSI4 out  " + psioufname)
+
+    init_stdout_redirect ()
+    t = threading.Thread(target=drain_pipe)
+    t.start()
 
     D = np.array(wfn_scf.Da())
     C0 = np.array(wfn_scf.Ca()) #unpolarized MOs - for later use
@@ -190,13 +277,27 @@ if __name__ == "__main__":
     mints = psi4.core.MintsHelper(wfn_scf.basisset())
     S = mints.ao_overlap()
     ndocc = wfn_scf.nalpha() 
+
+    os.close(stdout_fileno)
+    t.join()
+    finalize_stdout_redirect(psioufname)
+
     if args.fde:
       #build phi, the matrix containing the values of basis set on grid
-      print("Build phi matrix")
+      print("Building phi matrix")
+
+      init_stdout_redirect ()
+      t = threading.Thread(target=drain_pipe)
+      t.start()
+
       phi, lpos, nbas = fde_util.phi_builder(mol,xs,ys,zs,ws,basis_set)
-    
+
+      os.close(stdout_fileno)
+      t.join()
+      finalize_stdout_redirect(psioufname)
+      print("PSI4 out  " + psioufname)
+
       #export D to grid repres.
-    
       #fde_util.dens2grid(phi,D,xs,ys,zs,ws,0)
       # density on grid
       #temp = 2.0 * np.einsum('pm,mn,pn->p', phi, D, phi)
@@ -206,13 +307,23 @@ if __name__ == "__main__":
       ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
       # PyADF part
       #
-      embed_settings = pyadf.EmbedXCFunSettings()
-      embed_settings.set_fun_nad_xc ({'lda' : 1.0})
-      embed_settings.set_fun_nad_kin({'tfk' : 1.0})
+      f = io.StringIO()
+      with redirect_stdout(f):
+
+        embed_settings = pyadf.EmbedXCFunSettings()
+        embed_settings.set_fun_nad_xc ({'lda' : 1.0})
+        embed_settings.set_fun_nad_kin({'tfk' : 1.0})
     
-      embed_settings.show_functionals()
+        embed_settings.show_functionals()
     
-      embed_eval = pyadf.PyEmbed.EmbedXCFunEvaluator(settings=embed_settings)
+        embed_eval = pyadf.PyEmbed.EmbedXCFunEvaluator(settings=embed_settings)
+
+      fp = open(adfoufname, "a")
+      fp.write(f.getvalue())
+      fp.close()
+      print("ADF out  " + adfoufname)
+
+      exit(1)
     
       print()
       print("Subsystem A:")
@@ -225,17 +336,13 @@ if __name__ == "__main__":
       print("time to map active density on grid : %.3f" % (end_map-start_map))
       nel_active = density_active[0].integral()
       print("Integrated number of electrons for subsystem A: %.8f" % nel_active)
+
       #grid_active, isolated_elpot_active, density_active = \
       #    GridFunctionReader.read_density_elpot_xyzwv(os.path.join("./", 'FRZDNS.a.txt'))
       #nel_active = density_active[0].integral()
-    
       #check that grid_active and agrid should be the same
-    
       #GridWriter.write_xyzw(grid=grid_active,filename=os.path.join("./", 'ADFGRID_H20'),add_comment=False)
-    
       #isolated ammonia get densities and nuclear potentials
-    
-    
     
       isolated_dens_enviro  = r_isolated_enviro.get_density(grid=agrid, fit=False, order=2) #grid=grid_active=agrid
       isolated_vnuc_enviro  = r_isolated_enviro.get_potential(grid=agrid, pot='nuc')
@@ -279,6 +386,8 @@ if __name__ == "__main__":
       res = fde_util.embpot2mat(phi,nbas,pot,ws,lpos)
     else:
       res = np.zeros_like(D)
+
+    
     #########################################################
     """
     Restricted Kohn-Sham code using the Psi4 JK class for the
