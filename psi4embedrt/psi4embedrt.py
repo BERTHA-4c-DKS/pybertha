@@ -321,10 +321,8 @@ if __name__ == "__main__":
       fp = open(adfoufname, "a")
       fp.write(f.getvalue())
       fp.close()
-      print("ADF out  " + adfoufname)
+      print("  ADF out  " + adfoufname)
 
-      exit(1)
-    
       print()
       print("Subsystem A:")
       start_map=time.time()
@@ -333,9 +331,9 @@ if __name__ == "__main__":
       denshess = GridFunctionFactory.newGridFunction(agrid, np.ascontiguousarray(rho[:, 4:10]))  
       density_active = GridFunctionContainer([dens_gf, densgrad, denshess])
       end_map=time.time()
-      print("time to map active density on grid : %.3f" % (end_map-start_map))
+      print("  time to map active density on grid : %.3f" % (end_map-start_map))
       nel_active = density_active[0].integral()
-      print("Integrated number of electrons for subsystem A: %.8f" % nel_active)
+      print("  Integrated number of electrons for subsystem A: %.8f" % nel_active)
 
       #grid_active, isolated_elpot_active, density_active = \
       #    GridFunctionReader.read_density_elpot_xyzwv(os.path.join("./", 'FRZDNS.a.txt'))
@@ -343,51 +341,60 @@ if __name__ == "__main__":
       #check that grid_active and agrid should be the same
       #GridWriter.write_xyzw(grid=grid_active,filename=os.path.join("./", 'ADFGRID_H20'),add_comment=False)
       #isolated ammonia get densities and nuclear potentials
-    
-      isolated_dens_enviro  = r_isolated_enviro.get_density(grid=agrid, fit=False, order=2) #grid=grid_active=agrid
-      isolated_vnuc_enviro  = r_isolated_enviro.get_potential(grid=agrid, pot='nuc')
-      isolated_coul_enviro  = r_isolated_enviro.get_potential(grid=agrid, pot='coul')
-      isolated_elpot_enviro = isolated_vnuc_enviro + isolated_coul_enviro
-    
-    
-      print("1. Evaluation of the embedding potential in two steps:")
-      print ("   a. getting the non-additive potential")
+  
+      f = io.StringIO()
+      with redirect_stdout(f):
+        isolated_dens_enviro  = r_isolated_enviro.get_density(grid=agrid, \
+          fit=False, order=2) #grid=grid_active=agrid
+        isolated_vnuc_enviro  = r_isolated_enviro.get_potential(grid=agrid, \
+          pot='nuc')
+        isolated_coul_enviro  = r_isolated_enviro.get_potential(grid=agrid, \
+          pot='coul')
+        isolated_elpot_enviro = isolated_vnuc_enviro + isolated_coul_enviro
       
-      #nadkin_active_dd = embed_eval.get_nad_pot_kin(density_active,isolated_dens_enviro)
-      #nadxc_active_dd  = embed_eval.get_nad_pot_xc(density_active, isolated_dens_enviro)
-      #embpot_active_dd = nadkin_active_dd+nadxc_active_dd+isolated_elpot_enviro
-    
-    
-    
-      nadpot_active = embed_eval.get_nad_pot(density_active, isolated_dens_enviro)
-      #nadpot_enviro = embed_eval.get_nad_pot(isolated_dens_enviro, density_active) #not used if the density of environment is not propagated
-    
-      print("   b. adding the electrostatic potential")
+      fp = open(adfoufname, "a")
+      fp.write(f.getvalue())
+      fp.close()
+      print("  ADF out  " + adfoufname)
+
+      print("1. Evaluation of the embedding potential in two steps:")
+      print ("  a. getting the non-additive potential")
+
+      f = io.StringIO()
+      with redirect_stdout(f):
+        #nadkin_active_dd = embed_eval.get_nad_pot_kin(density_active,isolated_dens_enviro)
+        #nadxc_active_dd  = embed_eval.get_nad_pot_xc(density_active, isolated_dens_enviro)
+        #embpot_active_dd = nadkin_active_dd+nadxc_active_dd+isolated_elpot_enviro
+        nadpot_active = embed_eval.get_nad_pot(density_active, isolated_dens_enviro)
+        #nadpot_enviro = embed_eval.get_nad_pot(isolated_dens_enviro, density_active) #not used if the density of environment is not propagated
+      
+      fp = open(adfoufname, "a")
+      fp.write(f.getvalue())
+      fp.close()
+      print("    ADF out  " + adfoufname)
+
+      print("  b. adding the electrostatic potential")
     
       embpot_A_2 = isolated_elpot_enviro + nadpot_active
       if args.fdecorr : 
-       embpot_A_2 = fde_util.fcorr(embpot_A_2,density_active[0],isolated_dens_enviro[0])
+        embpot_A_2 = fde_util.fcorr(embpot_A_2, \
+          density_active[0],isolated_dens_enviro[0])
       #embpot_B_2 = isolated_elpot_active + nadpot_enviro #not used if the density of environment is not propagated
       #print("empot_A_2 is %s\n" % type(embpot_A_2))
       pot = embpot_A_2.get_values()
       
       #print("   c. Exporting the potential to file")
-    
       #GridFunctionWriter.write_xyzwv(embpot_A_2,filename=os.path.join("./", 'EMBPOT_PYEMBED_ADFGRID_H2O'),add_comment=False)
       #GridFunctionWriter.write_xyzwv(embpot_B_2,filename=os.path.join("./", 'EMBPOT_PYEMBED_ADFGRID_NH3'),add_comment=False)
-    
       print()
       #print "2. Evaluation of the embedding potential in one step, exporting to file"
-    
       #embpot_A_1 = embed_eval.get_emb_pot(density_A, density_B, ve_B)
       #embpot_B_1 = embed_eval.get_emb_pot(density_B, density_A, ve_A)
-    
       #transform EMBPOT_PYEMB_ADFGRID_H2O in basis set representation
       res = fde_util.embpot2mat(phi,nbas,pot,ws,lpos)
     else:
       res = np.zeros_like(D)
 
-    
     #########################################################
     """
     Restricted Kohn-Sham code using the Psi4 JK class for the
@@ -421,7 +428,11 @@ if __name__ == "__main__":
       D_conv = 1.0E-8
     else :
       D_conv = 1.0E-12
-    
+
+    init_stdout_redirect ()
+    t = threading.Thread(target=drain_pipe)
+    t.start()
+
     # Integral generation from Psi4's MintsHelper
     wfn = psi4.core.Wavefunction.build(mol, psi4.core.get_global_option('BASIS')) #use basis_set instead
     #mints = psi4.core.MintsHelper(wfn.basisset()) # moved upward
@@ -433,8 +444,13 @@ if __name__ == "__main__":
     if wfn.nalpha() != wfn.nbeta():
         raise PsiException("Only valid for RHF wavefunctions!")
     
-    print('\nNumber of occupied orbitals: %d\n' % ndocc)
-    print('Number of basis functions:   %d\n' % nbf)
+    os.close(stdout_fileno)
+    t.join()
+    finalize_stdout_redirect(psioufname)
+    print("PSI4 out  " + psioufname)
+    
+    print('Number of occupied orbitals: %d' % ndocc)
+    print('Number of basis functions:   %d' % nbf)
     
     # read from vemb.txt
     #temp = np.zeros((nbf,nbf),dtype=np.float_)
@@ -461,6 +477,8 @@ if __name__ == "__main__":
     # Orthogonalizer A = S^(-1/2)
     A = mints.ao_overlap()
     A.power(-0.5, 1.e-16)
+
+    exit(1)
     
     # Build diis
     diis = helper_HF.DIIS_helper(max_vec=6)
@@ -593,6 +611,7 @@ if __name__ == "__main__":
              else:
                 print("norm_D : %.12f\n" % norm_D)
                 print("norm_v : %.12f\n" % norm_v)
+
         if ( args.sscf and args.fde ):
             # calc new emb potential
      
