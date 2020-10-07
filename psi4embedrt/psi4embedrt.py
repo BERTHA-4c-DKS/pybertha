@@ -6,16 +6,10 @@ import os.path
 
 sys.path.append("/home/redo/BERTHAEmb/xcfun/build/lib64/python")
 sys.path.append("/home/redo/BERTHAEmb/psi4conda/lib/python3.7")
+sys.path.append("/home/redo/BERTHAEmb/psi4conda/share")
 sys.path.append("/home/redo/BERTHAEmb/pybertha/psi4rt")
 sys.path.append("/home/redo/BERTHAEmb/pybertha/src")
 sys.path.append("/home/redo/BERTHAEmb/pyadf/scr")
-
-import psi4
-import util
-import rtutil
-import numpy as np
-import fde_util
-import argparse
 
 os.environ['PSIPATH']="/home/redo/BERTHAEmb/psi4conda/share/psi4/basis"
 os.environ['PYBERTHAROOT'] = "/home/redo/BERTHAEmb/pybertha/"
@@ -23,6 +17,13 @@ os.environ['RTHOME'] = "/home/redo/BERTHAEmb/pybertha/psi4rt"
 sys.path.append(os.environ['PYBERTHAROOT']+"/src")
 sys.path.append(os.environ['RTHOME'])
 sys.path.append(os.environ['PSIPATH'])
+
+import psi4
+import util
+import rtutil
+import numpy as np
+import fde_util
+import argparse
 
 import io
 import threading
