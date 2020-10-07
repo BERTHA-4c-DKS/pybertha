@@ -6,7 +6,6 @@ import os.path
 
 sys.path.append("/home/redo/BERTHAEmb/xcfun/build/lib64/python")
 sys.path.append("/home/redo/BERTHAEmb/psi4conda/lib/python3.7")
-sys.path.append("/home/redo/BERTHAEmb/psi4conda/share")
 sys.path.append("/home/redo/BERTHAEmb/pybertha/psi4rt")
 sys.path.append("/home/redo/BERTHAEmb/pybertha/src")
 sys.path.append("/home/redo/BERTHAEmb/pyadf/scr")
