@@ -83,6 +83,177 @@ def finalize_stdout_redirect (fname, writef=False):
 
 ########################################################################################################
 
+def scfiterations (args, maxiter, jk, H, Cocc, func, wfn, D, vemb, E, Eold, \
+  Fock_list, DIIS_error, phi, agrid, densgrad, denshess, \
+    isolated_elpot_enviro, E_conv, D_conv, restricted = True):
+
+    #outer loop
+    for OUT_ITER in range(0,maxiter):
+        
+        #inner loop
+        for SCF_ITER in range(1, maxiter + 1):
+    
+            # Compute JK
+            jk.C_left_add(Cocc)
+            jk.compute()
+            jk.C_clear()
+       
+            # Build Fock matrix
+            F = H.clone()
+            F.axpy(2.0, jk.J()[0])
+            #XC potential
+            #sup = psi4.driver.dft_funcs.build_superfunctional(func, restricted)[0]
+            sup = psi4.driver.dft.build_superfunctional(func, restricted)[0]
+            sup.set_deriv(2)
+            sup.allocate()
+            vname = "RV"
+            if not restricted:
+                vname = "UV"
+            potential=psi4.core.VBase.build(wfn.basisset(),sup,vname)
+            potential.initialize()
+            potential.set_D([D])
+            V=psi4.core.Matrix(nbf,nbf)
+            potential.compute_V([V])
+            potential.finalize()
+            Exc= potential.quadrature_values()["FUNCTIONAL"]
+            # hybrid update
+            if sup.is_x_hybrid():
+              alpha = sup.x_alpha()
+              K = jk.K()[0]
+              F.axpy(-alpha,K)
+              Exc += -alpha*np.trace(np.matmul(D,K))
+            ####### 
+            F.axpy(1.0, V)
+            F.axpy(1.0, vemb)
+            twoel = 2.00*np.trace(np.matmul(np.array(D),np.array(jk.J()[0])))
+            # DIIS error build and update
+            diis_e = psi4.core.Matrix.triplet(F, D, S, False, False, False)
+            diis_e.subtract(psi4.core.Matrix.triplet(S, D, F, False, False, False))
+            diis_e = psi4.core.Matrix.triplet(A, diis_e, A, False, False, False)
+       
+            diis.add(F, diis_e)
+       
+            # SCF energy and update
+            SCF_E = 2.0*H.vector_dot(D) + Enuc + Exc + twoel
+       
+            dRMS = diis_e.rms()
+       
+            ztmp= np.matmul(np.array(D),np.array(dipole[2]))
+            diptmp = np.trace(ztmp)
+            print("SCF Iteration %3d: Energy = %4.16f "%(SCF_ITER, SCF_E))
+            print("   dE = %1.5E"%(SCF_E - Eold))
+            print(" dRMS = %1.5E"%(dRMS))
+            print("   Pz = %1.5E"%(diptmp))
+            
+            if (abs(SCF_E - Eold) < E_conv) and (dRMS < D_conv):
+                diffD= D.np-Dold
+                norm_D=np.linalg.norm(diffD,'fro')
+                print("norm_D at OUT_ITER(%i): %.12f\n" % (OUT_ITER,norm_D))
+                break
+       
+            Eold = SCF_E
+            Dold = np.copy(D)
+       
+            F = psi4.core.Matrix.from_array(diis.extrapolate())
+       
+            # Diagonalize Fock matrix
+            C, Cocc, D = build_orbitals(F)
+       
+            if SCF_ITER == maxiter:
+                psi4.core.clean()
+                raise Exception("Maximum number of SCF cycles exceeded.\n")
+            #end inner loop
+        
+        if ( (args.sscf and (OUT_ITER > 1)) and args.fde ) :
+             
+             diffv= vemb_in - vemb.np
+             diffD= D.np-D_in
+             norm_D=np.linalg.norm(diffD,'fro')
+             norm_v=np.linalg.norm(diffv,'fro')
+             if (norm_D<(1.0e-6) and norm_v<(1.0e-8)):
+                 break
+             else:
+                print("norm_D : %.12f\n" % norm_D)
+                print("norm_v : %.12f\n" % norm_v)
+
+        if ( args.sscf and args.fde ):
+            # calc new emb potential
+     
+            # Here the calculation of vemb(D_inner) starts
+            # if needed elpot of the active system can be built on the fly
+      
+            #phi matrix already built
+      
+            #export D to grid repres.
+      
+            #fde_util.dens2grid(phi,D,xs,ys,zs,ws,0)
+            #temp = 2.0 * np.einsum('pm,mn,pn->p', phi, np.copy(D), phi)
+            temp = 2.0 * fde_util.denstogrid( phi, np.copy(D), S,ndocc)
+            rho[:,0] = temp
+            ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### 
+            # call PyADF
+            #
+      
+            #print("Subsystem A:")
+      
+            dens_gf = GridFunctionFactory.newGridFunction(agrid,np.ascontiguousarray(rho[:,0]), gf_type="density") 
+            density_active = GridFunctionContainer([dens_gf, densgrad, denshess]) #refresh container
+            #nel_active = density_active[0].integral()
+            #print("Integrated number of electrons for subsystem A: %.8f" % nel_active)
+            print() 
+      
+            nadpot_active = embed_eval.get_nad_pot(density_active, isolated_dens_enviro)
+      
+            print("Adding the electrostatic potential")
+      
+            embpot_A_2 = isolated_elpot_enviro + nadpot_active
+      
+            if args.fdecorr : 
+              embpot_A_2 = fde_util.fcorr(embpot_A_2,density_active[0],isolated_dens_enviro[0])
+            #print("   c. Exporting the potential to file")
+      
+            pot = embpot_A_2.get_values()
+            #GridFunctionWriter.write_xyzwv(embpot_A_2,filename=os.path.join("./", 'EMBPOT_PYEMBED_ADFGRID_H2O'),add_comment=False)
+      
+            #copy vemb and D of the internal loop
+            vemb_in = np.copy(vemb)
+            D_in = np.copy(D)
+      
+            #transform EMBPOT_PYEMB_ADFGRID_H2O in basis set representation
+            vemb_new = fde_util.embpot2mat(phi,nbas,pot,ws,lpos)
+            vemb = psi4.core.Matrix.from_array(vemb_new) 
+            if OUT_ITER == maxiter:
+                raise Exception("Maximum number of SCF cycles exceeded.\n")
+            print("Outer iteration %i : DONE\n" % OUT_ITER)
+        else:
+             break # for args.fde = False, quit the outer loop of splitSCF scheme
+    #end outer loop
+
+    return D, C, Cocc, F, SCF_E, twoel, Exc
+
+    # Diagonalize routine
+
+########################################################################################################
+
+def build_orbitals(diag):
+
+    Fp = psi4.core.Matrix.triplet(A, diag, A, True, False, True)
+    
+    Cp = psi4.core.Matrix(nbf, nbf)
+    eigvals = psi4.core.Vector(nbf)
+    Fp.diagonalize(Cp, eigvals, psi4.core.DiagonalizeOrder.Ascending)
+    
+    C = psi4.core.Matrix.doublet(A, Cp, False, False)
+    
+    Cocc = psi4.core.Matrix(nbf, ndocc)
+    Cocc.np[:] = C.np[:, :ndocc]
+    
+    D = psi4.core.Matrix.doublet(Cocc, Cocc, False, True)
+      
+    return C, Cocc, D
+
+########################################################################################################
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
@@ -357,7 +528,7 @@ if __name__ == "__main__":
       fp.close()
       print("  ADF out  " + adfoufname)
 
-      print("1. Evaluation of the embedding potential in two steps:")
+      print("Evaluation of the embedding potential in two steps:")
       print ("  a. getting the non-additive potential")
 
       f = io.StringIO()
@@ -478,26 +649,8 @@ if __name__ == "__main__":
     A = mints.ao_overlap()
     A.power(-0.5, 1.e-16)
 
-    exit(1)
-    
     # Build diis
     diis = helper_HF.DIIS_helper(max_vec=6)
-    
-    # Diagonalize routine
-    def build_orbitals(diag):
-        Fp = psi4.core.Matrix.triplet(A, diag, A, True, False, True)
-    
-        Cp = psi4.core.Matrix(nbf, nbf)
-        eigvals = psi4.core.Vector(nbf)
-        Fp.diagonalize(Cp, eigvals, psi4.core.DiagonalizeOrder.Ascending)
-    
-        C = psi4.core.Matrix.doublet(A, Cp, False, False)
-    
-        Cocc = psi4.core.Matrix(nbf, ndocc)
-        Cocc.np[:] = C.np[:, :ndocc]
-    
-        D = psi4.core.Matrix.doublet(Cocc, Cocc, False, True)
-        return C, Cocc, D
     
     # Build core orbitals
     #C, Cocc, D = build_orbitals(H)
@@ -518,161 +671,27 @@ if __name__ == "__main__":
     jk = psi4.core.JK.build(wfn.basisset())
     jk.set_memory(int(1.25e8))  # 1GB
     jk.initialize()
-    jk.print_header()
+    #jk.print_header()
     
     ftime.write('\nTotal time taken for setup: %.3f seconds\n' % (time.time() - t))
     
     print('\nStart SCF iterations:\n\n')
     start = time.time()
     cstart = time.process_time()
-    #outer loop
-    for OUT_ITER in range(0,maxiter):
-        
-        #inner loop
-        for SCF_ITER in range(1, maxiter + 1):
-    
-            # Compute JK
-            jk.C_left_add(Cocc)
-            jk.compute()
-            jk.C_clear()
-       
-            # Build Fock matrix
-            F = H.clone()
-            F.axpy(2.0, jk.J()[0])
-            restricted = True
-            #XC potential
-            restricted = True
-            #sup = psi4.driver.dft_funcs.build_superfunctional(func, restricted)[0]
-            sup = psi4.driver.dft.build_superfunctional(func, restricted)[0]
-            sup.set_deriv(2)
-            sup.allocate()
-            vname = "RV"
-            if not restricted:
-                vname = "UV"
-            potential=psi4.core.VBase.build(wfn.basisset(),sup,vname)
-            potential.initialize()
-            potential.set_D([D])
-            V=psi4.core.Matrix(nbf,nbf)
-            potential.compute_V([V])
-            potential.finalize()
-            Exc= potential.quadrature_values()["FUNCTIONAL"]
-            # hybrid update
-            if sup.is_x_hybrid():
-              alpha = sup.x_alpha()
-              K = jk.K()[0]
-              F.axpy(-alpha,K)
-              Exc += -alpha*np.trace(np.matmul(D,K))
-            ####### 
-            F.axpy(1.0, V)
-            F.axpy(1.0, vemb)
-            twoel = 2.00*np.trace(np.matmul(np.array(D),np.array(jk.J()[0])))
-            # DIIS error build and update
-            diis_e = psi4.core.Matrix.triplet(F, D, S, False, False, False)
-            diis_e.subtract(psi4.core.Matrix.triplet(S, D, F, False, False, False))
-            diis_e = psi4.core.Matrix.triplet(A, diis_e, A, False, False, False)
-       
-            diis.add(F, diis_e)
-       
-            # SCF energy and update
-            SCF_E = 2.0*H.vector_dot(D) + Enuc + Exc + twoel
-       
-            dRMS = diis_e.rms()
-       
-            ztmp= np.matmul(np.array(D),np.array(dipole[2]))
-            diptmp = np.trace(ztmp)
-            print('SCF Iteration %3d: Energy = %4.16f   dE = % 1.5E   dRMS = %1.5E   Pz = %1.5E'
-                  % (SCF_ITER, SCF_E, (SCF_E - Eold), dRMS, diptmp))
-            if (abs(SCF_E - Eold) < E_conv) and (dRMS < D_conv):
-                diffD= D.np-Dold
-                norm_D=np.linalg.norm(diffD,'fro')
-                print("norm_D at OUT_ITER(%i): %.12f\n" % (OUT_ITER,norm_D))
-                break
-       
-            Eold = SCF_E
-            Dold = np.copy(D)
-       
-            F = psi4.core.Matrix.from_array(diis.extrapolate())
-       
-            # Diagonalize Fock matrix
-            C, Cocc, D = build_orbitals(F)
-       
-            if SCF_ITER == maxiter:
-                psi4.core.clean()
-                raise Exception("Maximum number of SCF cycles exceeded.\n")
-            #end inner loop
-        if ( (args.sscf and (OUT_ITER > 1)) and args.fde ) :
-             
-             diffv= vemb_in - vemb.np
-             diffD= D.np-D_in
-             norm_D=np.linalg.norm(diffD,'fro')
-             norm_v=np.linalg.norm(diffv,'fro')
-             if (norm_D<(1.0e-6) and norm_v<(1.0e-8)):
-                 break
-             else:
-                print("norm_D : %.12f\n" % norm_D)
-                print("norm_v : %.12f\n" % norm_v)
 
-        if ( args.sscf and args.fde ):
-            # calc new emb potential
-     
-            # Here the calculation of vemb(D_inner) starts
-            # if needed elpot of the active system can be built on the fly
-      
-            #phi matrix already built
-      
-            #export D to grid repres.
-      
-            #fde_util.dens2grid(phi,D,xs,ys,zs,ws,0)
-            #temp = 2.0 * np.einsum('pm,mn,pn->p', phi, np.copy(D), phi)
-            temp = 2.0 * fde_util.denstogrid( phi, np.copy(D), S,ndocc)
-            rho[:,0] = temp
-            ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### 
-            # call PyADF
-            #
-      
-            #print("Subsystem A:")
-      
-            dens_gf = GridFunctionFactory.newGridFunction(agrid,np.ascontiguousarray(rho[:,0]), gf_type="density") 
-            density_active = GridFunctionContainer([dens_gf, densgrad, denshess]) #refresh container
-            #nel_active = density_active[0].integral()
-            #print("Integrated number of electrons for subsystem A: %.8f" % nel_active)
-            print() 
-      
-            nadpot_active = embed_eval.get_nad_pot(density_active, isolated_dens_enviro)
-      
-            print("   b. adding the electrostatic potential")
-      
-            embpot_A_2 = isolated_elpot_enviro + nadpot_active
-      
-            if args.fdecorr : 
-              embpot_A_2 = fde_util.fcorr(embpot_A_2,density_active[0],isolated_dens_enviro[0])
-            #print("   c. Exporting the potential to file")
-      
-            pot = embpot_A_2.get_values()
-            #GridFunctionWriter.write_xyzwv(embpot_A_2,filename=os.path.join("./", 'EMBPOT_PYEMBED_ADFGRID_H2O'),add_comment=False)
-      
-            #copy vemb and D of the internal loop
-            vemb_in = np.copy(vemb)
-            D_in = np.copy(D)
-      
-            #transform EMBPOT_PYEMB_ADFGRID_H2O in basis set representation
-            vemb_new = fde_util.embpot2mat(phi,nbas,pot,ws,lpos)
-            vemb = psi4.core.Matrix.from_array(vemb_new) 
-            if OUT_ITER == maxiter:
-                raise Exception("Maximum number of SCF cycles exceeded.\n")
-            print("Outer iteration %i : DONE\n" % OUT_ITER)
-        else:
-             break # for args.fde = False, quit the outer loop of splitSCF scheme
-    #end outer loop
+    D, C, Cocc, F, SCF_E, twoel, Exc = scfiterations (args, maxiter, jk, H, Cocc, func, \
+      wfn, D, vemb, E, Eold, Fock_list, DIIS_error,  phi, agrid, densgrad, denshess, \
+        isolated_elpot_enviro, E_conv, D_conv)
     
     end = time.time()
     cend = time.process_time()
     ftime.write('Total time[time()] for SCF iterations: %.3f seconds \n\n' % (-start + end))
     ftime.write('Total time[clock()] for SCF iterations: %.3f seconds \n\n' % (-cstart + cend))
     
-    print('Final DFT energy: %.16f hartree\n' % SCF_E)
-    print('twoel energy: %.16f hartree\n' % twoel)
-    print('xc energy: %.16f hartree\n' % Exc)
+    print('Final DFT energy: %.16f hartree' % SCF_E)
+    print('    twoel energy: %.16f hartree' % twoel)
+    print('       xc energy: %.16f hartree' % Exc)
+
     dipz = np.matmul(np.array(D),np.array(dipole[2]))
     dipvalz = np.trace(2.0*dipz) + Ndip[2]
     dipy = np.matmul(np.array(D),np.array(dipole[1]))
@@ -691,9 +710,20 @@ if __name__ == "__main__":
     fout.write('unpolarized dipole: %.16f, %.16f, %.16f Debye\n' %  (dipvalx*conv,dipvaly*conv,dipvalz*conv))
     print("Ndip : %.8f, %.8f, %.8f\n" % (Ndip[0],Ndip[1],Ndip[2]))
     fout.close()
+
+    init_stdout_redirect ()
+    t = threading.Thread(target=drain_pipe)
+    t.start()
+
     wfn_scf.Da().copy(D)
     wfn_scf.Db().copy(D)
     psi4.cubeprop(wfn_scf)
+
+    os.close(stdout_fileno)
+    t.join()
+    finalize_stdout_redirect(psioufname)
+    print("PSI4 out  " + psioufname)
+
     # check of D and Cocc
     ovap = np.array(S)
     import scipy.linalg
@@ -702,7 +732,7 @@ if __name__ == "__main__":
     np.savetxt("eigvals.txt", eigvals)
     Cocc_test = eigvecs[:,-ndocc:]
     Dtest = np.matmul(Cocc_test,np.conjugate(Cocc_test.T))
-    print("D and Dtest : %s\n" % (np.allclose(D,Dtest,atol=1.0e-12)))
+    print("D and Dtest : %s" % (np.allclose(D,Dtest,atol=1.0e-12)))
     #for free-field propagation Fmax = 0.0
     
     molist = args.select.split("&")
@@ -741,12 +771,12 @@ if __name__ == "__main__":
     #}
     #nalpha, ndocc, nbf have already been defined
     #from psi4-rt.py
-    print('\nNumber of occupied orbitals: %d' % ndocc)
+    print('Number of occupied orbitals: %d' % ndocc)
     print('Number of basis functions: %d' % nbf)
     
     # Run a quick check to make sure everything will fit into memory
     I_Size = (nbf**4) * 8.e-9
-    print("\nSize of the ERI tensor will be %4.2f GB." % I_Size)
+    print("Size of the ERI tensor will be %4.2f GB." % I_Size)
     
     # Estimate memory usage
     memory_footprint = I_Size * 1.5
@@ -782,10 +812,8 @@ if __name__ == "__main__":
     print("CC^-1 = 1 : %s\n" % np.allclose(Id,test,atol=1.0e-12))
     #check C orthornmality
     test = np.matmul(np.conjugate(C.T),np.matmul(S,C))
-    
     print("C(.H)SC = 1 : %s\n" % np.allclose(Id,test,atol=1.0e-12))
     #set propagation params
-    
     
     
     if imp_opts['imp_type'] == 'analytic' :
@@ -810,7 +838,6 @@ if __name__ == "__main__":
     # analytic pertubation goes here
     #
     
-    
     if (analytic):
        print('Perturb density with analytic delta')
        # set the perturbed density -> exp(-ikP)D_0exp(+ikP)
@@ -831,7 +858,7 @@ if __name__ == "__main__":
     #
     #get new density and elpot
     if args.fde:
-      print("Here the calculation of vemb(D_pol) starts")
+      print("Start calculation of vemb(D_pol) starts")
       start=time.time()
       cstart =time.process_time()
       #if needed elpot of the active system can be built on the fly
@@ -983,6 +1010,9 @@ if __name__ == "__main__":
     start_tot = time.time()
     cstart_tot =time.process_time()
     vcount = 0.0
+
+    print("Startinr propagation...")
+
     for j in range(1,niter+1):
         # now we have to update vemb :(
         if (args.fde and args.iterative):
@@ -991,19 +1021,14 @@ if __name__ == "__main__":
             cstart_fde = time.process_time()
             #get elpot
             #if needed elpot of active system can be built on the fly
-     
             #phi matrix already built
-     
             #export D to grid repres.
-     
             #temp = 2.0 * np.einsum('pm,mn,pn->p', phi, D_ti, phi)
             temp = 2.0 * fde_util.denstogrid( phi, D_ti, S,ndocc)
             rho[:,0] = temp
      
             ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### 
             # call PyADF
-            #
-     
             #print("Subsystem A:")
      
             dens_gf = GridFunctionFactory.newGridFunction(agrid,np.ascontiguousarray(rho[:,0]), gf_type="density") 
@@ -1022,10 +1047,7 @@ if __name__ == "__main__":
             pot = embpot_A_2.get_values()
             vcount+=1
             #print("   c. Exporting the potential to file")
-     
             #GridFunctionWriter.write_xyzwv(embpot_A_2,filename=os.path.join("./", 'EMBPOT_PYEMBED_ADFGRID_H2O'),add_comment=False)
-     
-     
             #transform EMBPOT_PYEMB_ADFGRID_H2O in basis set representation
             vemb = fde_util.embpot2mat(phi,nbas,pot,ws,lpos)
             end_fde = time.time()
