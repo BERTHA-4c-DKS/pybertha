@@ -4,6 +4,7 @@ import ctypes
 import numpy
 import sys
 import re
+import os
 
 import json
 from json import encoder
@@ -14,7 +15,9 @@ import scipy.linalg as scila
 from numpy.linalg import eigvalsh
 from scipy.linalg import eigh
 
-sys.path.insert(0, "../src")
+berthamodpath = os.getenv("BERTHA_API_PATH", "../src")
+
+sys.path.insert(0, berthamodpath)
 import berthamod
 import rtutil
 
