@@ -169,6 +169,16 @@ def cos_env(Fmax, w, t, t0=0.0, n=20.0):
    return func
  
 #######################################################################
+
+def lin_cos(Fmax, w, t, t0=0.0, s=0.0):
+    
+    if ( t <= 2.0*numpy.pi/w and t>=0.0):
+        func=Fmax*w*t/2.0/numpy.pi*numpy.cos(w*t)
+    else:
+        func=Fmax*numpy.cos(w*t)
+
+#######################################################################
+
 def analytic(Fmax, w, t, t0=0.0, s=0.0):
 
    func = 0.0
@@ -234,6 +244,7 @@ funcswitcher = {
     "envelope": envelope,
     "sin_oc": sin_oc,
     "cos_env": cos_env,
+    "lin_cos": lin_cos,
     "analytic": analytic
      }
    
