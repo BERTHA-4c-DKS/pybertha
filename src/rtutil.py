@@ -176,6 +176,8 @@ def lin_cos(Fmax, w, t, t0=0.0, s=0.0):
         func=Fmax*w*t/2.0/numpy.pi*numpy.cos(w*t)
     else:
         func=Fmax*numpy.cos(w*t)
+     
+    return func
 
 #######################################################################
 
