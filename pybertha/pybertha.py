@@ -9,9 +9,6 @@ import os.path
 from numpy.linalg import eigvalsh
 from scipy.linalg import eigh
 
-sys.path.insert(0, '../src/')
-import berthamod
-
 import time
 
 parser = argparse.ArgumentParser()
@@ -35,8 +32,13 @@ parser.add_argument("--thresh", help="det threshold (default = 1.0e-11)", requir
         type=numpy.float64, default=1.0e-11)
 parser.add_argument("--wrapperso", help="set wrapper SO (default = ../../lib/bertha_wrapper.so)", 
         required=False, type=str, default="../lib/bertha_wrapper.so")
+parser.add_argument("--berthamodpath", help="set berthamod path (default = ../src)", 
+        required=False, type=str, default="../src")
 
 args = parser.parse_args()
+
+sys.path.insert(0, args.berthamodpath)
+import berthamod
 
 print("Options: ")
 print(args) 
