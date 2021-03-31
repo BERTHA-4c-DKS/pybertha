@@ -313,6 +313,15 @@ def normal_run_init (args):
     #dipole is  a list of psi4.core.Matrix objects
     # dipole[0] -> x, dipole[1] -> y, dipole[2] -> z
     dip_mat=np.copy(dipole[direction])
+
+    dip_dir = [0,1,2]
+    dip_dict={'0' : 'x', '1' : 'y', '2' : 'z'}
+    dip_dir.pop(direction)
+    dmat_offdiag = []
+
+    for i in dip_dir:
+         dmat_offdiag.append(np.array(dipole[i]))    
+
     H = T+V
     #internal defined functional 
 
@@ -408,6 +417,8 @@ def normal_run_init (args):
     #containers
     ene_list = []
     dip_list = []
+    dip_offdiag0 = []
+    dip_offdiag1 = []
     imp_list=[]
     weighted_dip = []
     #for molecules with permanent nuclear dipole add Enuc_list[k] to ene
@@ -458,6 +469,8 @@ def normal_run_init (args):
         ene_list.append(2.00*np.trace(np.matmul(Da,H))+J0+Exc0-np.trace(np.matmul(Da,(func_t0*dip_mat))))
     
     dip_list.append(np.trace(np.matmul(Da,dip_mat)))
+    dip_offdiag0.append(np.trace(np.matmul(Da,dmat_offdiag[0])))
+    dip_offdiag1.append(np.trace(np.matmul(Da,dmat_offdiag[1])))
     
     #weighted dipole
     if (do_weighted == -2):
@@ -526,6 +539,8 @@ def restart_init (args):
     outfnames = None
     Ndip_dir = None
     dip_list = None
+    dip_offdiag0 = None
+    dip_offdiag1= None
     ene_list = None
     imp_list = None
     virtlist = None
@@ -691,6 +706,8 @@ if __name__ == "__main__":
     Ndip_dir = None
     basisset = None
     dip_list = None
+    dip_offdiag0 = None
+    dip_offdiag1= None
     ene_list = None
     imp_list = None
     virtlist = None
@@ -816,6 +833,8 @@ if __name__ == "__main__":
     print("Time for %10d time iterations : (%.5f s, %.5f s)\n" %(niter+1,end-start,cend-cstart))
     t_point=np.linspace(0.0,niter*dt,niter+1)
     dip_t=2.00*np.array(dip_list).real + Ndip_dir
+    dip_t_od0=2.00*np.array(dip_offdiag0).real + Ndip_dir
+    dip_t_od1=2.00*np.array(dip_offdiag1).real + Ndip_dir
     ene_t=np.array(ene_list).real + Nuc_rep
     imp_t=np.array(imp_list)
 
@@ -828,6 +847,8 @@ if __name__ == "__main__":
     np.savetxt(outfnames[0], np.c_[t_point,dip_t], fmt='%.12e')
     np.savetxt(outfnames[1], np.c_[t_point,imp_t], fmt='%.12e')
     np.savetxt(outfnames[2], np.c_[t_point,ene_t], fmt='%.12e')
+    np.savetxt(outfnames[4], np.c_[t_point,dip_t_od0], fmt='%.12e')
+    np.savetxt(outfnames[5], np.c_[t_point,dip_t_od1], fmt='%.12e')
 
     if not args.restart:
         wfn.Da().copy(psi4.core.Matrix.from_array(D_ti.real))
