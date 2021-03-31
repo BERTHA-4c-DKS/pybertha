@@ -140,10 +140,10 @@ def get_json_data(args, D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, \
         
 ####################################################################################
 
-def main_loop (D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, C, C_inv, S, nbf, \
-        imp_opts, func, fo, basisset, Dp_ti, weighted_dip, dip_list, ene_list, \
-        imp_list, dipmo_mat, ndocc, occlist, virtlist, debug, HL, do_weighted, \
-        Enuc_list, Ndip_dir, Nuc_rep, extpot):
+def main_loop (D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, dmat_offdiag, C, C_inv, S, nbf, \
+        imp_opts, func, fo, basisset, Dp_ti, weighted_dip, dip_list, dip_offdiag0, \
+        dip_offdiag1, ene_list, imp_list, dipmo_mat, ndocc, occlist, virtlist, debug, \
+        HL, do_weighted, Enuc_list, Ndip_dir, Nuc_rep, extpot):
 
     J_i,Exc_i,func_ti,F_ti,fock_mid_tmp=util.mo_fock_mid_forwd_eval(D_ti,\
                 fock_mid_backwd,j,dt,H,I,dip_mat,C,C_inv,S,nbf,\
@@ -493,9 +493,9 @@ def normal_run_init (args):
         fo.write('Trace of SD.imag %.14f\n' % np.trace(np.matmul(S,D_ti.imag)))
         fo.write('Dipole %.8f %.15f\n' % (0.000, 2.00*dip_list[0].real))
         
-    return D_ti, fock_mid_backwd, dt, H, I, dip_mat, C, C_inv, S, nbf, \
+    return D_ti, fock_mid_backwd, dt, H, I, dip_mat, dmat_offdiag, C, C_inv, S, nbf, \
             imp_opts, func, fo, basisset, Dp_ti, weighted_dip, dip_list, \
-            ene_list, imp_list, dipmo_mat, ndocc, occlist, virtlist, debug, \
+            dip_offdiag0, dip_offdiag1, ene_list, imp_list, dipmo_mat, ndocc, occlist, virtlist, debug, \
             HL, Ndip_dir, Nuc_rep, niter, do_weighted, Enuc_list, psi4options, \
             geom, outfnames, wfn, imp_params, calc_params
 
@@ -641,7 +641,7 @@ def restart_init (args):
  
     fo = open(dbgfnames[0], "w")
 
-    return D_ti, fock_mid_backwd, dt, H, I, dip_mat, C, C_inv, S, nbf, imp_opts, func, fo, \
+    return D_ti, fock_mid_backwd, dt, H, I, dip_mat, dmat_offdiag, C, C_inv, S, nbf, imp_opts, func, fo, \
            Dp_ti, weighted_dip, dip_list, ene_list, imp_list, dipmo_mat, ndocc, occlist, \
            virtlist, debug, HL, Ndip_dir, Nuc_rep, niter, do_weighted, Enuc_list, psi4options, \
            geom, outfnames, wfn, imp_params, calc_params, j, extpot
@@ -717,6 +717,7 @@ if __name__ == "__main__":
     Nuc_rep = None
     occlist = None
     dip_mat = None
+    dmat_offdiag = None
     extpot = None
     ndocc = None
     debug = None
@@ -778,9 +779,9 @@ if __name__ == "__main__":
 
         jstart = j
     else:
-        D_ti, fock_mid_backwd, dt, H, I, dip_mat, \
+        D_ti, fock_mid_backwd, dt, H, I, dip_mat, dmat_offdiag, \
                 C, C_inv, S, nbf, imp_opts, func, fo, \
-                basisset, Dp_ti, weighted_dip, dip_list, \
+                basisset, Dp_ti, weighted_dip, dip_list, dip_offdia0, dip_offdiag1, \
                 ene_list, imp_list, dipmo_mat, ndocc, occlist, \
                 virtlist, debug, HL, Ndip_dir, Nuc_rep, niter, do_weighted, \
                 Enuc_list, psi4options, geom, outfnames, wfn, imp_params, calc_params \
@@ -795,8 +796,8 @@ if __name__ == "__main__":
     dumpcounter = 0
     for j in range(jstart+1,niter+1):
         fock_mid_backwd, D_ti, Dp_ti = main_loop (D_ti, fock_mid_backwd, j, dt, \
-                H, I, dip_mat, C, C_inv, S, nbf, imp_opts, func, fo, basisset, \
-                Dp_ti, weighted_dip, dip_list, ene_list, imp_list, dipmo_mat, \
+                H, I, dip_mat, dmat_offdiag, C, C_inv, S, nbf, imp_opts, func, fo, basisset, \
+                Dp_ti, weighted_dip, dip_list, dip_offdiag0, dip_offdiag1, ene_list, imp_list, dipmo_mat, \
                 ndocc, occlist, virtlist, debug, HL, do_weighted, Enuc_list, \
                 Ndip_dir, Nuc_rep, extpot)
 
