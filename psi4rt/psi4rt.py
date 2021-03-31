@@ -217,8 +217,8 @@ def normal_run_init (args):
         exit(1)
 
     outfnames = args.outfilenames.split(";")
-    if len(outfnames) != 4:
-        print("Error in --out-filenames, you need to specify 4 filenames")
+    if len(outfnames) != 6:
+        print("Error in --out-filenames, you need to specify 6 filenames")
         exit(1)
    
     debug = args.debug
@@ -631,8 +631,8 @@ def restart_init (args):
         exit(1)
 
     outfnames = args.outfilenames.split(";")
-    if len(outfnames) != 4:
-        print("Error in --out-filenames, you need to specify 4 filenames")
+    if len(outfnames) != 6:
+        print("Error in --out-filenames, you need to specify 6 filenames")
         exit(1)
 
     if "extpot_REAL" in json_data and "extpot_IMAG" in json_data:
@@ -684,8 +684,8 @@ if __name__ == "__main__":
             "[default=\"Da0.cube;Db0.cube;Dt0.cube;Ds0.cube\"]", \
             required=False, default="Da0.cube;Db0.cube;Dt0.cube;Ds0.cube", type=str, dest='cubefilenames')
     parser.add_argument("--out-filenames", help="Specify cout filenames " + \
-            "[default=\"dipole.txt;imp.txt;ene.txt;weighteddip.txt\"]", \
-            required=False, default="dipole.txt;imp.txt;ene.txt;weighteddip.txt", type=str, dest='outfilenames')
+            "[default=\"dipole.txt;imp.txt;ene.txt;weighteddip.txt;dipole_0.txt;dipole_1.txt\"]", \
+            required=False, default="dipole.txt;imp.txt;ene.txt;weighteddip.txt;dipole_0.txt;dipole_1.txt", type=str, dest='outfilenames')
     parser.add_argument("--iterations", help="Use iteration number instead of progressbar",
             required=False, default=False, action="store_true")
     parser.add_argument("--restartfile", help="set a restart file (default: restart_psi4rt.json)", 
@@ -709,7 +709,7 @@ if __name__ == "__main__":
     basisset = None
     dip_list = None
     dip_offdiag0 = None
-    dip_offdiag1= None
+    dip_offdiag1 = None
     ene_list = None
     imp_list = None
     virtlist = None
@@ -781,7 +781,7 @@ if __name__ == "__main__":
     else:
         D_ti, fock_mid_backwd, dt, H, I, dip_mat, dmat_offdiag, \
                 C, C_inv, S, nbf, imp_opts, func, fo, \
-                basisset, Dp_ti, weighted_dip, dip_list, dip_offdia0, dip_offdiag1, \
+                basisset, Dp_ti, weighted_dip, dip_list, dip_offdiag0, dip_offdiag1, \
                 ene_list, imp_list, dipmo_mat, ndocc, occlist, \
                 virtlist, debug, HL, Ndip_dir, Nuc_rep, niter, do_weighted, \
                 Enuc_list, psi4options, geom, outfnames, wfn, imp_params, calc_params \
