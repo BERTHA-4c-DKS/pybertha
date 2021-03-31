@@ -172,6 +172,8 @@ def main_loop (D_ti, fock_mid_backwd, j, dt, H, I, dip_mat, C, C_inv, S, nbf, \
     fo.write('%.8f\n' % np.trace(Dp_ti_dt).real)
     #dipole expectation for D_ti
     dip_list.append(np.trace(np.matmul(dip_mat,D_ti)))
+    dip_offdiag0.append(np.trace(np.matmul(D_ti,dmat_offdiag[0])))
+    dip_offdiag1.append(np.trace(np.matmul(D_ti,dmat_offdiag[1])))
     
     if debug:
         fo.write('Dipole  %.8f %.15f\n' % (j*dt, 2.00*dip_list[j].real))
