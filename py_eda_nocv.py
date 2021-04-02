@@ -9,7 +9,7 @@ import os.path
 from numpy.linalg import eigvalsh
 from scipy.linalg import eigh
 
-sys.path.insert(0, '../src/')
+sys.path.insert(0, '/home/belp/BERTHA/pybertha/src/')
 import berthamod
 
 import time
@@ -138,12 +138,18 @@ for i in range(ndim):
       print ""
 """
 
+sumeigen = 0.0
+
 print("")
 print("Final results ")
 for i in range(nocc+nopen):
     print("eigenvalue %5d %20.8f"%(i+1, eigen[i+nshift]-sfact))
+    sumeigen  = sumeigen + eigen[i+nshift]-sfact
     
 print("      lumo       %20.8f"%(eigen[i+nshift+1]))
+print("      SUMEIGEN   %20.8f"%(sumeigen))
+
+
 
 erep = bertha.get_erep()
 etotal = bertha.get_etotal()
@@ -319,7 +325,7 @@ for j in eigenval:
  i += 1
  fo.write(" %i %.8f\n" % (i,j))
 
-for i in range(0,eigenval.shape[0]/2):
+for i in range(0,int(eigenval.shape[0]/2)):
   fo.write("pair (%i):%.8f (%i):%.8f\n" % (-i-1,eigenval[i],i+1 ,eigenval[eigenval.shape[0]-1-i]))
 
 fo.close()
@@ -344,9 +350,37 @@ for i in range(npairs):
   print(("trace of nocv_+%i : %.8f\n" % (j,trace.real)))
   deltanocv = eigenval[i]*(d1 - d2)
 
+
   bertha.density_to_cube(d1.T, "nocv-"+str(j)+".cube", margin, drx, dry, drz )  
   bertha.density_to_cube(d2.T, "nocv+"+str(j)+".cube", margin, drx, dry, drz )  
   bertha.density_to_cube(deltanocv.T, label+".cube", margin, drx, dry, drz )  
+
+######  TEST
+bertha.realtime_init()
+
+dmat_trans = 0.5*(dmat+dmat0)
+fockm1=bertha.get_realtime_fock(dmat_trans.T)
+trace = numpy.trace(numpy.matmul((dmat-dmat0),fockm1))
+print(("trace of DeltaD F^TS : %.8f\n" % (trace.real)))
+######  TEST
+
+for i in range(npairs):
+  j = i + 1
+  label = "pair"+str(j)
+  tmp =  zmat[:,i]
+  d1 = numpy.outer(tmp,numpy.conjugate(tmp))
+  #check if d1 sum to 1
+  trace = numpy.trace(numpy.matmul(d1,ovapm))
+  print(("trace of nocv_-%i : %.8f\n" % (j,trace.real)))
+  tmp =  zmat[:,-i-1]
+  d2 = numpy.outer(tmp,numpy.conjugate(tmp))
+  #check if d2 sum to 1
+  trace = numpy.trace(numpy.matmul(d2,ovapm))
+  print(("trace of nocv_+%i : %.8f\n" % (j,trace.real)))
+  deltanocv = eigenval[i]*(d1 - d2)
+  trace = numpy.trace(numpy.matmul(deltanocv,fockm1))
+  print(("trace of DeltaD F^TS : %.8f\n" % (trace.real)))
+
 bertha.finalize()
 #
 #

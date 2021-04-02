@@ -32,8 +32,8 @@ CHARGE  0
 
 symmetry nosym
 Basis
-Type TZ2P
-core large 
+Type QZ4P
+core none 
 End
 XC
   GGA  becke perdew
@@ -63,8 +63,8 @@ CHARGE 0
 symmetry nosym 
 
 Basis
-Type TZ2P
-core Large 
+Type QZ4P 
+core none 
 End
 xc
   GGA  becke perdew
@@ -114,5 +114,6 @@ eor
 
 cp TAPE21   tot.t21
 cp tot.t21  $PBS_O_WORKDIR
+
 
 
