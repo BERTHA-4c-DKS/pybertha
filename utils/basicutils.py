@@ -12,7 +12,7 @@ from ase.io.cube import read_cube
 def cubetodx(infname, outfname, valperl = 3, scientfn=False):
 
      # need a local edit of OpenDx
-     OpenDX.global_values_per_line.append(valperl)
+     OpenDX.global_values_per_line = valperl
      if scientfn:
          OpenDX.global_float_format.append("e")
          OpenDX.global_float_precision.append(8)
