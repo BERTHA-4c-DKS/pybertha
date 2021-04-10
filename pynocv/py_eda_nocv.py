@@ -351,10 +351,9 @@ for i in range(npairs):
   deltanocv = eigenval[i]*(d1 - d2)
 
 
-
-  bertha.density_to_cube(d1.T, "nocv-"+str(j)+".cube", margin, drx, dry, drz )  
-  bertha.density_to_cube(d2.T, "nocv+"+str(j)+".cube", margin, drx, dry, drz )  
-  bertha.density_to_cube(deltanocv.T, label+".cube", margin, drx, dry, drz )  
+#  bertha.density_to_cube(d1.T, "nocv-"+str(j)+".cube", margin, drx, dry, drz )  
+#  bertha.density_to_cube(d2.T, "nocv+"+str(j)+".cube", margin, drx, dry, drz )  
+#  bertha.density_to_cube(deltanocv.T, label+".cube", margin, drx, dry, drz )  
 
 ######  TEST
 bertha.realtime_init()
@@ -362,7 +361,7 @@ bertha.realtime_init()
 dmat_trans = 0.5*(dmat+dmat0)
 fockm1=bertha.get_realtime_fock(dmat_trans.T)
 trace = numpy.trace(numpy.matmul((dmat-dmat0),fockm1))
-print(("trace of DeltaD F^TS : %.8f\n" % (trace.real)))
+print(("trace of DeltaD F^TS Orbital energy : %.8f\n" % (trace.real)))
 ######  TEST
 
 for i in range(npairs):
@@ -383,6 +382,5 @@ for i in range(npairs):
   print(("trace of DeltaD F^TS : %.8f\n" % (trace.real)))
 
 bertha.finalize()
-
 #
 #

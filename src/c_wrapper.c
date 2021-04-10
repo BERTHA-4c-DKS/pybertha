@@ -21,6 +21,8 @@
 #define f_sfact shiftr_mp_sfact_
 #define f_etotal energy_mp_etotal_
 #define f_erep bertha_wrapper_mp_erep_
+#define f_eecoul bertha_wrapper_mp_eecoul_
+#define f_eexc bertha_wrapper_mp_eexc_
 #define f_thresh bertha_wrapper_mp_thresh_
 #define f_densitydiff bertha_wrapper_mp_densitydiff_
 
@@ -46,6 +48,8 @@
 #define f_nopen __opensh_MOD_nopen
 #define f_sfact __shiftr_MOD_sfact
 #define f_etotal __energy_MOD_etotal
+#define f_eecoul __bertha_wrapper_MOD_eecoul
+#define f_eexc __bertha_wrapper_MOD_eexc
 #define f_erep __bertha_wrapper_MOD_erep
 #define f_thresh __bertha_wrapper_MOD_thresh
 #define f_densitydiff __bertha_wrapper_MOD_densitydiff
@@ -72,7 +76,7 @@ void f_bertha_eps(double *, double *, double *, double *);
 void f_bertha_realtime_fock (double *, double *);
 
 extern int f_ndim, f_nshift, f_nocc, f_nopen, f_densitydiff;
-extern double f_sfact, f_etotal, f_erep, f_thresh;
+extern double f_sfact, f_etotal, f_erep, f_thresh, f_eecoul, f_eexc;
 
 extern int f_ncent;
 void f_bertha_get_coord (int *, double *, double *, double *, double *);
@@ -158,6 +162,21 @@ double get_etotal ()
 
   return val;
 }
+
+double get_eecoul ()
+{
+  double val = f_eecoul;
+
+  return val;
+}
+
+double get_eexc ()
+{
+  double val = f_eexc;
+
+  return val;
+}
+
 
 // METHODS
 

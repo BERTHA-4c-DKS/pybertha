@@ -14,7 +14,7 @@ PROFILE=no
 USEINTEL=no
 
 #LIBXC
-LIBXC=no
+LIBXC=yes
 
 BERTHAROOT=/home/belp/BERTHA/bertha_ng
 
@@ -149,7 +149,8 @@ ifeq ($(LIBXC),yes)
   CFLAGS += -DLIBXC 
   FFLAGS += -DLIBXC 
   INCLUDE += -I$(DIRLIBXC)/include
-  LIBS += -L$(DIRLIBXC) -lxc -lxcf90 
+#  LIBS += -L$(DIRLIBXC) -lxc -lxcf90 
+  LIBS += -L$(DIRLIBXC) -lxc  
 endif
 
 ifeq ($(USEINTEL),yes)

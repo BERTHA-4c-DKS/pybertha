@@ -21,6 +21,7 @@
       integer :: intype, fitcase, testfit, igrid, iprint, mactve,
      +           maxit, nactve, ncore, nfitt, densitydiff
       real :: amass(ncentm), sfact1, sfact2, erep, thresh
+      real :: eecoul, eexc 
       character(len=7) :: expo
 
       contains
@@ -426,6 +427,10 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
           endif
         endif
 
+        eecoul  = efittcoul
+        eexc    = excfit
+
+
         energy2 = excfit - etemp
 
         time1 = walltime ()
@@ -777,6 +782,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       real (c_double), intent(in) :: dens_ptr(*) 
 
       real :: excfit, efittcoul, monoelectronenergy, ffre
+      real :: efittcoulplusexc, traceDFock
       complex, parameter :: czero = (0.0,0.0)
       real, allocatable :: v(:), zz(:)
       integer :: counter, i, j, a, rc
@@ -805,6 +811,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       call jmatfitt(fock,ndim,v,nfitt,fitcase)
       deallocate(v)
       deallocate(zz)
+       
 
       do i = 1,nshift
         do j = 1,i
@@ -812,6 +819,19 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
           fock(j+nshift,i+nshift) = conjg(fock(i+nshift,j+nshift))
         end do
       end do
+! #### TEST leonardo
+
+! #### Calculation of Tr(D(V_xc+J))    
+ 
+      efittcoulplusexc = 0.0
+      do i = 1,ndim
+          do j = 1,ndim
+              efittcoulplusexc = efittcoulplusexc +
+     +        real(c(i,j)*fock(i,j))
+          end do
+      end do
+
+! #### end  Calculation of Tr(D(V_xc+J))    
 
       call oneel(monoelectronenergy)
 
@@ -826,6 +846,24 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         ffre = real(fock(i,i))
         fock(i,i) = cmplx(ffre,0.0)
       end do
+
+! #### Calculation of Tr(D Fock)
+      traceDFock = 0.0
+      do i = 1,ndim
+          do j = 1,ndim
+              traceDFock =  traceDFock +
+     +        real(c(i,j)*fock(i,j))
+          end do
+      end do
+! #### end Calculation of Tr(D Fock)
+! 
+! ####  Calculation of total energy given a density matrix
+
+      etotal = traceDFock - efittcoulplusexc + 0.5d0*efittcoul + excfit 
+      eecoul  = efittcoul 
+      eexc    = excfit 
+
+! ####  end Calculation of total energy given a density matrix
 
       counter = 1
       do i = 1, ndim
