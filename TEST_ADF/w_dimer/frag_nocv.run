@@ -36,7 +36,7 @@ Type QZ4P
 core none 
 End
 XC
-  GGA  becke perdew
+  GGA BP86
 End
 End Input
 eor
@@ -63,11 +63,11 @@ CHARGE 0
 symmetry nosym 
 
 Basis
-Type QZ4P 
+Type QZ4P
 core none 
 End
 xc
-  GGA  becke perdew
+  GGA  BP86
 end
 end input
 eor
@@ -85,7 +85,7 @@ EPRINT
   SFO eig ovl
 END
 xc
-  GGA  becke perdew
+  GGA BP86 
 end
 
 ATOMS
@@ -96,6 +96,7 @@ ATOMS
     5.H        -0.902354   -1.435104   -0.414516    f=frag2
     6.H        -2.145956   -2.118384   -1.007632    f=frag2
 end
+
 
 symmetry nosym 
 CHARGE 0 
