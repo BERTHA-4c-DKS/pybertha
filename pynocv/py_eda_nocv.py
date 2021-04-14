@@ -5,7 +5,6 @@ import sys
 import re
 
 import os.path
-
 from numpy.linalg import eigvalsh
 from scipy.linalg import eigh
 
@@ -46,6 +45,10 @@ parser.add_argument("--deltaz", help="cube dz step (default = 0.2)", required=Fa
         type=numpy.float64, default=0.2)
 parser.add_argument("--lmargin", help="cube margin parameter (default = 10.0)", required=False, 
         type=numpy.float64, default=10.0)
+parser.add_argument("--info_fragA", help="Specify the json file related to fragA (default: info_eda_nocv_fragA.json)", required=False, 
+        type=str, default="info_eda_nocv_fragA.json")
+parser.add_argument("--info_fragB", help="Specify the json file related to fragB (default: info_eda_nocv_fragB.json", required=False, 
+        type=str, default="info_eda_nocv_fragB.json")
 args = parser.parse_args()
 
 print("Options: ")
@@ -226,6 +229,7 @@ for i in range(ndim):
 # NOCV analysis start here  ! check matrix from ovap file, transposition needed
 import cdautil
 from scipy.linalg import eig
+import json
 #check vct and ovap abduct !REMOVE
 #if not os.path.isfile(vctfilename):
 #    print("File ", vctfilename, " does not exist")
@@ -255,6 +259,28 @@ cmatab = occeigv
 
 cmata = berthamod.read_vctfile ("vcta.out")
 cmatb = berthamod.read_vctfile ("vctb.out")
+
+fp = open(args.info_fragA, 'r')
+json_data = json.load(fp)
+fp.close()
+
+# total energy fragA
+etotal_fragA = float(json_data["etotal"])
+exc_fragA = float(json_data["exc"])
+print(("etotal fragA: %.8f \n ")% etotal_fragA)
+print(("exc    fragA: %.8f \n ")% exc_fragA)
+
+fp = open(args.info_fragB, 'r')
+json_data = json.load(fp)
+fp.close()
+
+# total energy fragA
+etotal_fragB = float(json_data["etotal"])
+exc_fragB = float(json_data["exc"])
+print(("etotal fragB: %.8f \n ")% etotal_fragB)
+print(("exc    fragB: %.8f \n ")% exc_fragB)
+
+
 
 density = numpy.matmul(cmatab,numpy.conjugate(cmatab.T))
 trace = numpy.trace(numpy.matmul(ovapm,density))
@@ -358,29 +384,139 @@ for i in range(npairs):
 ######  TEST
 bertha.realtime_init()
 
+fockm1=bertha.get_realtime_fock(dmat.T)
+erep = bertha.get_erep()
+etotal = bertha.get_etotal()
+ecoul  = bertha.get_eecoul()
+exc    = bertha.get_eexc()
+
+print(" TEST  Density --> Fock --> energy")
+print("total electronic energy  = %30.15f"%(etotal))
+print("nuclear repulsion energy = %30.15f"%(erep))
+print("total energy             = %30.15f"%(etotal+erep))
+print("coulomb energy           = %30.15f"%(ecoul))
+print("Exc     energy           = %30.15f"%(exc))
+
+fockm1=bertha.get_realtime_fock(dmat0.T)
+erep = bertha.get_erep()
+etotal = bertha.get_etotal()
+ecoul  = bertha.get_eecoul()
+exc    = bertha.get_eexc()
+
+print(" TEST  Density_0 --> Fock --> energy")
+print("total electronic energy  = %30.15f"%(etotal))
+print("nuclear repulsion energy = %30.15f"%(erep))
+print("total energy             = %30.15f"%(etotal+erep))
+print("coulomb energy           = %30.15f"%(ecoul))
+print("Exc     energy           = %30.15f"%(exc))
+
+#density of the promolecule
+dmatsumAB = numpy.matmul(cmat_join,numpy.conjugate(cmat_join.T))
+
+fockm1=bertha.get_realtime_fock(dmatsumAB.T)
+erep = bertha.get_erep()
+etotal = bertha.get_etotal()
+ecoul  = bertha.get_eecoul()
+exc    = bertha.get_eexc()
+
+print(" TEST  Density_A+B --> Fock --> energy")
+print("total electronic energy  = %30.15f"%(etotal))
+print("nuclear repulsion energy = %30.15f"%(erep))
+print("total energy             = %30.15f"%(etotal+erep))
+print("coulomb energy           = %30.15f"%(ecoul))
+print("Exc     energy           = %30.15f"%(exc))
+
+####################################
+
+fockm1=bertha.get_realtime_fock(dmat.T)
+erep = bertha.get_erep()
+etotal = bertha.get_etotal()
+ecoul  = bertha.get_eecoul()
+exc    = bertha.get_eexc()
+
+print(" TEST  Density --> Fock --> energy")
+print("total electronic energy  = %30.15f"%(etotal))
+print("nuclear repulsion energy = %30.15f"%(erep))
+print("total energy             = %30.15f"%(etotal+erep))
+print("coulomb energy           = %30.15f"%(ecoul))
+print("Exc     energy           = %30.15f"%(exc))
+etotal = etotal+erep
+
+
+Eint = etotal - etotal_fragA - etotal_fragB 
+print(("Total interaction  energy : %.8f\n" % Eint))
+
 dmat_trans = 0.5*(dmat+dmat0)
 fockm1=bertha.get_realtime_fock(dmat_trans.T)
-trace = numpy.trace(numpy.matmul((dmat-dmat0),fockm1))
-print(("trace of DeltaD F^TS Orbital energy : %.8f\n" % (trace.real)))
+E_orb = numpy.trace(numpy.matmul((dmat-dmat0),fockm1))
+print(("trace of DeltaD F^TS Orbital energy : %.8f\n" % (E_orb.real)))
+
+dmat_trans = dmat0
+fockm0=bertha.get_realtime_fock(dmat_trans.T)
+dmat_trans = dmat
+fockmt=bertha.get_realtime_fock(dmat_trans.T)
+#
+fockmTS = 1.0/6.0*fockm0 + 4.0/6.0*fockm1 + 1.0/6.0*fockmt
+#
+trace = numpy.trace(numpy.matmul((dmat-dmat0),fockmTS))
+print(("trace of DeltaD F^TS Ziegler formula Orbital energy : %.8f\n" % (trace.real)))
+#
+
+
+#density of the promolecule
+dmatsumAB = numpy.matmul(cmat_join,numpy.conjugate(cmat_join.T))
+
+dmat_trans = 0.5*(dmatsumAB+dmat0)
+fockm1=bertha.get_realtime_fock(dmat_trans.T)
+e_pauli = numpy.trace(numpy.matmul((dmat0-dmatsumAB),fockm1))
+print(("trace of DeltaD F^TS Pauli energy : %.8f\n" % (e_pauli.real)))
+
+#density of the promolecule
+dmatsumAB = numpy.matmul(cmat_join,numpy.conjugate(cmat_join.T))
+
+fockm1=bertha.get_realtime_fock(dmatsumAB.T)
+erep = bertha.get_erep()
+etotal = bertha.get_etotal()
+ecoul_sumAB  = bertha.get_eecoul()
+exc_sumAB  = bertha.get_eexc()
+
+print(" TEST  Density_A+B --> Fock --> energy")
+print("total electronic energy  = %30.15f"%(etotal))
+print("nuclear repulsion energy = %30.15f"%(erep))
+print("total energy             = %30.15f"%(etotal+erep))
+print("coulomb energy           = %30.15f"%(ecoul_sumAB))
+print("Exc     energy           = %30.15f"%(exc_sumAB))
+
+####################################
+etotal_sumAB = etotal+erep
+Delta_Exc = exc_sumAB - exc_fragA - exc_fragB 
+print(("Delta_Exc = exc - exc_fragA - exc_fragB: %.8f\n" % Delta_Exc))
+Tot_pauli = trace.real + Delta_Exc
+print(("Pauli (DeltaD F^TS Pauli energy + Delta_Exc: %.8f\n" % Tot_pauli))
+print(("Electrostatic int E_A+B - Delta_Exc:  %.8f\n" %(etotal_sumAB-etotal_fragA-etotal_fragB-Delta_Exc)))
+
+
+
+
+
+
 ######  TEST
 
-for i in range(npairs):
-  j = i + 1
-  label = "pair"+str(j)
-  tmp =  zmat[:,i]
-  d1 = numpy.outer(tmp,numpy.conjugate(tmp))
-  #check if d1 sum to 1
-  trace = numpy.trace(numpy.matmul(d1,ovapm))
-  print(("trace of nocv_-%i : %.8f\n" % (j,trace.real)))
-  tmp =  zmat[:,-i-1]
-  d2 = numpy.outer(tmp,numpy.conjugate(tmp))
-  #check if d2 sum to 1
-  trace = numpy.trace(numpy.matmul(d2,ovapm))
-  print(("trace of nocv_+%i : %.8f\n" % (j,trace.real)))
-  deltanocv = eigenval[i]*(d1 - d2)
-  trace = numpy.trace(numpy.matmul(deltanocv,fockm1))
-  print(("trace of DeltaD F^TS : %.8f\n" % (trace.real)))
+#for i in range(npairs):
+#  j = i + 1
+#  label = "pair"+str(j)
+#  tmp =  zmat[:,i]
+#  d1 = numpy.outer(tmp,numpy.conjugate(tmp))
+#  #check if d1 sum to 1
+#  trace = numpy.trace(numpy.matmul(d1,ovapm))
+#  print(("trace of nocv_-%i : %.8f\n" % (j,trace.real)))
+#  tmp =  zmat[:,-i-1]
+#  d2 = numpy.outer(tmp,numpy.conjugate(tmp))
+#  #check if d2 sum to 1
+#  trace = numpy.trace(numpy.matmul(d2,ovapm))
+#  print(("trace of nocv_+%i : %.8f\n" % (j,trace.real)))
+#  deltanocv = eigenval[i]*(d1 - d2)
+#  trace = numpy.trace(numpy.matmul(deltanocv,fockm1))
+#  print(("trace of DeltaD F^TS : %.8f\n" % (trace.real)))
 
 bertha.finalize()
-#
-#
