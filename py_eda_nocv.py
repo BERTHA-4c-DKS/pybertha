@@ -267,8 +267,16 @@ fp.close()
 # total energy fragA
 etotal_fragA = float(json_data["etotal"])
 exc_fragA = float(json_data["exc"])
+ndim_fragA = int(json_data["ndim"])
+nocc_fragA = int(json_data["nocc"])
 print(("etotal fragA: %.8f \n ")% etotal_fragA)
 print(("exc    fragA: %.8f \n ")% exc_fragA)
+cmat_REAL = numpy.float_(json_data["occeigv_REAL"])
+cmat_IMAG = numpy.float_(json_data["occeigv_IMAG"])
+#cmata = check_and_covert (cmat_REAL, cmat_IMAG, ndim_fragA, nocc_fragA)
+
+
+
 
 fp = open(args.info_fragB, 'r')
 json_data = json.load(fp)
@@ -277,8 +285,14 @@ fp.close()
 # total energy fragA
 etotal_fragB = float(json_data["etotal"])
 exc_fragB = float(json_data["exc"])
+ndim_fragB = int(json_data["ndim"])
+nocc_fragB = int(json_data["nocc"])
 print(("etotal fragB: %.8f \n ")% etotal_fragB)
 print(("exc    fragB: %.8f \n ")% exc_fragB)
+cmat_REAL = numpy.float_(json_data["occeigv_REAL"])
+cmat_IMAG = numpy.float_(json_data["occeigv_IMAG"])
+#cmatb = check_and_covert (cmat_REAL, cmat_IMAG, ndim_fragB, nocc_fragB)
+
 
 
 
@@ -520,3 +534,24 @@ print(("Electrostatic int E_A+B - Delta_Exc:  %.8f\n" %(etotal_sumAB-etotal_frag
 #  print(("trace of DeltaD F^TS : %.8f\n" % (trace.real)))
 
 bertha.finalize()
+
+##########################################################################################
+
+def check_and_covert (mat_REAL, mat_IMAG, ndim, nocc):
+
+    if ((mat_REAL.shape == mat_IMAG.shape) and
+        (mat_REAL.shape[0] == mat_REAL.shape[1]) and
+        (mat_REAL.shape[0] == ndim)):
+
+        mat = numpy.zeros((ndim,ndim),dtype=numpy.complex128)
+
+        for i in range(ndim):
+            for j in range(nocc):
+                mat[i, j] = numpy.complex128(complex(mat_REAL[i][j],
+                    mat_IMAG[i][j]))
+
+        return mat
+
+    return None
+
+
