@@ -13,6 +13,27 @@ import berthamod
 
 import time
 
+##########################################################################################
+
+def check_and_covert(mat_REAL, mat_IMAG, ndim, nocc):
+
+    if ((mat_REAL.shape == mat_IMAG.shape) and
+        (mat_REAL.shape[0] == ndim) and
+        (mat_REAL.shape[1] == nocc)):
+
+        mat = numpy.zeros((ndim,nocc),dtype=numpy.complex128)
+
+        for i in range(ndim):
+            for j in range(nocc):
+                mat[i, j] = numpy.complex128(complex(mat_REAL[i][j],
+                    mat_IMAG[i][j]))
+
+        return mat
+
+    return None
+##########################################################################################
+
+
 parser = argparse.ArgumentParser()
 parser.add_argument("-f","--inputfile", help="Specify BERTHA input file (default: input.inp)", required=False, 
         type=str, default="input.inp")
@@ -257,8 +278,8 @@ margin = args.lmargin
 #cmatab = berthamod.read_vctfile (vctfilename)
 cmatab = occeigv
 
-cmata = berthamod.read_vctfile ("vcta.out")
-cmatb = berthamod.read_vctfile ("vctb.out")
+#cmata = berthamod.read_vctfile ("vcta.out")
+#cmatb = berthamod.read_vctfile ("vctb.out")
 
 fp = open(args.info_fragA, 'r')
 json_data = json.load(fp)
@@ -267,8 +288,16 @@ fp.close()
 # total energy fragA
 etotal_fragA = float(json_data["etotal"])
 exc_fragA = float(json_data["exc"])
+ndim_fragA = int(json_data["ndim"])
+nocc_fragA = int(json_data["nocc"])
 print(("etotal fragA: %.8f \n ")% etotal_fragA)
 print(("exc    fragA: %.8f \n ")% exc_fragA)
+cmat_REAL = numpy.float_(json_data["occeigv_REAL"])
+cmat_IMAG = numpy.float_(json_data["occeigv_IMAG"])
+cmata = check_and_covert (cmat_REAL, cmat_IMAG, ndim_fragA, nocc_fragA)
+
+
+
 
 fp = open(args.info_fragB, 'r')
 json_data = json.load(fp)
@@ -277,8 +306,14 @@ fp.close()
 # total energy fragA
 etotal_fragB = float(json_data["etotal"])
 exc_fragB = float(json_data["exc"])
+ndim_fragB = int(json_data["ndim"])
+nocc_fragB = int(json_data["nocc"])
 print(("etotal fragB: %.8f \n ")% etotal_fragB)
 print(("exc    fragB: %.8f \n ")% exc_fragB)
+cmat_REAL = numpy.float_(json_data["occeigv_REAL"])
+cmat_IMAG = numpy.float_(json_data["occeigv_IMAG"])
+cmatb = check_and_covert(cmat_REAL, cmat_IMAG, ndim_fragB, nocc_fragB)
+
 
 
 
@@ -446,6 +481,21 @@ etotal = etotal+erep
 Eint = etotal - etotal_fragA - etotal_fragB 
 print(("Total interaction  energy : %.8f\n" % Eint))
 
+dmat_trans = 0.5*(dmat+dmat0)
+fockm1=bertha.get_realtime_fock(dmat_trans.T)
+E_orb = numpy.trace(numpy.matmul((dmat-dmat0),fockm1))
+print(("trace of DeltaD F^TS Orbital energy : %.8f\n" % (E_orb.real)))
+
+dmat_trans = dmat0
+fockm0=bertha.get_realtime_fock(dmat_trans.T)
+dmat_trans = dmat
+fockmt=bertha.get_realtime_fock(dmat_trans.T)
+#
+fockmTS = 1.0/6.0*fockm0 + 4.0/6.0*fockm1 + 1.0/6.0*fockmt
+#
+trace = numpy.trace(numpy.matmul((dmat-dmat0),fockmTS))
+print(("trace of DeltaD F^TS Ziegler formula Orbital energy : %.8f\n" % (trace.real)))
+#
 
 
 #density of the promolecule
@@ -480,22 +530,10 @@ Tot_pauli = trace.real + Delta_Exc
 print(("Pauli (DeltaD F^TS Pauli energy + Delta_Exc: %.8f\n" % Tot_pauli))
 print(("Electrostatic int E_A+B - Delta_Exc:  %.8f\n" %(etotal_sumAB-etotal_fragA-etotal_fragB-Delta_Exc)))
 
-####################################
-dmat_trans = 0.5*(dmat+dmat0)
-fockm1=bertha.get_realtime_fock(dmat_trans.T)
-E_orb = numpy.trace(numpy.matmul((dmat-dmat0),fockm1))
-print(("trace of DeltaD F^TS Orbital energy : %.8f\n" % (E_orb.real)))
 
-dmat_trans = dmat0
-fockm0=bertha.get_realtime_fock(dmat_trans.T)
-dmat_trans = dmat
-fockmt=bertha.get_realtime_fock(dmat_trans.T)
-#
-fockmTS = 1.0/6.0*fockm0 + 4.0/6.0*fockm1 + 1.0/6.0*fockmt
-#
-trace = numpy.trace(numpy.matmul((dmat-dmat0),fockmTS))
-print(("trace of DeltaD F^TS Ziegler formula Orbital energy : %.8f\n" % (trace.real)))
-#
+
+
+
 
 ######  TEST
 
@@ -517,3 +555,24 @@ for i in range(npairs):
   print(("trace of DeltaD F^TS : %.8f\n" % (trace.real)))
 
 bertha.finalize()
+
+##########################################################################################
+
+def check_and_covert(mat_REAL, mat_IMAG, ndim, nocc):
+
+    if ((mat_REAL.shape == mat_IMAG.shape) and
+        (mat_REAL.shape[0] == mat_REAL.shape[1]) and
+        (mat_REAL.shape[0] == ndim)):
+
+        mat = numpy.zeros((ndim,ndim),dtype=numpy.complex128)
+
+        for i in range(ndim):
+            for j in range(nocc):
+                mat[i, j] = numpy.complex128(complex(mat_REAL[i][j],
+                    mat_IMAG[i][j]))
+
+        return mat
+
+    return None
+
+
