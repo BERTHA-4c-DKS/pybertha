@@ -260,13 +260,13 @@ import json
 #    print("File ", ovapfilename, " does not exist")
 #    exit(1)
 #check vct of frags
-if not os.path.isfile("vcta.out"):
-    print("File vcta.out does not exist")
-    exit(1)
+#if not os.path.isfile("vcta.out"):
+#    print("File vcta.out does not exist")
+#    exit(1)
 
-if not os.path.isfile("vctb.out"):
-    print("File vctb.out does not exist")
-    exit(1)
+#if not os.path.isfile("vctb.out"):
+#    print("File vctb.out does not exist")
+#    exit(1)
 
 npairs = args.npairs
 drx = args.deltax
@@ -526,11 +526,9 @@ print("Exc     energy           = %30.15f"%(exc_sumAB))
 etotal_sumAB = etotal+erep
 Delta_Exc = exc_sumAB - exc_fragA - exc_fragB 
 print(("Delta_Exc = exc - exc_fragA - exc_fragB: %.8f\n" % Delta_Exc))
-Tot_pauli = trace.real + Delta_Exc
+Tot_pauli = e_pauli + Delta_Exc
 print(("Pauli (DeltaD F^TS Pauli energy + Delta_Exc: %.8f\n" % Tot_pauli))
 print(("Electrostatic int E_A+B - Delta_Exc:  %.8f\n" %(etotal_sumAB-etotal_fragA-etotal_fragB-Delta_Exc)))
-
-
 
 
 
