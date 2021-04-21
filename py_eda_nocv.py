@@ -13,6 +13,27 @@ import berthamod
 
 import time
 
+##########################################################################################
+
+def check_and_covert(mat_REAL, mat_IMAG, ndim, nocc):
+
+    if ((mat_REAL.shape == mat_IMAG.shape) and
+        (mat_REAL.shape[0] == ndim) and
+        (mat_REAL.shape[1] == nocc)):
+
+        mat = numpy.zeros((ndim,nocc),dtype=numpy.complex128)
+
+        for i in range(ndim):
+            for j in range(nocc):
+                mat[i, j] = numpy.complex128(complex(mat_REAL[i][j],
+                    mat_IMAG[i][j]))
+
+        return mat
+
+    return None
+##########################################################################################
+
+
 parser = argparse.ArgumentParser()
 parser.add_argument("-f","--inputfile", help="Specify BERTHA input file (default: input.inp)", required=False, 
         type=str, default="input.inp")
@@ -239,13 +260,13 @@ import json
 #    print("File ", ovapfilename, " does not exist")
 #    exit(1)
 #check vct of frags
-if not os.path.isfile("vcta.out"):
-    print("File vcta.out does not exist")
-    exit(1)
+#if not os.path.isfile("vcta.out"):
+#    print("File vcta.out does not exist")
+#    exit(1)
 
-if not os.path.isfile("vctb.out"):
-    print("File vctb.out does not exist")
-    exit(1)
+#if not os.path.isfile("vctb.out"):
+#    print("File vctb.out does not exist")
+#    exit(1)
 
 npairs = args.npairs
 drx = args.deltax
@@ -257,8 +278,8 @@ margin = args.lmargin
 #cmatab = berthamod.read_vctfile (vctfilename)
 cmatab = occeigv
 
-cmata = berthamod.read_vctfile ("vcta.out")
-cmatb = berthamod.read_vctfile ("vctb.out")
+#cmata = berthamod.read_vctfile ("vcta.out")
+#cmatb = berthamod.read_vctfile ("vctb.out")
 
 fp = open(args.info_fragA, 'r')
 json_data = json.load(fp)
@@ -273,7 +294,7 @@ print(("etotal fragA: %.8f \n ")% etotal_fragA)
 print(("exc    fragA: %.8f \n ")% exc_fragA)
 cmat_REAL = numpy.float_(json_data["occeigv_REAL"])
 cmat_IMAG = numpy.float_(json_data["occeigv_IMAG"])
-#cmata = check_and_covert (cmat_REAL, cmat_IMAG, ndim_fragA, nocc_fragA)
+cmata = check_and_covert (cmat_REAL, cmat_IMAG, ndim_fragA, nocc_fragA)
 
 
 
@@ -291,7 +312,7 @@ print(("etotal fragB: %.8f \n ")% etotal_fragB)
 print(("exc    fragB: %.8f \n ")% exc_fragB)
 cmat_REAL = numpy.float_(json_data["occeigv_REAL"])
 cmat_IMAG = numpy.float_(json_data["occeigv_IMAG"])
-#cmatb = check_and_covert (cmat_REAL, cmat_IMAG, ndim_fragB, nocc_fragB)
+cmatb = check_and_covert(cmat_REAL, cmat_IMAG, ndim_fragB, nocc_fragB)
 
 
 
@@ -505,39 +526,37 @@ print("Exc     energy           = %30.15f"%(exc_sumAB))
 etotal_sumAB = etotal+erep
 Delta_Exc = exc_sumAB - exc_fragA - exc_fragB 
 print(("Delta_Exc = exc - exc_fragA - exc_fragB: %.8f\n" % Delta_Exc))
-Tot_pauli = trace.real + Delta_Exc
+Tot_pauli = e_pauli + Delta_Exc
 print(("Pauli (DeltaD F^TS Pauli energy + Delta_Exc: %.8f\n" % Tot_pauli))
 print(("Electrostatic int E_A+B - Delta_Exc:  %.8f\n" %(etotal_sumAB-etotal_fragA-etotal_fragB-Delta_Exc)))
 
 
 
 
-
-
 ######  TEST
 
-#for i in range(npairs):
-#  j = i + 1
-#  label = "pair"+str(j)
-#  tmp =  zmat[:,i]
-#  d1 = numpy.outer(tmp,numpy.conjugate(tmp))
-#  #check if d1 sum to 1
-#  trace = numpy.trace(numpy.matmul(d1,ovapm))
-#  print(("trace of nocv_-%i : %.8f\n" % (j,trace.real)))
-#  tmp =  zmat[:,-i-1]
-#  d2 = numpy.outer(tmp,numpy.conjugate(tmp))
-#  #check if d2 sum to 1
-#  trace = numpy.trace(numpy.matmul(d2,ovapm))
-#  print(("trace of nocv_+%i : %.8f\n" % (j,trace.real)))
-#  deltanocv = eigenval[i]*(d1 - d2)
-#  trace = numpy.trace(numpy.matmul(deltanocv,fockm1))
-#  print(("trace of DeltaD F^TS : %.8f\n" % (trace.real)))
+for i in range(npairs):
+  j = i + 1
+  label = "pair"+str(j)
+  tmp =  zmat[:,i]
+  d1 = numpy.outer(tmp,numpy.conjugate(tmp))
+  #check if d1 sum to 1
+  trace = numpy.trace(numpy.matmul(d1,ovapm))
+  print(("trace of nocv_-%i : %.8f\n" % (j,trace.real)))
+  tmp =  zmat[:,-i-1]
+  d2 = numpy.outer(tmp,numpy.conjugate(tmp))
+  #check if d2 sum to 1
+  trace = numpy.trace(numpy.matmul(d2,ovapm))
+  print(("trace of nocv_+%i : %.8f\n" % (j,trace.real)))
+  deltanocv = eigenval[i]*(d1 - d2)
+  trace = numpy.trace(numpy.matmul(deltanocv,fockm1))
+  print(("trace of DeltaD F^TS : %.8f\n" % (trace.real)))
 
 bertha.finalize()
 
 ##########################################################################################
 
-def check_and_covert (mat_REAL, mat_IMAG, ndim, nocc):
+def check_and_covert(mat_REAL, mat_IMAG, ndim, nocc):
 
     if ((mat_REAL.shape == mat_IMAG.shape) and
         (mat_REAL.shape[0] == mat_REAL.shape[1]) and
