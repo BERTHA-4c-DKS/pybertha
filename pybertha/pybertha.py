@@ -8,8 +8,36 @@ import os.path
 
 from numpy.linalg import eigvalsh
 from scipy.linalg import eigh
+import json
+from json import encoder
 
 import time
+
+##########################################################################################
+
+def get_json_data(args, etotal, erep, ecoul, exc, ndim, nocc, occeigv):
+
+    json_data = {}
+    for arg in vars(args):
+        json_data[arg] = getattr(args, arg)
+
+    othervals = {
+            'etotal': etotal,
+            'erep'  : erep, 
+            'ecoul' : ecoul, 
+            'exc'  : exc, 
+            'ndim' : ndim,
+            'nocc' : nocc, 
+            'occeigv_REAL' : numpy.real(occeigv).tolist(),  
+            'occeigv_IMAG' : numpy.imag(occeigv).tolist() 
+            }
+
+    json_data.update(othervals)
+
+    return json_data
+
+##########################################################################################
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-f","--inputfile", help="Specify BERTHA input file (default: input.inp)", required=False, 
@@ -34,6 +62,10 @@ parser.add_argument("--wrapperso", help="set wrapper SO (default = ../../lib/ber
         required=False, type=str, default="../lib/bertha_wrapper.so")
 parser.add_argument("--berthamodpath", help="set berthamod path (default = ../src)", 
         required=False, type=str, default="../src")
+parser.add_argument("--eda_nocv_info", help="set to dump info useful for py_eda_nocv",action='store_true',default=False)
+parser.add_argument("--eda_nocv_frag_file", help="set a file (default: info_eda_nocv_fragX.json)",
+           required=False, type=str, default="info_eda_nocv_fragX.json")
+
 
 args = parser.parse_args()
 
@@ -139,13 +171,23 @@ print("      lumo       %20.8f"%(eigen[i+nshift+1]))
 
 erep = bertha.get_erep()
 etotal = bertha.get_etotal()
+ecoul  = bertha.get_eecoul()
+exc    = bertha.get_eexc()
+
 
 print("")
 print("total electronic energy  = %30.15f"%(etotal-(sfact*nocc)))
 print("nuclear repulsion energy = %30.15f"%(erep))
 print("total energy             = %30.15f"%(etotal+erep-(sfact*nocc)))
+print("coulomb energy           = %30.15f"%(ecoul))
+print("Exc     energy           = %30.15f"%(exc))
 
 occeigv = numpy.zeros((ndim,nocc), dtype=numpy.complex128)
+
+etotal = etotal+erep-(sfact*nocc)
+
+
+
 
 iocc = 0
 for i in range(ndim):
@@ -153,6 +195,12 @@ for i in range(ndim):
         for j in range(ndim):
             occeigv[j, iocc] = eigem[j, i]
         iocc = iocc + 1
+
+if args.eda_nocv_info :
+   encoder.FLOAT_REPR = lambda o: format(o, '.25E')
+   json_data = get_json_data(args, etotal, erep, ecoul, exc, ndim, nocc, occeigv)
+   with open(args.eda_nocv_frag_file, 'w') as fp:
+            json.dump(json_data, fp, sort_keys=True, indent=4)
 
 """
 for i in range(nocc):
