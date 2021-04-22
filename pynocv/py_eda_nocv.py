@@ -482,8 +482,8 @@ Eint = etotal - etotal_fragA - etotal_fragB
 print(("Total interaction  energy : %.8f\n" % Eint))
 
 dmat_trans = 0.5*(dmat+dmat0)
-fockm1=bertha.get_realtime_fock(dmat_trans.T)
-E_orb = numpy.trace(numpy.matmul((dmat-dmat0),fockm1))
+fockmTS1=bertha.get_realtime_fock(dmat_trans.T)
+E_orb = numpy.trace(numpy.matmul((dmat-dmat0),fockmTS1))
 print(("trace of DeltaD F^TS Orbital energy : %.8f\n" % (E_orb.real)))
 
 dmat_trans = dmat0
@@ -491,7 +491,7 @@ fockm0=bertha.get_realtime_fock(dmat_trans.T)
 dmat_trans = dmat
 fockmt=bertha.get_realtime_fock(dmat_trans.T)
 #
-fockmTS = 1.0/6.0*fockm0 + 4.0/6.0*fockm1 + 1.0/6.0*fockmt
+fockmTS = 1.0/6.0*fockm0 + 4.0/6.0*fockmTS1 + 1.0/6.0*fockmt
 #
 trace = numpy.trace(numpy.matmul((dmat-dmat0),fockmTS))
 print(("trace of DeltaD F^TS Ziegler formula Orbital energy : %.8f\n" % (trace.real)))
@@ -549,8 +549,10 @@ for i in range(npairs):
   trace = numpy.trace(numpy.matmul(d2,ovapm))
   print(("trace of nocv_+%i : %.8f\n" % (j,trace.real)))
   deltanocv = eigenval[i]*(d1 - d2)
-  trace = numpy.trace(numpy.matmul(deltanocv,fockm1))
-  print(("trace of DeltaD F^TS : %.8f\n" % (trace.real)))
+  trace = numpy.trace(numpy.matmul(deltanocv,fockmTS1))
+  print(("trace of DeltaD F^TS1 : %.8f\n" % (trace.real)))
+  
+
 
 bertha.finalize()
 
