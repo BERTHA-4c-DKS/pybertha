@@ -58,6 +58,8 @@ parser.add_argument("--wrapperso", help="set wrapper SO (default = ../../lib/ber
 
 parser.add_argument("-np", "--npairs", help="Specify the numerber of nocv-pair density (default: 0)", required=False,
            default=0, type=int)
+parser.add_argument("--cube", help="Specify if nocv orbital and def. density need to be saved in cube file format (default: 0)", required=False,
+           default=False, action="store_true")
 parser.add_argument("--deltax", help="cube dx step (default = 0.2)", required=False, 
         type=numpy.float64, default=0.2)
 parser.add_argument("--deltay", help="cube dy step (default = 0.2)", required=False, 
@@ -534,24 +536,29 @@ print(("Electrostatic int E_A+B - Delta_Exc:  %.8f\n" %(etotal_sumAB-etotal_frag
 
 
 ######  TEST
+if (args.cube == True):
+   bertha.density_to_cube((dmat-dmatsumAB).T, "diff_tot.cube", margin, drx, dry, drz )
+   bertha.density_to_cube((dmat-dmat0).T, "diff_tot_ortho.cube", margin, drx, dry, drz )
+
 
 for i in range(npairs):
   j = i + 1
   label = "pair"+str(j)
   tmp =  zmat[:,i]
   d1 = numpy.outer(tmp,numpy.conjugate(tmp))
-  #check if d1 sum to 1
-  trace = numpy.trace(numpy.matmul(d1,ovapm))
-  print(("trace of nocv_-%i : %.8f\n" % (j,trace.real)))
   tmp =  zmat[:,-i-1]
   d2 = numpy.outer(tmp,numpy.conjugate(tmp))
-  #check if d2 sum to 1
-  trace = numpy.trace(numpy.matmul(d2,ovapm))
-  print(("trace of nocv_+%i : %.8f\n" % (j,trace.real)))
+
   deltanocv = eigenval[i]*(d1 - d2)
   trace = numpy.trace(numpy.matmul(deltanocv,fockmTS1))
-  print(("trace of DeltaD F^TS1 : %.8f\n" % (trace.real)))
-  
+#  print(("Def. Density, eigenvalue, energy (a.u.), energy (kcal/mol)  : %.8f\n" % (trace.real)))
+  print(("Def. Density nocv_+%i  eigenvalue: %.8f  energy (a.u.): %.8f energy (kcal/mol): %.8f  \n" % (j,eigenval[i].real,trace.real,(627.50961*trace).real)))
+
+  if (args.cube == True):
+     bertha.density_to_cube(d1.T, "nocv-"+str(j)+".cube", margin, drx, dry, drz )  
+     bertha.density_to_cube(d2.T, "nocv+"+str(j)+".cube", margin, drx, dry, drz )  
+     bertha.density_to_cube(deltanocv.T, label+".cube", margin, drx, dry, drz )  
+
 
 
 bertha.finalize()
