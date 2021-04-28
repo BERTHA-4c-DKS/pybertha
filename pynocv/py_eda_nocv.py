@@ -551,8 +551,17 @@ for i in range(npairs):
 
   deltanocv = eigenval[i]*(d1 - d2)
   trace = numpy.trace(numpy.matmul(deltanocv,fockmTS1))
-#  print(("Def. Density, eigenvalue, energy (a.u.), energy (kcal/mol)  : %.8f\n" % (trace.real)))
   print(("Def. Density nocv_+%i  eigenvalue: %.8f  energy (a.u.): %.8f energy (kcal/mol): %.8f  \n" % (j,eigenval[i].real,trace.real,(627.50961*trace).real)))
+
+#  Energy contribution singled out for each NOCV
+#
+#  deltanocv = eigenval[i]*d1 
+#  trace = numpy.trace(numpy.matmul(deltanocv,fockmTS1))
+#  print(("nocv_+%i  eigenvalue: %.8f  energy (a.u.): %.8f energy (kcal/mol): %.8f  \n" % (j,eigenval[i].real,trace.real,(627.50961*trace).real)))
+
+#  deltanocv = eigenval[-i-1]*d2
+#  trace = numpy.trace(numpy.matmul(deltanocv,fockmTS1))
+#  print(("nocv_-%i  eigenvalue: %.8f  energy (a.u.): %.8f energy (kcal/mol): %.8f  \n" % (j,eigenval[-i-1].real,trace.real,(627.50961*trace).real)))
 
   if (args.cube == True):
      bertha.density_to_cube(d1.T, "nocv-"+str(j)+".cube", margin, drx, dry, drz )  
