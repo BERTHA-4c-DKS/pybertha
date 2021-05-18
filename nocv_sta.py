@@ -1,16 +1,15 @@
 import numpy 
 import sys
 import os.path
-sys.path.insert(0, '../src/')
-import berthamod
-import cdautil
 from scipy.linalg import eig
 from scipy.linalg import eigh
 
+sys.path.insert(0, '../src/')
+import berthamod
+import cdautil
+
 ovapcmp = berthamod.read_ovapfile ("ovapab.out")
-
 cmatab = berthamod.read_vctfile ("vctab.out")
-
 cmata = berthamod.read_vctfile ("vcta.out")
 cmatb = berthamod.read_vctfile ("vctb.out")
 
