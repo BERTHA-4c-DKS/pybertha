@@ -934,7 +934,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       real, intent(out) :: x, y, z, an
       integer, intent(in) :: i
 
-      print *, "Here"
+      !print *, "Here"
 
       if ( i .le. ncent) then
         x = coord(1, i)
