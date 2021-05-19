@@ -165,41 +165,6 @@ if __name__ == "__main__":
     trace = density.trace()
     print("(%20.10f, %20.10fi)"%(trace.real, trace.imag))
     
-    #cmatb = berthamod.read_vctfile ("vctb.out")
-    #print("check vctb:  %s\n" %(numpy.allclose(occeigv,cmatb)))
-    #exit()
-    """
-    # to check if needed
-    eigvals, eigvecs = eigh(fockm, ovapm, eigvals_only=False)
-    
-    iocc = 0 
-    for i in range(ndim): 
-        if i >= nshift and iocc < nocc:
-            print eigvals[i] - sfact
-            iocc = iocc + 1
-    
-    
-    ovapcmp = berthamod.read_ovapfile ("ovap.txt")
-    
-    for i in range(ndim):
-        for j in range(ndim):
-            if (ovapcmp[i, j] != ovapm[i, j]):
-              sys.stdout.write("(%20.10f %20.10fi) -> (%20.10f %20.10fi) \n"%(ovapm[i, j].real, ovapm[i, j].imag,
-                  ovapcmp[i, j].real, ovapcmp[i, j].imag))
-        #sys.stdout.write("\n")
-    
-    eigecmp = berthamod.read_vctfile ("vct.txt")
-    
-    for i in range(ndim):
-          print "i ==> ", i+1, eigen[i]
-          for j in range(ndim):
-            if (eigecmp[i, j] != eigem[i, j]):
-              sys.stdout.write("(%20.10f %20.10fi) -> (%20.10f %20.10fi) \n"%(
-                  eigem[i, j].real, eigem[i, j].imag,
-                  eigecmp[i, j].real, eigecmp[i, j].imag))
-          print ""
-    """
-    
     
     # NOCV analysis start here  ! check matrix from ovap file, transposition needed
     from scipy.linalg import eig
@@ -243,7 +208,7 @@ if __name__ == "__main__":
     print(("Trace of DS: %.8f %.8fi\n" % (trace.real, trace.imag)))
     cmat_join = cdautil.join_cmat(cmata,cmatb,ndimab)
 
-    if cmat_join == None:
+    if cmat_join is None:
         print("Error in joining cmat")
         exit(1)
 
@@ -299,10 +264,12 @@ if __name__ == "__main__":
     #compute vmat (V = SDS)
     vmat = numpy.matmul(ovapm,numpy.matmul(tmp,ovapm))
     #diagonalize vmat
+
     try:
         eigenval, zmat = eigh(vmat,ovapm, eigvals_only=False)
     except LinAlgError:
          print("Error in scipy.linalg.eigh of vmat")
+
     fo = open("nocv_eigv.txt", "w")
     i = 0
     for j in eigenval:
