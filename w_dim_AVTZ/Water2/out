@@ -1,0 +1,239 @@
+ Initialze the atomic densities on each center
+ Done
+ Iteration            1
+  total electronic energy   =        -75.5318121639
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -66.5446668582
+  maxdiff in density matrix =      0.1191020358E+00 ( 180.292%) 
+ Iteration            2
+  total electronic energy   =        -85.4882308850
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.5010855792
+  maxdiff in density matrix =      0.6682594967E-01 (  25.472%) 
+ Iteration            3
+  total electronic energy   =        -85.4704180302
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.4832727244
+  maxdiff in density matrix =      0.3340383977E-01 (  13.599%) 
+ Iteration            4
+  total electronic energy   =        -85.4721493309
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.4850040252
+  maxdiff in density matrix =      0.9249882956E-02 (   3.177%) 
+ Iteration            5
+  total electronic energy   =        -85.4705042426
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.4833589368
+  maxdiff in density matrix =      0.5710277628E-02 (   2.220%) 
+ Iteration            6
+  total electronic energy   =        -85.4711351965
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.4839898907
+  maxdiff in density matrix =      0.3062198581E-02 (   1.042%) 
+ Iteration            7
+  total electronic energy   =        -85.4709336021
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.4837882964
+  maxdiff in density matrix =      0.1036358958E-02 (   0.399%) 
+ Iteration            8
+  total electronic energy   =        -85.4710506339
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.4839053281
+  maxdiff in density matrix =      0.9671724584E-03 (   0.326%) 
+ Iteration            9
+  total electronic energy   =        -85.4710275784
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.4838822727
+  maxdiff in density matrix =      0.5129115399E-03 (   0.173%) 
+ Iteration           10
+  total electronic energy   =        -85.4710504227
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.4839051170
+  maxdiff in density matrix =      0.3534680032E-03 (   0.119%) 
+ Iteration           11
+  total electronic energy   =        -85.4710562929
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.4839109872
+  maxdiff in density matrix =      0.7021274299E-03 (   0.236%) 
+ Iteration           12
+  total electronic energy   =        -85.4710539581
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.4839086524
+  maxdiff in density matrix =      0.2138524287E-03 (   0.252%) 
+ Iteration           13
+  total electronic energy   =        -85.4710541520
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.4839088463
+  maxdiff in density matrix =      0.1638923325E-03 (   0.055%) 
+ Iteration           14
+  total electronic energy   =        -85.4710571376
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.4839118318
+  maxdiff in density matrix =      0.2288520073E-03 (   0.077%) 
+ Iteration           15
+  total electronic energy   =        -85.4710594959
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.4839141901
+  maxdiff in density matrix =      0.1332523217E-03 (   7.787%) 
+ Iteration           16
+  total electronic energy   =        -85.4710612361
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.4839159304
+  maxdiff in density matrix =      0.2683298537E-03 (   0.090%) 
+ Iteration           17
+  total electronic energy   =        -85.4710600886
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.4839147829
+  maxdiff in density matrix =      0.1222330983E-03 (   0.041%) 
+ Iteration           18
+  total electronic energy   =        -85.4710610579
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.4839157522
+  maxdiff in density matrix =      0.3779553269E-04 (   0.013%) 
+ Iteration           19
+  total electronic energy   =        -85.4710616890
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.4839163832
+  maxdiff in density matrix =      0.3584143673E-04 (   0.012%) 
+ Iteration           20
+  total electronic energy   =        -85.4710620332
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.4839167275
+  maxdiff in density matrix =      0.1833503575E-04 (   0.006%) 
+ Iteration           21
+  total electronic energy   =        -85.4710623089
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.4839170032
+  maxdiff in density matrix =      0.1836486392E-04 (   0.006%) 
+ Iteration           22
+  total electronic energy   =        -85.4710624600
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.4839171542
+  maxdiff in density matrix =      0.1023081701E-04 (   0.003%) 
+ Iteration           23
+  total electronic energy   =        -85.4710625899
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.4839172842
+  maxdiff in density matrix =      0.9743954586E-05 (   0.003%) 
+ Iteration           24
+  total electronic energy   =        -85.4710626654
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.4839173596
+  maxdiff in density matrix =      0.5745230332E-05 (   0.002%) 
+ Iteration           25
+  total electronic energy   =        -85.4710627307
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.4839174249
+  maxdiff in density matrix =      0.5209927015E-05 (   0.002%) 
+ Iteration           26
+  total electronic energy   =        -85.4710627705
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.4839174648
+  maxdiff in density matrix =      0.3211531335E-05 (   0.001%) 
+ Iteration           27
+  total electronic energy   =        -85.4710628050
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.4839174992
+  maxdiff in density matrix =      0.2797798489E-05 (   0.001%) 
+ Iteration           28
+  total electronic energy   =        -85.4710628266
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.4839175208
+  maxdiff in density matrix =      0.1787054151E-05 (   0.001%) 
+ Iteration           29
+  total electronic energy   =        -85.4710628446
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.4839175389
+  maxdiff in density matrix =      0.1507442417E-05 (   0.001%) 
+ Iteration           30
+  total electronic energy   =        -85.4710628567
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.4839175509
+  maxdiff in density matrix =      0.9907277734E-06 (   0.000%) 
+ Iteration           31
+  total electronic energy   =        -85.4710628664
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.4839175606
+  maxdiff in density matrix =      0.8143623642E-06 (   0.000%) 
+ Iteration           32
+  total electronic energy   =        -85.4710628727
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.4839175670
+  maxdiff in density matrix =      0.5476514087E-06 (   0.000%) 
+ Iteration           33
+  total electronic energy   =        -85.4710628779
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.4839175722
+  maxdiff in density matrix =      0.4408875701E-06 (   0.000%) 
+ Iteration           34
+  total electronic energy   =        -85.4710628816
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.4839175759
+  maxdiff in density matrix =      0.3020137254E-06 (   0.000%) 
+ Iteration           35
+  total electronic energy   =        -85.4710628848
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.4839175791
+  maxdiff in density matrix =      0.2391241464E-06 (   0.000%) 
+ Iteration           36
+  total electronic energy   =        -85.4710628866
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.4839175808
+  maxdiff in density matrix =      0.1662513734E-06 (   0.000%) 
+ Iteration           37
+  total electronic energy   =        -85.4710628883
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.4839175825
+  maxdiff in density matrix =      0.1298558946E-06 (   0.000%) 
+ Iteration           38
+  total electronic energy   =        -85.4710628894
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.4839175836
+  maxdiff in density matrix =      0.9137899182E-07 (   0.000%) 
+ Iteration           39
+  total electronic energy   =        -85.4710628901
+  nuclear repulsion energy  =          8.9871453058
+  total energy              =        -76.4839175844
+Options: 
+Namespace(berthamodpath='/home/belp/BERTHA/pybertha/src', debug=False, dumpfiles=True, fitcoefffile='fitcoeff.txt', fittfile='fitt2.inp', inputfile='input.inp', ovapfile='ovap.txt', thresh=1e-11, vctfile='vct.txt', verbosity=-1, wrapperso='/home/belp/BERTHA/pybertha/lib/bertha_wrapper.so')
+
+
+Verbosity       :  -1
+Dumpfiles       :  1
+
+Matrix dimension:  224
+            nocc:  10
+          nshift:  112
+           nopen:  0
+     level shift:  -1.0
+
+Totaltime:     58.30636143684387  (CPU time:  107.657885369 ) s 
+MainRun Time:  58.29836320877075  (CPU time:  107.6261017 ) s 
+
+Final results 
+eigenvalue     1         -18.21205541
+eigenvalue     2         -18.21205541
+eigenvalue     3          -0.78869095
+eigenvalue     4          -0.78869095
+eigenvalue     5          -0.34333628
+eigenvalue     6          -0.34333628
+eigenvalue     7          -0.19322175
+eigenvalue     8          -0.19322175
+eigenvalue     9          -0.11436233
+eigenvalue    10          -0.11436233
+      lumo                 0.12027170
+
+total electronic energy  =            -85.471062890144438
+nuclear repulsion energy =              8.987145305759224
+total energy             =            -76.483917584385210
+
+Compute density matrix 
+Trace  
+(       10.0000000000,        -0.0000000000i)
+Num of atoms:  3
+(-1.7052, -2.71195, -0.783322, 1.0)
+(-4.05527, -4.00317, -1.90415, 1.0)
+(-2.38806, -4.38689, -1.22567, 8.0)
+ Here
+ Here
+ Here

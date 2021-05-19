@@ -1,0 +1,148 @@
+ Initialze the atomic densities on each center
+ Done
+ Iteration            1
+  total electronic energy   =       -169.6695333448
+  nuclear repulsion energy  =         36.5240029116
+  total energy              =       -133.1455304333
+  maxdiff in density matrix =      0.1236039193E+00 ( 222.143%) 
+ Iteration            2
+  total electronic energy   =       -189.6212209549
+  nuclear repulsion energy  =         36.5240029116
+  total energy              =       -153.0972180434
+  maxdiff in density matrix =      0.7683831756E-01 (  28.481%) 
+ Iteration            3
+  total electronic energy   =       -189.5813049615
+  nuclear repulsion energy  =         36.5240029116
+  total energy              =       -153.0573020499
+  maxdiff in density matrix =      0.4777392485E-01 (  17.474%) 
+ Iteration            4
+  total electronic energy   =       -189.5755063353
+  nuclear repulsion energy  =         36.5240029116
+  total energy              =       -153.0515034238
+Options: 
+Namespace(cube=True, debug=False, deltax=0.2, deltay=0.2, deltaz=0.2, dumpfiles=False, fitcoefffile='fitcoeff.txt', fittfile='fitt2.inp', info_fragA='info_eda_nocv_fragA.json', info_fragB='info_eda_nocv_fragB.json', inputfile='input.inp', lmargin=10.0, npairs=0, ovapfile='ovap.txt', thresh=0.0001, vctfile='vct.txt', verbosity=-1, wrapperso='/home/belp/BERTHA/pybertha/lib/bertha_wrapper.so')
+
+
+Verbosity       :  -1
+Dumpfiles       :  0
+
+Matrix dimension:  456
+            nocc:  20
+          nshift:  228
+           nopen:  0
+     level shift:  -1.0
+
+Totaltime:     12.755491733551025  (CPU time:  19.084833618 ) s 
+MainRun Time:  12.723721981048584  (CPU time:  18.995329064 ) s 
+
+Final results 
+eigenvalue     1         -18.75759736
+eigenvalue     2         -18.75759736
+eigenvalue     3         -18.68878200
+eigenvalue     4         -18.68878200
+eigenvalue     5          -0.93503942
+eigenvalue     6          -0.93503942
+eigenvalue     7          -0.86967505
+eigenvalue     8          -0.86967505
+eigenvalue     9          -0.48646352
+eigenvalue    10          -0.48646352
+eigenvalue    11          -0.42884684
+eigenvalue    12          -0.42884684
+eigenvalue    13          -0.34962179
+eigenvalue    14          -0.34962179
+eigenvalue    15          -0.29078200
+eigenvalue    16          -0.29078200
+eigenvalue    17          -0.26181024
+eigenvalue    18          -0.26181024
+eigenvalue    19          -0.20738199
+eigenvalue    20          -0.20738199
+      lumo                -0.05654954
+      SUMEIGEN           -82.55200042
+
+total electronic energy  =        -189.57550634
+nuclear repulsion energy =          36.52400291
+total energy             =        -153.05150342
+
+Compute density matrix 
+Trace  
+(       20.0000000000,         0.0000000000i)
+etotal fragA: -76.52195441 
+ 
+exc    fragA: -9.34354774 
+ 
+etotal fragB: -76.52183169 
+ 
+exc    fragB: -9.31648991 
+ 
+Trace of DS: 20.00000000 -0.00000000i
+
+check cmata: OK
+check cmatb: OK
+check cmat_join: OK
+noccab : 20
+
+Enter Loewdin
+Compute O
+Check Trace of O
+(20+1.942955100627066e-17j)
+Compute inverse of O : O^-1
+Compute trace of O^-1
+
+Trace of O^-1 : 20.06228771573640, -0.00000000000000 i
+
+Compute Z x O^-1 x Z^-1 to check eigenvector
+
+trace of Z x O^-1 x Z^-1 : 20.06228771573640, -0.00000000000000 i
+
+sum of eigs of O^-1: 20.06228771573641 -0.00000000000000
+
+Trace of DmatAB 20.00000000 0.00000000i
+
+Trace of Dmat0 20.00000000 -0.00000000i
+
+NOCV orthonormal: True
+
+ TEST  Density --> Fock --> energy
+total electronic energy  =           -189.573742971568890
+nuclear repulsion energy =             36.524002911566086
+total energy             =           -153.049740060002819
+coulomb energy           =            222.661157700145282
+Exc     energy           =            -18.652471893610084
+ TEST  Density_0 --> Fock --> energy
+total electronic energy  =           -189.568586635846430
+nuclear repulsion energy =             36.524002911566086
+total energy             =           -153.044583724280358
+coulomb energy           =            223.241015887422236
+Exc     energy           =            -18.697651519656066
+ TEST  Density_A+B --> Fock --> energy
+total electronic energy  =           -189.590295523743521
+nuclear repulsion energy =             36.524002911566086
+total energy             =           -153.066292612177449
+coulomb energy           =            223.007305836698322
+Exc     energy           =            -18.679305609679986
+ TEST  Density --> Fock --> energy
+total electronic energy  =           -189.573742971568890
+nuclear repulsion energy =             36.524002911566086
+total energy             =           -153.049740060002819
+coulomb energy           =            222.661157700145282
+Exc     energy           =            -18.652471893610084
+Total interaction  energy : -0.00595395
+
+trace of DeltaD F^TS Orbital energy : -0.00519545
+
+trace of DeltaD F^TS Ziegler formula Orbital energy : -0.00518648
+
+trace of DeltaD F^TS Pauli energy : 0.02170818
+
+ TEST  Density_A+B --> Fock --> energy
+total electronic energy  =           -189.590295523743521
+nuclear repulsion energy =             36.524002911566086
+total energy             =           -153.066292612177449
+coulomb energy           =            223.007305836698322
+Exc     energy           =            -18.679305609679986
+Delta_Exc = exc - exc_fragA - exc_fragB: -0.01926795
+
+Pauli (DeltaD F^TS Pauli energy + Delta_Exc: 0.00244023
+
+Electrostatic int E_A+B - Delta_Exc:  -0.00323855
+
