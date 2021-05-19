@@ -148,12 +148,10 @@ if __name__ == "__main__":
     
     sys.stdout.flush()
     
-    
     if (fockm is None) or (eigen is None) or (fockm is None) \
             or (eigen is None):
         print("Error in bertha run")
         exit(-1)
-    
     
     sumeigen = 0.0
     
@@ -170,9 +168,9 @@ if __name__ == "__main__":
     etotal = bertha.get_etotal()
     
     print("")
-    print("total electronic energy  = %20.8f"%(etotal-(sfact*nocc)))
-    print("nuclear repulsion energy = %20.8f"%(erep))
-    print("total energy             = %20.8f"%(etotal+erep-(sfact*nocc)))
+    print("Total electronic energy  = %20.8f"%(etotal-(sfact*nocc)))
+    print("Nuclear repulsion energy = %20.8f"%(erep))
+    print("Total energy             = %20.8f"%(etotal+erep-(sfact*nocc)))
     
     #bertha.finalize()
     
@@ -189,10 +187,10 @@ if __name__ == "__main__":
     print("Compute density matrix ")
     density = numpy.matmul(occeigv, numpy.conjugate(occeigv.transpose()), out=None)
     density = numpy.matmul(density, ovapm)
-    print("Trace  ")
     trace = density.trace()
-    print("(%20.10f, %20.10fi)"%(trace.real, trace.imag))
-        
+    print("Trace (%20.10f, %20.10fi)"%(trace.real, trace.imag))
+    print("")
+
     # NOCV analysis start here  ! check matrix from ovap file, transposition needed
     from scipy.linalg import eig
     import json
@@ -235,8 +233,8 @@ if __name__ == "__main__":
     exc_fragA = float(json_data["exc"])
     ndim_fragA = int(json_data["ndim"])
     nocc_fragA = int(json_data["nocc"])
-    print(("etotal fragA: %.8f \n ")% etotal_fragA)
-    print(("exc    fragA: %.8f \n ")% exc_fragA)
+    print(("Etotal fragA: %.8f")% etotal_fragA)
+    print(("Exc    fragA: %.8f")% exc_fragA)
     cmat_REAL = numpy.float_(json_data["occeigv_REAL"])
     cmat_IMAG = numpy.float_(json_data["occeigv_IMAG"])
     cmata = check_and_covert (cmat_REAL, cmat_IMAG, ndim_fragA, nocc_fragA)
@@ -250,8 +248,8 @@ if __name__ == "__main__":
     exc_fragB = float(json_data["exc"])
     ndim_fragB = int(json_data["ndim"])
     nocc_fragB = int(json_data["nocc"])
-    print(("etotal fragB: %.8f \n ")% etotal_fragB)
-    print(("exc    fragB: %.8f \n ")% exc_fragB)
+    print(("Etotal fragB: %.8f")% etotal_fragB)
+    print(("Exc    fragB: %.8f")% exc_fragB)
     cmat_REAL = numpy.float_(json_data["occeigv_REAL"])
     cmat_IMAG = numpy.float_(json_data["occeigv_IMAG"])
     cmatb = check_and_covert(cmat_REAL, cmat_IMAG, ndim_fragB, nocc_fragB)
@@ -260,30 +258,36 @@ if __name__ == "__main__":
     trace = numpy.trace(numpy.matmul(ovapm,density))
     ndimab = cmatab.shape[0]
     noccab = cmatab.shape[1]
-    
-    print(("Trace of DS: %.8f %.8fi\n" % (trace.real, trace.imag)))
+
+    if args.verbosity == 1: 
+        print("Trace of DS: %.8f %.8fi\n" % (trace.real, trace.imag))
+
     cmat_join = cdautil.join_cmat(cmata,cmatb,ndimab)
     if cmat_join is None:
         print("Error in joing matrix")
         exit(1)
 
-    print("Enter Loewdin")
-    print("Compute O")
+    if args.verbosity == 1:
+        print("Enter Loewdin")
+        print("Compute O")
     O = numpy.matmul(numpy.conjugate(cmat_join.T),numpy.matmul(ovapm,cmat_join))
-    print("Check Trace of O")
-    otrace = numpy.trace(O)
-    print(otrace)
-    print("Compute inverse of O : O^-1")
+    if args.verbosity == 1:
+        otrace = numpy.trace(O)
+        print("Check Trace of O")
+        print(otrace)
+    if args.verbosity == 1:
+        print("Compute inverse of O : O^-1")
     oinv = numpy.linalg.inv(O)
     
-    print("Compute trace of O^-1\n")
-    print(("Trace of O^-1 : %.14f, %.14f i\n" % (numpy.trace(oinv).real, numpy.trace(oinv).imag)))
+    if args.verbosity == 1:
+        print("Compute trace of O^-1\n")
+        print(("Trace of O^-1 : %.14f, %.14f i\n" % (numpy.trace(oinv).real, numpy.trace(oinv).imag)))
     #print("Check O inversion")
     #test = numpy.matmul(O,oinv)
     #print("O*oinv =  1 : %s\n" % numpy.allclose(test,numpy.eye(test.shape[0]),atol=1.0e-14))
     #compute left eigenvectors of O-1
     try:
-        w,z = eig(oinv,left=True,right=False)
+         w,z = eig(oinv,left=True,right=False)
     except LinAlgError:
          print("Error in scipy.linalg.eig of O^-1")
     
@@ -291,15 +295,16 @@ if __name__ == "__main__":
     zinv = numpy.linalg.inv(z)
     
     #test eigenvector
-    print("Compute Z x O^-1 x Z^-1 to check eigenvector\n")
-    temp = numpy.matmul(z,numpy.matmul(oinv,zinv))
-    print(("trace of Z x O^-1 x Z^-1 : %.14f, %.14f i\n" % (numpy.trace(temp).real,numpy.trace(temp).imag)))
+    if args.verbosity == 1:
+        print("Compute Z x O^-1 x Z^-1 to check eigenvector\n")
+        temp = numpy.matmul(z,numpy.matmul(oinv,zinv))
+        print(("trace of Z x O^-1 x Z^-1 : %.14f, %.14f i\n" % (numpy.trace(temp).real,numpy.trace(temp).imag)))
+
+        val = 0.0 + 0.0j
+        for i in w:
+            val += i
+        print(("sum of eigs of O^-1: %.14f %.14f\n" % (val.real,val.imag)))
     
-    val = 0.0 + 0.0j
-    
-    for i in w:
-      val += i
-    print(("sum of eigs of O^-1: %.14f %.14f\n" % (val.real,val.imag)))
     da = numpy.diagflat(numpy.sqrt(w))
     
     LoewdinMat = numpy.matmul(z,numpy.matmul(da,zinv))
@@ -314,120 +319,119 @@ if __name__ == "__main__":
     #TODO add the D_anti contribution
     trdmat = numpy.trace(numpy.matmul(dmat,ovapm))
     trdmat0 = numpy.trace(numpy.matmul(dmat0,ovapm))
-    print(("Trace of DmatAB %.8f %.8fi\n" % (trdmat.real,trdmat.imag)))
-    print(("Trace of Dmat0 %.8f %.8fi\n" % (trdmat0.real,trdmat0.imag)))
+    if args.verbosity == 1:
+        print(("Trace of DmatAB %.8f %.8fi\n" % (trdmat.real,trdmat.imag)))
+        print(("Trace of Dmat0 %.8f %.8fi\n" % (trdmat0.real,trdmat0.imag)))
     #compute vmat (V = SDS)
     vmat = numpy.matmul(ovapm,numpy.matmul(tmp,ovapm))
+    
     #diagonalize vmat
     try:
-        eigenval, zmat = eigh(vmat,ovapm, eigvals_only=False)
+         eigenval, zmat = eigh(vmat,ovapm, eigvals_only=False)
     except LinAlgError:
          print("Error in scipy.linalg.eigh of vmat")
+
     fo = open("nocv_eigv.txt", "w")
-    i = 0
-    for j in eigenval:
-     i += 1
-     fo.write(" %i %.8f\n" % (i,j))
+    for i, v in enumerate(eigenval):
+        fo.write(" %d %.8f\n" % (i+1,v))
     
     for i in range(0,int(eigenval.shape[0]/2)):
-      fo.write("pair (%i):%.8f (%i):%.8f\n" % (-i-1,eigenval[i],i+1 ,eigenval[eigenval.shape[0]-1-i]))
+        fo.write("pair (%i):%.8f (%i):%.8f\n" % (-i-1,eigenval[i],i+1 ,eigenval[eigenval.shape[0]-1-i]))
     
     fo.close()
     #check orthormality of zmat coeff
     test=numpy.matmul(numpy.conjugate(zmat.T),numpy.matmul(ovapm,zmat))
-    print(("NOCV orthonormal: %s\n" % (numpy.allclose(test,numpy.eye(zmat.shape[0]),atol=1.0e-10))))
+    print("NOCV orthonormal: %s\n" % (numpy.allclose(test,numpy.eye(zmat.shape[0]),atol=1.0e-10)))
     #npairs = 2 #to be read from input
     if (npairs > eigenval.shape[0]/2):
-      print("Wrong n. of pairs\n")
+        print("Wrong n. of pairs\n")
+
     for i in range(npairs):
-      j = i + 1
-      label = "pair"+str(j)
-      tmp =  zmat[:,i]
-      d1 = numpy.outer(tmp,numpy.conjugate(tmp))
-      #check if d1 sum to 1
-      trace = numpy.trace(numpy.matmul(d1,ovapm))
-      print(("trace of nocv_-%i : %.8f\n" % (j,trace.real)))
-      tmp =  zmat[:,-i-1]
-      d2 = numpy.outer(tmp,numpy.conjugate(tmp))
-      #check if d2 sum to 1
-      trace = numpy.trace(numpy.matmul(d2,ovapm))
-      print(("trace of nocv_+%i : %.8f\n" % (j,trace.real)))
-      deltanocv = eigenval[i]*(d1 - d2)
-    
-    
-    #  bertha.density_to_cube(d1.T, "nocv-"+str(j)+".cube", margin, drx, dry, drz )  
-    #  bertha.density_to_cube(d2.T, "nocv+"+str(j)+".cube", margin, drx, dry, drz )  
-    #  bertha.density_to_cube(deltanocv.T, label+".cube", margin, drx, dry, drz )  
+        j = i + 1
+        label = "pair"+str(j)
+        tmp =  zmat[:,i]
+        d1 = numpy.outer(tmp,numpy.conjugate(tmp))
+        #check if d1 sum to 1
+        trace = numpy.trace(numpy.matmul(d1,ovapm))
+        print(("trace of nocv_-%i : %.8f\n" % (j,trace.real)))
+        tmp =  zmat[:,-i-1]
+        d2 = numpy.outer(tmp,numpy.conjugate(tmp))
+        #check if d2 sum to 1
+        trace = numpy.trace(numpy.matmul(d2,ovapm))
+        print(("trace of nocv_+%i : %.8f\n" % (j,trace.real)))
+        deltanocv = eigenval[i]*(d1 - d2)
+        #bertha.density_to_cube(d1.T, "nocv-"+str(j)+".cube", margin, drx, dry, drz )  
+        #bertha.density_to_cube(d2.T, "nocv+"+str(j)+".cube", margin, drx, dry, drz )  
+        #bertha.density_to_cube(deltanocv.T, label+".cube", margin, drx, dry, drz )  
     
     ######  TEST
     bertha.realtime_init()
     
-    fockm1=bertha.get_realtime_fock(dmat.T)
-    erep = bertha.get_erep()
+    fockm1 = bertha.get_realtime_fock(dmat.T)
+    erep   = bertha.get_erep()
     etotal = bertha.get_etotal()
     ecoul  = bertha.get_eecoul()
     exc    = bertha.get_eexc()
     
-    print(" TEST  Density --> Fock --> energy")
-    print("total electronic energy  = %30.15f"%(etotal))
-    print("nuclear repulsion energy = %30.15f"%(erep))
-    print("total energy             = %30.15f"%(etotal+erep))
-    print("coulomb energy           = %30.15f"%(ecoul))
-    print("Exc     energy           = %30.15f"%(exc))
+    print("Density --> Fock --> energy")
+    print(" total electronic energy  = %30.15f"%(etotal))
+    print(" nuclear repulsion energy = %30.15f"%(erep))
+    print(" total energy             = %30.15f"%(etotal+erep))
+    print(" coulomb energy           = %30.15f"%(ecoul))
+    print(" Exc     energy           = %30.15f"%(exc))
     
-    fockm1=bertha.get_realtime_fock(dmat0.T)
-    erep = bertha.get_erep()
+    fockm1 = bertha.get_realtime_fock(dmat0.T)
+    erep   = bertha.get_erep()
     etotal = bertha.get_etotal()
     ecoul  = bertha.get_eecoul()
     exc    = bertha.get_eexc()
     
-    print(" TEST  Density_0 --> Fock --> energy")
-    print("total electronic energy  = %30.15f"%(etotal))
-    print("nuclear repulsion energy = %30.15f"%(erep))
-    print("total energy             = %30.15f"%(etotal+erep))
-    print("coulomb energy           = %30.15f"%(ecoul))
-    print("Exc     energy           = %30.15f"%(exc))
+    print("Density_0 --> Fock --> energy")
+    print(" total electronic energy  = %30.15f"%(etotal))
+    print(" nuclear repulsion energy = %30.15f"%(erep))
+    print(" total energy             = %30.15f"%(etotal+erep))
+    print(" coulomb energy           = %30.15f"%(ecoul))
+    print(" Exc     energy           = %30.15f"%(exc))
     
     #density of the promolecule
     dmatsumAB = numpy.matmul(cmat_join,numpy.conjugate(cmat_join.T))
     
-    fockm1=bertha.get_realtime_fock(dmatsumAB.T)
-    erep = bertha.get_erep()
+    fockm1 = bertha.get_realtime_fock(dmatsumAB.T)
+    erep   = bertha.get_erep()
     etotal = bertha.get_etotal()
     ecoul  = bertha.get_eecoul()
     exc    = bertha.get_eexc()
     
-    print(" TEST  Density_A+B --> Fock --> energy")
-    print("total electronic energy  = %30.15f"%(etotal))
-    print("nuclear repulsion energy = %30.15f"%(erep))
-    print("total energy             = %30.15f"%(etotal+erep))
-    print("coulomb energy           = %30.15f"%(ecoul))
-    print("Exc     energy           = %30.15f"%(exc))
+    print("Density_A+B --> Fock --> energy")
+    print(" total electronic energy  = %30.15f"%(etotal))
+    print(" nuclear repulsion energy = %30.15f"%(erep))
+    print(" total energy             = %30.15f"%(etotal+erep))
+    print(" coulomb energy           = %30.15f"%(ecoul))
+    print(" Exc     energy           = %30.15f"%(exc))
     
     ####################################
     
-    fockm1=bertha.get_realtime_fock(dmat.T)
-    erep = bertha.get_erep()
+    fockm1 = bertha.get_realtime_fock(dmat.T)
+    erep   = bertha.get_erep()
     etotal = bertha.get_etotal()
     ecoul  = bertha.get_eecoul()
     exc    = bertha.get_eexc()
     
-    print(" TEST  Density --> Fock --> energy")
-    print("total electronic energy  = %30.15f"%(etotal))
-    print("nuclear repulsion energy = %30.15f"%(erep))
-    print("total energy             = %30.15f"%(etotal+erep))
-    print("coulomb energy           = %30.15f"%(ecoul))
-    print("Exc     energy           = %30.15f"%(exc))
+    print("Density --> Fock --> energy")
+    print(" total electronic energy  = %30.15f"%(etotal))
+    print(" nuclear repulsion energy = %30.15f"%(erep))
+    print(" total energy             = %30.15f"%(etotal+erep))
+    print(" coulomb energy           = %30.15f"%(ecoul))
+    print(" Exc     energy           = %30.15f"%(exc))
     etotal = etotal+erep
     
-    
     Eint = etotal - etotal_fragA - etotal_fragB 
-    print(("Total interaction  energy : %.8f\n" % Eint))
+    print(("\nTotal interaction  energy : %.8f" % Eint))
     
     dmat_trans = 0.5*(dmat+dmat0)
     fockmTS1=bertha.get_realtime_fock(dmat_trans.T)
     E_orb = numpy.trace(numpy.matmul((dmat-dmat0),fockmTS1))
-    print(("trace of DeltaD F^TS Orbital energy : %.8f\n" % (E_orb.real)))
+    print("Trace of DeltaD F^TS Orbital energy : %.8f" % (E_orb.real))
     
     dmat_trans = dmat0
     fockm0=bertha.get_realtime_fock(dmat_trans.T)
@@ -437,9 +441,7 @@ if __name__ == "__main__":
     fockmTS = 1.0/6.0*fockm0 + 4.0/6.0*fockmTS1 + 1.0/6.0*fockmt
     #
     trace = numpy.trace(numpy.matmul((dmat-dmat0),fockmTS))
-    print(("trace of DeltaD F^TS Ziegler formula Orbital energy : %.8f\n" % (trace.real)))
-    #
-    
+    print("Trace of DeltaD F^TS Ziegler formula Orbital energy : %.8f" % (trace.real))
     
     #density of the promolecule
     dmatsumAB = numpy.matmul(cmat_join,numpy.conjugate(cmat_join.T))
@@ -447,7 +449,7 @@ if __name__ == "__main__":
     dmat_trans = 0.5*(dmatsumAB+dmat0)
     fockm1=bertha.get_realtime_fock(dmat_trans.T)
     e_pauli = numpy.trace(numpy.matmul((dmat0-dmatsumAB),fockm1))
-    print(("trace of DeltaD F^TS Pauli energy : %.8f\n" % (e_pauli.real)))
+    print(("Trace of DeltaD F^TS Pauli energy : %.8f \n" % (e_pauli.real)))
     
     #density of the promolecule
     dmatsumAB = numpy.matmul(cmat_join,numpy.conjugate(cmat_join.T))
@@ -458,20 +460,20 @@ if __name__ == "__main__":
     ecoul_sumAB  = bertha.get_eecoul()
     exc_sumAB  = bertha.get_eexc()
     
-    print(" TEST  Density_A+B --> Fock --> energy")
-    print("total electronic energy  = %30.15f"%(etotal))
-    print("nuclear repulsion energy = %30.15f"%(erep))
-    print("total energy             = %30.15f"%(etotal+erep))
-    print("coulomb energy           = %30.15f"%(ecoul_sumAB))
-    print("Exc     energy           = %30.15f"%(exc_sumAB))
+    print("Density_A+B --> Fock --> energy")
+    print(" total electronic energy  = %30.15f"%(etotal))
+    print(" nuclear repulsion energy = %30.15f"%(erep))
+    print(" total energy             = %30.15f"%(etotal+erep))
+    print(" coulomb energy           = %30.15f"%(ecoul_sumAB))
+    print(" Exc     energy           = %30.15f"%(exc_sumAB))
     
     ####################################
     etotal_sumAB = etotal+erep
     Delta_Exc = exc_sumAB - exc_fragA - exc_fragB 
-    print(("Delta_Exc = exc - exc_fragA - exc_fragB: %.8f\n" % Delta_Exc))
+    print("\nDelta_Exc = exc - exc_fragA - exc_fragB: %.8f" % (Delta_Exc))
     Tot_pauli = e_pauli + Delta_Exc
-    print(("Pauli (DeltaD F^TS Pauli energy + Delta_Exc: %.8f\n" % Tot_pauli))
-    print(("Electrostatic int E_A+B - Delta_Exc:  %.8f\n" %(etotal_sumAB-etotal_fragA-etotal_fragB-Delta_Exc)))
+    print("Pauli DeltaD F^TS Pauli energy + Delta_Exc: %.8f" % (Tot_pauli.real))
+    print("Electrostatic int E_A+B - Delta_Exc:  %.8f" %(etotal_sumAB-etotal_fragA-etotal_fragB-Delta_Exc))
     
     ######  TEST
     if (args.cube == True):
@@ -488,17 +490,18 @@ if __name__ == "__main__":
     
       deltanocv = eigenval[i]*(d1 - d2)
       trace = numpy.trace(numpy.matmul(deltanocv,fockmTS1))
-      print(("Def. Density nocv_+%i  eigenvalue: %.8f  energy (a.u.): %.8f energy (kcal/mol): %.8f  \n" % (j,eigenval[i].real,trace.real,(627.50961*trace).real)))
+      print("Def. Density nocv_+%i  eigenvalue: %.8f  energy (a.u.): %.8f energy (kcal/mol): %.8f  " % \
+              (j,eigenval[i].real,trace.real,(627.50961*trace).real))
     
-    #  Energy contribution singled out for each NOCV
-    #
-    #  deltanocv = eigenval[i]*d1 
-    #  trace = numpy.trace(numpy.matmul(deltanocv,fockmTS1))
-    #  print(("nocv_+%i  eigenvalue: %.8f  energy (a.u.): %.8f energy (kcal/mol): %.8f  \n" % (j,eigenval[i].real,trace.real,(627.50961*trace).real)))
-    
-    #  deltanocv = eigenval[-i-1]*d2
-    #  trace = numpy.trace(numpy.matmul(deltanocv,fockmTS1))
-    #  print(("nocv_-%i  eigenvalue: %.8f  energy (a.u.): %.8f energy (kcal/mol): %.8f  \n" % (j,eigenval[-i-1].real,trace.real,(627.50961*trace).real)))
+      #Energy contribution singled out for each NOCV
+      #
+      #deltanocv = eigenval[i]*d1 
+      #trace = numpy.trace(numpy.matmul(deltanocv,fockmTS1))
+      #print(("nocv_+%i  eigenvalue: %.8f  energy (a.u.): %.8f energy (kcal/mol): %.8f  \n" % (j,eigenval[i].real,trace.real,(627.50961*trace).real)))
+      
+      #deltanocv = eigenval[-i-1]*d2
+      #trace = numpy.trace(numpy.matmul(deltanocv,fockmTS1))
+      #print(("nocv_-%i  eigenvalue: %.8f  energy (a.u.): %.8f energy (kcal/mol): %.8f  \n" % (j,eigenval[-i-1].real,trace.real,(627.50961*trace).real)))
     
       if (args.cube == True):
          bertha.density_to_cube(d1.T, "nocv-"+str(j)+".cube", margin, drx, dry, drz )  

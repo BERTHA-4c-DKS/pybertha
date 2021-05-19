@@ -268,16 +268,16 @@ if __name__ == "__main__":
     try:
         eigenval, zmat = eigh(vmat,ovapm, eigvals_only=False)
     except LinAlgError:
-         print("Error in scipy.linalg.eigh of vmat")
+        print("Error in scipy.linalg.eigh of vmat")
 
     fo = open("nocv_eigv.txt", "w")
     i = 0
     for j in eigenval:
-     i += 1
-     fo.write(" %i %.8f\n" % (i,j))
+        i += 1
+        fo.write(" %i %.8f\n" % (i,j))
     
     for i in range(0,eigenval.shape[0]/2):
-      fo.write("pair (%i):%.8f (%i):%.8f\n" % (-i-1,eigenval[i],i+1 ,eigenval[eigenval.shape[0]-1-i]))
+        fo.write("pair (%i):%.8f (%i):%.8f\n" % (-i-1,eigenval[i],i+1 ,eigenval[eigenval.shape[0]-1-i]))
     
     fo.close()
     #check orthormality of zmat coeff
