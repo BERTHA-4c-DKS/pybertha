@@ -66,8 +66,11 @@ if __name__ == "__main__":
             type=numpy.float64, default=10.0)
     parser.add_argument("--info_fragA", help="Specify the json file related to fragA (default: info_eda_nocv_fragA.json)", required=False, 
             type=str, default="info_eda_nocv_fragA.json")
-    parser.add_argument("--info_fragB", help="Specify the json file related to fragB (default: info_eda_nocv_fragB.json", required=False, 
+    parser.add_argument("--info_fragB", help="Specify the json file related to fragB (default: info_eda_nocv_fragB.json)", required=False, 
             type=str, default="info_eda_nocv_fragB.json")
+    parser.add_argument("--energyconverter", help="Specify energy converter (default: 1.0)", required=False, 
+            type=float, default=1.0)
+ 
         
     args = parser.parse_args()
 
@@ -158,19 +161,19 @@ if __name__ == "__main__":
     print("")
     print("Final results ")
     for i in range(nocc+nopen):
-        print("eigenvalue %5d %20.8f"%(i+1, eigen[i+nshift]-sfact))
+        print("eigenvalue %5d %20.8f"%(i+1, args.energyconverter*(eigen[i+nshift]-sfact)))
         sumeigen  = sumeigen + eigen[i+nshift]-sfact
         
-    print("      lumo       %20.8f"%(eigen[i+nshift+1]))
-    print("      SUMEIGEN   %20.8f"%(sumeigen))
+    print("      lumo       %20.8f"%(args.energyconverter*eigen[i+nshift+1]))
+    print("      SUMEIGEN   %20.8f"%(args.energyconverter*sumeigen))
     
     erep = bertha.get_erep()
     etotal = bertha.get_etotal()
     
     print("")
-    print("Total electronic energy  = %20.8f"%(etotal-(sfact*nocc)))
-    print("Nuclear repulsion energy = %20.8f"%(erep))
-    print("Total energy             = %20.8f"%(etotal+erep-(sfact*nocc)))
+    print("Total electronic energy  = %20.8f"%(args.energyconverter*(etotal-(sfact*nocc))))
+    print("Nuclear repulsion energy = %20.8f"%(args.energyconverter*erep))
+    print("Total energy             = %20.8f"%(args.energyconverter*(etotal+erep-(sfact*nocc))))
     
     #bertha.finalize()
     
@@ -223,7 +226,11 @@ if __name__ == "__main__":
     
     #cmata = berthamod.read_vctfile ("vcta.out")
     #cmatb = berthamod.read_vctfile ("vctb.out")
-    
+
+    if not os.path.isfile(args.info_fragA):
+        print("File ", args.info_fragA, " does not exist")
+        exit(1)
+
     fp = open(args.info_fragA, 'r')
     json_data = json.load(fp)
     fp.close()
@@ -239,6 +246,10 @@ if __name__ == "__main__":
     cmat_IMAG = numpy.float_(json_data["occeigv_IMAG"])
     cmata = check_and_covert (cmat_REAL, cmat_IMAG, ndim_fragA, nocc_fragA)
     
+    if not os.path.isfile(args.info_fragB):
+        print("File ", args.info_fragB, " does not exist")
+        exit(1)
+
     fp = open(args.info_fragB, 'r')
     json_data = json.load(fp)
     fp.close()
@@ -374,11 +385,11 @@ if __name__ == "__main__":
     exc    = bertha.get_eexc()
     
     print("Density --> Fock --> energy")
-    print(" total electronic energy  = %30.15f"%(etotal))
-    print(" nuclear repulsion energy = %30.15f"%(erep))
-    print(" total energy             = %30.15f"%(etotal+erep))
-    print(" coulomb energy           = %30.15f"%(ecoul))
-    print(" Exc     energy           = %30.15f"%(exc))
+    print(" total electronic energy  = %30.15f"%(args.energyconverter*etotal))
+    print(" nuclear repulsion energy = %30.15f"%(args.energyconverter*erep))
+    print(" total energy             = %30.15f"%(args.energyconverter*(etotal+erep)))
+    print(" coulomb energy           = %30.15f"%(args.energyconverter*ecoul))
+    print(" Exc     energy           = %30.15f"%(args.energyconverter*exc))
     
     fockm1 = bertha.get_realtime_fock(dmat0.T)
     erep   = bertha.get_erep()
@@ -387,11 +398,11 @@ if __name__ == "__main__":
     exc    = bertha.get_eexc()
     
     print("Density_0 --> Fock --> energy")
-    print(" total electronic energy  = %30.15f"%(etotal))
-    print(" nuclear repulsion energy = %30.15f"%(erep))
-    print(" total energy             = %30.15f"%(etotal+erep))
-    print(" coulomb energy           = %30.15f"%(ecoul))
-    print(" Exc     energy           = %30.15f"%(exc))
+    print(" total electronic energy  = %30.15f"%(args.energyconverter*etotal))
+    print(" nuclear repulsion energy = %30.15f"%(args.energyconverter*erep))
+    print(" total energy             = %30.15f"%(args.energyconverter*(etotal+erep)))
+    print(" coulomb energy           = %30.15f"%(args.energyconverter*ecoul))
+    print(" Exc     energy           = %30.15f"%(args.energyconverter*exc))
     
     #density of the promolecule
     dmatsumAB = numpy.matmul(cmat_join,numpy.conjugate(cmat_join.T))
@@ -403,11 +414,11 @@ if __name__ == "__main__":
     exc    = bertha.get_eexc()
     
     print("Density_A+B --> Fock --> energy")
-    print(" total electronic energy  = %30.15f"%(etotal))
-    print(" nuclear repulsion energy = %30.15f"%(erep))
-    print(" total energy             = %30.15f"%(etotal+erep))
-    print(" coulomb energy           = %30.15f"%(ecoul))
-    print(" Exc     energy           = %30.15f"%(exc))
+    print(" total electronic energy  = %30.15f"%(args.energyconverter*etotal))
+    print(" nuclear repulsion energy = %30.15f"%(args.energyconverter*erep))
+    print(" total energy             = %30.15f"%(args.energyconverter*(etotal+erep)))
+    print(" coulomb energy           = %30.15f"%(args.energyconverter*ecoul))
+    print(" Exc     energy           = %30.15f"%(args.energyconverter*exc))
     
     ####################################
     
@@ -418,20 +429,20 @@ if __name__ == "__main__":
     exc    = bertha.get_eexc()
     
     print("Density --> Fock --> energy")
-    print(" total electronic energy  = %30.15f"%(etotal))
-    print(" nuclear repulsion energy = %30.15f"%(erep))
-    print(" total energy             = %30.15f"%(etotal+erep))
-    print(" coulomb energy           = %30.15f"%(ecoul))
-    print(" Exc     energy           = %30.15f"%(exc))
+    print(" total electronic energy  = %30.15f"%(args.energyconverter*etotal))
+    print(" nuclear repulsion energy = %30.15f"%(args.energyconverter*erep))
+    print(" total energy             = %30.15f"%(args.energyconverter*(etotal+erep)))
+    print(" coulomb energy           = %30.15f"%(args.energyconverter*ecoul))
+    print(" Exc     energy           = %30.15f"%(args.energyconverter*exc))
     etotal = etotal+erep
     
     Eint = etotal - etotal_fragA - etotal_fragB 
-    print(("\nTotal interaction  energy : %.8f" % Eint))
+    print("\nTotal interaction  energy : %.8f" % (args.energyconverter*Eint))
     
     dmat_trans = 0.5*(dmat+dmat0)
     fockmTS1=bertha.get_realtime_fock(dmat_trans.T)
     E_orb = numpy.trace(numpy.matmul((dmat-dmat0),fockmTS1))
-    print("Trace of DeltaD F^TS Orbital energy : %.8f" % (E_orb.real))
+    print("Trace of DeltaD F^TS Orbital energy : %.8f" % (args.energyconverter*E_orb.real))
     
     dmat_trans = dmat0
     fockm0=bertha.get_realtime_fock(dmat_trans.T)
@@ -441,7 +452,7 @@ if __name__ == "__main__":
     fockmTS = 1.0/6.0*fockm0 + 4.0/6.0*fockmTS1 + 1.0/6.0*fockmt
     #
     trace = numpy.trace(numpy.matmul((dmat-dmat0),fockmTS))
-    print("Trace of DeltaD F^TS Ziegler formula Orbital energy : %.8f" % (trace.real))
+    print("Trace of DeltaD F^TS Ziegler formula Orbital energy : %.8f" % (args.energyconverter*trace.real))
     
     #density of the promolecule
     dmatsumAB = numpy.matmul(cmat_join,numpy.conjugate(cmat_join.T))
@@ -449,7 +460,7 @@ if __name__ == "__main__":
     dmat_trans = 0.5*(dmatsumAB+dmat0)
     fockm1=bertha.get_realtime_fock(dmat_trans.T)
     e_pauli = numpy.trace(numpy.matmul((dmat0-dmatsumAB),fockm1))
-    print(("Trace of DeltaD F^TS Pauli energy : %.8f \n" % (e_pauli.real)))
+    print(("Trace of DeltaD F^TS Pauli energy : %.8f \n" % (args.energyconverter*e_pauli.real)))
     
     #density of the promolecule
     dmatsumAB = numpy.matmul(cmat_join,numpy.conjugate(cmat_join.T))
@@ -461,19 +472,19 @@ if __name__ == "__main__":
     exc_sumAB  = bertha.get_eexc()
     
     print("Density_A+B --> Fock --> energy")
-    print(" total electronic energy  = %30.15f"%(etotal))
-    print(" nuclear repulsion energy = %30.15f"%(erep))
-    print(" total energy             = %30.15f"%(etotal+erep))
-    print(" coulomb energy           = %30.15f"%(ecoul_sumAB))
-    print(" Exc     energy           = %30.15f"%(exc_sumAB))
+    print(" total electronic energy  = %30.15f"%(args.energyconverter*etotal))
+    print(" nuclear repulsion energy = %30.15f"%(args.energyconverter*erep))
+    print(" total energy             = %30.15f"%(args.energyconverter*(etotal+erep)))
+    print(" coulomb energy           = %30.15f"%(args.energyconverter*ecoul_sumAB))
+    print(" Exc     energy           = %30.15f"%(args.energyconverter*exc_sumAB))
     
     ####################################
     etotal_sumAB = etotal+erep
     Delta_Exc = exc_sumAB - exc_fragA - exc_fragB 
-    print("\nDelta_Exc = exc - exc_fragA - exc_fragB: %.8f" % (Delta_Exc))
+    print("\nDelta_Exc = exc - exc_fragA - exc_fragB: %.8f" % (args.energyconverter*Delta_Exc))
     Tot_pauli = e_pauli + Delta_Exc
-    print("Pauli DeltaD F^TS Pauli energy + Delta_Exc: %.8f" % (Tot_pauli.real))
-    print("Electrostatic int E_A+B - Delta_Exc:  %.8f" %(etotal_sumAB-etotal_fragA-etotal_fragB-Delta_Exc))
+    print("Pauli DeltaD F^TS Pauli energy + Delta_Exc: %.8f" % (args.energyconverter*Tot_pauli.real))
+    print("Electrostatic int E_A+B - Delta_Exc:  %.8f" %(args.energyconverter*(etotal_sumAB-etotal_fragA-etotal_fragB-Delta_Exc)))
     
     ######  TEST
     if (args.cube == True):
