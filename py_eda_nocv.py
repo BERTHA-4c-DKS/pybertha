@@ -27,7 +27,6 @@ def check_and_covert(mat_REAL, mat_IMAG, ndim, nocc):
 
     return None
 
-
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
@@ -194,9 +193,6 @@ if __name__ == "__main__":
     trace = density.trace()
     print("(%20.10f, %20.10fi)"%(trace.real, trace.imag))
     
-    #cmatb = berthamod.read_vctfile ("vctb.out")
-    #print("check vctb:  %s\n" %(numpy.allclose(occeigv,cmatb)))
-    #exit()
     """
     # to check if needed
     eigvals, eigvecs = eigh(fockm, ovapm, eigvals_only=False)
@@ -206,7 +202,6 @@ if __name__ == "__main__":
         if i >= nshift and iocc < nocc:
             print eigvals[i] - sfact
             iocc = iocc + 1
-    
     
     ovapcmp = berthamod.read_ovapfile ("ovap.txt")
     
@@ -228,7 +223,6 @@ if __name__ == "__main__":
                   eigecmp[i, j].real, eigecmp[i, j].imag))
           print ""
     """
-    
     
     # NOCV analysis start here  ! check matrix from ovap file, transposition needed
     from scipy.linalg import eig
@@ -278,9 +272,6 @@ if __name__ == "__main__":
     cmat_IMAG = numpy.float_(json_data["occeigv_IMAG"])
     cmata = check_and_covert (cmat_REAL, cmat_IMAG, ndim_fragA, nocc_fragA)
     
-    
-    
-    
     fp = open(args.info_fragB, 'r')
     json_data = json.load(fp)
     fp.close()
@@ -295,9 +286,6 @@ if __name__ == "__main__":
     cmat_REAL = numpy.float_(json_data["occeigv_REAL"])
     cmat_IMAG = numpy.float_(json_data["occeigv_IMAG"])
     cmatb = check_and_covert(cmat_REAL, cmat_IMAG, ndim_fragB, nocc_fragB)
-    
-    
-    
     
     density = numpy.matmul(cmatab,numpy.conjugate(cmatab.T))
     trace = numpy.trace(numpy.matmul(ovapm,density))
@@ -516,14 +504,10 @@ if __name__ == "__main__":
     print(("Pauli (DeltaD F^TS Pauli energy + Delta_Exc: %.8f\n" % Tot_pauli))
     print(("Electrostatic int E_A+B - Delta_Exc:  %.8f\n" %(etotal_sumAB-etotal_fragA-etotal_fragB-Delta_Exc)))
     
-    
-    
-    
     ######  TEST
     if (args.cube == True):
        bertha.density_to_cube((dmat-dmatsumAB).T, "diff_tot.cube", margin, drx, dry, drz )
        bertha.density_to_cube((dmat-dmat0).T, "diff_tot_ortho.cube", margin, drx, dry, drz )
-    
     
     for i in range(npairs):
       j = i + 1
@@ -552,27 +536,4 @@ if __name__ == "__main__":
          bertha.density_to_cube(d2.T, "nocv+"+str(j)+".cube", margin, drx, dry, drz )  
          bertha.density_to_cube(deltanocv.T, label+".cube", margin, drx, dry, drz )  
     
-    
-    
     bertha.finalize()
-    
-    ##########################################################################################
-    
-    def check_and_covert(mat_REAL, mat_IMAG, ndim, nocc):
-    
-        if ((mat_REAL.shape == mat_IMAG.shape) and
-            (mat_REAL.shape[0] == mat_REAL.shape[1]) and
-            (mat_REAL.shape[0] == ndim)):
-    
-            mat = numpy.zeros((ndim,ndim),dtype=numpy.complex128)
-    
-            for i in range(ndim):
-                for j in range(nocc):
-                    mat[i, j] = numpy.complex128(complex(mat_REAL[i][j],
-                        mat_IMAG[i][j]))
-    
-            return mat
-    
-        return None
-    
-    
