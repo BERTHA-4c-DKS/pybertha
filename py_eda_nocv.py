@@ -437,12 +437,12 @@ if __name__ == "__main__":
     etotal = etotal+erep
     
     Eint = etotal - etotal_fragA - etotal_fragB 
-    print("\nTotal interaction  energy : %.8f" % (args.energyconverter*Eint))
+    print("\nTotal interaction  energy [DEint]: %.8f" % (args.energyconverter*Eint))
     
     dmat_trans = 0.5*(dmat+dmat0)
     fockmTS1=bertha.get_realtime_fock(dmat_trans.T)
     E_orb = numpy.trace(numpy.matmul((dmat-dmat0),fockmTS1))
-    print("Trace of DeltaD F^TS Orbital energy : %.8f" % (args.energyconverter*E_orb.real))
+    print("Trace of DeltaD F^TS Orbital energy [DEorb]: %.8f" % (args.energyconverter*E_orb.real))
     
     dmat_trans = dmat0
     fockm0=bertha.get_realtime_fock(dmat_trans.T)
@@ -452,7 +452,7 @@ if __name__ == "__main__":
     fockmTS = 1.0/6.0*fockm0 + 4.0/6.0*fockmTS1 + 1.0/6.0*fockmt
     #
     trace = numpy.trace(numpy.matmul((dmat-dmat0),fockmTS))
-    print("Trace of DeltaD F^TS Ziegler formula Orbital energy : %.8f" % (args.energyconverter*trace.real))
+    print("Trace of DeltaD F^TS Ziegler formula Orbital energy [DEorb]: %.8f" % (args.energyconverter*trace.real))
     
     #density of the promolecule
     dmatsumAB = numpy.matmul(cmat_join,numpy.conjugate(cmat_join.T))
@@ -460,7 +460,7 @@ if __name__ == "__main__":
     dmat_trans = 0.5*(dmatsumAB+dmat0)
     fockm1=bertha.get_realtime_fock(dmat_trans.T)
     e_pauli = numpy.trace(numpy.matmul((dmat0-dmatsumAB),fockm1))
-    print(("Trace of DeltaD F^TS Pauli energy : %.8f \n" % (args.energyconverter*e_pauli.real)))
+    print(("Trace of DeltaD F^TS Pauli energy [Deets - DEpauli]: %.8f \n" % (args.energyconverter*e_pauli.real)))
     
     #density of the promolecule
     dmatsumAB = numpy.matmul(cmat_join,numpy.conjugate(cmat_join.T))
@@ -481,10 +481,10 @@ if __name__ == "__main__":
     ####################################
     etotal_sumAB = etotal+erep
     Delta_Exc = exc_sumAB - exc_fragA - exc_fragB 
-    print("\nDelta_Exc = exc - exc_fragA - exc_fragB: %.8f" % (args.energyconverter*Delta_Exc))
+    print("\nDelta_Exc = exc - exc_fragA - exc_fragB [DEexc]: %.8f" % (args.energyconverter*Delta_Exc))
     Tot_pauli = e_pauli + Delta_Exc
-    print("Pauli DeltaD F^TS Pauli energy + Delta_Exc: %.8f" % (args.energyconverter*Tot_pauli.real))
-    print("Electrostatic int E_A+B - Delta_Exc:  %.8f" %(args.energyconverter*(etotal_sumAB-etotal_fragA-etotal_fragB-Delta_Exc)))
+    print("Pauli DeltaD F^TS Pauli energy + Delta_Exc [DEpauli]: %.8f" % (args.energyconverter*Tot_pauli.real))
+    print("Electrostatic int E_A+B - Delta_Exc [DEelect]:  %.8f" %(args.energyconverter*(etotal_sumAB-etotal_fragA-etotal_fragB-Delta_Exc)))
     
     ######  TEST
     if (args.cube == True):
@@ -495,7 +495,7 @@ if __name__ == "__main__":
       j = i + 1
       label = "pair"+str(j)
       tmp =  zmat[:,i]
-      d1 = numpy.outer(tmp,numpy.conjugate(tmp))
+      d1 =< numpy.outer(tmp,numpy.conjugate(tmp))
       tmp =  zmat[:,-i-1]
       d2 = numpy.outer(tmp,numpy.conjugate(tmp))
     
