@@ -10,6 +10,42 @@ from scipy.linalg import eigh
 
 import time
 
+from dataclasses import dataclass
+
+@dataclass
+class ppynocvedaoption:
+    inputfile: str
+    fittfile: str
+    fitcoefffile: str
+    vctfile: str
+    ovapfile: str
+    dumpfiles: bool
+    debug: bool
+    verbosity: int
+    thresh: numpy.float64
+    wrapperso: str
+    berthamodpath: str
+    npairs: int
+    cube: bool
+    deltax: numpy.float64
+    deltay: numpy.float64
+    deltaz: numpy.float64
+    lmargin: numpy.float64
+    info_fragA: str
+    info_fragB: str
+    energyconverter: float
+
+    def __str__ (self):
+        toret = ""
+
+        toret += "inputfile = " + self.inputfile + "; "
+        toret += "fittfile = " + self.fittfile + "; "
+
+        return toret
+
+    def __repr__ (self):
+        return self.__str__()
+
 def check_and_covert(mat_REAL, mat_IMAG, ndim, nocc):
 
     if ((mat_REAL.shape == mat_IMAG.shape) and
@@ -27,92 +63,47 @@ def check_and_covert(mat_REAL, mat_IMAG, ndim, nocc):
 
     return None
 
-if __name__ == "__main__":
+def runnocveda (nocvedaopt):
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-f","--inputfile", help="Specify BERTHA input file (default: input.inp)", required=False, 
-            type=str, default="input.inp")
-    parser.add_argument("-t","--fittfile", help="Specify BERTHA fitting input file (default: fitt2.inp)", required=False, 
-            type=str, default="fitt2.inp")
-    parser.add_argument("-c","--fitcoefffile", help="Specify BERTHA fitcoeff output file (default: fitcoeff.txt)",
-            required=False, type=str, default="fitcoeff.txt")
-    parser.add_argument("-e","--vctfile", help="Specify BERTHA vct output file (default: vct.txt)", required=False, 
-            type=str, default="vct.txt")
-    parser.add_argument("-p","--ovapfile", help="Specify BERTHA ovap output file (default: ovap.txt)", required=False, 
-            type=str, default="ovap.txt")
-    parser.add_argument("-s", "--dumpfiles", help="Dumpfile on, default is off", required=False,
-            default=False, action="store_true")
-    parser.add_argument("-d", "--debug", help="Debug on, prints debug info to debug_info.txt", required=False, 
-            default=False, action="store_true")
-    parser.add_argument("-v", "--verbosity", help="Verbosity level 0 = minim, -1 = print iteration info, " + 
-            "1 = maximum (defaul -1)", required=False, default=-1, type=int)
-    parser.add_argument("--thresh", help="det threshold (default = 1.0e-12)", required=False, 
-            type=numpy.float64, default=1.0e-12)
-    parser.add_argument("--wrapperso", help="set wrapper SO (default = ../../lib/bertha_wrapper.so)", 
-            required=False, type=str, default="../lib/bertha_wrapper.so")
-    parser.add_argument("--berthamodpath", help="set berthamod path (default = ../src)", 
-            required=False, type=str, default="../src")
-    parser.add_argument("-np", "--npairs", help="Specify the numerber of nocv-pair density (default: 0)", required=False,
-               default=0, type=int)
-    parser.add_argument("--cube", help="Specify if nocv orbital and def. density need to be saved in cube file format (default: 0)", required=False,
-               default=False, action="store_true")
-    parser.add_argument("--deltax", help="cube dx step (default = 0.2)", required=False, 
-            type=numpy.float64, default=0.2)
-    parser.add_argument("--deltay", help="cube dy step (default = 0.2)", required=False, 
-            type=numpy.float64, default=0.2)
-    parser.add_argument("--deltaz", help="cube dz step (default = 0.2)", required=False, 
-            type=numpy.float64, default=0.2)
-    parser.add_argument("--lmargin", help="cube margin parameter (default = 10.0)", required=False, 
-            type=numpy.float64, default=10.0)
-    parser.add_argument("--info_fragA", help="Specify the json file related to fragA (default: info_eda_nocv_fragA.json)", required=False, 
-            type=str, default="info_eda_nocv_fragA.json")
-    parser.add_argument("--info_fragB", help="Specify the json file related to fragB (default: info_eda_nocv_fragB.json)", required=False, 
-            type=str, default="info_eda_nocv_fragB.json")
-    parser.add_argument("--energyconverter", help="Specify energy converter (default: 1.0)", required=False, 
-            type=float, default=1.0)
- 
-        
-    args = parser.parse_args()
-
-    sys.path.insert(0, args.berthamodpath)
+    sys.path.insert(0, nocvedaopt.berthamodpath)
 
     import berthamod
     import cdautil
     
     print("Options: ")
-    print(args) 
+    print(nocvedaopt) 
     print("")
     print("")
     
-    if not os.path.isfile(args.wrapperso):
-        print("SO File ", args.wrapperso, " does not exist")
+    if not os.path.isfile(nocvedaopt.wrapperso):
+        print("SO File ", nocvedaopt.wrapperso, " does not exist")
         exit(1)
     
-    bertha = berthamod.pybertha(args.wrapperso)
+    bertha = berthamod.pybertha(nocvedaopt.wrapperso)
     
-    fittcoefffname = args.fitcoefffile
-    vctfilename = args.vctfile
-    ovapfilename = args.ovapfile
+    fittcoefffname = nocvedaopt.fitcoefffile
+    vctfilename = nocvedaopt.vctfile
+    ovapfilename = nocvedaopt.ovapfile
     
-    fnameinput = args.inputfile
+    fnameinput = nocvedaopt.inputfile
     if not os.path.isfile(fnameinput):
         print("File ", fnameinput, " does not exist")
         exit(1)
     
-    fittfname = args.fittfile
+    fittfname = nocvedaopt.fittfile
     if not os.path.isfile(fittfname):
         print("File ", fittfname , " does not exist")
         exit(1)
     
-    verbosity = args.verbosity
-    dumpfiles = int(args.dumpfiles)
+    verbosity = nocvedaopt.verbosity
+    dumpfiles = int(nocvedaopt.dumpfiles)
     
     bertha.set_fittcoefffname(fittcoefffname)
     bertha.set_ovapfilename(ovapfilename)
     bertha.set_vctfilename(vctfilename)
     bertha.set_fnameinput(fnameinput)
     bertha.set_fittfname(fittfname)
-    bertha.set_thresh(args.thresh)
+    bertha.set_thresh(nocvedaopt.thresh)
     
     bertha.set_verbosity(verbosity)
     bertha.set_dumpfiles(dumpfiles)
@@ -161,19 +152,19 @@ if __name__ == "__main__":
     print("")
     print("Final results ")
     for i in range(nocc+nopen):
-        print("eigenvalue %5d %20.8f"%(i+1, args.energyconverter*(eigen[i+nshift]-sfact)))
+        print("eigenvalue %5d %20.8f"%(i+1, nocvedaopt.energyconverter*(eigen[i+nshift]-sfact)))
         sumeigen  = sumeigen + eigen[i+nshift]-sfact
         
-    print("      lumo       %20.8f"%(args.energyconverter*eigen[i+nshift+1]))
-    print("      SUMEIGEN   %20.8f"%(args.energyconverter*sumeigen))
+    print("      lumo       %20.8f"%(nocvedaopt.energyconverter*eigen[i+nshift+1]))
+    print("      SUMEIGEN   %20.8f"%(nocvedaopt.energyconverter*sumeigen))
     
     erep = bertha.get_erep()
     etotal = bertha.get_etotal()
     
     print("")
-    print("Total electronic energy  = %20.8f"%(args.energyconverter*(etotal-(sfact*nocc))))
-    print("Nuclear repulsion energy = %20.8f"%(args.energyconverter*erep))
-    print("Total energy             = %20.8f"%(args.energyconverter*(etotal+erep-(sfact*nocc))))
+    print("Total electronic energy  = %20.8f"%(nocvedaopt.energyconverter*(etotal-(sfact*nocc))))
+    print("Nuclear repulsion energy = %20.8f"%(nocvedaopt.energyconverter*erep))
+    print("Total energy             = %20.8f"%(nocvedaopt.energyconverter*(etotal+erep-(sfact*nocc))))
     
     #bertha.finalize()
     
@@ -214,11 +205,11 @@ if __name__ == "__main__":
     #    print("File vctb.out does not exist")
     #    exit(1)
     
-    npairs = args.npairs
-    drx = args.deltax
-    dry = args.deltay
-    drz = args.deltaz
-    margin = args.lmargin
+    npairs = nocvedaopt.npairs
+    drx = nocvedaopt.deltax
+    dry = nocvedaopt.deltay
+    drz = nocvedaopt.deltaz
+    margin = nocvedaopt.lmargin
     #ovapcmp = berthamod.read_ovapfile ("ovapab.out")
     
     #cmatab = berthamod.read_vctfile (vctfilename)
@@ -227,11 +218,11 @@ if __name__ == "__main__":
     #cmata = berthamod.read_vctfile ("vcta.out")
     #cmatb = berthamod.read_vctfile ("vctb.out")
 
-    if not os.path.isfile(args.info_fragA):
-        print("File ", args.info_fragA, " does not exist")
+    if not os.path.isfile(nocvedaopt.info_fragA):
+        print("File ", nocvedaopt.info_fragA, " does not exist")
         exit(1)
 
-    fp = open(args.info_fragA, 'r')
+    fp = open(nocvedaopt.info_fragA, 'r')
     json_data = json.load(fp)
     fp.close()
     
@@ -240,17 +231,17 @@ if __name__ == "__main__":
     exc_fragA = float(json_data["exc"])
     ndim_fragA = int(json_data["ndim"])
     nocc_fragA = int(json_data["nocc"])
-    print(("Etotal fragA: %.8f")% (args.energyconverter*etotal_fragA))
-    print(("Exc    fragA: %.8f")% (args.energyconverter*exc_fragA))
+    print(("Etotal fragA: %.8f")% (nocvedaopt.energyconverter*etotal_fragA))
+    print(("Exc    fragA: %.8f")% (nocvedaopt.energyconverter*exc_fragA))
     cmat_REAL = numpy.float_(json_data["occeigv_REAL"])
     cmat_IMAG = numpy.float_(json_data["occeigv_IMAG"])
     cmata = check_and_covert (cmat_REAL, cmat_IMAG, ndim_fragA, nocc_fragA)
     
-    if not os.path.isfile(args.info_fragB):
-        print("File ", args.info_fragB, " does not exist")
+    if not os.path.isfile(nocvedaopt.info_fragB):
+        print("File ", nocvedaopt.info_fragB, " does not exist")
         exit(1)
 
-    fp = open(args.info_fragB, 'r')
+    fp = open(nocvedaopt.info_fragB, 'r')
     json_data = json.load(fp)
     fp.close()
     
@@ -259,8 +250,8 @@ if __name__ == "__main__":
     exc_fragB = float(json_data["exc"])
     ndim_fragB = int(json_data["ndim"])
     nocc_fragB = int(json_data["nocc"])
-    print(("Etotal fragB: %.8f")% (args.energyconverter*etotal_fragB))
-    print(("Exc    fragB: %.8f")% (args.energyconverter*exc_fragB))
+    print(("Etotal fragB: %.8f")% (nocvedaopt.energyconverter*etotal_fragB))
+    print(("Exc    fragB: %.8f")% (nocvedaopt.energyconverter*exc_fragB))
     cmat_REAL = numpy.float_(json_data["occeigv_REAL"])
     cmat_IMAG = numpy.float_(json_data["occeigv_IMAG"])
     cmatb = check_and_covert(cmat_REAL, cmat_IMAG, ndim_fragB, nocc_fragB)
@@ -270,7 +261,7 @@ if __name__ == "__main__":
     ndimab = cmatab.shape[0]
     noccab = cmatab.shape[1]
 
-    if args.verbosity == 1: 
+    if nocvedaopt.verbosity == 1: 
         print("Trace of DS: %.8f %.8fi\n" % (trace.real, trace.imag))
 
     cmat_join = cdautil.join_cmat(cmata,cmatb,ndimab)
@@ -278,19 +269,19 @@ if __name__ == "__main__":
         print("Error in joing matrix")
         exit(1)
 
-    if args.verbosity == 1:
+    if nocvedaopt.verbosity == 1:
         print("Enter Loewdin")
         print("Compute O")
     O = numpy.matmul(numpy.conjugate(cmat_join.T),numpy.matmul(ovapm,cmat_join))
-    if args.verbosity == 1:
+    if nocvedaopt.verbosity == 1:
         otrace = numpy.trace(O)
         print("Check Trace of O")
         print(otrace)
-    if args.verbosity == 1:
+    if nocvedaopt.verbosity == 1:
         print("Compute inverse of O : O^-1")
     oinv = numpy.linalg.inv(O)
     
-    if args.verbosity == 1:
+    if nocvedaopt.verbosity == 1:
         print("Compute trace of O^-1\n")
         print(("Trace of O^-1 : %.14f, %.14f i\n" % (numpy.trace(oinv).real, numpy.trace(oinv).imag)))
     #print("Check O inversion")
@@ -306,7 +297,7 @@ if __name__ == "__main__":
     zinv = numpy.linalg.inv(z)
     
     #test eigenvector
-    if args.verbosity == 1:
+    if nocvedaopt.verbosity == 1:
         print("Compute Z x O^-1 x Z^-1 to check eigenvector\n")
         temp = numpy.matmul(z,numpy.matmul(oinv,zinv))
         print(("trace of Z x O^-1 x Z^-1 : %.14f, %.14f i\n" % (numpy.trace(temp).real,numpy.trace(temp).imag)))
@@ -330,7 +321,7 @@ if __name__ == "__main__":
     #TODO add the D_anti contribution
     trdmat = numpy.trace(numpy.matmul(dmat,ovapm))
     trdmat0 = numpy.trace(numpy.matmul(dmat0,ovapm))
-    if args.verbosity == 1:
+    if nocvedaopt.verbosity == 1:
         print(("Trace of DmatAB %.8f %.8fi\n" % (trdmat.real,trdmat.imag)))
         print(("Trace of Dmat0 %.8f %.8fi\n" % (trdmat0.real,trdmat0.imag)))
     #compute vmat (V = SDS)
@@ -385,11 +376,11 @@ if __name__ == "__main__":
     exc    = bertha.get_eexc()
     
     print("Density --> Fock --> energy")
-    print(" total electronic energy  = %30.15f"%(args.energyconverter*etotal))
-    print(" nuclear repulsion energy = %30.15f"%(args.energyconverter*erep))
-    print(" total energy             = %30.15f"%(args.energyconverter*(etotal+erep)))
-    print(" coulomb energy           = %30.15f"%(args.energyconverter*ecoul))
-    print(" Exc     energy           = %30.15f"%(args.energyconverter*exc))
+    print(" total electronic energy  = %30.15f"%(nocvedaopt.energyconverter*etotal))
+    print(" nuclear repulsion energy = %30.15f"%(nocvedaopt.energyconverter*erep))
+    print(" total energy             = %30.15f"%(nocvedaopt.energyconverter*(etotal+erep)))
+    print(" coulomb energy           = %30.15f"%(nocvedaopt.energyconverter*ecoul))
+    print(" Exc     energy           = %30.15f"%(nocvedaopt.energyconverter*exc))
     
     fockm1 = bertha.get_realtime_fock(dmat0.T)
     erep   = bertha.get_erep()
@@ -398,11 +389,11 @@ if __name__ == "__main__":
     exc    = bertha.get_eexc()
     
     print("Density_0 --> Fock --> energy")
-    print(" total electronic energy  = %30.15f"%(args.energyconverter*etotal))
-    print(" nuclear repulsion energy = %30.15f"%(args.energyconverter*erep))
-    print(" total energy             = %30.15f"%(args.energyconverter*(etotal+erep)))
-    print(" coulomb energy           = %30.15f"%(args.energyconverter*ecoul))
-    print(" Exc     energy           = %30.15f"%(args.energyconverter*exc))
+    print(" total electronic energy  = %30.15f"%(nocvedaopt.energyconverter*etotal))
+    print(" nuclear repulsion energy = %30.15f"%(nocvedaopt.energyconverter*erep))
+    print(" total energy             = %30.15f"%(nocvedaopt.energyconverter*(etotal+erep)))
+    print(" coulomb energy           = %30.15f"%(nocvedaopt.energyconverter*ecoul))
+    print(" Exc     energy           = %30.15f"%(nocvedaopt.energyconverter*exc))
     
     #density of the promolecule
     dmatsumAB = numpy.matmul(cmat_join,numpy.conjugate(cmat_join.T))
@@ -414,11 +405,11 @@ if __name__ == "__main__":
     exc    = bertha.get_eexc()
     
     print("Density_A+B --> Fock --> energy")
-    print(" total electronic energy  = %30.15f"%(args.energyconverter*etotal))
-    print(" nuclear repulsion energy = %30.15f"%(args.energyconverter*erep))
-    print(" total energy             = %30.15f"%(args.energyconverter*(etotal+erep)))
-    print(" coulomb energy           = %30.15f"%(args.energyconverter*ecoul))
-    print(" Exc     energy           = %30.15f"%(args.energyconverter*exc))
+    print(" total electronic energy  = %30.15f"%(nocvedaopt.energyconverter*etotal))
+    print(" nuclear repulsion energy = %30.15f"%(nocvedaopt.energyconverter*erep))
+    print(" total energy             = %30.15f"%(nocvedaopt.energyconverter*(etotal+erep)))
+    print(" coulomb energy           = %30.15f"%(nocvedaopt.energyconverter*ecoul))
+    print(" Exc     energy           = %30.15f"%(nocvedaopt.energyconverter*exc))
     
     ####################################
     
@@ -429,20 +420,20 @@ if __name__ == "__main__":
     exc    = bertha.get_eexc()
     
     print("Density --> Fock --> energy")
-    print(" total electronic energy  = %30.15f"%(args.energyconverter*etotal))
-    print(" nuclear repulsion energy = %30.15f"%(args.energyconverter*erep))
-    print(" total energy             = %30.15f"%(args.energyconverter*(etotal+erep)))
-    print(" coulomb energy           = %30.15f"%(args.energyconverter*ecoul))
-    print(" Exc     energy           = %30.15f"%(args.energyconverter*exc))
+    print(" total electronic energy  = %30.15f"%(nocvedaopt.energyconverter*etotal))
+    print(" nuclear repulsion energy = %30.15f"%(nocvedaopt.energyconverter*erep))
+    print(" total energy             = %30.15f"%(nocvedaopt.energyconverter*(etotal+erep)))
+    print(" coulomb energy           = %30.15f"%(nocvedaopt.energyconverter*ecoul))
+    print(" Exc     energy           = %30.15f"%(nocvedaopt.energyconverter*exc))
     etotal = etotal+erep
     
     Eint = etotal - etotal_fragA - etotal_fragB 
-    print("\nTotal interaction  energy [DEint]: %.8f" % (args.energyconverter*Eint))
+    print("\nTotal interaction  energy [DEint]: %.8f" % (nocvedaopt.energyconverter*Eint))
     
     dmat_trans = 0.5*(dmat+dmat0)
     fockmTS1=bertha.get_realtime_fock(dmat_trans.T)
     E_orb = numpy.trace(numpy.matmul((dmat-dmat0),fockmTS1))
-    print("Trace of DeltaD F^TS Orbital energy [DEorb]: %.8f" % (args.energyconverter*E_orb.real))
+    print("Trace of DeltaD F^TS Orbital energy [DEorb]: %.8f" % (nocvedaopt.energyconverter*E_orb.real))
     
     dmat_trans = dmat0
     fockm0=bertha.get_realtime_fock(dmat_trans.T)
@@ -452,7 +443,7 @@ if __name__ == "__main__":
     fockmTS = 1.0/6.0*fockm0 + 4.0/6.0*fockmTS1 + 1.0/6.0*fockmt
     #
     trace = numpy.trace(numpy.matmul((dmat-dmat0),fockmTS))
-    print("Trace of DeltaD F^TS Ziegler formula Orbital energy [DEorb]: %.8f" % (args.energyconverter*trace.real))
+    print("Trace of DeltaD F^TS Ziegler formula Orbital energy [DEorb]: %.8f" % (nocvedaopt.energyconverter*trace.real))
     
     #density of the promolecule
     dmatsumAB = numpy.matmul(cmat_join,numpy.conjugate(cmat_join.T))
@@ -460,7 +451,7 @@ if __name__ == "__main__":
     dmat_trans = 0.5*(dmatsumAB+dmat0)
     fockm1=bertha.get_realtime_fock(dmat_trans.T)
     e_pauli = numpy.trace(numpy.matmul((dmat0-dmatsumAB),fockm1))
-    print(("Trace of DeltaD F^TS Pauli energy [Deets - DEpauli]: %.8f \n" % (args.energyconverter*e_pauli.real)))
+    print(("Trace of DeltaD F^TS Pauli energy [Deets - DEpauli]: %.8f \n" % (nocvedaopt.energyconverter*e_pauli.real)))
     
     #density of the promolecule
     dmatsumAB = numpy.matmul(cmat_join,numpy.conjugate(cmat_join.T))
@@ -472,22 +463,22 @@ if __name__ == "__main__":
     exc_sumAB  = bertha.get_eexc()
     
     print("Density_A+B --> Fock --> energy")
-    print(" total electronic energy  = %30.15f"%(args.energyconverter*etotal))
-    print(" nuclear repulsion energy = %30.15f"%(args.energyconverter*erep))
-    print(" total energy             = %30.15f"%(args.energyconverter*(etotal+erep)))
-    print(" coulomb energy           = %30.15f"%(args.energyconverter*ecoul_sumAB))
-    print(" Exc     energy           = %30.15f"%(args.energyconverter*exc_sumAB))
+    print(" total electronic energy  = %30.15f"%(nocvedaopt.energyconverter*etotal))
+    print(" nuclear repulsion energy = %30.15f"%(nocvedaopt.energyconverter*erep))
+    print(" total energy             = %30.15f"%(nocvedaopt.energyconverter*(etotal+erep)))
+    print(" coulomb energy           = %30.15f"%(nocvedaopt.energyconverter*ecoul_sumAB))
+    print(" Exc     energy           = %30.15f"%(nocvedaopt.energyconverter*exc_sumAB))
     
     ####################################
     etotal_sumAB = etotal+erep
     Delta_Exc = exc_sumAB - exc_fragA - exc_fragB 
-    print("\nDelta_Exc = exc - exc_fragA - exc_fragB [DEexc]: %.8f" % (args.energyconverter*Delta_Exc))
+    print("\nDelta_Exc = exc - exc_fragA - exc_fragB [DEexc]: %.8f" % (nocvedaopt.energyconverter*Delta_Exc))
     Tot_pauli = e_pauli + Delta_Exc
-    print("Pauli DeltaD F^TS Pauli energy + Delta_Exc [DEpauli]: %.8f" % (args.energyconverter*Tot_pauli.real))
-    print("Electrostatic int E_A+B - Delta_Exc [DEelect]:  %.8f" %(args.energyconverter*(etotal_sumAB-etotal_fragA-etotal_fragB-Delta_Exc)))
+    print("Pauli DeltaD F^TS Pauli energy + Delta_Exc [DEpauli]: %.8f" % (nocvedaopt.energyconverter*Tot_pauli.real))
+    print("Electrostatic int E_A+B - Delta_Exc [DEelect]:  %.8f" %(nocvedaopt.energyconverter*(etotal_sumAB-etotal_fragA-etotal_fragB-Delta_Exc)))
     
     ######  TEST
-    if (args.cube == True):
+    if (nocvedaopt.cube == True):
        bertha.density_to_cube((dmat-dmatsumAB).T, "diff_tot.cube", margin, drx, dry, drz )
        bertha.density_to_cube((dmat-dmat0).T, "diff_tot_ortho.cube", margin, drx, dry, drz )
     
@@ -495,7 +486,7 @@ if __name__ == "__main__":
       j = i + 1
       label = "pair"+str(j)
       tmp =  zmat[:,i]
-      d1 =< numpy.outer(tmp,numpy.conjugate(tmp))
+      d1 = numpy.outer(tmp,numpy.conjugate(tmp))
       tmp =  zmat[:,-i-1]
       d2 = numpy.outer(tmp,numpy.conjugate(tmp))
     
@@ -514,9 +505,82 @@ if __name__ == "__main__":
       #trace = numpy.trace(numpy.matmul(deltanocv,fockmTS1))
       #print(("nocv_-%i  eigenvalue: %.8f  energy (a.u.): %.8f energy (kcal/mol): %.8f  \n" % (j,eigenval[-i-1].real,trace.real,(627.50961*trace).real)))
     
-      if (args.cube == True):
+      if (nocvedaopt.cube == True):
          bertha.density_to_cube(d1.T, "nocv-"+str(j)+".cube", margin, drx, dry, drz )  
          bertha.density_to_cube(d2.T, "nocv+"+str(j)+".cube", margin, drx, dry, drz )  
          bertha.density_to_cube(deltanocv.T, label+".cube", margin, drx, dry, drz )  
     
     bertha.finalize()
+
+
+
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-f","--inputfile", help="Specify BERTHA input file (default: input.inp)", required=False, 
+            type=str, default="input.inp")
+    parser.add_argument("-t","--fittfile", help="Specify BERTHA fitting input file (default: fitt2.inp)", required=False, 
+            type=str, default="fitt2.inp")
+    parser.add_argument("-c","--fitcoefffile", help="Specify BERTHA fitcoeff output file (default: fitcoeff.txt)",
+            required=False, type=str, default="fitcoeff.txt")
+    parser.add_argument("-e","--vctfile", help="Specify BERTHA vct output file (default: vct.txt)", required=False, 
+            type=str, default="vct.txt")
+    parser.add_argument("-p","--ovapfile", help="Specify BERTHA ovap output file (default: ovap.txt)", required=False, 
+            type=str, default="ovap.txt")
+    parser.add_argument("-s", "--dumpfiles", help="Dumpfile on, default is off", required=False,
+            default=False, action="store_true")
+    parser.add_argument("-d", "--debug", help="Debug on, prints debug info to debug_info.txt", required=False, 
+            default=False, action="store_true")
+    parser.add_argument("-v", "--verbosity", help="Verbosity level 0 = minim, -1 = print iteration info, " + 
+            "1 = maximum (defaul -1)", required=False, default=-1, type=int)
+    parser.add_argument("--thresh", help="det threshold (default = 1.0e-12)", required=False, 
+            type=numpy.float64, default=1.0e-12)
+    parser.add_argument("--wrapperso", help="set wrapper SO (default = ../../lib/bertha_wrapper.so)", 
+            required=False, type=str, default="../lib/bertha_wrapper.so")
+    parser.add_argument("--berthamodpath", help="set berthamod path (default = ../src)", 
+            required=False, type=str, default="../src")
+    parser.add_argument("-np", "--npairs", help="Specify the numerber of nocv-pair density (default: 0)", required=False,
+               default=0, type=int)
+    parser.add_argument("--cube", help="Specify if nocv orbital and def. density need to be saved in cube file format (default: 0)", required=False,
+               default=False, action="store_true")
+    parser.add_argument("--deltax", help="cube dx step (default = 0.2)", required=False, 
+            type=numpy.float64, default=0.2)
+    parser.add_argument("--deltay", help="cube dy step (default = 0.2)", required=False, 
+            type=numpy.float64, default=0.2)
+    parser.add_argument("--deltaz", help="cube dz step (default = 0.2)", required=False, 
+            type=numpy.float64, default=0.2)
+    parser.add_argument("--lmargin", help="cube margin parameter (default = 10.0)", required=False, 
+            type=numpy.float64, default=10.0)
+    parser.add_argument("--info_fragA", help="Specify the json file related to fragA (default: info_eda_nocv_fragA.json)", required=False, 
+            type=str, default="info_eda_nocv_fragA.json")
+    parser.add_argument("--info_fragB", help="Specify the json file related to fragB (default: info_eda_nocv_fragB.json)", required=False, 
+            type=str, default="info_eda_nocv_fragB.json")
+    parser.add_argument("--energyconverter", help="Specify energy converter (default: 1.0)", required=False, 
+            type=float, default=1.0)
+ 
+    args = parser.parse_args()
+
+    nocvedaopt = ppynocvedaoption
+
+    nocvedaopt.inputfile = args.inputfile
+    nocvedaopt.fittfile = args.fittfile
+    nocvedaopt.fitcoefffile = args.fitcoefffile
+    nocvedaopt.vctfile = args.vctfile 
+    nocvedaopt.ovapfile = args.ovapfile
+    nocvedaopt.dumpfiles = args.dumpfiles
+    nocvedaopt.debug = args.debug
+    nocvedaopt.verbosity = args.verbosity
+    nocvedaopt.thresh = args.thresh
+    nocvedaopt.wrapperso = args.wrapperso
+    nocvedaopt.berthamodpath = args.berthamodpath
+    nocvedaopt.npairs = args.npairs
+    nocvedaopt.cube = args.cube
+    nocvedaopt.deltax = args.deltax
+    nocvedaopt.deltay = args.deltay
+    nocvedaopt.deltaz = args.deltaz
+    nocvedaopt.lmargin = args.lmargin
+    nocvedaopt.info_fragA = args.info_fragA
+    nocvedaopt.info_fragB = args.info_fragB
+    nocvedaopt.energyconverter = args.energyconverter
+
+    runnocveda (nocvedaopt)
