@@ -12,7 +12,7 @@ import time
 
 from dataclasses import dataclass
 
-@dataclass
+@dataclass(repr=True)
 class ppynocvedaoption:
     inputfile: str
     fittfile: str
@@ -35,16 +35,6 @@ class ppynocvedaoption:
     info_fragB: str
     energyconverter: float
 
-    def __str__ (self):
-        toret = ""
-
-        toret += "inputfile = " + self.inputfile + "; "
-        toret += "fittfile = " + self.fittfile + "; "
-
-        return toret
-
-    def __repr__ (self):
-        return self.__str__()
 
 def check_and_covert(mat_REAL, mat_IMAG, ndim, nocc):
 
@@ -71,7 +61,8 @@ def runnocveda (nocvedaopt):
     import cdautil
     
     print("Options: ")
-    print(nocvedaopt) 
+    for att in [a for a in dir(nocvedaopt) if not a.startswith('__')]:
+        print(att, " = ", getattr(nocvedaopt, att)) 
     print("")
     print("")
     
