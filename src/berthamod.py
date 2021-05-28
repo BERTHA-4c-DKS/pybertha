@@ -590,6 +590,32 @@ class pybertha:
 
         return 0.0
 
+    def get_eecoul(self):
+        """
+        It returns coulomb electronic repulsion energy from fitting.
+        """
+
+        self.__bertha.get_eecoul.restype = ctypes.c_double
+
+        if self.__mainrundone:
+            return self.__bertha.get_eecoul()
+
+        return 0.0
+
+    def get_eexc(self):
+        """
+        It returns exchange-correlation energy.
+        """
+
+        self.__bertha.get_eexc.restype = ctypes.c_double
+
+        if self.__mainrundone:
+            return self.__bertha.get_eexc()
+
+        return 0.0
+
+
+
     def realtime_init(self):
         """
         realtime_init initializes all the data needed by the 
