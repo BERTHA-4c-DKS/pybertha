@@ -14,3 +14,8 @@ $ python3 full_eda_nocv.py --berthamodpaths "../pybertha;../../berthaingen/pybge
     -b "H:avdz,O:avdz" -t "H:fittset,O:fittset" --convertlengthunit 1.8897259886 \
     --energyconverter 627.50961 --npairs=5 | tee out_full 
 
+For the Ag+ Alkyne
+
+$ python3 full_eda_nocv.py --berthamodpaths "../pybertha;../../berthaingen/pybgen" \
+  --fragA ./TEST_BERTHA/Ag+.xyz  --fragB ./TEST_BERTHA/Alkyne.xyz --molecule ./TEST_BERTHA/Ag+Alkine.xyz \
+  --basisset "H:SVP,C:SVP,Ag:SVP" --fittset "H:A2,C:A2,Ag:A2" --energyconverter 627.50961 --npairs=5

@@ -38,8 +38,9 @@ if __name__ == "__main__":
         required=True, type=str, default="")
     parser.add_argument("--convertlengthunit", help="Specify a length converter [default=1.0]", \
         type=float, default=1.0)
+    parser.add_argument("--functxc", help="EX-POTENTIAL available: LDA,B88P86,HCTH93,BLYP (default=BLYP)", \
+        type=str, default="BLYP")
 
- 
     args = parser.parse_args()
 
     for path in args.berthamodpaths.split(";"):
@@ -56,6 +57,7 @@ if __name__ == "__main__":
     pygenoption_fraga.jsonbasisfile = args.jsonbasisfile
     pygenoption_fraga.fittset = args.fittset
     pygenoption_fraga.basisset = args.basisset
+    pygenoption_fraga.functxc = args.functxc
     pygenoption_fraga.convertlengthunit = args.convertlengthunit
 
     pybgen.generateinputfiles (pygenoption_fraga)
@@ -77,6 +79,7 @@ if __name__ == "__main__":
     pygenoption_fragb.jsonbasisfile = args.jsonbasisfile
     pygenoption_fragb.fittset = args.fittset
     pygenoption_fragb.basisset = args.basisset
+    pygenoption_fraga.functxc = args.functxc
     pygenoption_fragb.convertlengthunit = args.convertlengthunit
 
     pybgen.generateinputfiles (pygenoption_fragb)
