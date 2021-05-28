@@ -1,0 +1,61 @@
+import argparse
+import sys
+
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("--fragA", help="Specify the fragA XYZ file", required=True, 
+            type=str, default="")
+    parser.add_argument("--fragB", help="Specify the fragB XYZ file", required=True, 
+            type=str, default="")
+    parser.add_argument("--molecule", help="Specify the molecule XYZ file", required=True, 
+            type=str, default="")
+ 
+    parser.add_argument("-d", "--debug", help="Debug on, prints debug info to debug_info.txt", required=False, 
+            default=False, action="store_true")
+    parser.add_argument("-v", "--verbosity", help="Verbosity level 0 = minim, -1 = print iteration info, " + 
+            "1 = maximum (defaul -1)", required=False, default=-1, type=int)
+    parser.add_argument("--wrapperso", help="set wrapper SO (default = ../../lib/bertha_wrapper.so)", 
+            required=False, type=str, default="../lib/bertha_wrapper.so")
+    parser.add_argument("--berthamodpaths", help="set berthamod and all other modules path [\"path1;path2;...\"] (default = ../src)", 
+            required=False, type=str, default="../src")
+    parser.add_argument("-np", "--npairs", help="Specify the numerber of nocv-pair density (default: 0)", required=False,
+               default=0, type=int)
+           
+    parser.add_argument("-j","--jsonbasisfile", \
+        help="Specify BERTHA JSON file for fitting and basis (default: fullsets.json)", \
+        required=False, type=str, default="fullsets.json")
+    parser.add_argument("-b","--basisset", \
+        help="Specify BERTHA basisset \"atomname1:basisset1,atomname2:basisset2,...\"", \
+        required=True, type=str, default="")
+    parser.add_argument("-t","--fittset", \
+        help="Specify BERTHA fitting set \"atomname1:fittset1,atomname2:fittset2,...\"", \
+        required=True, type=str, default="")
+    parser.add_argument("--convertlengthunit", help="Specify a length converter [default=1.0]", \
+        type=float, default=1.0)
+
+ 
+    args = parser.parse_args()
+
+    for path in args.berthamodpaths.split(";"):
+        sys.path.append(path)
+
+    import py_eda_nocv
+    import pybertha
+    import pybgen
+
+    py_eda_nocvoption = py_eda_nocv.ppynocvedaoption
+
+    pyberthaoption_fraga = pybertha.pyberthaoption
+    pygenoption_fraga = pybgen.berthainputoption
+
+    pygenoption_fraga.inputfile = args.fragA
+    pygenoption_fraga.jsonbasisfile = args.jsonbasisfile
+    pygenoption_fraga.fittset = args.fittset
+    pygenoption_fraga.basisset = args.basisset
+    pygenoption_fraga.convertlengthunit = args.convertlengthunit
+
+    pybgen.generateinputfiles (pygenoption_fraga)
+
+
