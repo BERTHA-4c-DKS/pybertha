@@ -1,5 +1,6 @@
 import argparse
 import sys
+import os
 
 if __name__ == "__main__":
 
@@ -11,6 +12,9 @@ if __name__ == "__main__":
             type=str, default="")
     parser.add_argument("--molecule", help="Specify the molecule XYZ file", required=True, 
             type=str, default="")
+
+    parser.add_argument("--energyconverter", help="Specify energy converter (default: 1.0)", required=False, 
+            type=float, default=1.0)
  
     parser.add_argument("-d", "--debug", help="Debug on, prints debug info to debug_info.txt", required=False, 
             default=False, action="store_true")
@@ -45,8 +49,6 @@ if __name__ == "__main__":
     import pybertha
     import pybgen
 
-    py_eda_nocvoption = py_eda_nocv.ppynocvedaoption
-
     pyberthaoption_fraga = pybertha.pyberthaoption
     pygenoption_fraga = pybgen.berthainputoption
 
@@ -58,4 +60,58 @@ if __name__ == "__main__":
 
     pybgen.generateinputfiles (pygenoption_fraga)
 
+    pyberthaoption_fraga.eda_nocv_info = True
+    pyberthaoption_fraga.eda_nocv_frag_file = "info_eda_nocv_fragA.json"
+
+    pybertha.runspbertha (pyberthaoption_fraga)
+
+    os.remove("input.inp") 
+    os.remove("fitt2.inp") 
+    os.remove("eps.txt")
+    os.remove("fockmtx.txt")
+
+    pyberthaoption_fragb = pybertha.pyberthaoption
+    pygenoption_fragb = pybgen.berthainputoption
+
+    pygenoption_fragb.inputfile = args.fragB
+    pygenoption_fragb.jsonbasisfile = args.jsonbasisfile
+    pygenoption_fragb.fittset = args.fittset
+    pygenoption_fragb.basisset = args.basisset
+    pygenoption_fragb.convertlengthunit = args.convertlengthunit
+
+    pybgen.generateinputfiles (pygenoption_fragb)
+
+    pyberthaoption_fragb.eda_nocv_info = True
+    pyberthaoption_fragb.eda_nocv_frag_file = "info_eda_nocv_fragB.json"
+
+    pybertha.runspbertha (pyberthaoption_fragb)
+
+    os.remove("input.inp") 
+    os.remove("fitt2.inp") 
+    os.remove("eps.txt")
+    os.remove("fockmtx.txt")
+
+    pygenoption_mol = pybgen.berthainputoption
+
+    pygenoption_mol.inputfile = args.molecule
+    pygenoption_mol.jsonbasisfile = args.jsonbasisfile
+    pygenoption_mol.fittset = args.fittset
+    pygenoption_mol.basisset = args.basisset
+    pygenoption_mol.convertlengthunit = args.convertlengthunit
+
+    pybgen.generateinputfiles (pygenoption_mol)
+ 
+    py_eda_nocvoption = py_eda_nocv.ppynocvedaoption
+
+    py_eda_nocvoption.npairs = args.npairs
+    py_eda_nocvoption.energyconverter = args.energyconverter
+
+    py_eda_nocv.runnocveda (py_eda_nocvoption)
+
+    os.remove("input.inp") 
+    os.remove("fitt2.inp") 
+    os.remove("fockmtx.txt")
+
+    os.remove("info_eda_nocv_fragA.json")
+    os.remove("info_eda_nocv_fragB.json")
 

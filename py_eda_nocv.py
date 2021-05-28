@@ -14,26 +14,26 @@ from dataclasses import dataclass
 
 @dataclass(repr=True)
 class ppynocvedaoption:
-    inputfile: str
-    fittfile: str
-    fitcoefffile: str
-    vctfile: str
-    ovapfile: str
-    dumpfiles: bool
-    debug: bool
-    verbosity: int
-    thresh: numpy.float64
-    wrapperso: str
-    berthamodpath: str
-    npairs: int
-    cube: bool
-    deltax: numpy.float64
-    deltay: numpy.float64
-    deltaz: numpy.float64
-    lmargin: numpy.float64
-    info_fragA: str
-    info_fragB: str
-    energyconverter: float
+    inputfile: str ="input.inp"
+    fittfile: str ="fitt2.inp"
+    fitcoefffile: str ="fitcoeff.txt"
+    vctfile: str ="vct.txt"
+    ovapfile: str ="ovap.txt"
+    dumpfiles: bool =False
+    debug: bool =False
+    verbosity: int = -1
+    thresh: numpy.float64 =1.0e-12
+    wrapperso: str = "../lib/bertha_wrapper.so"
+    berthamodpath: str="../src"
+    npairs: int = 0
+    cube: bool = False
+    deltax: numpy.float64 =0.2
+    deltay: numpy.float64 =0.2
+    deltaz: numpy.float64 =0.2
+    lmargin: numpy.float64 =10.0
+    info_fragA: str ="info_eda_nocv_fragA.json"
+    info_fragB: str ="info_eda_nocv_fragB.json"
+    energyconverter: float =1.0
 
 
 def check_and_covert(mat_REAL, mat_IMAG, ndim, nocc):
