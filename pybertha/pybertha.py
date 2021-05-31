@@ -26,9 +26,9 @@ class pyberthaoption:
     dumpfiles: bool =False
     debug: bool =False
     verbosity: int =-1
-    thresh: numpy.float64
-    wrapperso: str =1.0e-11
-    berthamodpath: str ="../lib/bertha_wrapper.so"
+    thresh: numpy.float64 = 1.0e-11
+    wrapperso: str = "../lib/bertha_wrapper.so"
+    berthamodpath: str ="../src"
     eda_nocv_info: bool =False
     eda_nocv_frag_file: str ="info_eda_nocv_fragX.json"
 

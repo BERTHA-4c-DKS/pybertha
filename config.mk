@@ -143,13 +143,13 @@ CFLAGS += -fPIC
 FFLAGS += -fPIC
 
 ifeq ($(LIBXC),yes)
-  # Use libxc of a distribution DIRLIBXC to be set
+  # Use libxc of a distribution DIRLIBXC to be set version 4.3.X is needed 
   DIRLIBXC = /usr/lib/x86_64-linux-gnu
   #DIRLIBXC = /usr/local/libxc
   CFLAGS += -DLIBXC 
   FFLAGS += -DLIBXC 
   INCLUDE += -I$(DIRLIBXC)/include
-  LIBS += -L$(DIRLIBXC) -lxc -lxcf90 
+  LIBS += -L$(DIRLIBXC) -lxcf90 -lxc
 endif
 
 ifeq ($(USEINTEL),yes)
