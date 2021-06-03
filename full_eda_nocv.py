@@ -1,4 +1,5 @@
 import argparse
+import numpy
 import sys
 import os
 
@@ -15,6 +16,18 @@ if __name__ == "__main__":
 
     parser.add_argument("--energyconverter", help="Specify energy converter (default: 1.0)", required=False, 
             type=float, default=1.0)
+    parser.add_argument("--cube", help="Specify if nocv orbital and def. density need to be saved in cube file format (default: False)", required=False,
+               default=False, action="store_true")
+    parser.add_argument("--deltax", help="cube dx step (default = 0.2)", required=False, 
+            type=numpy.float64, default=0.2)
+    parser.add_argument("--deltay", help="cube dy step (default = 0.2)", required=False, 
+            type=numpy.float64, default=0.2)
+    parser.add_argument("--deltaz", help="cube dz step (default = 0.2)", required=False, 
+            type=numpy.float64, default=0.2)
+    parser.add_argument("--lmargin", help="cube margin parameter (default = 10.0)", required=False, 
+            type=numpy.float64, default=10.0)
+    parser.add_argument("-np", "--npairs", help="Specify the numerber of nocv-pair density (default: 0)", required=False,
+               default=0, type=int)
  
     parser.add_argument("-d", "--debug", help="Debug on, prints debug info to debug_info.txt", required=False, 
             default=False, action="store_true")
@@ -24,9 +37,7 @@ if __name__ == "__main__":
             required=False, type=str, default="../lib/bertha_wrapper.so")
     parser.add_argument("--berthamodpaths", help="set berthamod and all other modules path [\"path1;path2;...\"] (default = ../src)", 
             required=False, type=str, default="../src")
-    parser.add_argument("-np", "--npairs", help="Specify the numerber of nocv-pair density (default: 0)", required=False,
-               default=0, type=int)
-           
+          
     parser.add_argument("-j","--jsonbasisfile", \
         help="Specify BERTHA JSON file for fitting and basis (default: fullsets.json)", \
         required=False, type=str, default="fullsets.json")
@@ -108,6 +119,12 @@ if __name__ == "__main__":
 
     py_eda_nocvoption.npairs = args.npairs
     py_eda_nocvoption.energyconverter = args.energyconverter
+
+    py_eda_nocvoption.cube = args.cube
+    py_eda_nocvoption.deltax = args.deltax
+    py_eda_nocvoption.deltay = args.deltay
+    py_eda_nocvoption.deltaz = args.deltaz
+    py_eda_nocvoption.lmargin = args.lmargin
 
     py_eda_nocv.runnocveda (py_eda_nocvoption)
 
