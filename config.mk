@@ -14,7 +14,13 @@ PROFILE=no
 USEINTEL=no
 
 #LIBXC
-LIBXC=no
+LIBXC=yes
+
+# use OpenMP
+# export OMP_SCHEDULE=dynamic
+# export OMP_STACKSIZE=200M (KMP_.... for Intel)
+# export OMP_NUM_THREADS=4
+USEOPENMP=yes
 
 BERTHAROOT=/home/redo/Project_Bertha/bertha_ng
 
@@ -144,17 +150,25 @@ FFLAGS += -fPIC
 
 ifeq ($(LIBXC),yes)
   # Use libxc of a distribution DIRLIBXC to be set version 4.3.X is needed 
-  DIRLIBXC = /usr/lib/x86_64-linux-gnu
-  #DIRLIBXC = /usr/local/libxc
+  #DIRLIBXC = /usr/lib/x86_64-linux-gnu
+  DIRLIBXC = /usr/local/libxc
   CFLAGS += -DLIBXC 
   FFLAGS += -DLIBXC 
   INCLUDE += -I$(DIRLIBXC)/include
-  LIBS += -L$(DIRLIBXC) -lxcf90 -lxc
+  LIBS += -L$(DIRLIBXC)/lib -lxcf90 -lxc
 endif
 
 ifeq ($(USEINTEL),yes)
   CFLAGS += -DUSEINTELCMP
   FFLAGS += -DUSEINTELCMP
+endif
+
+LINKFLAGS = 
+
+ifeq ($(USEOPENMP),yes)
+  FFLAGS    += -fopenmp 
+  CFLAGS    += -fopenmp 
+  LINKFLAGS += -fopenmp
 endif
 
 FFLAGS += -DDUMPFOCKMTX

@@ -14,7 +14,7 @@ CFLAGS+= -fPIC
 
 $(BERTHAWLIB): $(OBJ)
 	cp ${BERTHAROOT}/lib/* ../lib
-	$(FC) -shared $(OBJ) -o $(BERTHAWLIB) -L../lib -lbertha -lberthaserial $(LIBS)
+	$(FC) -shared $(LINKFLAGS) $(OBJ) -o $(BERTHAWLIB) -L../lib -lbertha -lberthaserial $(LIBS)
 	strip $(BERTHAWLIB)
 	cp $(BERTHAWLIB) ../lib
 
