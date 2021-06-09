@@ -30,7 +30,8 @@ class pyberthaoption:
     wrapperso: str = "../lib/bertha_wrapper.so"
     berthamodpath: str ="../src"
     eda_nocv_info: bool =False
-    eda_nocv_frag_file: str ="info_eda_nocv_fragX.json"
+    eda_nocv_frag_file: str = "info_eda_nocv_fragX.json"
+
 
 ##########################################################################################
 
@@ -65,7 +66,8 @@ def runspbertha (pberthaopt):
     import berthamod
     
     print("Options: ")
-    print(pberthaopt) 
+    for att in [a for a in dir(pberthaopt) if not a.startswith('__')]:
+        print(att, " = ", getattr(pberthaopt, att)) 
     print("")
     print("")
     
