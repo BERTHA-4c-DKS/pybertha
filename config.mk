@@ -17,6 +17,8 @@ USEINTEL=no
 LIBXC=yes
 
 # use OpenMP
+# ulimit -s unlimited
+#
 # export OMP_SCHEDULE=dynamic
 # export OMP_STACKSIZE=200M (KMP_.... for Intel)
 # export OMP_NUM_THREADS=4
