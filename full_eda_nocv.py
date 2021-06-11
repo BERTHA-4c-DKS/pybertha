@@ -54,6 +54,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    MAXIT = 100
+
     for path in args.berthamodpaths.split(";"):
         sys.path.append(path)
 
@@ -70,6 +72,9 @@ if __name__ == "__main__":
     pygenoption_fraga.basisset = args.basisset
     pygenoption_fraga.functxc = args.functxc
     pygenoption_fraga.convertlengthunit = args.convertlengthunit
+
+    pygenoption_fraga.maxit = MAXIT
+
 
     pybgen.generateinputfiles (pygenoption_fraga)
 
@@ -93,6 +98,8 @@ if __name__ == "__main__":
     pygenoption_fraga.functxc = args.functxc
     pygenoption_fragb.convertlengthunit = args.convertlengthunit
 
+    pygenoption_fragb.maxit = MAXIT
+
     pybgen.generateinputfiles (pygenoption_fragb)
 
     pyberthaoption_fragb.eda_nocv_info = True
@@ -112,6 +119,8 @@ if __name__ == "__main__":
     pygenoption_mol.fittset = args.fittset
     pygenoption_mol.basisset = args.basisset
     pygenoption_mol.convertlengthunit = args.convertlengthunit
+
+    pygenoption_mol.maxit = MAXIT
 
     pybgen.generateinputfiles (pygenoption_mol)
  
