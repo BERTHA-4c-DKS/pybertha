@@ -16,7 +16,7 @@ USEINTEL=no
 #LIBXC
 LIBXC=yes
 
-# use OpenMP
+# use OpenMP with Intel there could be problem related to the stacksize
 # ulimit -s unlimited
 #
 # export OMP_SCHEDULE=dynamic
