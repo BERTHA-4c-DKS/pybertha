@@ -59,7 +59,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    MAXIT = 1
+    MAXIT = 100
 
     for path in args.berthamodpaths.split(";"):
         sys.path.append(path)
