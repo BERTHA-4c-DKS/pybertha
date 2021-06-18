@@ -1,3 +1,4 @@
+import subprocess
 import argparse
 import numpy
 import sys
@@ -6,6 +7,10 @@ import os
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
+    
+    parser.add_argument("--externalprocess", help="Specify to use an external process for pybertha run",
+            required=False, default=False, action="store_true")
+    
 
     parser.add_argument("--fragA", help="Specify the fragA XYZ file", required=True, 
             type=str, default="")
@@ -54,7 +59,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    MAXIT = 100
+    MAXIT = 1
 
     for path in args.berthamodpaths.split(";"):
         sys.path.append(path)
@@ -75,13 +80,22 @@ if __name__ == "__main__":
 
     pygenoption_fraga.maxit = MAXIT
 
-
     pybgen.generateinputfiles (pygenoption_fraga)
 
     pyberthaoption_fraga.eda_nocv_info = True
     pyberthaoption_fraga.eda_nocv_frag_file = "info_eda_nocv_fragA.json"
 
-    pybertha.runspbertha (pyberthaoption_fraga)
+
+    if args.externalprocess:
+       toexe = "python3 ./pybertha.py --eda_nocv_info --eda_nocv_frag_file " + \
+               pyberthaoption_fraga.eda_nocv_frag_file
+       print("Start pybertha fragA")
+       results  = subprocess.run(toexe, shell=True, check=True, \
+                  stdout=subprocess.PIPE, stderr=subprocess.PIPE, \
+                  universal_newlines=True)
+
+    else:
+        pybertha.runspbertha (pyberthaoption_fraga)
 
     os.remove("input.inp") 
     os.remove("fitt2.inp") 
@@ -105,7 +119,16 @@ if __name__ == "__main__":
     pyberthaoption_fragb.eda_nocv_info = True
     pyberthaoption_fragb.eda_nocv_frag_file = "info_eda_nocv_fragB.json"
 
-    pybertha.runspbertha (pyberthaoption_fragb)
+    if args.externalprocess:
+       toexe = "python3 ./pybertha.py --eda_nocv_info --eda_nocv_frag_file " + \
+               pyberthaoption_fragb.eda_nocv_frag_file
+       print("Start pybertha fragB")
+       results  = subprocess.run(toexe, shell=True, check=True, \
+                  stdout=subprocess.PIPE, stderr=subprocess.PIPE, \
+                  universal_newlines=True)
+
+    else:
+        pybertha.runspbertha (pyberthaoption_fragb)
 
     os.remove("input.inp") 
     os.remove("fitt2.inp") 
