@@ -1,8 +1,24 @@
 import subprocess
 import argparse
 import numpy
+import shlex
 import sys
 import os
+
+
+def execute(cmd):
+
+    process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+    while True:
+        output = process.stdout.readline()
+        if output == '' and process.poll() is not None:
+            break
+        if output:
+            print(output.strip().decode("utf-8"), flush=True)
+
+    rc = process.poll()
+            
+    return rc
 
 if __name__ == "__main__":
 
@@ -85,15 +101,14 @@ if __name__ == "__main__":
     pyberthaoption_fraga.eda_nocv_info = True
     pyberthaoption_fraga.eda_nocv_frag_file = "info_eda_nocv_fragA.json"
 
-
     if args.externalprocess:
-       toexe = "python3 ./pybertha.py --eda_nocv_info --eda_nocv_frag_file " + \
-               pyberthaoption_fraga.eda_nocv_frag_file
+       toexe = "python3 ./pybertha.py --eda_nocv_info --eda_nocv_frag_file " \
+               + pyberthaoption_fraga.eda_nocv_frag_file
        print("Start pybertha fragA")
-       results  = subprocess.run(toexe, shell=True, check=True, \
-                  stdout=subprocess.PIPE, stderr=subprocess.PIPE, \
-                  universal_newlines=True)
-
+       execute(shlex.split(toexe))
+       #results  = subprocess.run(toexe, shell=True, check=True, \
+       #           stdout=subprocess.PIPE, stderr=subprocess.PIPE, \
+       #           universal_newlines=True)
     else:
         pybertha.runspbertha (pyberthaoption_fraga)
 
@@ -123,9 +138,10 @@ if __name__ == "__main__":
        toexe = "python3 ./pybertha.py --eda_nocv_info --eda_nocv_frag_file " + \
                pyberthaoption_fragb.eda_nocv_frag_file
        print("Start pybertha fragB")
-       results  = subprocess.run(toexe, shell=True, check=True, \
-                  stdout=subprocess.PIPE, stderr=subprocess.PIPE, \
-                  universal_newlines=True)
+       execute(shlex.split(toexe))
+       #results  = subprocess.run(toexe, shell=True, check=True, \
+       #           stdout=subprocess.PIPE, stderr=subprocess.PIPE, \
+       #           universal_newlines=True)
 
     else:
         pybertha.runspbertha (pyberthaoption_fragb)
