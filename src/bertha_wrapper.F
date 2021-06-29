@@ -1040,4 +1040,23 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
+      subroutine bertha_get_density_ongrid (npoints, grid, density)
+
+      implicit none
+
+      integer, intent(in) :: npoints
+      real, intent(in) :: grid(4,npoints)
+      real, intent(out) :: density(npoints)
+
+      integer :: i
+
+      do i=1,npoints
+        print *, "FORTRAN L: ", grid(1,i), grid(2,i), grid(3,i), grid(4,i)
+        density(i) = grid(1,i)*grid(2,i)*grid(3,i)*grid(4,i)
+      enddo
+
+      end subroutine bertha_get_density_ongrid
+
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
       end module
