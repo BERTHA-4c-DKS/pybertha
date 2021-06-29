@@ -120,6 +120,8 @@ def runspberthaembedrt (pberthaopt):
         grid[i,2] = z
         grid[i,3] = w
 
+        pot[i] = x*y*z*w
+
         x += 1.0
         y += 1.0
         z += 1.0

@@ -24,6 +24,10 @@
       real :: eecoul, eexc 
       character(len=7) :: expo
 
+c     potential to add
+      logical :: addpot
+      real, allocatable :: grid(:,:), pot(:)
+
       contains
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -38,6 +42,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       integer :: lammax
 
+      addpot = .FALSE.
       verbose = verbosity
       dumpfiles = dumpfilesin
 
@@ -356,6 +361,11 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
         v = zz + v
         call jmatfitt(fock,ndim,v,nfitt,fitcase)
+
+        if (addpot) then 
+          print *, "add pot TODO"
+        endif
+
         deallocate(v)
         deallocate(zz)
         efittcoulplusexc = 0.0
@@ -695,6 +705,16 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       call fremem()
 
+      if (addpot) deallocate(grid, pot)
+      
+      addpot = .FALSE.
+
+      if (verbose .eq. 1) call writeversion ()
+
+      ndim = 0
+      maxit = 2
+      nshift = 0
+
       end subroutine
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -803,6 +823,11 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       if (rc.ne.0) call errmsg('error allocating memory')
       call v_calculation(nfitt,fitcase,v)
       call factlu(nfitt,v)
+
+      if (addpot) then 
+        print *, "add pot TODO"
+      endif
+
       call jfitenergy(v,nfitt,efittcoul)
       a = 0
       excfit = 0.0
@@ -1060,21 +1085,27 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
-      subroutine bertha_set_embpot_on_grid (npoints, grid, pot)
+      subroutine bertha_set_embpot_on_grid (npoints, ingrid, inpot)
 
       implicit none
 
       integer, intent(in) :: npoints
-      real, intent(in) :: grid(4,npoints)
-      real, intent(in) :: pot(npoints)
+      real, intent(in) :: ingrid(4,npoints)
+      real, intent(in) :: inpot(npoints)
 
-      integer :: i
+      integer :: i, ierr
 
       do i=1,npoints
-        write(*, '(A,F15.5,F15.5,F15.5,F15.5,F15.5)'), "FORTRAN L: ", 
-     +     grid(1,i), grid(2,i), grid(3,i), grid(4,i), pot(i)
+        write(*, '(A,F15.5,F15.5,F15.5,F15.5)'), "FORTRAN L: ", 
+     +     ingrid(1,i), ingrid(2,i), ingrid(3,i), ingrid(4,i)
+        write(*, '(F15.5,A,F15.5)') inpot(i), " vs ", 
+     +     ingrid(1,i)*ingrid(2,i)*ingrid(3,i)*ingrid(4,i)
       enddo
 
+      addpot = .TRUE. 
+      allocate(grid(4, npoints), pot(npoints), stat=ierr)
+      if (ierr.ne.0) call errmsg('error allocating memory')
+ 
       end subroutine bertha_set_embpot_on_grid
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
