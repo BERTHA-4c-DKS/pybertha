@@ -1051,12 +1051,33 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       integer :: i
 
       do i=1,npoints
-        print *, "FORTRAN L: ", grid(1,i), grid(2,i), grid(3,i), grid(4,i)
+        write(*, '(A,F15.5,F15.5,F15.5,F15.5)'), "FORTRAN L: ", 
+     +     grid(1,i), grid(2,i), grid(3,i), grid(4,i)
         density(i) = grid(1,i)*grid(2,i)*grid(3,i)*grid(4,i)
       enddo
 
       end subroutine bertha_get_density_ongrid
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
+      subroutine bertha_set_embpot_on_grid (npoints, grid, pot)
+
+      implicit none
+
+      integer, intent(in) :: npoints
+      real, intent(in) :: grid(4,npoints)
+      real, intent(in) :: pot(npoints)
+
+      integer :: i
+
+      do i=1,npoints
+        write(*, '(A,F15.5,F15.5,F15.5,F15.5,F15.5)'), "FORTRAN L: ", 
+     +     grid(1,i), grid(2,i), grid(3,i), grid(4,i), pot(i)
+      enddo
+
+      end subroutine bertha_set_embpot_on_grid
+
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
 
       end module
