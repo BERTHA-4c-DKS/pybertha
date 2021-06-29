@@ -136,6 +136,88 @@ class pybertha:
 
         self.set_densitydiff (0)
 
+    def get_density_on_grid (self, grid):
+
+        # in true o mainrun o fockmtx 
+        # grid N x 4 array containing x,y,z,w double  
+        # chiamata interno su bertha_wrapper che viene poi implemntata su bertha_ng
+
+        density = None # vector N double
+
+        if self.__realtime_init or self.__mainrundone:
+            if isinstance(grid,(numpy.ndarray)):
+                if not grid.flags['C_CONTIGUOUS']:
+                    raise TypeError("get_density_on_grid: " \
+                        + "input must be C_CONTIGUOUS see numpy.ascontiguousarray( ")
+
+                if len(grid.shape) == 2:
+                    if grid.shape[1] == 4:
+                        npoints = grid.shape[0]
+
+                        density = numpy.zeros(npoints, dtype=numpy.double)
+                        density = numpy.ascontiguousarray(density, dtype=numpy.double)
+
+                        # call to main function to get the density on the grid
+                        # call in self.__bertha
+                        self.__bertha.bertha_get_density_ongrid(ctypes.c_int(npoints), \
+                            ctypes.c_void_p(grid.ctypes.data), \
+                            ctypes.c_void_p(density.ctypes.data))
+
+                    else:
+                        raise TypeError("get_density_on_grid: input must be a 2D numpy.ndarray with 4 columns")
+                else:
+                    raise TypeError("get_density_on_grid: input must be a 2D numpy.ndarray")
+            else:
+                raise TypeError("get_density_on_grid: input must be a numpy.ndarray")
+
+        return density
+
+    def set_embpot_on_grid (self, grid, pot):
+
+        # solo init true rivedere
+
+        # pot vector N double
+
+        # grid N x 4 array containing x,y,z,w double  
+
+        # in bertha wrapper rimane e serve sia per mainrun che per get_fovk_realtime
+
+        # questo dato va in bertha_wrapper e poi con if decide se sommare o meno duranti il ciclo SCF
+        # e durante la chiamata a get_fock_realtime
+
+        if self.__init:
+            if not isinstance(grid,(numpy.ndarray)):
+                raise TypeError("set_embpot_on_grid: input must be a numpy.ndarray")
+
+            if not grid.flags['C_CONTIGUOUS']:
+                raise TypeError("get_density_on_grid: " \
+                        + "input grid must be C_CONTIGUOUS see numpy.ascontiguousarray( ")
+
+            if not isinstance(pot,(numpy.ndarray)):
+                raise TypeError("set_embpot_on_grid: input must be a numpy.ndarray")
+
+            if not pot.flags['C_CONTIGUOUS']:
+                raise TypeError("get_density_on_grid: " \
+                        + "input pot must be C_CONTIGUOUS see numpy.ascontiguousarray( ")
+
+            if len(grid.shape) == 2 and len(pot.shape) == 1:
+                if grid.shape[1] == 4:
+                    npoints = grid.shape[0]
+
+                    if pot.shape[0] != npoints:
+                        raise TypeError("set_embpot_on_grid: incompatible dimensions ")
+
+                    # call to main function to set the embed potentil and grid
+                    # and a flag to be called in scf or get reltime_fock
+                    # call in self.__bertha
+
+                else:
+                    raise TypeError("set_embpot_on_grid: input must be a 2D numpy.ndarray with 4 columns")
+            else:
+                raise TypeError("set_embpot_on_grid: grid must be a 2D numpy.ndarray and pot a 1D ndarray")
+
+        return
+
     def get_childthread(self):
         """
         Return childthread  value
@@ -567,7 +649,6 @@ class pybertha:
                     ctypes.c_void_p(ovapbuffer.ctypes.data), \
                     ctypes.c_void_p(eigenvctbu.ctypes.data), \
                     ctypes.c_void_p(fockbuffer.ctypes.data))
-
 
             end = time.time()
             cend = time.process_time()
