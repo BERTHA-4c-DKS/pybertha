@@ -13,6 +13,7 @@
 #define f_bertha_realtime_fock bertha_wrapper_mp_bertha_realtime_fock_
 #define f_bertha_density_to_cube  bertha_wrapper_mp_bertha_density_to_cube_
 #define f_bertha_density_to_cube_limit bertha_wrapper_mp_bertha_density_to_cube_limit_
+#define f_bertha_get_density_ongrid bertha_wrapper_mp_bertha_get_density_ongrid_
 
 #define f_ndim spec_mp_ndim_
 #define f_nshift spec_mp_nshift_
@@ -41,6 +42,7 @@
 #define f_bertha_realtime_fock __bertha_wrapper_MOD_bertha_realtime_fock
 #define f_bertha_density_to_cube  __bertha_wrapper_MOD_bertha_density_to_cube
 #define f_bertha_density_to_cube_limit __bertha_wrapper_MOD_bertha_density_to_cube_limit
+#define f_bertha_get_density_ongrid __bertha_wrapper_MOD_bertha_get_density_ongrid
 
 #define f_ndim __spec_MOD_ndim
 #define f_nshift __spec_MOD_nshift
@@ -74,6 +76,7 @@ void f_bertha_realtime_dipolematrix(int *,
       int *, double *);
 void f_bertha_eps(double *, double *, double *, double *);
 void f_bertha_realtime_fock (double *, double *);
+void f_bertha_get_density_ongrid (int *, double *, double *);
 
 extern int f_ndim, f_nshift, f_nocc, f_nopen, f_densitydiff;
 extern double f_sfact, f_etotal, f_erep, f_thresh, f_eecoul, f_eexc;
@@ -290,6 +293,11 @@ void density_to_cube_limit (double * dens_ptr, double ri1, double ri2, double ri
   f_bertha_density_to_cube_limit(dens_ptr, &ri1, &ri2, &ri3, 
       &rf1, &rf2, &rf3, &drx, &dry, &drz, 
       filename, fittfname, strlen(filename), strlen(fittfname));
+}
+
+void bertha_get_density_ongrid (int npoints, double * grid, double * density)
+{
+  f_bertha_get_density_ongrid (&npoints, grid, density);
 }
 
 int finalize ()
