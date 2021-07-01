@@ -1076,7 +1076,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       integer :: i
 
       do i=1,npoints
-        write(*, '(A,F15.5,F15.5,F15.5,F15.5)'), "FORTRAN L: ", 
+        write(*, '(A,F20.5,F20.5,F20.5,F20.5)'), "FORTRAN L: ", 
      +     grid(1,i), grid(2,i), grid(3,i), grid(4,i)
         density(i) = grid(1,i)*grid(2,i)*grid(3,i)*grid(4,i)
       enddo
@@ -1098,7 +1098,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       do i=1,npoints
         write(*, '(A,F15.5,F15.5,F15.5,F15.5)'), "FORTRAN L: ", 
      +     ingrid(1,i), ingrid(2,i), ingrid(3,i), ingrid(4,i)
-        write(*, '(F15.5,A,F15.5)') inpot(i), " vs ", 
+        write(*, '(F30.5,A,F23.5)') inpot(i), " vs ", 
      +     ingrid(1,i)*ingrid(2,i)*ingrid(3,i)*ingrid(4,i)
       enddo
 

@@ -1,11 +1,65 @@
 import threading
 import ctypes
 import numpy
-import sys
 import re
 
 import os.path
 import time
+
+###############################################################################
+
+def isinteger (val):
+    isint = True
+
+    try:
+        int(val)
+    except ValueError:
+        isint = False
+
+    return isint
+
+###############################################################################
+
+def isdouble (val):
+    isfloat = True
+
+    try:
+        numpy.double(val)
+    except ValueError:
+        isfloat = False
+
+    return isfloat
+
+###############################################################################
+
+def read_grid_file (filename):
+    grid = None
+
+    if os.path.isfile(filename):
+        fp = open(filename)
+        line = fp.readline() 
+
+        if isinteger(line):
+            num = int(line)
+
+            grid = numpy.zeros((num, 4))
+            grid = numpy.ascontiguousarray(grid, dtype=numpy.double)
+
+            for i in range(num):
+                line = fp.readline()
+                sline = line.split()
+
+                if len(sline) != 4:
+                    return None
+
+                for j, s in enumerate(sline):
+                    if not isdouble(s):
+                        return None
+                    else:
+                        grid[i, j] = numpy.double(s)
+                
+
+    return grid
 
 ###############################################################################
 

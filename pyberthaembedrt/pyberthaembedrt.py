@@ -103,9 +103,13 @@ def runspberthaembedrt (pberthaopt):
     
 
     #generate a sample grid
-    npoints = 10
-    grid = numpy.zeros((npoints, 4))
-    grid = numpy.ascontiguousarray(grid, dtype=numpy.double)
+    #npoints = 10
+    #grid = numpy.zeros((npoints, 4))
+    #grid = numpy.ascontiguousarray(grid, dtype=numpy.double)
+
+    #read a real grid
+    grid = berthamod.read_grid_file ("ADFGRID")
+    npoints = grid.shape[0]
 
     pot = numpy.zeros(npoints)
     pot = numpy.ascontiguousarray(pot, dtype=numpy.double)
