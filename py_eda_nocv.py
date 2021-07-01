@@ -360,31 +360,36 @@ def runnocveda (nocvedaopt):
     ######  TEST
     bertha.realtime_init()
     
-    fockm1 = bertha.get_realtime_fock(dmat.T)
-    erep   = bertha.get_erep()
-    etotal = bertha.get_etotal()
-    ecoul  = bertha.get_eecoul()
-    exc    = bertha.get_eexc()
-    
-    print("Density --> Fock --> energy")
-    print(" total electronic energy  = %30.15f"%(nocvedaopt.energyconverter*etotal))
-    print(" nuclear repulsion energy = %30.15f"%(nocvedaopt.energyconverter*erep))
-    print(" total energy             = %30.15f"%(nocvedaopt.energyconverter*(etotal+erep)))
-    print(" coulomb energy           = %30.15f"%(nocvedaopt.energyconverter*ecoul))
-    print(" Exc     energy           = %30.15f"%(nocvedaopt.energyconverter*exc))
+#    fockm1 = bertha.get_realtime_fock(dmat.T)
+#    erep   = bertha.get_erep()
+#    etotal = bertha.get_etotal()
+#    ecoul  = bertha.get_eecoul()
+#    exc    = bertha.get_eexc()
+#    
+#    print("Density --> Fock --> energy")
+#    print(" total electronic energy  = %30.15f"%(nocvedaopt.energyconverter*etotal))
+#    print(" nuclear repulsion energy = %30.15f"%(nocvedaopt.energyconverter*erep))
+#    print(" total energy             = %30.15f"%(nocvedaopt.energyconverter*(etotal+erep)))
+#    print(" coulomb energy           = %30.15f"%(nocvedaopt.energyconverter*ecoul))
+#    print(" Exc     energy           = %30.15f"%(nocvedaopt.energyconverter*exc))
     
     fockm1 = bertha.get_realtime_fock(dmat0.T)
     erep   = bertha.get_erep()
     etotal = bertha.get_etotal()
     ecoul  = bertha.get_eecoul()
     exc    = bertha.get_eexc()
-    
+   
+ 
     print("Density_0 --> Fock --> energy")
     print(" total electronic energy  = %30.15f"%(nocvedaopt.energyconverter*etotal))
     print(" nuclear repulsion energy = %30.15f"%(nocvedaopt.energyconverter*erep))
     print(" total energy             = %30.15f"%(nocvedaopt.energyconverter*(etotal+erep)))
     print(" coulomb energy           = %30.15f"%(nocvedaopt.energyconverter*ecoul))
     print(" Exc     energy           = %30.15f"%(nocvedaopt.energyconverter*exc))
+
+    e_dmat0 = etotal
+
+    ####################################
     
     #density of the promolecule
     dmatsumAB = numpy.matmul(cmat_join,numpy.conjugate(cmat_join.T))
@@ -402,6 +407,9 @@ def runnocveda (nocvedaopt):
     print(" coulomb energy           = %30.15f"%(nocvedaopt.energyconverter*ecoul))
     print(" Exc     energy           = %30.15f"%(nocvedaopt.energyconverter*exc))
     
+    e_dmatAB = etotal
+    etotal_sumAB = etotal+erep
+    exc_sumAB = exc
     ####################################
     
     fockm1 = bertha.get_realtime_fock(dmat.T)
@@ -416,15 +424,42 @@ def runnocveda (nocvedaopt):
     print(" total energy             = %30.15f"%(nocvedaopt.energyconverter*(etotal+erep)))
     print(" coulomb energy           = %30.15f"%(nocvedaopt.energyconverter*ecoul))
     print(" Exc     energy           = %30.15f"%(nocvedaopt.energyconverter*exc))
+
+    fockm1 = bertha.get_realtime_fock(dmat.T)
+    erep   = bertha.get_erep()
+    etotal = bertha.get_etotal()
+    ecoul  = bertha.get_eecoul()
+    exc    = bertha.get_eexc()
+
+    e_dmat = etotal
+
+    ####################################
     etotal = etotal+erep
     
     Eint = etotal - etotal_fragA - etotal_fragB 
-    print("\nTotal interaction  energy [DEint]: %.8f" % (nocvedaopt.energyconverter*Eint))
+    print("\nTotal interaction  energy                                    [DE_int]: %.8f" % (nocvedaopt.energyconverter*Eint))
+    #density of the promolecule
+    dmatsumAB = numpy.matmul(cmat_join,numpy.conjugate(cmat_join.T))
+
+    dmat_trans = 0.5*(dmatsumAB+dmat0)
+    fockm1=bertha.get_realtime_fock(dmat_trans.T)
+    e_pauli = numpy.trace(numpy.matmul((dmat0-dmatsumAB),fockm1))
+    print(("\ntilde Pauli exact                                     [DE_tildePauli]: %.8f                                 " % (nocvedaopt.energyconverter*(e_dmat0-e_dmatAB).real)))
+    print(("tilde Pauli from ETS (corrected up to third order): %.8f" % (nocvedaopt.energyconverter*e_pauli.real)))
+    Delta_Exc = exc_sumAB - exc_fragA - exc_fragB 
+    print("Delta_Exc = exc - exc_fragA - exc_fragB                         [DEexc]: %.8f" % (nocvedaopt.energyconverter*Delta_Exc))
+    Tot_pauli = (e_dmat0-e_dmatAB)  + Delta_Exc
+    print("\nPauli defined as in ADF. (tilde Pauli (exact) + Delta_Exc   [DEpauli]: %.8f" % (nocvedaopt.energyconverter*Tot_pauli.real))
+
+    print("\nElectrostatic int E_A+B - Delta_Exc                         [DEelect]:  %.8f         " %(nocvedaopt.energyconverter*(etotal_sumAB-etotal_fragA-etotal_fragB-Delta_Exc)))
+
+    print("\nOrbital energy (exact)                                        [DEorb]: %.8f" % (nocvedaopt.energyconverter*(e_dmat-e_dmat0).real))
     
     dmat_trans = 0.5*(dmat+dmat0)
     fockmTS1=bertha.get_realtime_fock(dmat_trans.T)
     E_orb = numpy.trace(numpy.matmul((dmat-dmat0),fockmTS1))
-    print("Trace of DeltaD F^TS Orbital energy [DEorb]: %.8f" % (nocvedaopt.energyconverter*E_orb.real))
+
+    print("Orbital energy from ETS  (corrected up to third order): %.8f" % (nocvedaopt.energyconverter*E_orb.real))
     
     dmat_trans = dmat0
     fockm0=bertha.get_realtime_fock(dmat_trans.T)
@@ -434,39 +469,9 @@ def runnocveda (nocvedaopt):
     fockmTS = 1.0/6.0*fockm0 + 4.0/6.0*fockmTS1 + 1.0/6.0*fockmt
     #
     trace = numpy.trace(numpy.matmul((dmat-dmat0),fockmTS))
-    print("Trace of DeltaD F^TS Ziegler formula Orbital energy [DEorb]: %.8f" % (nocvedaopt.energyconverter*trace.real))
-    
-    #density of the promolecule
-    dmatsumAB = numpy.matmul(cmat_join,numpy.conjugate(cmat_join.T))
-    
-    dmat_trans = 0.5*(dmatsumAB+dmat0)
-    fockm1=bertha.get_realtime_fock(dmat_trans.T)
-    e_pauli = numpy.trace(numpy.matmul((dmat0-dmatsumAB),fockm1))
-    print(("Trace of DeltaD F^TS Pauli energy [Deets - DEpauli]: %.8f \n" % (nocvedaopt.energyconverter*e_pauli.real)))
-    
-    #density of the promolecule
-    dmatsumAB = numpy.matmul(cmat_join,numpy.conjugate(cmat_join.T))
-    
-    fockm1=bertha.get_realtime_fock(dmatsumAB.T)
-    erep = bertha.get_erep()
-    etotal = bertha.get_etotal()
-    ecoul_sumAB  = bertha.get_eecoul()
-    exc_sumAB  = bertha.get_eexc()
-    
-    print("Density_A+B --> Fock --> energy")
-    print(" total electronic energy  = %30.15f"%(nocvedaopt.energyconverter*etotal))
-    print(" nuclear repulsion energy = %30.15f"%(nocvedaopt.energyconverter*erep))
-    print(" total energy             = %30.15f"%(nocvedaopt.energyconverter*(etotal+erep)))
-    print(" coulomb energy           = %30.15f"%(nocvedaopt.energyconverter*ecoul_sumAB))
-    print(" Exc     energy           = %30.15f"%(nocvedaopt.energyconverter*exc_sumAB))
+    print("Orbital energy from ETS using Ziegler formula (corrected up to fifth order): %.8f" % (nocvedaopt.energyconverter*trace.real))
     
     ####################################
-    etotal_sumAB = etotal+erep
-    Delta_Exc = exc_sumAB - exc_fragA - exc_fragB 
-    print("\nDelta_Exc = exc - exc_fragA - exc_fragB [DEexc]: %.8f" % (nocvedaopt.energyconverter*Delta_Exc))
-    Tot_pauli = e_pauli + Delta_Exc
-    print("Pauli DeltaD F^TS Pauli energy + Delta_Exc [DEpauli]: %.8f" % (nocvedaopt.energyconverter*Tot_pauli.real))
-    print("Electrostatic int E_A+B - Delta_Exc [DEelect]:  %.8f" %(nocvedaopt.energyconverter*(etotal_sumAB-etotal_fragA-etotal_fragB-Delta_Exc)))
     
     ######  TEST
     if (nocvedaopt.cube == True):
@@ -483,9 +488,20 @@ def runnocveda (nocvedaopt):
     
       deltanocv = eigenval[i]*(d1 - d2)
       trace = numpy.trace(numpy.matmul(deltanocv,fockmTS1))
-      print("Def. Density nocv_+%i  eigenvalue: %.8f  energy (a.u.): %.8f energy (kcal/mol): %.8f  " % \
+      print("\nnocv_%i pair eigenvalue: %.8f  energy (a.u.): %.8f energy (kcal/mol): %.8f  " % \
               (j,eigenval[i].real,trace.real,(627.50961*trace).real))
-    
+#
+      deltanocv = eigenval[i]*(d1)
+      trace = numpy.trace(numpy.matmul(deltanocv,fockmTS1))
+      print("nocv_-%i     eigenvalue: %.8f  energy (a.u.): %.8f energy (kcal/mol): %.8f  " % \
+              (j,eigenval[i].real,trace.real,(627.50961*trace).real))
+      
+      deltanocv = -eigenval[i]*(d2)
+      trace = numpy.trace(numpy.matmul(deltanocv,fockmTS1))
+      print("nocv_+%i      eigenvalue: %.8f  energy (a.u.): %.8f  energy (kcal/mol): %.8f \n " % \
+              (j,eigenval[-i-1].real,trace.real,(627.50961*trace).real))
+
+#    
       #Energy contribution singled out for each NOCV
       #
       #deltanocv = eigenval[i]*d1 

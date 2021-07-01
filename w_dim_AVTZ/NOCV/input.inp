@@ -165,4 +165,4 @@ lxcbp86
 'scalapack'
 2 2 32 2.0
 'maxit'
-1000
+40
