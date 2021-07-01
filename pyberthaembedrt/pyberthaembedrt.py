@@ -103,14 +103,10 @@ def runspberthaembedrt (pberthaopt):
     
 
     #generate a sample grid
-    #npoints = 10
-    #grid = numpy.zeros((npoints, 4))
-    #grid = numpy.ascontiguousarray(grid, dtype=numpy.double)
-
-    #read a real grid
-    grid = berthamod.read_grid_file ("ADFGRID")
-    npoints = grid.shape[0]
-
+    """
+    npoints = 10
+    grid = numpy.zeros((npoints, 4))
+    grid = numpy.ascontiguousarray(grid, dtype=numpy.double)
     pot = numpy.zeros(npoints)
     pot = numpy.ascontiguousarray(pot, dtype=numpy.double)
 
@@ -130,6 +126,22 @@ def runspberthaembedrt (pberthaopt):
         y += 1.0
         z += 1.0
         w += 0.1
+    """
+
+    #read a real grid
+    grid = berthamod.read_grid_file ("ADFGRID")
+    if grid is None:
+        print("ERROR in reading gridfile")
+        exit(1)
+
+    grid, pot = berthamod.read_grid_ampot_file ("EMBPOT_PYEMBED_ADFGRID_H2O")
+
+    if grid is None or pot is None:
+        print("ERROR in reading gridpotfile")
+        exit(1)
+
+            
+    npoints = grid.shape[0]
 
     start = time.time()
     cstart = time.process_time() 
@@ -141,9 +153,11 @@ def runspberthaembedrt (pberthaopt):
 
     density = bertha.get_density_on_grid(grid)
 
+    """
     for i in range(npoints):
         val = grid[i,0] * grid[i,1]  * grid[i,2] * grid[i,3]
         print("Python L: %15.5f vs %15.5f"%(density[i], val))
+    """
 
     end = time.time()
     cend = time.process_time()
