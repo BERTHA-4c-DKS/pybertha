@@ -364,6 +364,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
         if (addpot) then 
           print *, "add pot TODO"
+c         call set_emb_pot (grdi, pot)
         endif
 
         deallocate(v)
@@ -826,6 +827,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       if (addpot) then 
         print *, "add pot TODO"
+c       call set_emb_pot (grdi, pot)
       endif
 
       call jfitenergy(v,nfitt,efittcoul)
@@ -1081,6 +1083,9 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         density(i) = grid(1,i)*grid(2,i)*grid(3,i)*grid(4,i)
       enddo
 
+c     call function in bertha_ng return density 
+c     call get_density_on_grid (grid, density)
+
       end subroutine bertha_get_density_ongrid
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -1095,17 +1100,28 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       integer :: i, ierr
 
-      do i=1,npoints
-        write(*, '(A,F15.5,F15.5,F15.5,F15.5)'), "FORTRAN L: ", 
-     +     ingrid(1,i), ingrid(2,i), ingrid(3,i), ingrid(4,i)
-        write(*, '(F30.5,A,F23.5)') inpot(i), " vs ", 
-     +     ingrid(1,i)*ingrid(2,i)*ingrid(3,i)*ingrid(4,i)
-      enddo
+c      do i=1,npoints
+c        write(*, '(A,F15.5,F15.5,F15.5,F15.5)'), "FORTRAN L: ", 
+c     +     ingrid(1,i), ingrid(2,i), ingrid(3,i), ingrid(4,i)
+c        write(*, '(F30.5,A,F23.5)') inpot(i), " vs ", 
+c     +     ingrid(1,i)*ingrid(2,i)*ingrid(3,i)*ingrid(4,i)
+c      enddo
 
       addpot = .TRUE. 
       allocate(grid(4, npoints), pot(npoints), stat=ierr)
       if (ierr.ne.0) call errmsg('error allocating memory')
- 
+c     as initial test prefoem the copy but is not needed 
+c     I can avoid it reagoanizing a bit the workflow 
+      pot(i:npoints) = inpot(i:npoints)
+      grid(1:4,1:npoints) = ingrid(1:4,1:npoints)
+
+      do i=1,npoints
+        write(*, '(A,F15.5,F15.5,F15.5,F15.5)'), "FORTRAN L: ", 
+     +     grid(1,i), grid(2,i), grid(3,i), grid(4,i)
+        write(*, '(F30.5,A,F23.5)') pot(i), " vs ", 
+     +     grid(1,i)*grid(2,i)*grid(3,i)*grid(4,i)
+      enddo
+
       end subroutine bertha_set_embpot_on_grid
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
