@@ -127,7 +127,7 @@
 'ENTER GRID QUALITY FROM 1 (COURSE) to 5 (FINE)'
 3                                          
 'EX-POTENTIAL available: LDA, B88P86,HCTH93,BLYP,LXCBLYP,LXCLDA,LXCVWN5'
-lxcbp86
+blyp
 'fitt' 2=standard:fitt2 4=solo_poisson:fitt3 6=both:fitt2+fitt3
 2 0
 'scalapack'
