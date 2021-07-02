@@ -15,3 +15,9 @@ pymol load_cube.py
 python3 pycd.py -f diff_tot.cube
 python3 pycd.py -f pair1.cube 
 python3 pycd.py -f pair2.cube 
+python3 pycd.py -f pair3.cube
+
+gnuplot> plot "diff_tot.cube_cdz.txt" u 1:2 w l lw 4, 
+           "pair1.cube_cdz.txt"  u 1:($2*2) w l lw 4, 
+            "pair3.cube_cdz.txt" u 1:(2*$2) w l lw 4
+
