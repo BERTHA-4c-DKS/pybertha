@@ -26,7 +26,7 @@
 
 c     potential to add
       logical :: addpot
-      real, allocatable :: grid(:,:), pot(:)
+      real, pointer :: grid(:,:), pot(:)
 
       contains
 
@@ -706,7 +706,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       call fremem()
 
-      if (addpot) deallocate(grid, pot)
+c      if (addpot) deallocate(grid, pot)
       
       addpot = .FALSE.
 
@@ -1095,8 +1095,8 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       implicit none
 
       integer, intent(in) :: npoints
-      real, intent(in) :: ingrid(4,npoints)
-      real, intent(in) :: inpot(npoints)
+      real, intent(in), target :: ingrid(4,npoints)
+      real, intent(in), target :: inpot(npoints)
 
       integer :: i, ierr
 
@@ -1108,12 +1108,16 @@ c     +     ingrid(1,i)*ingrid(2,i)*ingrid(3,i)*ingrid(4,i)
 c      enddo
 
       addpot = .TRUE. 
-      allocate(grid(4, npoints), pot(npoints), stat=ierr)
-      if (ierr.ne.0) call errmsg('error allocating memory')
+c      allocate(grid(4, npoints), pot(npoints), stat=ierr)
+c      if (ierr.ne.0) call errmsg('error allocating memory')
 c     as initial test prefoem the copy but is not needed 
 c     I can avoid it reagoanizing a bit the workflow 
-      pot(i:npoints) = inpot(i:npoints)
-      grid(1:4,1:npoints) = ingrid(1:4,1:npoints)
+c      pot(i:npoints) = inpot(i:npoints)
+c      grid(1:4,1:npoints) = ingrid(1:4,1:npoints)
+
+c     avoid explicit copy       
+      grid => ingrid 
+      pot => inpot
 
       do i=1,npoints
         write(*, '(A,F15.5,F15.5,F15.5,F15.5)'), "FORTRAN L: ", 
