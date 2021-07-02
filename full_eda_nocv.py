@@ -114,13 +114,13 @@ if __name__ == "__main__":
         pybertha.runspbertha (pyberthaoption_fraga)
 
 
-    if (os.path.isfile("input.inp"):
+    if (os.path.isfile("input.inp")):
         os.remove("input.inp") 
-    if (os.path.isfile("fitt2.inp"):
+    if (os.path.isfile("fitt2.inp")):
         os.remove("fitt2.inp") 
-    if (os.path.isfile("eps.txt"):
+    if (os.path.isfile("eps.txt")):
         os.remove("eps.txt")
-    if (os.path.isfile("fockmtx.txt"):
+    if (os.path.isfile("fockmtx.txt")):
         os.remove("fockmtx.txt")
 
     pyberthaoption_fragb = pybertha.pyberthaoption
@@ -152,13 +152,13 @@ if __name__ == "__main__":
     else:
         pybertha.runspbertha (pyberthaoption_fragb)
 
-    if (os.path.isfile("input.inp"):
+    if (os.path.isfile("input.inp")):
         os.remove("input.inp") 
-    if (os.path.isfile("fitt2.inp"):
+    if (os.path.isfile("fitt2.inp")):
         os.remove("fitt2.inp") 
-    if (os.path.isfile("eps.txt"):
+    if (os.path.isfile("eps.txt")):
         os.remove("eps.txt")
-    if (os.path.isfile("fockmtx.txt"):
+    if (os.path.isfile("fockmtx.txt")):
         os.remove("fockmtx.txt")
 
     pygenoption_mol = pybgen.berthainputoption
@@ -186,17 +186,17 @@ if __name__ == "__main__":
 
     py_eda_nocv.runnocveda (py_eda_nocvoption)
 
-    if (os.path.isfile("input.inp"):
+    if (os.path.isfile("input.inp")):
         os.remove("input.inp") 
-    if (os.path.isfile("fitt2.inp"):
+    if (os.path.isfile("fitt2.inp")):
         os.remove("fitt2.inp") 
-    if (os.path.isfile("eps.txt"):
+    if (os.path.isfile("eps.txt")):
         os.remove("eps.txt")
-    if (os.path.isfile("fockmtx.txt"):
+    if (os.path.isfile("fockmtx.txt")):
         os.remove("fockmtx.txt")
 
-    if (os.path.isfile("info_eda_nocv_fragA.json"):
+    if (os.path.isfile("info_eda_nocv_fragA.json")):
         os.remove("info_eda_nocv_fragA.json")
-    if (os.path.isfile("info_eda_nocv_fragB.json"):
+    if (os.path.isfile("info_eda_nocv_fragB.json")):
         os.remove("info_eda_nocv_fragB.json")
 
