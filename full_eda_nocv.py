@@ -113,10 +113,15 @@ if __name__ == "__main__":
     else:
         pybertha.runspbertha (pyberthaoption_fraga)
 
-    os.remove("input.inp") 
-    os.remove("fitt2.inp") 
-    os.remove("eps.txt")
-    os.remove("fockmtx.txt")
+
+    if (os.path.isfile("input.inp"):
+        os.remove("input.inp") 
+    if (os.path.isfile("fitt2.inp"):
+        os.remove("fitt2.inp") 
+    if (os.path.isfile("eps.txt"):
+        os.remove("eps.txt")
+    if (os.path.isfile("fockmtx.txt"):
+        os.remove("fockmtx.txt")
 
     pyberthaoption_fragb = pybertha.pyberthaoption
     pygenoption_fragb = pybgen.berthainputoption
@@ -147,10 +152,14 @@ if __name__ == "__main__":
     else:
         pybertha.runspbertha (pyberthaoption_fragb)
 
-    os.remove("input.inp") 
-    os.remove("fitt2.inp") 
-    os.remove("eps.txt")
-    os.remove("fockmtx.txt")
+    if (os.path.isfile("input.inp"):
+        os.remove("input.inp") 
+    if (os.path.isfile("fitt2.inp"):
+        os.remove("fitt2.inp") 
+    if (os.path.isfile("eps.txt"):
+        os.remove("eps.txt")
+    if (os.path.isfile("fockmtx.txt"):
+        os.remove("fockmtx.txt")
 
     pygenoption_mol = pybgen.berthainputoption
 
@@ -177,10 +186,17 @@ if __name__ == "__main__":
 
     py_eda_nocv.runnocveda (py_eda_nocvoption)
 
-    os.remove("input.inp") 
-    os.remove("fitt2.inp") 
-    os.remove("fockmtx.txt")
+    if (os.path.isfile("input.inp"):
+        os.remove("input.inp") 
+    if (os.path.isfile("fitt2.inp"):
+        os.remove("fitt2.inp") 
+    if (os.path.isfile("eps.txt"):
+        os.remove("eps.txt")
+    if (os.path.isfile("fockmtx.txt"):
+        os.remove("fockmtx.txt")
 
-    os.remove("info_eda_nocv_fragA.json")
-    os.remove("info_eda_nocv_fragB.json")
+    if (os.path.isfile("info_eda_nocv_fragA.json"):
+        os.remove("info_eda_nocv_fragA.json")
+    if (os.path.isfile("info_eda_nocv_fragB.json"):
+        os.remove("info_eda_nocv_fragB.json")
 
