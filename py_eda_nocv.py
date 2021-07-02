@@ -491,13 +491,13 @@ def runnocveda (nocvedaopt):
       print("\nnocv_%i pair eigenvalue: %.8f  energy (a.u.): %.8f energy (kcal/mol): %.8f  " % \
               (j,eigenval[i].real,trace.real,(627.50961*trace).real))
 #
-      deltanocv = eigenval[i]*(d1)
-      trace = numpy.trace(numpy.matmul(deltanocv,fockmTS1))
+      nocvmin = eigenval[i]*(d1)
+      trace = numpy.trace(numpy.matmul(nocvmin,fockmTS1))
       print("nocv_-%i     eigenvalue: %.8f  energy (a.u.): %.8f energy (kcal/mol): %.8f  " % \
               (j,eigenval[i].real,trace.real,(627.50961*trace).real))
       
-      deltanocv = -eigenval[i]*(d2)
-      trace = numpy.trace(numpy.matmul(deltanocv,fockmTS1))
+      nocvplus = -eigenval[i]*(d2)
+      trace = numpy.trace(numpy.matmul(nocvplus,fockmTS1))
       print("nocv_+%i      eigenvalue: %.8f  energy (a.u.): %.8f  energy (kcal/mol): %.8f \n " % \
               (j,eigenval[-i-1].real,trace.real,(627.50961*trace).real))
 
@@ -513,8 +513,8 @@ def runnocveda (nocvedaopt):
       #print(("nocv_-%i  eigenvalue: %.8f  energy (a.u.): %.8f energy (kcal/mol): %.8f  \n" % (j,eigenval[-i-1].real,trace.real,(627.50961*trace).real)))
     
       if (nocvedaopt.cube == True):
-         bertha.density_to_cube(d1.T, "nocv-"+str(j)+".cube", margin, drx, dry, drz )  
-         bertha.density_to_cube(d2.T, "nocv+"+str(j)+".cube", margin, drx, dry, drz )  
+         bertha.density_to_cube(nocvmin.T, "nocv-"+str(j)+".cube", margin, drx, dry, drz )  
+         bertha.density_to_cube(nocvplus.T, "nocv+"+str(j)+".cube", margin, drx, dry, drz )  
          bertha.density_to_cube(deltanocv.T, label+".cube", margin, drx, dry, drz )  
     
     bertha.finalize()
