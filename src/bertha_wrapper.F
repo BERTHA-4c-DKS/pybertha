@@ -27,6 +27,7 @@
 c     potential to add
       logical :: addpot
       real, allocatable :: grid(:,:), pot(:)
+      real, allocatable :: cfit(:)
 
       contains
 
@@ -130,6 +131,10 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       call initijkvec()
 
       call initfitting(fitcase,nfitt,fittfname)
+
+        allocate(cfit(nfitt),stat=rc)
+        if (rc.ne.0) call errmsg('error allocating memory')
+
       call flabel(centfun)
 ! nuclear repulsion energy
       erep = 0.0
@@ -264,9 +269,14 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         if (rc.ne.0) call errmsg('error allocating memory')
         allocate(zz(nfitt),stat=rc)
         if (rc.ne.0) call errmsg('error allocating memory')
+
+
         open(unit=11, file=fittcoefffname, status='unknown')
         rewind(11)
         read(11,*) v
+        cfit(:) = v(:)
+
+! TO DO
 
         a=0
         excfit=0.0
@@ -330,11 +340,18 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         if (rc.ne.0) call errmsg('error allocating memory')
         allocate(zz(nfitt), stat=rc)
         if (rc.ne.0) call errmsg('error allocating memory')
+
+
         call v_calculation(nfitt,fitcase,v)
+
 
         timetomt2 = walltime ()
         ctimetomt2 = cputime ()
         call factlu(nfitt,v)
+
+!! 
+        cfit(:) = v(:)
+
         timetomt2 = walltime () - timetomt2
         ctimetomt2 = cputime () - ctimetomt2
 
@@ -360,15 +377,19 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
      +          '  cputime ', f10.2)
 
         v = zz + v
-        call jmatfitt(fock,ndim,v,nfitt,fitcase)
 
         if (addpot) then 
           print *, "add pot TODO"
-c         call set_emb_pot (grdi, pot)
+
+!          call set_emb_pot (grdi, pot)
         endif
+
+        call jmatfitt(fock,ndim,v,nfitt,fitcase)
+
 
         deallocate(v)
         deallocate(zz)
+
         efittcoulplusexc = 0.0
 
         do ii = 1,ndim
@@ -707,6 +728,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       call fremem()
 
       if (addpot) deallocate(grid, pot)
+      deallocate(cfit)
       
       addpot = .FALSE.
 
@@ -824,6 +846,8 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       if (rc.ne.0) call errmsg('error allocating memory')
       call v_calculation(nfitt,fitcase,v)
       call factlu(nfitt,v)
+
+
 
       if (addpot) then 
         print *, "add pot TODO"
@@ -970,6 +994,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       call initijkvec()
       call initfitting(fitcase, nfitt, fittfname)
+    
       call flabel(centfun)
       allocate (v(nfitt),zz(nfitt))
 
@@ -1074,17 +1099,38 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       integer, intent(in) :: npoints
       real, intent(in) :: grid(4,npoints)
       real, intent(out) :: density(npoints)
+      real, allocatable :: hgf(:)
+      real :: x,y,z,rho
 
       integer :: i
+
+      print*, 'in bertha_get_density_ongrid'    
+      print*, fitcase     
+      print*, nfitt     
+      print*, cfit(:) 
+      print*, 'end bertha_get_density_ongrid'    
+
+      allocate(hgf(nfitt))
 
       do i=1,npoints
         write(*, '(A,F20.5,F20.5,F20.5,F20.5)'), "FORTRAN L: ", 
      +     grid(1,i), grid(2,i), grid(3,i), grid(4,i)
-        density(i) = grid(1,i)*grid(2,i)*grid(3,i)*grid(4,i)
+
+      x = grid(1,i)
+      y = grid(2,i) 
+      z = grid(3,i) 
+      
+      call  fit_dens(rho,hgf,x,y,z,cfit,nfitt,fitcase)
+        density(i) = rho 
+
       enddo
 
+      
+      print*, 'Tot number el.', dot_product(density(:),grid(4,:))     
 c     call function in bertha_ng return density 
 c     call get_density_on_grid (grid, density)
+
+      deallocate(hgf)
 
       end subroutine bertha_get_density_ongrid
 
@@ -1099,6 +1145,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       real, intent(in) :: inpot(npoints)
 
       integer :: i, ierr
+
 
 c      do i=1,npoints
 c        write(*, '(A,F15.5,F15.5,F15.5,F15.5)'), "FORTRAN L: ", 
