@@ -146,12 +146,18 @@ def runspberthaembedrt (pberthaopt):
     start = time.time()
     cstart = time.process_time() 
 
+    print("Type grid", type(grid), grid.shape)
+    print("Type pot",  type(pot), pot.shape)
+    
+
     bertha.set_embpot_on_grid(grid, pot)
     
-    #main run here
+#main run here
     ovapm, eigem, fockm, eigen = bertha.run()
 
     density = bertha.get_density_on_grid(grid)
+    print("Type density", type(density), density.shape)
+    print("Scalar product" , "density.weigt", numpy.dot(density,grid[:,3]))
 
     """
     for i in range(npoints):
