@@ -93,6 +93,9 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
      + nuca, nucb, nucc, nuccnt, rc, istate, a, iocc
 
       real, allocatable :: v(:), zz(:)
+      real, allocatable :: pp(:)
+      integer           :: npoints
+
 
       real :: monoelectronenergy, centfun(ncentm), 
      + dist, r1x, r1y, r1z, d1, r2x, 
@@ -276,7 +279,6 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         read(11,*) v
         cfit(:) = v(:)
 
-! TO DO
 
         a=0
         excfit=0.0
@@ -284,6 +286,19 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         call dftinit_fit(excfit,igrid,expo,v,nfitt,fitcase,zz,a)
 
         v=v+zz
+
+        if (addpot) then 
+          allocate(pp(nfitt),stat=rc)
+          if (rc.ne.0) call errmsg('error allocating memory')
+
+          if (associated(pot))     npoints = SIZE(pot) 
+          
+          if (associated(grid))    call onel_pot_from_grid(grid, pot, npoints, nfitt, fitcase, pp)
+          
+          v = v + pp 
+          deallocate(pp)
+        endif
+
 
         fock=(0.0,0.0) 
 
@@ -378,26 +393,49 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
         v = zz + v
 
-        if (addpot) then 
-          print *, "add pot TODO"
-
-!          call set_emb_pot (grdi, pot)
-        endif
+! Note that this is necessary to evaluate the TOTAL energy
 
         call jmatfitt(fock,ndim,v,nfitt,fitcase)
+
+        do i = 1,nshift
+          do j = 1,i
+          fock(j,i) = conjg(fock(i,j))
+          fock(j+nshift,i+nshift) = conjg(fock(i+nshift,j+nshift))
+          end do
+        end do
+
+! #### Calculation of Tr(D(V_xc+J))    
+        efittcoulplusexc = 0.0
+        do i = 1,ndim
+          do j = 1,ndim
+              efittcoulplusexc = efittcoulplusexc +
+     +        real(c(i,j)*fock(i,j))
+          end do
+        end do
+! #### end  Calculation of Tr(D(V_xc+J))    
+
+!  For Embedding
+
+        if (addpot) then
+          allocate(pp(nfitt),stat=rc)
+          if (rc.ne.0) call errmsg('error allocating memory')
+
+          if (associated(pot))     npoints = SIZE(pot)
+
+          if (associated(grid))    call onel_pot_from_grid(grid, pot, npoints, nfitt, fitcase, pp)
+
+          v = v + pp
+
+          call jmatfitt(fock,ndim,v,nfitt,fitcase)
+
+          deallocate(pp)
+        endif
+
 
 
         deallocate(v)
         deallocate(zz)
 
-        efittcoulplusexc = 0.0
-
-        do ii = 1,ndim
-          do jj = 1,ndim
-            efittcoulplusexc = efittcoulplusexc + 
-     +        real(c(ii,jj)*fock(ii,jj))
-          end do
-        end do
         etemp = efittcoulplusexc - efittcoul / 2
         timetomt1 = walltime () - timetomt1
         ctimetomt1 = cputime () - ctimetomt1
@@ -827,7 +865,9 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       real :: efittcoulplusexc, traceDFock
       complex, parameter :: czero = (0.0,0.0)
       real, allocatable :: v(:), zz(:)
+      real, allocatable :: pp(:)
       integer :: counter, i, j, a, rc
+      integer :: npoints
 
       counter = 1
       do i = 1, ndim
@@ -848,19 +888,14 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 
 
-      if (addpot) then 
-        print *, "add pot TODO"
-c       call set_emb_pot (grdi, pot)
-      endif
-
       call jfitenergy(v,nfitt,efittcoul)
       a = 0
       excfit = 0.0
       call dftinit_fit(excfit,igrid,expo,v,nfitt,fitcase,zz,a)
       v = zz + v
+! Note that this is necessary to evaluate the TOTAL energy
+
       call jmatfitt(fock,ndim,v,nfitt,fitcase)
-      deallocate(v)
-      deallocate(zz)
 
       do i = 1,nshift
         do j = 1,i
@@ -870,7 +905,6 @@ c       call set_emb_pot (grdi, pot)
       end do
 
 ! #### Calculation of Tr(D(V_xc+J))    
- 
       efittcoulplusexc = 0.0
       do i = 1,ndim
           do j = 1,ndim
@@ -878,8 +912,31 @@ c       call set_emb_pot (grdi, pot)
      +        real(c(i,j)*fock(i,j))
           end do
       end do
-
 ! #### end  Calculation of Tr(D(V_xc+J))    
+
+!  For Embedding
+
+      if (addpot) then
+          allocate(pp(nfitt),stat=rc)
+          if (rc.ne.0) call errmsg('error allocating memory')
+
+          if (associated(pot))     npoints = SIZE(pot)
+
+          if (associated(grid))    call onel_pot_from_grid(grid, pot, npoints, nfitt, fitcase, pp)
+
+          v = v + pp
+
+          call jmatfitt(fock,ndim,v,nfitt,fitcase)
+
+          deallocate(pp)
+      endif
+
+
+      deallocate(v)
+      deallocate(zz)
+
+
+
 
       call oneel(monoelectronenergy)
 
@@ -1103,17 +1160,17 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       integer :: i
 
-      print*, 'in bertha_get_density_ongrid'    
-      print*, fitcase     
-      print*, nfitt     
-      print*, cfit(:) 
-      print*, 'end bertha_get_density_ongrid'    
+c      print*, 'in bertha_get_density_ongrid'    
+c      print*, fitcase     
+c      print*, nfitt     
+c      print*, cfit(:) 
+c      print*, 'end bertha_get_density_ongrid'    
 
       allocate(hgf(nfitt))
 
       do i=1,npoints
-        write(*, '(A,F20.5,F20.5,F20.5,F20.5)'), "FORTRAN L: ", 
-     +     grid(1,i), grid(2,i), grid(3,i), grid(4,i)
+c        write(*, '(A,F20.5,F20.5,F20.5,F20.5)'), "FORTRAN L: ", 
+c     +     grid(1,i), grid(2,i), grid(3,i), grid(4,i)
 
       x = grid(1,i)
       y = grid(2,i) 
@@ -1165,11 +1222,14 @@ c     avoid explicit copy
       grid => ingrid 
       pot => inpot
 
+
+
       do i=1,npoints
-        write(*, '(A,F15.5,F15.5,F15.5,F15.5)'), "FORTRAN L: ", 
-     +     grid(1,i), grid(2,i), grid(3,i), grid(4,i)
-        write(*, '(F30.5,A,F23.5)') pot(i), " vs ", 
-     +     grid(1,i)*grid(2,i)*grid(3,i)*grid(4,i)
+c        write(*, '(A,F15.5,F15.5,F15.5,F15.5)'), "FORTRAN L: ", 
+c     +     grid(1,i), grid(2,i), grid(3,i), grid(4,i)
+c        write(*, '(F30.5,A,F23.5)') pot(i), " vs ", 
+c     +     grid(1,i)*grid(2,i)*grid(3,i)*grid(4,i)
+c        inpot(i) = -0.00*ingrid(1,i)/0.5291772106
       enddo
 
       end subroutine bertha_set_embpot_on_grid
