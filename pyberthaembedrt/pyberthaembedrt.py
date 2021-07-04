@@ -1,18 +1,8 @@
 import argparse
-import ctypes
-from os import X_OK
 import numpy
 import sys
-import re
 
 import os.path
-
-from numpy.linalg import eigvalsh
-from scipy.linalg import eigh
-
-import json
-from json import encoder
-
 import time
 
 from dataclasses import dataclass
@@ -37,8 +27,11 @@ class pyberthaembedrtoption:
 
 def runspberthaembedrt (pberthaopt):
 
-    sys.path.insert(0, pberthaopt.berthamodpath)
+    for path in pberthaopt.berthamodpath.split(":"):
+        sys.path.insert(0, path)
+
     import berthamod
+    import pyembmod
     
     print("Options: ")
     for att in [a for a in dir(pberthaopt) if not a.startswith('__')]:
@@ -165,6 +158,16 @@ def runspberthaembedrt (pberthaopt):
         print("Python L: %15.5f vs %15.5f"%(density[i], val))
     """
 
+    embepot = pyembmod.pyemb()
+
+    embepot.set_active_fname("H2O.xyz")
+    embepot.set_enviro_fname("NH3.xyz")
+
+    embepot.initialize()
+    print(grid.shape)
+    print(density.shape)
+    pot = embepot.get_potential(density, grid)
+
     end = time.time()
     cend = time.process_time()
 
@@ -199,7 +202,7 @@ if __name__ == "__main__":
             type=numpy.float64, default=1.0e-11)
     parser.add_argument("--wrapperso", help="set wrapper SO (default = ../../lib/bertha_wrapper.so)", 
             required=False, type=str, default="../lib/bertha_wrapper.so")
-    parser.add_argument("--berthamodpath", help="set berthamod path (default = ../src)", 
+    parser.add_argument("--berthamodpath", help="set berthamod and other intenal mod path path (default = ../src)", 
             required=False, type=str, default="../src")
     parser.add_argument("--eda_nocv_info", help="set to dump info useful for py_eda_nocv",action='store_true',default=False)
     parser.add_argument("--eda_nocv_frag_file", help="set a file (default: info_eda_nocv_fragX.json)",

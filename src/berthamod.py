@@ -546,6 +546,11 @@ class pybertha:
         self.__bertha.init(in_fnameinput, ctypes.c_int(self.__verbosity), 
                 ctypes.c_int(self.__dumpfiles))
 
+        ierr = self.__bertha.get_init_outerr ()
+
+        if ierr != 0:
+            raise Exception("Init error %d in reading input"%(ierr))
+
         self.__init = True
 
     def get_ndim(self):
