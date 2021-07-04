@@ -162,12 +162,12 @@ def runspberthaembedrt (pberthaopt):
 
 #  TEST density on grid
 
-    print("TEST density on grid")
-    print("Type density", type(density), density.shape)
-    print("Scalar product" , "density.weigt", numpy.dot(density,grid[:,3]))
-    print("Dip x" , "density.weigt", numpy.dot(density*grid[:,3],grid[:,0]))
-    print("Dip y" , "density.weigt", numpy.dot(density*grid[:,3],grid[:,1]))
-    print("Dip z" , "density.weigt", numpy.dot(density*grid[:,3],grid[:,2]))
+#    print("TEST density on grid")
+#    print("Type density", type(density), density.shape)
+#    print("Scalar product" , "density.weigt", numpy.dot(density,grid[:,3]))
+#    print("Dip x" , "density.weigt", numpy.dot(density*grid[:,3],grid[:,0]))
+#    print("Dip y" , "density.weigt", numpy.dot(density*grid[:,3],grid[:,1]))
+#    print("Dip z" , "density.weigt", numpy.dot(density*grid[:,3],grid[:,2]))
 
     """
     for i in range(npoints):
@@ -202,19 +202,17 @@ def runspberthaembedrt (pberthaopt):
 
     Da = numpy.matmul(occeigv,numpy.conjugate(occeigv.transpose()))
 
-    dipx = numpy.trace(numpy.matmul(Da,dipx_mat)).real
-    dipy = numpy.trace(numpy.matmul(Da,dipy_mat)).real
-    dipz = numpy.trace(numpy.matmul(Da,dipz_mat)).real
+    dipx_ref = numpy.trace(numpy.matmul(Da,dipx_mat)).real
+    dipy_ref = numpy.trace(numpy.matmul(Da,dipy_mat)).real
+    dipz_ref = numpy.trace(numpy.matmul(Da,dipz_mat)).real
 
-    print("Dipx    ",dipx)
-    print("Dipy    ",dipy)
-    print("Dipz    ",dipz)
+    print("Dipx    ",dipx_ref)
+    print("Dipy    ",dipy_ref)
+    print("Dipz    ",dipz_ref)
 
 
 #  TEST density on grid
 
-    print("TEST one electron potential (embedding) in g-spinor")
-    print("Potential used -x*E and x*E evaluating dipole via finite field")
 
     bertha.finalize()
 
@@ -233,7 +231,7 @@ def runspberthaembedrt (pberthaopt):
     bertha.init()
  
    
-    field = 0.001
+    field = 0.00001
 
 
     pot = grid[:,0]*field
@@ -243,8 +241,6 @@ def runspberthaembedrt (pberthaopt):
     ovapm, eigem, fockm, eigen = bertha.run()
     etotal1 = bertha.get_etotal()
 
-
-    pot = grid[:,0]*(-field)
 
     bertha.finalize()
 
@@ -261,16 +257,34 @@ def runspberthaembedrt (pberthaopt):
     bertha.set_densitydiff(1)
     
     bertha.init()
- 
 
+    pot = grid[:,0]*(-field)
+
+    bertha.set_embpot_on_grid(grid, pot)
     ovapm, eigem, fockm, eigen = bertha.run()
     etotal2 = bertha.get_etotal()
 
     dipx = (etotal2 - etotal1)/(2*field)
 
 
-    print("Dip x" , "from finite field", dipx)
+    print("Dipole moment analitical: Tr(D dip_mat)")
 
+    print("Dip x    ",dipx_ref)
+    print("Dip y    ",dipy_ref)
+    print("Dip z    ",dipz_ref)
+
+    print("TEST dipole moment from density on grid numerical integration")
+    print("  ")
+    print("Type density", type(density), density.shape)
+    print("Scalar product" , "density.weigt", numpy.dot(density,grid[:,3]))
+    print("Dip x" , "density.weigt", numpy.dot(density*grid[:,3],grid[:,0]))
+    print("Dip y" , "density.weigt", numpy.dot(density*grid[:,3],grid[:,1]))
+    print("Dip z" , "density.weigt", numpy.dot(density*grid[:,3],grid[:,2]))
+
+    print("  ")
+    print("TEST one electron potential (embedding) in g-spinor")
+    print("Potential used -x*E and x*E evaluating dipole via finite field")
+    print("Dip x" , "from finite field", dipx)
     
     sys.stdout.flush()
 
