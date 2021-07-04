@@ -182,9 +182,12 @@ def runspberthaembedrt (pberthaopt):
     print("MainRun Time: ", bertha.get_mainruntime() , \
             " (CPU time: ", bertha.get_mainrunctime(), ") s ")
 
+    bertha.realtime_init()
 
     normalise = 1
     dip_mat = None
+    
+   
 
     dipx_mat, dipy_mat, dipz_mat = \
             bertha.get_realtime_dipolematrix (0, normalise)
