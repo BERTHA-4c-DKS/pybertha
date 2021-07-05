@@ -2,10 +2,23 @@ from pymol.cgo import *
 from pymol import cmd
 import glob
 import os
+import sys
 
-lista = ["diff_tot.cube", "diff_tot_ortho.cube", "nocv-1.cube", "nocv+1.cube", "pair1.cube"]
+lista = []
+xyzfile = ""
+#lista = ["diff_tot.cube", "diff_tot_ortho.cube", "nocv-1.cube", "nocv+1.cube", "pair1.cube"]
+#cmd.load('AuCn+.xyz')
 
-cmd.load('aucn.xyz')
+print(sys.argv)
+
+if len(sys.argv) != 5:
+    print("usage: ", sys.argv[0], " cube xyzfile")
+    exit(1)
+else:
+    lista.append(sys.argv[3])
+    xyzfile = sys.argv[4]
+
+cmd.load(xyzfile)
 
 cmd.set_bond ('stick_radius', 0.1, 'all', 'all')
 cmd.set ('sphere_scale', 0.15, 'all')
@@ -48,3 +61,18 @@ for idx, name in enumerate(lista):
     cmd.color('blue', basename+'_sp')
     cmd.isosurface(basename+'_sm', basename, -0.0014)
     cmd.color('red', basename+'_sm')
+
+
+cmd.set_view ('\
+    -0.086753346,    0.836276770,    0.541441798,\
+     0.670052588,   -0.353231400,    0.652936995,\
+     0.737265468,    0.419426382,   -0.529700875,\
+     0.000000000,    0.000000000,  -34.167503357,\
+     0.108778238,    0.131587982,    2.662951946,\
+    26.937919617,   41.397087097,  -20.000000000' )
+
+cmd.ray(600,600)
+cmd.png('this.png', dpi=150)
+
+cmd.quit()
+
