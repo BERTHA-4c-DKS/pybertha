@@ -9,10 +9,9 @@ xyzfile = ""
 #lista = ["diff_tot.cube", "diff_tot_ortho.cube", "nocv-1.cube", "nocv+1.cube", "pair1.cube"]
 #cmd.load('AuCn+.xyz')
 
-print(sys.argv)
-
 if len(sys.argv) != 5:
     print("usage: ", sys.argv[0], " cube xyzfile")
+    cmd.quit()
     exit(1)
 else:
     lista.append(sys.argv[3])
