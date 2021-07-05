@@ -4,6 +4,7 @@
 callfunctions () {
 
   cp ./SHE/plot.p ./SHE/$SYSYEMNAME/
+  cp ./SHE/extractintE.py ./SHE/$SYSYEMNAME/
   cp load_cube.py ./SHE/$SYSYEMNAME/
   cd ./SHE/$SYSYEMNAME/
 
@@ -16,8 +17,13 @@ callfunctions () {
 	  python3 /home/redo/BERTHA/pycubescd/pycd.py -f pair"$i".cube
 
 	  pymol  -c load_cube.py  pair"$i".cube  $SYSYEMNAME.xyz
-
 	  mv this.png pair"$i".png 
+
+	  pymol  -c load_cube.py  "nocv-"$i".cube"  $SYSYEMNAME.xyz
+	  mv this.png "nocv-"$i".png"
+
+	  pymol  -c load_cube.py  "nocv+"$i".cube"  $SYSYEMNAME.xyz
+	  mv this.png "nocv+"$i".png"
 
 	  i=$(($i+1))
   done
@@ -32,7 +38,11 @@ callfunctions () {
 
   gnuplot plot.p
   epstopdf cd.ps 
- 
+
+  cp ../results.tex .
+
+  python3 extractintE.py $SYSYEMNAME"out.txt" >> results.tex
+
   cd -
 }
 
