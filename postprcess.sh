@@ -3,6 +3,7 @@
 
 callfunctions () {
 
+  cp ./SHE/plot.p ./SHE/$SYSYEMNAME/
   cp load_cube.py ./SHE/$SYSYEMNAME/
   cd ./SHE/$SYSYEMNAME/
 
@@ -28,7 +29,10 @@ callfunctions () {
   pymol  -c load_cube.py diff_tot.cube $SYSYEMNAME.xyz
   mv this.png diff_tot.png
   python3 /home/redo/BERTHA/pycubescd/pycd.py -f diff_tot.cube 
-  
+
+  gnuplot plot.p
+  epstopdf cd.ps 
+ 
   cd -
 }
 
