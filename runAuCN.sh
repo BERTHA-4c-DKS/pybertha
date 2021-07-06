@@ -64,16 +64,14 @@ callfunctionspost () {
   cd -
 }
 
-
-
 export SYSYEMNAME="AuCN"
-export ATOMB="Au"
-export ATOMA="CN"
+export ATOMA="Au"
+export ATOMB="CN"
 
 export BASISSET="Au:dyall_vtz,C:aug-cc-pVTZ-DK,N:aug-cc-pVTZ-DK"
 export FITSET="Au:b20,C:fittset,N:fittset"
 
-callfunctions
+#callfunctions
 callfunctionspost
 
 
