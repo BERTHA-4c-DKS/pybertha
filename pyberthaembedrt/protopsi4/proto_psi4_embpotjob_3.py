@@ -2,7 +2,7 @@ import sys
 import os
 #sys.path.append("/usr/local/xcfun_py3/lib64/python")
 #sys.path.append("/usr/local/PyADF-myfork/src/")
-sys.path.append('/home/mdesantis/local/xcfun_py3/lib64/python')
+sys.path.append('/home/matteo/local/xcfun/lib/python')
 import numpy as np
 import psi4
 from pkg_resources import parse_version
@@ -77,7 +77,7 @@ Vpot.initialize()
 x, y, z, w = Vpot.get_np_xyzw()
 Vpot.finalize()
 
-points = np.zeros((x.shape[0],4) , dtype=np.float64)
+points = np.zeros((x.shape[0],4)) #dtype?
 points[: ,0] = x
 points[: ,1] = y
 points[: ,2] = z
@@ -112,19 +112,19 @@ nh3_epc = p4c.ESPPropCalc(nh3_wfn)
 elpot_nh3 = np.array(nh3_epc.compute_esp_over_grid_in_memory( psi4_matrix ))
 
 #custom grid object (pyadf)
-cgrid=pyadf.customgrid(mol=m_dummy,coords=points[:,:3],weights=w)
+cgrid=pyadf.customgrid(mol=m_dummy,coords=np.ascontiguousarray(points[:,:3]),weights=np.ascontiguousarray(w))
 #DEBUG: dump the psi4 grid
 GridWriter.write_xyzw(grid=cgrid,filename=os.path.join("./", 'PSI4GRID'),add_comment=False)
-
+np.savetxt("psi4grid.txt",points)
 
 # 2.1 map A and B density on grid points
 from grid import GridFactoryDensity 
 #we use the total system grid
 #the first positional arguents (psi4 molecule object) is used to generate the basis set.
 tempA = GridFactoryDensity(h2o_mol,points,'sto-3g',C_h2o) 
-rho = 2.0*tempA.rho
+rho = tempA.rho
 rho_container = np.zeros((rho.shape[0],10),dtype=np.float_)
-rho_container[:,0] = rho
+rho_container[:,0] = 2.0*rho
 #DEBUG
 print("rhoA length: %i\n" % (tempA.rho).shape[0])
 #quick check (n. electrons)
@@ -135,13 +135,19 @@ dens_gf_act = GridFunctionFactory.newGridFunction(cgrid,np.ascontiguousarray(rho
 densgrad = GridFunctionFactory.newGridFunction(cgrid, np.ascontiguousarray(rho_container[:, 1:4]))   #for now we have no gradient and hessian of the density
 denshess = GridFunctionFactory.newGridFunction(cgrid, np.ascontiguousarray(rho_container[:, 4:10]))  
 density_active = GridFunctionContainer([dens_gf_act, densgrad, denshess])
-print("check dens_active type %s\n" % type(density_active))
+#dens_gf_act.get_xyzvfile(filename=os.path.join("./", 'DENSa'),add_comment=False)
+GridFunctionWriter.write_xyzv(dens_gf_act,filename=os.path.join("./", \
+        'DENSa'),add_comment=False)
+print("dens_active is  %s\n" % type(density_active))
+
+res=density_active+density_active
+exit()
 #B
 
 tempB = GridFactoryDensity(nh3_mol,points,'sto-3g',C_nh3) 
-rho = 2.0*tempB.rho
+rho = tempB.rho
 #we re-use the previously defined rho_container
-rho_container[:,0] = rho
+rho_container[:,0] = 2.0*rho
 #DEBUG
 print("rhoB length: %i\n" % (tempA.rho).shape[0])
 
@@ -150,7 +156,6 @@ isolated_dens_enviro =  GridFunctionContainer([dens_gf_enviro, densgrad, denshes
 #check the pyadf object
 nel_enviro = isolated_dens_enviro[0].integral()
 print("  Integrated number of electrons for subsystem B: %.8f" % nel_enviro)
-
 #the pyadf object for elpot_nh3
 #DEBUG
 
@@ -162,8 +167,9 @@ isolated_elpot_enviro=GridFunctionContainer([elpot_gf_nh3])
 # 2.2 pyembed calculations to get FDE embedding potentials from the isolated subsystems, put these in proper format
 
 embed_settings = pyadf.PyEmbed.EmbedXCFunSettings()
-embed_settings.set_fun_nad_xc ({'BeckeX': 1.0, 'LYPC': 1.0})
-embed_settings.set_fun_nad_kin({'pw91k' : 1.0})
+
+embed_settings.set_fun_nad_xc ({'lda' : 1.0})
+embed_settings.set_fun_nad_kin({'tfk' : 1.0})
 
 embed_settings.show_functionals()
 
