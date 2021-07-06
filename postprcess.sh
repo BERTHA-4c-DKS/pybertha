@@ -43,6 +43,8 @@ callfunctions () {
 
   python3 extractintE.py $SYSYEMNAME"out.txt" >> results.tex
 
+  pdflatex results.tex
+
   cd -
 }
 

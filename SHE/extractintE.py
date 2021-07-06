@@ -26,8 +26,9 @@ for line in fp:
 
 print("\\begin{table}[]")
 print("\\begin{tabular}{ll}")
+print("\\hline")
 for name in energies:
-    print(name.replace("_", "") , " & ", energies[name] , "\\\\")
+    print(name.replace("_", "") , " & ", energies[name] , "\\\\ \\hline")
 print("\\end{tabular}")
 print("\\end{table}")
 print("\\end{document}")
