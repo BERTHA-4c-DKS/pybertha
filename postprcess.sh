@@ -16,23 +16,23 @@ callfunctions () {
 
 	  python3 /home/redo/BERTHA/pycubescd/pycd.py -f pair"$i".cube
 
-	  pymol  -c load_cube.py  pair"$i".cube  $SYSYEMNAME.xyz
+	  pymol  -c load_cube.py  pair"$i".cube  $SYSYEMNAME.xyz 0.0014
 	  mv this.png pair"$i".png 
 
-	  pymol  -c load_cube.py  "nocv-"$i".cube"  $SYSYEMNAME.xyz
+	  pymol  -c load_cube.py  "nocv-"$i".cube"  $SYSYEMNAME.xyz 0.0008
 	  mv this.png "nocv-"$i".png"
 
-	  pymol  -c load_cube.py  "nocv+"$i".cube"  $SYSYEMNAME.xyz
+	  pymol  -c load_cube.py  "nocv+"$i".cube"  $SYSYEMNAME.xyz 0.0008
 	  mv this.png "nocv+"$i".png"
 
 	  i=$(($i+1))
   done
 
-  pymol  -c load_cube.py diff_tot_ortho.cube $SYSYEMNAME.xyz
+  pymol  -c load_cube.py diff_tot_ortho.cube $SYSYEMNAME.xyz 0.0014
   mv this.png diff_tot_ortho.png
   python3 /home/redo/BERTHA/pycubescd/pycd.py -f diff_tot_ortho.cube
 
-  pymol  -c load_cube.py diff_tot.cube $SYSYEMNAME.xyz
+  pymol  -c load_cube.py diff_tot.cube $SYSYEMNAME.xyz 0.0014
   mv this.png diff_tot.png
   python3 /home/redo/BERTHA/pycubescd/pycd.py -f diff_tot.cube 
 

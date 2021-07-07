@@ -6,16 +6,18 @@ import sys
 
 lista = []
 xyzfile = ""
+cutvalue = 0.00014
 #lista = ["diff_tot.cube", "diff_tot_ortho.cube", "nocv-1.cube", "nocv+1.cube", "pair1.cube"]
 #cmd.load('AuCn+.xyz')
 
-if len(sys.argv) != 5:
-    print("usage: ", sys.argv[0], " cube xyzfile")
+if len(sys.argv) != 6:
+    print("usage: ", sys.argv[0], " cube xyzfile cutvalue")
     cmd.quit()
     exit(1)
 else:
     lista.append(sys.argv[3])
     xyzfile = sys.argv[4]
+    cutvalue = float(sys.argv[5])
 
 cmd.load(xyzfile)
 
@@ -56,9 +58,9 @@ cmd.set('transparency', 0.50)
 for idx, name in enumerate(lista):
     cmd.load(name)
     basename = os.path.splitext(name)[0]
-    cmd.isosurface(basename+'_sp', basename, +0.0014)
+    cmd.isosurface(basename+'_sp', basename, cutvalue)
     cmd.color('blue', basename+'_sp')
-    cmd.isosurface(basename+'_sm', basename, -0.0014)
+    cmd.isosurface(basename+'_sm', basename, -1.0*cutvalue)
     cmd.color('red', basename+'_sm')
 
 
