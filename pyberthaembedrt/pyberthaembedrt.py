@@ -121,12 +121,6 @@ def runspberthaembedrt (pberthaopt):
         w += 0.1
     """
 
-    embepot = pyembmod.pyemb()
-
-    embepot.set_active_fname("H2O.xyz")
-    embepot.set_enviro_fname("NH3.xyz")
-
-
     #read a real grid
     grid = berthamod.read_grid_file ("ADFGRID")
     if grid is None:
@@ -163,6 +157,16 @@ def runspberthaembedrt (pberthaopt):
         val = grid[i,0] * grid[i,1]  * grid[i,2] * grid[i,3]
         print("Python L: %15.5f vs %15.5f"%(density[i], val))
     """
+
+    embepot = pyembmod.pyemb()
+
+    embepot.set_active_fname("H2O.xyz")
+    embepot.set_enviro_fname("NH3.xyz")
+
+    embepot.initialize()
+    print(grid.shape)
+    print(density.shape)
+    pot = embepot.get_potential(density, grid)
 
     end = time.time()
     cend = time.process_time()

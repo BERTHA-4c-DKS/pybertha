@@ -50,21 +50,27 @@ class pyemb:
 
         self.__init = True
 
-    def get_potential (self, density):
+    def get_potential (self, density, grid):
         # TODO given the density on the grid get the potential 
 
         if not isinstance(density,(np.ndarray)):
             raise TypeError("input must be a numpy.ndarray")
+
+        if not isinstance(grid,(np.ndarray)):
+            raise TypeError("input must be a numpy.ndarray")
         
         npoints = 0
         
-        if len(density.shape) == 2:
-            if density.shape[1] == 4:
+        if len(grid.shape) == 2 and len(density.shape) == 1:
+            if grid.shape[1] == 4:
                 npoints = density.shape[0]
+
+                if (npoints != density.shape[0]):
+                    raise PyEmbError ("incomaptible grid dimension")
             else:
                 raise TypeError("input must be a numpy.ndarray npoints X 4")
         else:
-            raise TypeError("input must be a numpy.ndarray npoints X 4")
+            raise TypeError("input must be a numpy.ndarray npoints and npoints X 4 ")
                 
         pot = np.zeros(npoints, dtype=np.double)
         pot = np.ascontiguousarray(pot, dtype=np.double)
