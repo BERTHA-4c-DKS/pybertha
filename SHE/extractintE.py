@@ -28,7 +28,7 @@ print("\\begin{table}[]")
 print("\\begin{tabular}{ll}")
 print("\\hline")
 for name in energies:
-    print(name.replace("_", "") , " & ", energies[name] , "\\\\ \\hline")
+    print(name.replace("_", "") + " & %12.4f"%( energies[name]) + "\\\\ \\hline")
 print("\\end{tabular}")
 print("\\end{table}")
 print("\\end{document}")

@@ -43,7 +43,11 @@ callfunctions () {
 
   python3 extractintE.py $SYSYEMNAME"out.txt" >> results.tex
 
+  sed -i "s/Bond\ analysis\ SHE/Bond\ analysis\ SHE\ $SYSYEMNAME/g" results.tex
+
   pdflatex results.tex
+
+  cp results.pdf ../../results$SYSYEMNAME.pdf
 
   cd -
 }
