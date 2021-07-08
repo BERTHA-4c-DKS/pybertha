@@ -186,7 +186,6 @@ def runspberthaembedrt (pberthaopt):
 
     normalise = 1
     dip_mat = None
-    
    
 
     dipx_mat, dipy_mat, dipz_mat = \
@@ -217,6 +216,22 @@ def runspberthaembedrt (pberthaopt):
     print("TEST one electron potential (embedding) in g-spinor")
     print("Potential used -x*E and x*E evaluating dipole via finite field")
 
+    bertha.finalize()
+
+    bertha.set_fittcoefffname(fittcoefffname)
+    bertha.set_ovapfilename(ovapfilename)
+    bertha.set_vctfilename(vctfilename)
+    bertha.set_fnameinput(fnameinput)
+    bertha.set_fittfname(fittfname)
+    bertha.set_thresh(pberthaopt.thresh)
+    
+    bertha.set_verbosity(verbosity)
+    bertha.set_dumpfiles(dumpfiles)
+    
+    bertha.set_densitydiff(1)
+    
+    bertha.init()
+ 
    
     field = 0.001
 
@@ -230,6 +245,23 @@ def runspberthaembedrt (pberthaopt):
 
 
     pot = grid[:,0]*(-field)
+
+    bertha.finalize()
+
+    bertha.set_fittcoefffname(fittcoefffname)
+    bertha.set_ovapfilename(ovapfilename)
+    bertha.set_vctfilename(vctfilename)
+    bertha.set_fnameinput(fnameinput)
+    bertha.set_fittfname(fittfname)
+    bertha.set_thresh(pberthaopt.thresh)
+    
+    bertha.set_verbosity(verbosity)
+    bertha.set_dumpfiles(dumpfiles)
+    
+    bertha.set_densitydiff(1)
+    
+    bertha.init()
+ 
 
     ovapm, eigem, fockm, eigen = bertha.run()
     etotal2 = bertha.get_etotal()
