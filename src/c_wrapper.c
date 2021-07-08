@@ -31,6 +31,8 @@
 #define f_ncent spec_mp_ncent_
 #define f_bertha_get_coord bertha_wrapper_mp_bertha_get_coord_
 
+#define f_outerr spec_mp_outerr_
+
 #else
 
 #define f_bertha_init __bertha_wrapper_MOD_bertha_init
@@ -61,6 +63,8 @@
 #define f_ncent __spec_MOD_ncent
 #define f_bertha_get_coord __bertha_wrapper_MOD_bertha_get_coord
 
+#define f_outerr __spec_MOD_outerr
+
 #endif
 
 void f_bertha_density_to_cube (double *, double *, double *, 
@@ -86,6 +90,8 @@ extern double f_sfact, f_etotal, f_erep, f_thresh, f_eecoul, f_eexc;
 
 extern int f_ncent;
 void f_bertha_get_coord (int *, double *, double *, double *, double *);
+
+extern int f_outerr;
 
 // DATA METHODS
 
@@ -130,6 +136,13 @@ int get_ndim ()
 int get_nshift ()
 {
   int val = f_nshift;
+
+  return val;
+}
+
+int get_init_outerr ()
+{
+  int val = f_outerr;
 
   return val;
 }
