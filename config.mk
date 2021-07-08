@@ -22,7 +22,7 @@ LIBXC=yes
 # export OMP_SCHEDULE=dynamic
 # export OMP_STACKSIZE=200M (KMP_.... for Intel)
 # export OMP_NUM_THREADS=4
-USEOPENMP=yes
+USEOPENMP=no
 
 BERTHAROOT=/home/redo/Project_Bertha/bertha_ng
 

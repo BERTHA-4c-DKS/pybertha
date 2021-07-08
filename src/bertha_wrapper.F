@@ -135,8 +135,8 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       call initfitting(fitcase,nfitt,fittfname)
 
-        allocate(cfit(nfitt),stat=rc)
-        if (rc.ne.0) call errmsg('error allocating memory')
+      allocate(cfit(nfitt),stat=rc)
+      if (rc.ne.0) call errmsg('error allocating memory')
 
       call flabel(centfun)
 ! nuclear repulsion energy
