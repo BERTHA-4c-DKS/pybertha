@@ -11,10 +11,10 @@ PROFILE=no
 
 #is used only by serial
 #use Intel compiler
-USEINTEL=no
+USEINTEL=yes
 
 #LIBXC
-LIBXC=no
+LIBXC=yes
 
 # use OpenMP with Intel there could be problem related to the stacksize
 # ulimit -s unlimited
@@ -24,7 +24,7 @@ LIBXC=no
 # export OMP_NUM_THREADS=4
 USEOPENMP=no
 
-BERTHAROOT=/home/redo/Sources/BERTHA/bertha_ng
+BERTHAROOT=/home/redo/Project_Bertha/bertha_ng
 
 ###
 ## NO BLUEGENE
@@ -145,7 +145,7 @@ else
   LIBS = $(BGQFELAPACK)
 endif
 
-FFLAGS += -I../common 
+#FFLAGS += -I../common 
 
 CFLAGS += -fPIC
 FFLAGS += -fPIC
