@@ -7,7 +7,7 @@ import psi4
 from pkg_resources import parse_version
 from molecule import Molecule
 
-psi4.set_num_threads(16)
+#psi4.set_num_threads(16)
 h2o=Molecule('H2O.xyz')
 h2o.append('symmetry c1' +'\n' + 'no_com' + '\n' + 'no_reorient' + '\n')
 psi4.set_options({'basis': 'aug-cc-pvdz', # can be defined later maybe?
@@ -15,13 +15,14 @@ psi4.set_options({'basis': 'aug-cc-pvdz', # can be defined later maybe?
                   'DF_SCF_GUESS': 'False',
                   'scf_type': 'direct',
                   'dft_radial_scheme' : 'becke',
-                  'dft_radial_points': 89,
-                  'dft_spherical_points' : 770,
+                  'dft_radial_points': 50,
+                  'dft_spherical_points' : 194,
                   'e_convergence': 1e-8,
                   'd_convergence': 1e-8})
 h2o_mol=psi4.geometry(h2o.geometry)
 ene, h2o_wfn = psi4.energy('blyp', return_wfn=True)
 C_h2o=np.array(h2o_wfn.Ca_subset("AO","OCC"))
+D_h2o=np.array(h2o_wfn.Da())
 
 # 2.1 map A and B density on grid points
 from grid import GridFactoryDensity 
@@ -41,5 +42,15 @@ rho = 2.0*tempA.rho
 #number of electrons from rho
 tempA.integrate()
 
+from grid import GridFactoryDensity_fromD
+
+mints = psi4.core.MintsHelper(h2o_wfn.basisset())
+S =np.asarray(mints.ao_overlap())
+
+Dlist=[D_h2o,S]
+tempD=GridFactoryDensity_fromD(h2o_mol,points,'aug-cc-pvdz',Dlist) 
+
+tempD.integrate()
+print(np.allclose(tempA.rho,tempD.rho))
 #rho_container = np.zeros((rho.shape[0],10),dtype=np.float_)
 #rho_container[:,0] = rho

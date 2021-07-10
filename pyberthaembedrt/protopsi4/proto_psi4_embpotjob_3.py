@@ -59,18 +59,18 @@ else:
 
 
 tot_mol=psi4.geometry(tot.geometry)
-
-psi4.set_options({'basis': 'sto-3g', # can be defined later maybe?
+basis_set='aug-cc-pvdz'
+psi4.set_options({'basis': basis_set, # can be defined later maybe?
                   'puream': 'True',
                   'DF_SCF_GUESS': 'False',
                   'scf_type': 'direct',
                   'dft_radial_scheme' : 'becke',
-                  'dft_radial_points': 49,
-                  'dft_spherical_points' : 170,
+                  'dft_radial_points': 50,
+                  'dft_spherical_points' : 110,
                   'e_convergence': 1e-8,
                   'd_convergence': 1e-8})
 
-basis_tot = psi4.core.BasisSet.build(tot_mol, "ORBITAL", "AUG-CC-PVDZ")
+basis_tot = psi4.core.BasisSet.build(tot_mol, "ORBITAL", basis_set)
 sup = build_superfunctional("BLYP", True)[0]
 Vpot = psi4.core.VBase.build(basis_tot, sup, "RV")
 Vpot.initialize()
@@ -112,7 +112,8 @@ nh3_epc = p4c.ESPPropCalc(nh3_wfn)
 elpot_nh3 = np.array(nh3_epc.compute_esp_over_grid_in_memory( psi4_matrix ))
 
 #custom grid object (pyadf)
-cgrid=pyadf.customgrid(mol=m_dummy,coords=np.ascontiguousarray(points[:,:3]),weights=np.ascontiguousarray(w))
+cgrid=pyadf.customgrid(mol=m_dummy,coords=np.ascontiguousarray(points[:,:3],dtype=np.float_),weights=np.ascontiguousarray(w,dtype=np.float_))
+print("cgrid is %s\n" % type(cgrid))
 #DEBUG: dump the psi4 grid
 GridWriter.write_xyzw(grid=cgrid,filename=os.path.join("./", 'PSI4GRID'),add_comment=False)
 np.savetxt("psi4grid.txt",points)
@@ -121,37 +122,38 @@ np.savetxt("psi4grid.txt",points)
 from grid import GridFactoryDensity 
 #we use the total system grid
 #the first positional arguents (psi4 molecule object) is used to generate the basis set.
-tempA = GridFactoryDensity(h2o_mol,points,'sto-3g',C_h2o) 
+tempA = GridFactoryDensity(h2o_mol,points,basis_set,C_h2o) 
 rho = tempA.rho
+#DEBUG
+print("rho is %s\n" % type(rho))
+np.savetxt("densa.txt",rho*2.00)
 rho_container = np.zeros((rho.shape[0],10),dtype=np.float_)
-rho_container[:,0] = 2.0*rho
+rho_container[:,0] = np.float_(2.0)*rho
 #DEBUG
 print("rhoA length: %i\n" % (tempA.rho).shape[0])
 #quick check (n. electrons)
 tempA.integrate()
 
 #set the pyadf container
-dens_gf_act = GridFunctionFactory.newGridFunction(cgrid,np.ascontiguousarray(rho_container[:,0]), gf_type="density") 
-densgrad = GridFunctionFactory.newGridFunction(cgrid, np.ascontiguousarray(rho_container[:, 1:4]))   #for now we have no gradient and hessian of the density
-denshess = GridFunctionFactory.newGridFunction(cgrid, np.ascontiguousarray(rho_container[:, 4:10]))  
+dens_gf_act = GridFunctionFactory.newGridFunction(cgrid,np.ascontiguousarray(rho_container[:,0],dtype=np.float_), gf_type="density") 
+densgrad = GridFunctionFactory.newGridFunction(cgrid, np.ascontiguousarray(rho_container[:, 1:4],dtype=np.float_))   #for now we have no gradient and hessian of the density
+denshess = GridFunctionFactory.newGridFunction(cgrid, np.ascontiguousarray(rho_container[:, 4:10],dtype=np.float_))  
 density_active = GridFunctionContainer([dens_gf_act, densgrad, denshess])
 #dens_gf_act.get_xyzvfile(filename=os.path.join("./", 'DENSa'),add_comment=False)
 GridFunctionWriter.write_xyzv(dens_gf_act,filename=os.path.join("./", \
         'DENSa'),add_comment=False)
 print("dens_active is  %s\n" % type(density_active))
 
-res=density_active+density_active
-exit()
 #B
 
-tempB = GridFactoryDensity(nh3_mol,points,'sto-3g',C_nh3) 
+tempB = GridFactoryDensity(nh3_mol,points,basis_set,C_nh3) 
 rho = tempB.rho
 #we re-use the previously defined rho_container
-rho_container[:,0] = 2.0*rho
+rho_container[:,0] = np.float_(2.0)*rho
 #DEBUG
 print("rhoB length: %i\n" % (tempA.rho).shape[0])
 
-dens_gf_enviro = GridFunctionFactory.newGridFunction(cgrid,np.ascontiguousarray(rho_container[:,0]), gf_type="density") 
+dens_gf_enviro = GridFunctionFactory.newGridFunction(cgrid,np.ascontiguousarray(rho_container[:,0],dtype=np.float_), gf_type="density") 
 isolated_dens_enviro =  GridFunctionContainer([dens_gf_enviro, densgrad, denshess])
 #check the pyadf object
 nel_enviro = isolated_dens_enviro[0].integral()
@@ -161,11 +163,14 @@ print("  Integrated number of electrons for subsystem B: %.8f" % nel_enviro)
 
 print("elpot_nh3 length: %i\n" % elpot_nh3.shape[0])
 
-elpot_gf_nh3 = GridFunctionFactory.newGridFunction(cgrid,np.ascontiguousarray(elpot_nh3), gf_type="potential") 
-isolated_elpot_enviro=GridFunctionContainer([elpot_gf_nh3])
+#the following block is unnecessary
+elpot_gf_nh3 = GridFunctionFactory.newGridFunction(cgrid,np.ascontiguousarray(elpot_nh3,dtype=np.float_), gf_type="potential") 
+#elpot_gf_nh3 is GridFunctionPotential object (see below) 
+epval=elpot_gf_nh3.get_values()
+print("check frozen pot: .....PASS: %s\n" % (np.allclose(epval,elpot_nh3)))
+
 
 # 2.2 pyembed calculations to get FDE embedding potentials from the isolated subsystems, put these in proper format
-
 embed_settings = pyadf.PyEmbed.EmbedXCFunSettings()
 
 embed_settings.set_fun_nad_xc ({'lda' : 1.0})
@@ -176,11 +181,19 @@ embed_settings.show_functionals()
 embed_eval = pyadf.PyEmbed.EmbedXCFunEvaluator(settings=embed_settings)
 
 nadpot_active = embed_eval.get_nad_pot(density_active,isolated_dens_enviro)
-#fde_embpot_h2o = embed_eval.get_emb_pot(density_active, isolated_dens_enviro, isolated_elpot_enviro)
+fde_embpot_h2o=nadpot_active+elpot_gf_nh3
+print("check nad  and isolated_ep type..\n")
+print(type(nadpot_active))
+print(type(elpot_gf_nh3))
+fde_embpot_h2o_1 = embed_eval.get_emb_pot(density_active, isolated_dens_enviro, elpot_gf_nh3)
 #fde_embpot_nh3 = embed_eval.get_emb_pot(isolated_dens_nh3, isolated_dens_h2o, isolated_elpot_h2o)
 
-#GridFunctionWriter.write_xyzwv(fde_embpot_h2o,filename=os.path.join("./", \
-#        'EMBPOT_PYEMBED_ADFGRID_H2O'),add_comment=False)
+GridFunctionWriter.write_xyzwv(nadpot_active,filename=os.path.join("./", \
+        'NADPOT_PYEMBED_ADFGRID_H2O'),add_comment=False)
+GridFunctionWriter.write_xyzwv(fde_embpot_h2o,filename=os.path.join("./", \
+        'EMBPOT_PYEMBED_ADFGRID_H2O'),add_comment=False)
+GridFunctionWriter.write_xyzwv(fde_embpot_h2o_1,filename=os.path.join("./", \
+        'EMBPOT_PYEMBED_ADFGRID_H2O_1'),add_comment=False)
 #GridFunctionWriter.write_xyzwv(fde_embpot_nh3,filename=os.path.join("./", \
 #        'EMBPOT_PYEMBED_ADFGRID_NH3'),add_comment=False)
 #GridFunctionWriter.write_cube(fde_embpot_h2o,filename=os.path.join("./", \
