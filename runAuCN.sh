@@ -16,7 +16,7 @@ export FITSET="Au:b20,C:fittset,N:fittset"
 
 . ./edafunctions.sh --source-only
 
-#runeda
+runeda
 posteda
 
 

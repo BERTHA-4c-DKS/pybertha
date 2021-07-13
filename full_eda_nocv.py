@@ -1,5 +1,6 @@
 import subprocess
 import argparse
+import shutil
 import numpy
 import shlex
 import sys
@@ -102,17 +103,34 @@ if __name__ == "__main__":
     pyberthaoption_fraga.eda_nocv_info = True
     pyberthaoption_fraga.eda_nocv_frag_file = "info_eda_nocv_fragA.json"
 
+    pyberthaoption_fraga.cube = args.cube
+    pyberthaoption_fraga.deltax = args.deltax
+    pyberthaoption_fraga.deltay = args.deltay
+    pyberthaoption_fraga.deltaz = args.deltaz
+    pyberthaoption_fraga.lmargin = args.lmargin
+
     if args.externalprocess:
-       toexe = "python3 ./pybertha.py --eda_nocv_info --eda_nocv_frag_file " \
-               + pyberthaoption_fraga.eda_nocv_frag_file
+       toexe = ""
+
+       if args.cube:
+           toexe = "python3 ./pybertha.py --eda_nocv_info --eda_nocv_frag_file " \
+               + pyberthaoption_fraga.eda_nocv_frag_file + " --cube --deltax " + \
+               str(args.deltax) + " --deltay " + str(args.deltay) + " --deltaz " + \
+               str(args.deltaz) + " --lmargin " + str(args.lmargin)
+       else:
+           toexe = "python3 ./pybertha.py --eda_nocv_info --eda_nocv_frag_file" \
+                   + pyberthaoption_fraga.eda_nocv_frag_file
+
        print("Start pybertha fragA")
        execute(shlex.split(toexe))
        #results  = subprocess.run(toexe, shell=True, check=True, \
        #           stdout=subprocess.PIPE, stderr=subprocess.PIPE, \
        #           universal_newlines=True)
     else:
-        pybertha.runspbertha (pyberthaoption_fraga)
+       pybertha.runspbertha (pyberthaoption_fraga)
 
+    if args.cube:
+        shutil.move("density.cube", "fragmentAdensity.cube")
 
     if (os.path.isfile("input.inp")):
         os.remove("input.inp") 
@@ -140,17 +158,35 @@ if __name__ == "__main__":
     pyberthaoption_fragb.eda_nocv_info = True
     pyberthaoption_fragb.eda_nocv_frag_file = "info_eda_nocv_fragB.json"
 
+    pyberthaoption_fragb.cube = args.cube
+    pyberthaoption_fragb.deltax = args.deltax
+    pyberthaoption_fragb.deltay = args.deltay
+    pyberthaoption_fragb.deltaz = args.deltaz
+    pyberthaoption_fragb.lmargin = args.lmargin
+
+
     if args.externalprocess:
-       toexe = "python3 ./pybertha.py --eda_nocv_info --eda_nocv_frag_file " + \
-               pyberthaoption_fragb.eda_nocv_frag_file
+       toexe = ""
+
+       if args.cube:
+           toexe = "python3 ./pybertha.py --eda_nocv_info --eda_nocv_frag_file " \
+               + pyberthaoption_fragb.eda_nocv_frag_file + " --cube --deltax " + \
+               str(args.deltax) + " --deltay " + str(args.deltay) + " --deltaz " + \
+               str(args.deltaz) + " --lmargin " + str(args.lmargin)
+       else:
+           toexe = "python3 ./pybertha.py --eda_nocv_info --eda_nocv_frag_file" \
+                   + pyberthaoption_fragb.eda_nocv_frag_file
+ 
        print("Start pybertha fragB")
        execute(shlex.split(toexe))
        #results  = subprocess.run(toexe, shell=True, check=True, \
        #           stdout=subprocess.PIPE, stderr=subprocess.PIPE, \
        #           universal_newlines=True)
-
     else:
-        pybertha.runspbertha (pyberthaoption_fragb)
+       pybertha.runspbertha (pyberthaoption_fragb)
+
+    if args.cube:
+        shutil.move("density.cube", "fragmentBdensity.cube")
 
     if (os.path.isfile("input.inp")):
         os.remove("input.inp") 
@@ -185,6 +221,9 @@ if __name__ == "__main__":
     py_eda_nocvoption.lmargin = args.lmargin
 
     py_eda_nocv.runnocveda (py_eda_nocvoption)
+
+    if args.cube:
+        shutil.move("density.cube", "ABdensity.cube")
 
     if (os.path.isfile("input.inp")):
         os.remove("input.inp") 

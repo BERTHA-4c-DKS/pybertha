@@ -176,6 +176,15 @@ def runnocveda (nocvedaopt):
     print("Trace (%20.10f, %20.10fi)"%(trace.real, trace.imag))
     print("")
 
+    drx = nocvedaopt.deltax
+    dry = nocvedaopt.deltay
+    drz = nocvedaopt.deltaz
+    margin = nocvedaopt.lmargin
+
+    if (nocvedaopt.cube == True):
+       bertha.density_to_cube((density).T, "density.cube", margin, drx, dry, drz )
+
+
     # NOCV analysis start here  ! check matrix from ovap file, transposition needed
     from scipy.linalg import eig
     import json
