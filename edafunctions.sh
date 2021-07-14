@@ -21,12 +21,16 @@ posteda () {
 
   # TODO
   # need to call pydens_iso.py an so to cd give the isodensity point 
-
+  export ISODENVAL=$(python3 /home/redo/BERTHA/pycubescd/PY3/pydens_iso.py \
+	  -f1 fragmentAdensity.cube  -f2 fragmentBdensity.cube \
+	  -axis $AXIS -iseed $SEEDVAL | grep isodensity_point | awk '{print $3}')
+  
+  echo "isodensity point " $ISODENVAL
 
   i=1
   while [ $i -ne 13 ]
   do
-	  echo "$i"
+	  echo "RUN: " $i
 
 	  python3 /home/redo/BERTHA/pycubescd/pycd.py -f pair"$i".cube
 

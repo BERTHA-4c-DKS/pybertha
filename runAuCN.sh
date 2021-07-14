@@ -14,9 +14,12 @@ export ATOMB="CN"
 export BASISSET="Au:dyall_vtz,C:aug-cc-pVTZ-DK,N:aug-cc-pVTZ-DK"
 export FITSET="Au:b20,C:fittset,N:fittset"
 
+export AXIS="z"
+export SEEDVAL=1.3
+
 . ./edafunctions.sh --source-only
 
-runeda
+#runeda
 posteda
 
 
