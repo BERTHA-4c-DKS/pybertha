@@ -27,12 +27,14 @@ posteda () {
   
   echo "isodensity point " $ISODENVAL
 
+  > CT_iso.dat
+
   i=1
   while [ $i -ne 13 ]
   do
 	  echo "RUN: " $i
 
-	  python3 /home/redo/BERTHA/pycubescd/pycd.py -f pair"$i".cube
+	  python3 /home/redo/BERTHA/pycubescd/PY3/pycd.py -f pair"$i".cube --axis $AXIS -i $ISODENVAL
 
 	  pymol  -c load_cube.py  pair"$i".cube  $SYSYEMNAME.xyz 0.0014
 	  mv this.png pair"$i".png 
@@ -48,11 +50,11 @@ posteda () {
 
   pymol  -c load_cube.py diff_tot_ortho.cube $SYSYEMNAME.xyz 0.0014
   mv this.png diff_tot_ortho.png
-  python3 /home/redo/BERTHA/pycubescd/pycd.py -f diff_tot_ortho.cube
+  python3 /home/redo/BERTHA/pycubescd/PY3/pycd.py -f diff_tot_ortho.cube --axis $AXIS -i $ISODENVAL
 
   pymol  -c load_cube.py diff_tot.cube $SYSYEMNAME.xyz 0.0014
   mv this.png diff_tot.png
-  python3 /home/redo/BERTHA/pycubescd/pycd.py -f diff_tot.cube 
+  python3 /home/redo/BERTHA/pycubescd/PY3/pycd.py -f diff_tot.cube --axis $AXIS -i $ISODENVAL
 
   gnuplot plot.p
   epstopdf cd.ps 
