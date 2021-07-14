@@ -242,11 +242,11 @@ def runspbertha (pberthaopt):
        bertha.density_to_cube((density).T, "density.cube", margin, drx, dry, drz )
 
     if (pberthaopt.cubebox == True):
-       bertha.density_to_cube((density).T, "densitybox.cube", \
-               pberthaopt.xmin, pberthaopt.xmax, \
-               pberthaopt.ymin, pberthaopt.ymax, \
-               pberthaopt.zmin, pberthaopt.zmax, \
-               pberthaopt.drx, pberthaopt.dry, pberthaopt.drz )
+       bertha.density_to_cube_limit((density).T, "densitybox.cube", \
+               (pberthaopt.xmin, pberthaopt.ymin, \
+               pberthaopt.zmin), (pberthaopt.xmax, \
+               pberthaopt.ymax, pberthaopt.zmax), \
+               drx, dry, drz )
     
     bertha.realtime_init()
     normalise = 1
@@ -285,7 +285,6 @@ def runspbertha (pberthaopt):
     
             y = y + dy
         x = x + dx
-    """
     
     dz = (zmax - zmin)/float(griddim)
     z = zmin
@@ -296,6 +295,8 @@ def runspbertha (pberthaopt):
         outep.write (" %10.5e %10.5e \n"%(z, eps))
     
         z = z + dz
+
+    """
     
     bertha.finalize()
     
