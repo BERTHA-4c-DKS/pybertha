@@ -19,7 +19,7 @@ export SEEDVAL=1.3
 
 . ./edafunctions.sh --source-only
 
-#runeda
+runeda
 posteda
 
 
