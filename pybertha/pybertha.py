@@ -31,7 +31,18 @@ class pyberthaoption:
     berthamodpath: str ="../src"
     eda_nocv_info: bool =False
     eda_nocv_frag_file: str = "info_eda_nocv_fragX.json"
-
+    cubebox: bool = False
+    cube: bool = False
+    xmin: numpy.float64 = -10.0
+    ymin: numpy.float64 = -10.0
+    zmin: numpy.float64 = -10.0
+    xmax: numpy.float64 = 10.0
+    ymax: numpy.float64 = 10.0
+    zmax: numpy.float64 = 10.0
+    deltax: numpy.float64 = 0.2
+    deltay: numpy.float64 = 0.2
+    deltaz: numpy.float64 = 0.2
+    lmargin: numpy.float64 = 10.0
 
 ##########################################################################################
 
@@ -64,6 +75,12 @@ def runspbertha (pberthaopt):
 
     sys.path.insert(0, pberthaopt.berthamodpath)
     import berthamod
+    
+    #import os, psutil
+
+    #process = psutil.Process(os.getpid())
+    #print(process.memory_info())  # in bytes 
+
     
     print("Options: ")
     for att in [a for a in dir(pberthaopt) if not a.startswith('__')]:
@@ -104,10 +121,12 @@ def runspbertha (pberthaopt):
     bertha.set_verbosity(verbosity)
     bertha.set_dumpfiles(dumpfiles)
     
-    bertha.set_densitydiff(1)
+    bertha.set_densitydiff(0)
     
     bertha.init()
-    
+
+    #print(process.memory_info())  # in bytes 
+
     ndim = bertha.get_ndim()
     nshift = bertha.get_nshift()
     nocc = bertha.get_nocc()
@@ -126,7 +145,9 @@ def runspbertha (pberthaopt):
     
     start = time.time()
     cstart = time.process_time() 
-    
+
+    #print(process.memory_info())  # in bytes 
+
     ovapm, eigem, fockm, eigen = bertha.run()
     
     end = time.time()
@@ -210,10 +231,35 @@ def runspbertha (pberthaopt):
     print("Trace  ")
     trace = density.trace()
     print("(%20.10f, %20.10fi)"%(trace.real, trace.imag))
+
+    drx = pberthaopt.deltax
+    dry = pberthaopt.deltay
+    drz = pberthaopt.deltaz
+    margin = pberthaopt.lmargin
+
+
+    if (pberthaopt.cube == True):
+       bertha.density_to_cube((density).T, "density.cube", margin, drx, dry, drz )
+
+    if (pberthaopt.cubebox == True):
+       bertha.density_to_cube_limit((density).T, "densitybox.cube", \
+               (pberthaopt.xmin, pberthaopt.ymin, \
+               pberthaopt.zmin), (pberthaopt.xmax, \
+               pberthaopt.ymax, pberthaopt.zmax), \
+               drx, dry, drz )
     
     bertha.realtime_init()
     normalise = 1
     
+   
+    numofatom = bertha.get_natoms()
+    print ("Num of atoms: ",numofatom)
+    for i in range(numofatom):
+        print(bertha.get_coords(i))
+    
+    outep = open("eps.txt", "w")
+    
+    """
     griddim = 50
     
     xmin = 9.0
@@ -224,15 +270,7 @@ def runspbertha (pberthaopt):
     
     zmax =  7.0
     zmin = -3.0
-    
-    numofatom = bertha.get_natoms()
-    print ("Num of atoms: ",numofatom)
-    for i in range(numofatom):
-        print(bertha.get_coords(i))
-    
-    outep = open("eps.txt", "w")
-    
-    """
+ 
     dx = (xmax - xmin)/float(griddim)
     dy = (ymax - ymin)/float(griddim)
     x = xmin
@@ -247,7 +285,6 @@ def runspbertha (pberthaopt):
     
             y = y + dy
         x = x + dx
-    """
     
     dz = (zmax - zmin)/float(griddim)
     z = zmin
@@ -258,6 +295,8 @@ def runspbertha (pberthaopt):
         outep.write (" %10.5e %10.5e \n"%(z, eps))
     
         z = z + dz
+
+    """
     
     bertha.finalize()
     
@@ -324,7 +363,32 @@ if __name__ == "__main__":
     parser.add_argument("--eda_nocv_info", help="set to dump info useful for py_eda_nocv",action='store_true',default=False)
     parser.add_argument("--eda_nocv_frag_file", help="set a file (default: info_eda_nocv_fragX.json)",
             required=False, type=str, default="info_eda_nocv_fragX.json")
-    
+    parser.add_argument("--cube", help="Specify if density need to be saved in cube file format (default: 0)", required=False,
+               default=False, action="store_true")
+    parser.add_argument("--deltax", help="cube dx step (default = 0.2)", required=False,
+            type=numpy.float64, default=0.2)
+    parser.add_argument("--deltay", help="cube dy step (default = 0.2)", required=False,
+            type=numpy.float64, default=0.2)
+    parser.add_argument("--deltaz", help="cube dz step (default = 0.2)", required=False,
+            type=numpy.float64, default=0.2)
+    parser.add_argument("--lmargin", help="cube margin parameter (default = 10.0)", required=False,
+            type=numpy.float64, default=10.0)
+
+    parser.add_argument("--cubebox", help="Specify if need to dump density on a cubeBOX(default: 0)", required=False,
+               default=False, action="store_true")
+    parser.add_argument("--xmin", help="cube xmin (default = -10.0)", required=False,
+            type=numpy.float64, default=-10.0)
+    parser.add_argument("--ymin", help="cube ymin (default = -10.0)", required=False,
+            type=numpy.float64, default=-10.0)
+    parser.add_argument("--zmin", help="cube zmin (default = -10.0)", required=False,
+            type=numpy.float64, default=-10.0)
+    parser.add_argument("--xmax", help="cube xmax (default =  10.0)", required=False,
+            type=numpy.float64, default=10.0)
+    parser.add_argument("--ymax", help="cube ymax (default =  10.0)", required=False,
+            type=numpy.float64, default=10.0)
+    parser.add_argument("--zmax", help="cube zmax (default =  10.0)", required=False,
+            type=numpy.float64, default=10.0)
+
     args = parser.parse_args()
 
     pberthaopt = pyberthaoption
@@ -342,5 +406,29 @@ if __name__ == "__main__":
     pberthaopt.berthamodpath = args.berthamodpath
     pberthaopt.eda_nocv_info = args.eda_nocv_info
     pberthaopt.eda_nocv_frag_file = args.eda_nocv_frag_file
+    pberthaopt.cube = args.cube
+    pberthaopt.deltax = args.deltax
+    pberthaopt.deltay = args.deltay
+    pberthaopt.deltaz = args.deltaz
+    pberthaopt.lmargin = args.lmargin
+    pberthaopt.cubebox = args.cubebox
+    pberthaopt.xmin = args.xmin
+    pberthaopt.ymin = args.ymin
+    pberthaopt.zmin = args.zmin
+    pberthaopt.xmax = args.xmax
+    pberthaopt.ymax = args.ymax
+    pberthaopt.zmax = args.zmax
+
+
+    import resource, sys
+
+    #rsrc = resource.RLIMIT_STACK
+    #soft, hard = resource.getrlimit(rsrc)
+    #print("Limit starts as:", soft, hard)
+    #val = 100000000
+    #resource.setrlimit(rsrc, (val, val))
+    #soft, hard = resource.getrlimit(rsrc)
+    #print("Limit is now:", soft, hard)
+    #sys.setrecursionlimit(10**6)
 
     runspbertha (pberthaopt)
