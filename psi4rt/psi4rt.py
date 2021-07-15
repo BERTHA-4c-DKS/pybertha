@@ -717,8 +717,8 @@ if __name__ == "__main__":
     C = None
     S = None
 
-    os.environ['PSI4ROOT']="/home/redo/BERTHAEmb/psi4conda/lib/python3.7"
-    os.environ['PYBERTHAROOT'] = "/home/redo/BERTHAEmb/pybertha/"
+    os.environ['PSI4ROOT']="/home/matteod/local/psi4rc/lib"
+    os.environ['PYBERTHAROOT'] = "/home/matteod/pybertha/"
 
 
     if args.psi4root != "":
@@ -804,7 +804,7 @@ if __name__ == "__main__":
             dumpcounter = 0
 
         if args.iterations:
-            print ("Iter %10d od %10d"%(j,niter))
+            print ("Iter %10d of %10d"%(j,niter))
         else:
             rtutil.progress_bar(j, niter)
 

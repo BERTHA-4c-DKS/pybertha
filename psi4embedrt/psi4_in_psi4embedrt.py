@@ -3,16 +3,16 @@ import sys
 import time
 import shutil
 import os.path
-sys.path.append('/home/matteo/local/xcfun/lib/python')
-#sys.path.append("/home/redo/BERTHAEmb/xcfun/build/lib64/python")
-#sys.path.append("/home/redo/BERTHAEmb/psi4conda/lib/python3.7")
-sys.path.append("/home/matteo/pybertha/psi4rt")
-sys.path.append("/home/matteo/pybertha/src")
-#sys.path.append("/home/redo/BERTHAEmb/pyadf/scr")
+
+sys.path.append("/home/matteod/build/xcfun/build/lib/python")
+#sys.path.append("/home/matteod/psi4conda/lib/python3.7")
+sys.path.append("/home/matteod/pybertha/psi4rt")
+sys.path.append("/home/matteod/pybertha/src")
+sys.path.append("/home/matteod/build/pyadf/src")
 
 #os.environ['PSIPATH']="/home/redo/BERTHAEmb/psi4conda/share/psi4/basis"
-os.environ['PYBERTHAROOT'] = "/home/matteo/pybertha/"
-os.environ['RTHOME'] = "/home/matteo/pybertha/psi4rt"
+os.environ['PYBERTHAROOT'] = "/home/matteod/pybertha/"
+os.environ['RTHOME'] = "/home/matteod/pybertha/psi4rt"
 sys.path.append(os.environ['PYBERTHAROOT']+"/src")
 sys.path.append(os.environ['RTHOME'])
 #sys.path.append(os.environ['PSIPATH'])
@@ -89,10 +89,11 @@ def finalize_stdout_redirect (fname, writef=False):
 def scfiterations (args, maxiter, jk, H, Cocc, func, wfn, D, vemb, E, Eold, \
   Fock_list, DIIS_error, gfcont, agrid, densgrad, denshess, \
     isolated_elpot_enviro, E_conv, D_conv, restricted = True):
-
+    print('entering the outer loop..\n')
     #outer loop
     for OUT_ITER in range(0,maxiter):
         
+        print('entering the inner loop..\n')
         #inner loop
         for SCF_ITER in range(1, maxiter + 1):
     
@@ -125,6 +126,7 @@ def scfiterations (args, maxiter, jk, H, Cocc, func, wfn, D, vemb, E, Eold, \
               K = jk.K()[0]
               F.axpy(-alpha,K)
               Exc += -alpha*np.trace(np.matmul(D,K))
+            print('add V_xc\n')
             ####### 
             F.axpy(1.0, V)
             F.axpy(1.0, vemb)
@@ -322,6 +324,7 @@ if __name__ == "__main__":
                       'e_convergence': 1e-8,
                       'd_convergence': 1e-8})
     
+    print('CHECK : basis from options block :%s\n' % (psi4.core.get_global_option('BASIS')))
     ene = None 
     active_wfn = None
     enviro_wfn = None
@@ -399,6 +402,7 @@ if __name__ == "__main__":
                           'dft_spherical_points' : 110})
         #set grid quality level here: tot_mol or active
         basis_tot = psi4.core.BasisSet.build(tot_mol, "ORBITAL", args.obs1)
+        print('CHECK : basis from options block#2 (grid obj) :%s\n' % (psi4.core.get_global_option('BASIS')))
         sup = build_superfunctional(args.frzn_func, True)[0]
         Vpot = psi4.core.VBase.build(basis_tot, sup, "RV")
         Vpot.initialize()
@@ -438,9 +442,25 @@ if __name__ == "__main__":
       init_stdout_redirect ()
       t = threading.Thread(target=drain_pipe)
       t.start()
-      psi4.set_options({'dft_radial_scheme' : 'becke',
+      #set enviroment fragment 
+      
+      enviro.append('symmetry c1' +'\n' + 'no_com' + '\n' + 'no_reorient' + '\n')
+      enviro_mol=psi4.geometry(enviro.geometry)
+      #specify a different basis set for the frozen fragment
+      psi4.set_options({'basis': args.obs1})
+
+      print('CHECK : basis from options block (env sys) :%s\n' % (psi4.core.get_global_option('BASIS')))
+      ene, enviro_wfn = psi4.energy(args.frzn_func,return_wfn=True)
+      
+      C_enviro=np.array(enviro_wfn.Ca_subset("AO","OCC"))
+      psi4.core.clean()
+
+      #specify a different basis set for the frozen fragment
+      psi4.set_options({'basis': args.obs,
+                      'dft_radial_scheme' : 'becke',
                       'dft_radial_points': 75,
                       'dft_spherical_points' : 434}) #defaul = 302
+      print('CHECK : basis from options block (act sys) :%s\n' % (psi4.core.get_global_option('BASIS')))
       #set the grid for the calculation of fragments
       #set the active molecule 
       active=Molecule(geomA)
@@ -456,16 +476,6 @@ if __name__ == "__main__":
       os.rename("Ds.cube","Ds0.cube")
       psi4.core.clean()
 
-      #set enviroment fragment 
-      
-      enviro.append('symmetry c1' +'\n' + 'no_com' + '\n' + 'no_reorient' + '\n')
-      enviro_mol=psi4.geometry(enviro.geometry)
-      #specify a different basis set for the frozen fragment
-      psi4.set_options({'basis': args.obs1})
-
-      ene, enviro_wfn = psi4.energy(args.frzn_func,return_wfn=True)
-      
-      C_enviro=np.array(enviro_wfn.Ca_subset("AO","OCC"))
       import psi4.core as p4c
       psi4_matrix = p4c.Matrix.from_array(points[:,:3])
       enviro_epc = p4c.ESPPropCalc(enviro_wfn)
@@ -489,7 +499,7 @@ if __name__ == "__main__":
       active.append('symmetry c1' +'\n' + 'no_com' + '\n' + 'no_reorient' + '\n')
       active_mol=psi4.geometry(active.geometry)
       ene, active_wfn = psi4.energy(func,return_wfn=True)
-      psi4.core.clean()
+      
       os.close(stdout_fileno)
       t.join()
       finalize_stdout_redirect(psioufname, True)
@@ -604,7 +614,11 @@ if __name__ == "__main__":
       res = fde_util.embpot2mat(gf_active.phi,gf_active.nbas,pot,gf_active.points[:,3],gf_active.lpos)
     else:
       res = np.zeros_like(D)
-
+      gf_active=None
+      agrid=None
+      densgrad=None
+      denshess=None
+      isolated_elpot_enviro=None
     #########################################################
     """
     Restricted Kohn-Sham code using the Psi4 JK class for the
@@ -646,6 +660,8 @@ if __name__ == "__main__":
     # Integral generation from Psi4's MintsHelper
     #duplicate
     wfn = psi4.core.Wavefunction.build(active_mol, psi4.core.get_global_option('BASIS')) #use basis_set instead
+    #check
+    print('basis from wfn object :%s\n' % (psi4.core.get_global_option('BASIS')))
     #mints = psi4.core.MintsHelper(wfn.basisset()) # moved upward
     #S = mints.ao_overlap()                        #
     

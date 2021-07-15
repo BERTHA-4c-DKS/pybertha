@@ -1,10 +1,10 @@
 import sys
 
-sys.path.append("/home/redo/BERTHAEmb/xcfun/build/lib64/python")
-sys.path.append("/home/redo/BERTHAEmb/psi4conda/lib/python3.7")
-sys.path.append("/home/redo/BERTHAEmb/pybertha/psi4rt")
-sys.path.append("/home/redo/BERTHAEmb/pybertha/src")
-sys.path.append("/home/redo/BERTHAEmb/pyadf/src")
+sys.path.append("/home/matteod/build/xcfun/build/lib/python")
+#sys.path.append("/home/matteod/psi4conda/lib/python3.7")
+sys.path.append("/home/matteod/pybertha/psi4rt")
+sys.path.append("/home/matteod/pybertha/src")
+sys.path.append("/home/matteod/build/pyadf/src")
 
 import os
 import psi4

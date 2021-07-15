@@ -1,8 +1,10 @@
 import sys
 import os
-#sys.path.append("/usr/local/xcfun_py3/lib64/python")
-#sys.path.append("/usr/local/PyADF-myfork/src/")
-sys.path.append('/home/matteo/local/xcfun/lib/python')
+sys.path.append("/home/matteod/build/xcfun/build/lib/python")
+sys.path.append("/home/matteod/psi4conda/lib/python3.7")
+sys.path.append("/home/matteod/pybertha/psi4rt")
+sys.path.append("/home/matteod/pybertha/src")
+sys.path.append("/home/matteod/build/pyadf/src")
 import numpy as np
 import psi4
 from pkg_resources import parse_version
