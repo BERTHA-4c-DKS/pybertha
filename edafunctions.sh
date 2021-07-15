@@ -65,6 +65,35 @@ posteda () {
 
   sed -i "s/Bond\ analysis\ SHE/Bond\ analysis\ SHE\ $SYSYEMNAME/g" results.tex
 
+  echo "\begin{table}[]" >> results.tex
+  echo "\begin{tabular}{ll}" >> results.tex
+  echo "\hline" >> results.tex
+
+  i=1
+  j=1
+  while [ $i -ne 13 ]
+  do
+	  echo "RUN: " $i
+	  export CTVAL=$(grep "pair$i.cube" CT_iso.dat  | awk '{print $4}')
+
+	  echo $CTVAL
+
+	  echo "CT nocv$j & $CTVAL \\\ \hline" >> results.tex
+
+	  j=$(($j+1))	  
+	  i=$(($i+2))
+  done
+
+  export CTVAL=$(grep "diff_tot.cube" CT_iso.dat  | awk '{print$4}')
+  echo "CT tot & $CTVAL \\\ \hline" >> results.tex
+
+  echo "\end{tabular}" >> results.tex
+  echo "\end{table}" >> results.tex
+  echo "\end{document}" >> results.tex
+
+  echo "\end{document}" >> results.tex
+
+
   pdflatex results.tex
 
   cp results.pdf ../../results$SYSYEMNAME.pdf

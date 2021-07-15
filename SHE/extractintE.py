@@ -19,9 +19,11 @@ for line in fp:
         if line.find(name) >= 0:
             energies[name] = float(line.split()[-1])
             
+    j = 1
     for i in range(1, 13, 2):
         if line.find("nocv_%d pair eigenvalue"%(i)) >= 0:
-            energies["nocv_%d"%(i)] = 2.0 * float(line.split()[-1])
+            energies["nocv_%d"%(j)] = 2.0 * float(line.split()[-1])
+            j += 1
             
 
 print("\\begin{table}[]")
@@ -31,6 +33,6 @@ for name in energies:
     print(name.replace("_", "") + " & %12.4f"%( energies[name]) + "\\\\ \\hline")
 print("\\end{tabular}")
 print("\\end{table}")
-print("\\end{document}")
+#print("\\end{document}")
 
 
