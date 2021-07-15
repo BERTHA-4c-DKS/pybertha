@@ -78,7 +78,9 @@ posteda () {
 
 	  echo $CTVAL
 
-	  echo "CT nocv$j & $CTVAL \\\ \hline" >> results.tex
+	  export CTDVAL=$(python3 -c "print($CTVAL * 2.0)")
+
+	  echo "CT nocv$j & $CTDVAL \\\ \hline" >> results.tex
 
 	  j=$(($j+1))	  
 	  i=$(($i+2))
@@ -86,6 +88,11 @@ posteda () {
 
   export CTVAL=$(grep "diff_tot.cube" CT_iso.dat  | awk '{print$4}')
   echo "CT tot & $CTVAL \\\ \hline" >> results.tex
+
+  export CTVAL=$(grep "diff_tot_ortho.cube" CT_iso.dat  | awk '{print$4}')
+  echo "CT tot ortho & $CTVAL \\\ \hline" >> results.tex
+
+
 
   echo "\end{tabular}" >> results.tex
   echo "\end{table}" >> results.tex
