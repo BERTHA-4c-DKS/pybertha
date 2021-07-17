@@ -1,4 +1,4 @@
-import numpy as np
+import numpy 
 import os
 import pyadf 
 import pyadf.PyEmbed
@@ -57,6 +57,8 @@ class pyemb:
         self.thresh_conv = None
         self.acc_int = None
         self.basis_frzn = None
+        self.f_nad_xc = None
+        self.f_nad_kin = None
         self.agrid = None
         self.isolated_dens_enviro = None
         self.isolated_elpot_enviro = None
@@ -88,17 +90,19 @@ class pyemb:
     def get_enviro_fname (self, envirofname):
         return self.__envirofname
     
-    def set_options(self,param,gtype=1, func='BLYP', basis ='AUG/DZP', thresh=1.0e-8):
+    def set_options(self,param,gtype=1, func='BLYP', basis ='AUG/ADZP', f_nad={'xc' : 'lda', 'kin' : 'tfk'}, thresh=1.0e-8):
         self.grid_type = gtype
         self.enviro_func = func
         self.basis_frzn = basis
         self.thresh_conv = thresh
         self.acc_int = param      # can be a list of integers or a float
-       
+        # options for xcfun 
+        self.f_nad_xc = f_nad['xc']
+        self.f_nad_kin = f_nad['kin']
         
     def print_options(self):
 
-        print("pyad job type : %s, grid type : %s, functional (enviro) : %s e/d thresh : %.2e\n"\
+        print("pyad job type : %s, grid type : %s, functional (enviro) : %s, e/d thresh : %.2e\n"\
                     % (self.__jobtype,self.grid_type,self.enviro_func,self.thresh_conv))
         print("grid specs (accuracy / radial & spherical points)\n")
         print(self.acc_int)
@@ -208,7 +212,7 @@ class pyemb:
             # TODO
                #placeholder
                npoints = 999
-               points=np.zeros((npoints,4))
+               points=numpy.zeros((npoints,4))
             else :
             
                basis_dummy = psi4.core.BasisSet.build(mol_obj, "ORBITAL", self.basis_frzn)
@@ -221,7 +225,7 @@ class pyemb:
                x, y, z, w = Vpot.get_np_xyzw()
                Vpot.finalize()
           
-               points = np.zeros((x.shape[0],4)) #dtype?
+               points = numpy.zeros((x.shape[0],4)) #dtype?
                points[: ,0] = x
                points[: ,1] = y
                points[: ,2] = z
@@ -230,7 +234,7 @@ class pyemb:
                psi4.core.clean()
         
             # prepare a custom pyadf grid object out of x,y,z,w. A mol object is only needed for cube dumping (see documentation)
-            self.agrid=pyadf.customgrid(mol=m_dummy,coords=np.ascontiguousarray(points[:,:3],dtype=np.float_),weights=np.ascontiguousarray(w,dtype=np.float_))
+            self.agrid=pyadf.customgrid(mol=m_dummy,coords=numpy.ascontiguousarray(points[:,:3],dtype=numpy.float_),weights=numpy.ascontiguousarray(w,dtype=numpy.float_))
             # TODO : code for the calculation of ESP and isolated enviroment density
         else: 
             raise PyEmbError ("incompatible job type")
@@ -248,7 +252,7 @@ class pyemb:
         # TODO given the density on the grid get the potential 
         # remind : density labels the active system
 
-        if not isinstance(density,(np.ndarray)):
+        if not isinstance(density,(numpy.ndarray)):
             raise TypeError("input must be a numpy.ndarray")
 
         
@@ -261,19 +265,28 @@ class pyemb:
         else:
             raise TypeError("input must be a numpy.ndarray npoints X 10")
                 
-        density_gf = GridFunctionFactory.newGridFunction(self.agrid,np.ascontiguousarray(density[:,0]), gf_type="density")
-        densgrad = GridFunctionFactory.newGridFunction(self.agrid, np.ascontiguousarray(density[:, 1:4]))
-        denshess = GridFunctionFactory.newGridFunction(self.agrid, np.ascontiguousarray(density[:, 4:10]))  
+        density_gf = GridFunctionFactory.newGridFunction(self.agrid,numpy.ascontiguousarray(density[:,0]), gf_type="density")
+        densgrad = GridFunctionFactory.newGridFunction(self.agrid, numpy.ascontiguousarray(density[:, 1:4]))
+        denshess = GridFunctionFactory.newGridFunction(self.agrid, numpy.ascontiguousarray(density[:, 4:10]))  
         
         #wrapper container
         density_act = GridFunctionContainer([density_gf, densgrad, denshess])
+        
+
+        embed_settings = pyadf.EmbedXCFunSettings()
+        embed_settings.set_fun_nad_xc ({self.f_nad_xc  : 1.0})
+        embed_settings.set_fun_nad_kin({self.f_nad_kin : 1.0})
+    
+        embed_settings.show_functionals()
+    
+        embed_eval = pyadf.PyEmbed.EmbedXCFunEvaluator(settings=embed_settings)
 
         nadpot_active=embed_eval.get_nad_pot(density_act, self.isolated_dens_enviro)
         embpot = self.isolated_elpot_enviro + nadpot_active
 
         #get the potential as numpy.ndarray
         pot = embpot.get_values()
-        pot = np.ascontiguousarray(pot, dtype=np.double)
+        pot = numpy.ascontiguousarray(pot, dtype=numpy.double)
         
         # TODO 
 

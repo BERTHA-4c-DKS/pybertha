@@ -152,7 +152,7 @@ def runspberthaembed (pberthaopt):
     
     end = time.time()
     cend = time.process_time()
-    """
+
 #   initialize pyembed instance
 
     activefname = pberthaopt.activefile
@@ -176,10 +176,12 @@ def runspberthaembed (pberthaopt):
     #DEBUG : quick check of grid
     print("Type grid", type(grid), grid.shape)
     
-    density = bertha.get_density_on_grid(grid)
-    
+    rho = bertha.get_density_on_grid(grid)
+    density=numpy.zeros((rho.shape[0],10))
+    density[:,0] = rho
+   
     pot = embfactory.get_potential(density)    
-    """
+
 #  TEST density on grid
 
 #    print("TEST density on grid")
@@ -247,15 +249,17 @@ def runspberthaembed (pberthaopt):
 
  
     bertha.init()
-    """
+    
 #   run with Vemb included
     bertha.set_embpot_on_grid(grid, pot)
-    """
+    
     ovapm, eigem, fockm, eigen = bertha.run()
     etotal2 = bertha.get_etotal()
 
-    dipx = (etotal2 - etotal1)/(2*field)
+    rho = bertha.get_density_on_grid(grid)
 
+    density2=numpy.zeros((rho.shape[0],10))
+    density2[:,0] = rho
 
     print("Dipole moment analitical: Tr(D dip_mat)")
 
@@ -265,16 +269,16 @@ def runspberthaembed (pberthaopt):
 
     print("TEST dipole moment from density on grid numerical integration")
     print("  ")
-    print("Type density", type(density), density.shape)
-    print("Scalar product" , "density.weigt", numpy.dot(density,grid[:,3]))
-    print("Dip x" , "density.weigt", numpy.dot(density*grid[:,3],grid[:,0]))
-    print("Dip y" , "density.weigt", numpy.dot(density*grid[:,3],grid[:,1]))
-    print("Dip z" , "density.weigt", numpy.dot(density*grid[:,3],grid[:,2]))
+    print("Type density", type(density2), density2.shape)
+    print("Scalar product" , "density.weigt", numpy.dot(density2[:,0],grid[:,3]))
+    print("Dip x" , "density.weigt", numpy.dot(density2[:,0]*grid[:,3],grid[:,0]))
+    print("Dip y" , "density.weigt", numpy.dot(density2[:,0]*grid[:,3],grid[:,1]))
+    print("Dip z" , "density.weigt", numpy.dot(density2[:,0]*grid[:,3],grid[:,2]))
 
     print("  ")
-    print("TEST one electron potential (embedding) in g-spinor")
-    print("Potential used -x*E and x*E evaluating dipole via finite field")
-    print("Dip x" , "from finite field", dipx)
+    #print("TEST one electron potential (embedding) in g-spinor")
+    #print("Potential used -x*E and x*E evaluating dipole via finite field")
+    #print("Dip x" , "from finite field", dipx)
     
     sys.stdout.flush()
 
