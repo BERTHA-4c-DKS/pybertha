@@ -101,14 +101,14 @@ class pyemb:
             adf_settings.set_convergence(self.thresh_conv)
             adf_settings.set_integration(accint=self.acc_int)
 
-        elif self.__jobtype: 'psi4' :
+        elif self.__jobtype == 'psi4' :
             if len(self.acc_int) != 2  :
                raise PyEmbError ("input must be a list (radial and spherical points) ")
 
             psi4.set_options({'basis' : self.basis_frzn,
                     'puream' : 'True',
                     'dft_radial_scheme' : 'becke',
-                    'dft_radial_points': , self.acc_int[0]
+                    'dft_radial_points':  self.acc_int[0],
                     'dft_spherical_points' : self.acc_int[1],  #'dft_nuclear_scheme': 'treutler' | default
                     'scf_type' : 'direct',                     #dft_radial_ and spherical_ points determine grid size
                     'DF_SCF_GUESS': 'False',
@@ -134,7 +134,7 @@ class pyemb:
 
     
         
-        if self.__jobype == 'adf'
+        if self.__jobype == 'adf':
 
 
             m_active = pyadf.molecule(self.__activefname)
@@ -184,7 +184,7 @@ class pyemb:
 
 
         #temporary placeholder
-        elif self.__jobtype == 'psi4'
+        elif self.__jobtype == 'psi4':
             #dummy pyadf molecule
             m_dummy = pyadf.molecule(self.__envirofname)
             
@@ -207,26 +207,30 @@ class pyemb:
                 build_superfunctional = psi4.driver.dft_funcs.build_superfunctional  
             
             tot_mol=psi4.geometry(tot.geometry)
-            if self.grid_type == 1
+            if self.grid_type == 1:
+            # TODO
+               #placeholder
+               npoints = 999
+               points=np.zeros((npoints,4))
             else :
             
-            basis_dummy = psi4.core.BasisSet.build(mol_obj, "ORBITAL", self.basis_frzn)
-
-            sup = build_superfunctional(args.frzn_func, True)[0]
-
-            Vpot = psi4.core.VBase.build(basis_dummy, sup, "RV")
-            Vpot.initialize()
-
-            x, y, z, w = Vpot.get_np_xyzw()
-            Vpot.finalize()
-         
-            points = np.zeros((x.shape[0],4)) #dtype?
-            points[: ,0] = x
-            points[: ,1] = y
-            points[: ,2] = z
-            points[: ,3] = w
-         
-            psi4.core.clean()
+               basis_dummy = psi4.core.BasisSet.build(mol_obj, "ORBITAL", self.basis_frzn)
+             
+               sup = build_superfunctional(args.frzn_func, True)[0]
+             
+               Vpot = psi4.core.VBase.build(basis_dummy, sup, "RV")
+               Vpot.initialize()
+             
+               x, y, z, w = Vpot.get_np_xyzw()
+               Vpot.finalize()
+          
+               points = np.zeros((x.shape[0],4)) #dtype?
+               points[: ,0] = x
+               points[: ,1] = y
+               points[: ,2] = z
+               points[: ,3] = w
+          
+               psi4.core.clean()
         
             # prepare a custom pyadf grid object out of x,y,z,w. A mol object is only needed for cube dumping (see documentation)
             self.agrid=pyadf.customgrid(mol=m_dummy,coords=np.ascontiguousarray(points[:,:3],dtype=np.float_),weights=np.ascontiguousarray(w,dtype=np.float_))

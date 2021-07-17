@@ -6,8 +6,18 @@ import sys
 import re
 
 import os.path
-sys.path.append('/home/mdesantis/pybertha/pyemb')
-import pyembedmod
+sys.path.append('/home/matteod/pybertha/pyemb')
+sys.path.append("/home/matteod/build/xcfun/build/lib/python")
+sys.path.append("/home/matteod/pybertha/psi4rt")
+sys.path.append("/home/matteod/pybertha/src")
+sys.path.append("/home/matteod/build/pyadf/src")
+
+os.environ['PYBERTHAROOT'] = "/home/matteod/pybertha/"
+os.environ['RTHOME'] = "/home/matteod/pybertha/psi4rt"
+sys.path.append(os.environ['PYBERTHAROOT']+"/src")
+sys.path.append(os.environ['RTHOME'])
+
+import pyembmod
 
 from numpy.linalg import eigvalsh
 from scipy.linalg import eigh
