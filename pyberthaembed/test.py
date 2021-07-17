@@ -152,7 +152,7 @@ def runspberthaembed (pberthaopt):
     
     end = time.time()
     cend = time.process_time()
-
+    """
 #   initialize pyembed instance
 
     activefname = pberthaopt.activefile
@@ -165,7 +165,7 @@ def runspberthaembed (pberthaopt):
         print("File ", envirofname , " does not exist")
         exit(1)
 
-    embfactory = pyembed.pyemb(activefname,envirofname,'adf') #jobtype='adf' is default de facto
+    embfactory = pyembmod.pyemb(activefname,envirofname,'adf') #jobtype='adf' is default de facto
     embfactory.set_options(4.0)  # only the integration accuracy parameter is specified 
    
     embfactory.print_options()
@@ -179,7 +179,7 @@ def runspberthaembed (pberthaopt):
     density = bertha.get_density_on_grid(grid)
     
     pot = embfactory.get_potential(density)    
-
+    """
 #  TEST density on grid
 
 #    print("TEST density on grid")
@@ -247,9 +247,10 @@ def runspberthaembed (pberthaopt):
 
  
     bertha.init()
-
+    """
 #   run with Vemb included
     bertha.set_embpot_on_grid(grid, pot)
+    """
     ovapm, eigem, fockm, eigen = bertha.run()
     etotal2 = bertha.get_etotal()
 

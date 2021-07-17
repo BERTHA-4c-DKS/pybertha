@@ -88,39 +88,18 @@ class pyemb:
     def get_enviro_fname (self, envirofname):
         return self.__envirofname
     
-    def set_options(param,gtype=1, func='BLYP', thresh=1.0e-8):
+    def set_options(self,param,gtype=1, func='BLYP', basis ='AUG/DZP', thresh=1.0e-8):
         self.grid_type = gtype
         self.enviro_func = func
+        self.basis_frzn = basis
         self.thresh_conv = thresh
         self.acc_int = param      # can be a list of integers or a float
        
-        if self.__jobtype == 'adf' :
-            adf_settings = pyadf.adfsettings()
-            adf_settings.set_save_tapes([21,10])
-            adf_settings.set_functional(self.enviro_func)
-            adf_settings.set_convergence(self.thresh_conv)
-            adf_settings.set_integration(accint=self.acc_int)
-
-        elif self.__jobtype == 'psi4' :
-            if len(self.acc_int) != 2  :
-               raise PyEmbError ("input must be a list (radial and spherical points) ")
-
-            psi4.set_options({'basis' : self.basis_frzn,
-                    'puream' : 'True',
-                    'dft_radial_scheme' : 'becke',
-                    'dft_radial_points':  self.acc_int[0],
-                    'dft_spherical_points' : self.acc_int[1],  #'dft_nuclear_scheme': 'treutler' | default
-                    'scf_type' : 'direct',                     #dft_radial_ and spherical_ points determine grid size
-                    'DF_SCF_GUESS': 'False',
-                    'd_convergence' : self.thresh_conv,
-                    'e_convergence' : self.thresh_conv})
-        else:
-            raise PyEmbError ("incompatible job type")
         
     def print_options(self):
 
         print("pyad job type : %s, grid type : %s, functional (enviro) : %s e/d thresh : %.2e\n"\
-                    % (self.jobtype,self.grid_type,self.enviro_func,self.thresh_conv))
+                    % (self.__jobtype,self.grid_type,self.enviro_func,self.thresh_conv))
         print("grid specs (accuracy / radial & spherical points)\n")
         print(self.acc_int)
     def initialize (self):
@@ -134,7 +113,13 @@ class pyemb:
 
     
         
-        if self.__jobype == 'adf':
+        if self.__jobtype == 'adf':
+
+            adf_settings = pyadf.adfsettings()
+            adf_settings.set_save_tapes([21,10])
+            adf_settings.set_functional(self.enviro_func)
+            adf_settings.set_convergence(self.thresh_conv)
+            adf_settings.set_integration(accint=self.acc_int)
 
 
             m_active = pyadf.molecule(self.__activefname)
@@ -149,7 +134,7 @@ class pyemb:
             # ii) use the total sys (env+act)  grid
             #iii) use the active sys grid
  
-            r_isolated_enviro = pyadf.adfsinglepointjob(m_enviro, basis_frzn, \
+            r_isolated_enviro = pyadf.adfsinglepointjob(m_enviro, self.basis_frzn, \
                settings=adf_settings, options=['NOSYMFIT']).run()
             if self.grid_type == 1:
                 frags = [ pyadf.fragment(None,  [m_active]),
@@ -185,6 +170,18 @@ class pyemb:
 
         #temporary placeholder
         elif self.__jobtype == 'psi4':
+            if len(self.acc_int) != 2  :
+               raise PyEmbError ("input must be a list (radial and spherical points) ")
+
+            psi4.set_options({'basis' : self.basis_frzn,
+                    'puream' : 'True',
+                    'dft_radial_scheme' : 'becke',
+                    'dft_radial_points':  self.acc_int[0],
+                    'dft_spherical_points' : self.acc_int[1],  #'dft_nuclear_scheme': 'treutler' | default
+                    'scf_type' : 'direct',                     #dft_radial_ and spherical_ points determine grid size
+                    'DF_SCF_GUESS': 'False',
+                    'd_convergence' : self.thresh_conv,
+                    'e_convergence' : self.thresh_conv})
             #dummy pyadf molecule
             m_dummy = pyadf.molecule(self.__envirofname)
             
