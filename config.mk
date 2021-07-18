@@ -11,10 +11,10 @@ PROFILE=no
 
 #is used only by serial
 #use Intel compiler
-USEINTEL=yes
+USEINTEL=no
 
 #LIBXC
-LIBXC=yes
+LIBXC=no
 
 # use OpenMP with Intel there could be problem related to the stacksize
 # ulimit -s unlimited
@@ -24,7 +24,7 @@ LIBXC=yes
 # export OMP_NUM_THREADS=4
 USEOPENMP=no
 
-BERTHAROOT=/home/redo/Project_Bertha/bertha_ng
+BERTHAROOT=/home/redo/BERTHA/bertha_ng
 
 ###
 ## NO BLUEGENE
