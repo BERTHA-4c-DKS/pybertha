@@ -20,11 +20,14 @@ class Molecule():
 
       self.geometry=str()
       with open(fgeom,'r') as data:
-         self.natom = int(data.readline()) # natom is the 'proper' number of atoms in the (active) molecule
+         self.natom = int(data.readline()) # natom is the 'proper' 
+                                           # number of atoms in the 
+                                           # (active) molecule
          next(data)
          for line in data:
             self.geometry += str(line)
-      self.internal = self.geometry        # store a 'copy' of the isolated fragment geometry
+      self.internal = self.geometry        # store a 'copy' of the isolated 
+                                           # fragment geometry
 
   def set_ghost(self):
       self.gdummy=str()
@@ -33,7 +36,9 @@ class Molecule():
       for m in tmp:
         self.gdummy +="@"+m.strip()+'\n'
 
-  def append(self,options):                # options is a string like "symmetry c1"+"\n" or a string containing moelcular coordinates
+  def append(self,options):                
+      # options is a string like "symmetry c1"+"\n" or a 
+      # string containing moelcular coordinates
       self.geometry += options
   
   def display_xyz(self):
