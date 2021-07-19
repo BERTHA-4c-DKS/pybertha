@@ -57,19 +57,22 @@ class pyemb:
         self.__activefname = activefname
         self.__envirofname = envirofname
         self.__jobtype = jobtype  #'adf' or 'psi4' as provider of grid and isolated environment density
-        self.__grid_type = None
-        self.__enviro_func = None
-        self.__thresh_conv = None
-        self.__acc_int = None
-        self.__basis_frzn = None
-        self.__f_nad_xc = None
-        self.__f_nad_kin = None
         self.__agrid = None
         self.__isolated_dens_enviro = None
         self.__isolated_elpot_enviro = None
         self.__init = False
+        self.__acc_int = None
+
+        self.__grid_type = 1
+        self.__enviro_func = "BLYP"
+        self.__basis_frzn = 'AUG/ADZP'
+        self.__thresh_conv = 1.0e-8
+        # options for xcfun 
+        self.__f_nad_xc = 'lda'
+        self.__f_nad_kin = 'tkf'
 
     def set_active_fname (self, activefname):
+
         if not isinstance(activefname, str):
             raise TypeError("set_fittcoefffname: input must be a string")
 
@@ -80,6 +83,7 @@ class pyemb:
         self.finalize () # we should rerun the init
 
     def set_enviro_fname (self, envirofname):
+
         if not isinstance(envirofname, str):
             raise TypeError("set_fittcoefffname: input must be a string")
 
@@ -95,29 +99,102 @@ class pyemb:
     def get_enviro_fname (self, envirofname):
         return self.__envirofname
     
-    def set_options(self,param,gtype=1, func='BLYP', basis ='AUG/ADZP', \
-	f_nad={'xc' : 'lda', 'kin' : 'tfk'}, thresh=1.0e-8):
-        self.__grid_type = gtype
-        self.__enviro_func = func
-        self.__basis_frzn = basis
-        self.__thresh_conv = thresh
-        self.__acc_int = param      # can be a list of integers or a float
-        # options for xcfun 
-        self.__f_nad_xc = f_nad['xc']
-        self.__f_nad_kin = f_nad['kin']
-        
-    def print_options(self):
+    def set_grid_type(self, gtype):
 
-        print("pyad job type : %s, grid type : %s, functional (enviro) : %s, e/d thresh : %.2e\n"\
-                    % (self.__jobtype,self.__grid_type,self.__enviro_func,self.__thresh_conv))
-        print("grid specs (accuracy / radial & spherical points)\n")
-        print(self.__acc_int)
+        if not isinstance(gtype, int):
+            raise TypeError("input must be an integer")
+
+        self.__grid_type = gtype
+
+    def get_grid_type(self):
+
+        return self.__grid_type
+
+    def set_enviro_func(self, func):
+
+        if not isinstance(func, str):
+            raise TypeError("input must be a string")
+
+        self.__enviro_func = func
+
+    def get_enviro_func(self):
+        
+        return self.__enviro_func
+
+    def set_basis_frzn(self, basis):
+
+        if not isinstance(basis, str):
+            raise TypeError("input must be a string")
+
+        self.__basis_frzn = basis
+
+    def get_basis_frzn(self):
+        
+        return self.__basis_frzn
+
+    def set_thresh_conv(self, thresh):
+
+        if not isinstance(thresh, float):
+            raise TypeError("input must be a floating-point")
+
+        self.__thresh_conv = thresh
+
+    def get_thresh_conv(self):
+        
+        return self.__thresh_conv
+
+    def set_f_nad_xc(self, xc):
+
+        if not isinstance(xc, str):
+            raise TypeError("input must be a string")
+
+        self.__f_nad_xc = xc
+
+    def get_f_nad_xc(self):
+        
+        return self.__f_nad_xc
+
+    def set_f_nad_kin(self, kin):
+
+        if not isinstance(kin, str):
+            raise TypeError("input must be a string")
+
+        self.__f_nad_kin = kin
+
+    def get_f_nad_kin(self):
+        
+        return self.__f_nad_kin
+
+    def set_options(self, param, gtype=1, func='BLYP', basis ='AUG/ADZP', \
+        f_nad={'xc' : 'lda', 'kin' : 'tfk'}, thresh=1.0e-8):
+
+        self.__acc_int = param      # can be a list of integers or a float
+
+        self.set_grid_type(gtype)
+        self.set_enviro_func(func)
+        self.set_basis_frzn(basis)
+        self.set_thresh_conv (thresh)
+
+        # options for xcfun 
+        if not isinstance(f_nad, dict):
+            raise TypeError("f_nad (parameter 5) must be a dictionary")
+
+        self.set_f_nad_xc(f_nad['xc'])
+        self.set_f_nad_kin(f_nad['kin'])
+        
+    def get_options(self):
+
+        outstr = "pyad job type : %s, grid type : %s, functional (enviro) : %s, e/d thresh : %.2e\n" \
+                    % (self.__jobtype,self.__grid_type,self.__enviro_func,self.__thresh_conv)
+        outstr += "grid specs (accuracy / radial & spherical points)\n"
+        outstr += str(self.__acc_int)
+
+        return outstr
 
     def initialize (self):
         # Here we can insert some init code: all the basic 
         # needed for the proper get_potential start with checking
         # filename maybe we need to specify here the grid to be used ? 
-
 
         if self.__jobtype == 'adf':
 
@@ -126,7 +203,6 @@ class pyemb:
             adf_settings.set_functional(self.__enviro_func)
             adf_settings.set_convergence(self.__thresh_conv)
             adf_settings.set_integration(accint=self.__acc_int)
-
 
             m_active = pyadf.molecule(self.__activefname)
             m_active.set_symmetry('NOSYM')
@@ -211,13 +287,12 @@ class pyemb:
                 build_superfunctional = psi4.driver.dft_funcs.build_superfunctional  
             
             tot_mol=psi4.geometry(tot.geometry)
+
             if self.__grid_type == 1:
-            # TODO
                #placeholder
                npoints = 999
                points=numpy.zeros((npoints,4))
             else :
-            
                basis_dummy = psi4.core.BasisSet.build(mol_obj, "ORBITAL", self.__basis_frzn)
              
                sup = build_superfunctional(args.frzn_func, True)[0]
@@ -246,20 +321,19 @@ class pyemb:
 
     def get_grid(self):
 
-	grid = None 
-
         if self.__init:
             npoints = self.__agrid.npoints
             grid = numpy.zeros((npoints, 4))
             grid[:,:3] = self.__agrid.get_coordinates(bohr=True)
             grid[:,3] = self.__agrid.get_weights()
             grid = numpy.ascontiguousarray(grid, dtype=numpy.double)
+
+            return grid
+        else:
+            raise PyEmbError ("Need to be initialized")
        
-        return grid
 
     def get_potential (self, density):
-        # TODO given the density on the grid get the potential 
-        # remind : density labels the active system
 
         if self.__init:
             if not isinstance(density,(numpy.ndarray)):
@@ -297,22 +371,24 @@ class pyemb:
             pot = numpy.ascontiguousarray(pot, dtype=numpy.double)
             
             return pot
+        else:
+            raise PyEmbError ("Need to be initialized")
 
     def finalize (self):
-        self.__init = False
-        self.__activefname = ""
-        self.__envirofname = ""
-        self.__jobtype = ""
-        self.__grid_type = None
-        self.__enviro_func = None
-        self.__thresh_conv = None
-        self.__acc_int = None
-        self.__basis_frzn = None
-        self.__f_nad_xc = None
-        self.__f_nad_kin = None
+
+        self.__activefname = activefname
+        self.__envirofname = envirofname
+        self.__jobtype = jobtype  #'adf' or 'psi4' as provider of grid and isolated environment density
         self.__agrid = None
         self.__isolated_dens_enviro = None
         self.__isolated_elpot_enviro = None
         self.__init = False
+        self.__acc_int = None
 
-        # TODO clean all the allocated data 
+        self.__grid_type = 1
+        self.__enviro_func = "BLYP"
+        self.__basis_frzn = 'AUG/ADZP'
+        self.__thresh_conv = 1.0e-8
+        # options for xcfun 
+        self.__f_nad_xc = 'lda'
+        self.__f_nad_kin = 'tkf'
