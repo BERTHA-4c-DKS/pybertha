@@ -145,15 +145,14 @@ def runspberthaembed (pberthaopt):
     start = time.time()
     cstart = time.process_time() 
 
-    
-#main run here
+    #main run here
 
     ovapm, eigem, fockm, eigen = bertha.run()
     
     end = time.time()
     cend = time.process_time()
 
-#   initialize pyembed instance
+    #initialize pyembed instance
 
     activefname = pberthaopt.activefile
     if not os.path.isfile(activefname):
@@ -168,7 +167,7 @@ def runspberthaembed (pberthaopt):
     embfactory = pyembmod.pyemb(activefname,envirofname,'adf') #jobtype='adf' is default de facto
     embfactory.set_options(4.0)  # only the integration accuracy parameter is specified 
    
-    embfactory.print_options()
+    print(embfactory.get_options())
 
     embfactory.initialize()
     grid = embfactory.get_grid() 
@@ -182,14 +181,14 @@ def runspberthaembed (pberthaopt):
    
     pot = embfactory.get_potential(density)    
 
-#  TEST density on grid
+    #TEST density on grid
 
-#    print("TEST density on grid")
-#    print("Type density", type(density), density.shape)
-#    print("Scalar product" , "density.weigt", numpy.dot(density,grid[:,3]))
-#    print("Dip x" , "density.weigt", numpy.dot(density*grid[:,3],grid[:,0]))
-#    print("Dip y" , "density.weigt", numpy.dot(density*grid[:,3],grid[:,1]))
-#    print("Dip z" , "density.weigt", numpy.dot(density*grid[:,3],grid[:,2]))
+    #print("TEST density on grid")
+    #print("Type density", type(density), density.shape)
+    #print("Scalar product" , "density.weigt", numpy.dot(density,grid[:,3]))
+    #print("Dip x" , "density.weigt", numpy.dot(density*grid[:,3],grid[:,0]))
+    #print("Dip y" , "density.weigt", numpy.dot(density*grid[:,3],grid[:,1]))
+    #print("Dip z" , "density.weigt", numpy.dot(density*grid[:,3],grid[:,2]))
 
     """
     for i in range(npoints):
@@ -230,9 +229,6 @@ def runspberthaembed (pberthaopt):
     print("Dipy    ",dipy_ref)
     print("Dipz    ",dipz_ref)
 
-
-
-
     bertha.finalize()
 
     bertha.set_fittcoefffname(fittcoefffname)
@@ -246,11 +242,10 @@ def runspberthaembed (pberthaopt):
     bertha.set_dumpfiles(dumpfiles)
     
     bertha.set_densitydiff(1)
-
  
     bertha.init()
     
-#   run with Vemb included
+    # run with Vemb included
     bertha.set_embpot_on_grid(grid, pot)
     
     ovapm, eigem, fockm, eigen = bertha.run()

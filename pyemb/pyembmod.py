@@ -277,8 +277,8 @@ class pyemb:
             tot=Molecule(self.__activefname)
             tot.append(m_enviro.geometry+'symmetry c1' +'\n' + 'no_com' + '\n' + 'no_reorient' + '\n')
             if __grid_type == 3:
-
                raise PyEmbError ("incompatible grid type")
+
             #psi4 block
              
             if parse_version(psi4.__version__) >= parse_version('1.3a1'):      
