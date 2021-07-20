@@ -219,11 +219,14 @@ def runspberthaembed (pberthaopt):
                 occeigv[j, iocc] = eigem[j, i]
             iocc = iocc + 1
 
-    Da = numpy.matmul(occeigv,numpy.conjugate(occeigv.transpose()))
+    Da0 = numpy.matmul(occeigv,numpy.conjugate(occeigv.transpose()))
+  
+    print("Dump ground state unperturbed density density0.cube")
+    bertha.density_to_cube(Da0.T, "density0.cube",margin=5.0)
 
-    dipx_ref = numpy.trace(numpy.matmul(Da,dipx_mat)).real
-    dipy_ref = numpy.trace(numpy.matmul(Da,dipy_mat)).real
-    dipz_ref = numpy.trace(numpy.matmul(Da,dipz_mat)).real
+    dipx_ref = numpy.trace(numpy.matmul(Da0,dipx_mat)).real
+    dipy_ref = numpy.trace(numpy.matmul(Da0,dipy_mat)).real
+    dipz_ref = numpy.trace(numpy.matmul(Da0,dipz_mat)).real
 
     print("Dipx    ",dipx_ref)
     print("Dipy    ",dipy_ref)
@@ -250,6 +253,20 @@ def runspberthaembed (pberthaopt):
     
     ovapm, eigem, fockm, eigen = bertha.run()
     etotal2 = bertha.get_etotal()
+
+    occeigv = numpy.zeros((ndim,nocc), dtype=numpy.complex128)
+    iocc = 0
+
+    for i in range(ndim):
+        if i >= nshift and iocc < nocc:
+            for j in range(ndim):
+                occeigv[j, iocc] = eigem[j, i]
+            iocc = iocc + 1
+
+    Da = numpy.matmul(occeigv,numpy.conjugate(occeigv.transpose()))
+  
+    print("Dump ground state unperturbed density density.cube")
+    bertha.density_to_cube(Da.T, "density.cube",margin=5.0)
 
     rho = bertha.get_density_on_grid(grid)
 

@@ -1,125 +1,130 @@
  Initialze the atomic densities on each center
  Done
  Iteration            1
-  total electronic energy   =        -75.6438211828
+  total electronic energy   =        -75.6438211829
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -66.5356949753
+  total energy              =        -66.5356949754
   maxdiff in density matrix =      0.1204522036E+00 ( 184.218%) 
  Iteration            2
-  total electronic energy   =        -85.6062771476
+  total electronic energy   =        -85.6062771480
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.4981509402
+  total energy              =        -76.4981509405
   maxdiff in density matrix =      0.8499723028E-01 (  31.962%) 
  Iteration            3
-  total electronic energy   =        -85.5816119167
+  total electronic energy   =        -85.5816119165
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.4734857092
+  total energy              =        -76.4734857090
   maxdiff in density matrix =      0.4381816544E-01 (  17.860%) 
  Iteration            4
-  total electronic energy   =        -85.5777653546
+  total electronic energy   =        -85.5777653547
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.4696391471
-  maxdiff in density matrix =      0.1309070625E-01 (   4.570%) 
+  total energy              =        -76.4696391473
+  maxdiff in density matrix =      0.1309070623E-01 (   4.570%) 
  Iteration            5
-  total electronic energy   =        -85.5772149433
+  total electronic energy   =        -85.5772149436
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.4690887358
-  maxdiff in density matrix =      0.7847022849E-02 (   3.020%) 
+  total energy              =        -76.4690887361
+  maxdiff in density matrix =      0.7847022848E-02 (   3.020%) 
  Iteration            6
   total electronic energy   =        -85.5771818839
   nuclear repulsion energy  =          9.1081262075
   total energy              =        -76.4690556764
-  maxdiff in density matrix =      0.4078584128E-02 (   1.404%) 
+  maxdiff in density matrix =      0.4078584137E-02 (   1.404%) 
  Iteration            7
-  total electronic energy   =        -85.5772016134
+  total electronic energy   =        -85.5772016136
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.4690754059
-  maxdiff in density matrix =      0.1471591956E-02 (   0.560%) 
+  total energy              =        -76.4690754061
+  maxdiff in density matrix =      0.1471591959E-02 (   0.560%) 
  Iteration            8
-  total electronic energy   =        -85.5772181378
+  total electronic energy   =        -85.5772181377
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.4690919303
-  maxdiff in density matrix =      0.1501820882E-02 (   0.511%) 
+  total energy              =        -76.4690919302
+  maxdiff in density matrix =      0.1501820878E-02 (   0.511%) 
  Iteration            9
-  total electronic energy   =        -85.5772290694
+  total electronic energy   =        -85.5772290690
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.4691028619
-  maxdiff in density matrix =      0.3815124816E-03 (   3.783%) 
+  total energy              =        -76.4691028616
+  maxdiff in density matrix =      0.3815124818E-03 (   3.783%) 
  Iteration           10
-  total electronic energy   =        -85.5772373437
+  total electronic energy   =        -85.5772373434
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.4691111362
-  maxdiff in density matrix =      0.8257068183E-03 ( 107.594%) 
+  total energy              =        -76.4691111359
+  maxdiff in density matrix =      0.8257067949E-03 ( 107.594%) 
  Iteration           11
-  total electronic energy   =        -85.5772363073
+  total electronic energy   =        -85.5772363070
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.4691100998
-  maxdiff in density matrix =      0.1600258749E-02 (   0.542%) 
+  total energy              =        -76.4691100996
+  maxdiff in density matrix =      0.1600258621E-02 (   0.542%) 
  Iteration           12
-  total electronic energy   =        -85.5772355637
+  total electronic energy   =        -85.5772355638
   nuclear repulsion energy  =          9.1081262075
   total energy              =        -76.4691093563
-  maxdiff in density matrix =      0.4445213166E-03 (   0.150%) 
+  maxdiff in density matrix =      0.4445214118E-03 (   0.150%) 
  Iteration           13
   total electronic energy   =        -85.5772364448
   nuclear repulsion energy  =          9.1081262075
   total energy              =        -76.4691102373
-  maxdiff in density matrix =      0.2275287583E-03 (   0.077%) 
+  maxdiff in density matrix =      0.2275287247E-03 (   0.077%) 
  Iteration           14
-  total electronic energy   =        -85.5772368512
+  total electronic energy   =        -85.5772368513
   nuclear repulsion energy  =          9.1081262075
   total energy              =        -76.4691106438
-  maxdiff in density matrix =      0.1827105458E-03 (   0.062%) 
+  maxdiff in density matrix =      0.1827105987E-03 (   0.062%) 
  Iteration           15
-  total electronic energy   =        -85.5772370678
+  total electronic energy   =        -85.5772370681
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.4691108604
-  maxdiff in density matrix =      0.1016770234E-03 (   0.034%) 
+  total energy              =        -76.4691108607
+  maxdiff in density matrix =      0.1016769865E-03 (   0.034%) 
  Iteration           16
-  total electronic energy   =        -85.5772371838
+  total electronic energy   =        -85.5772371836
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.4691109763
-  maxdiff in density matrix =      0.9743957011E-04 (   0.033%) 
+  total energy              =        -76.4691109761
+  maxdiff in density matrix =      0.9743960265E-04 (   0.033%) 
  Iteration           17
-  total electronic energy   =        -85.5772372433
+  total electronic energy   =        -85.5772372430
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.4691110358
-  maxdiff in density matrix =      0.4355818326E-04 (   0.015%) 
+  total energy              =        -76.4691110355
+  maxdiff in density matrix =      0.4355815524E-04 (   0.015%) 
  Iteration           18
-  total electronic energy   =        -85.5772372750
+  total electronic energy   =        -85.5772372752
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.4691110675
-  maxdiff in density matrix =      0.5805221099E-04 (   0.020%) 
+  total energy              =        -76.4691110677
+  maxdiff in density matrix =      0.5805223879E-04 (   0.020%) 
  Iteration           19
   total electronic energy   =        -85.5772372919
   nuclear repulsion energy  =          9.1081262075
   total energy              =        -76.4691110844
-  maxdiff in density matrix =      0.1795795370E-04 (   0.155%) 
+  maxdiff in density matrix =      0.1795795754E-04 (   0.155%) 
  Iteration           20
-  total electronic energy   =        -85.5772373008
+  total electronic energy   =        -85.5772373007
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.4691110933
-  maxdiff in density matrix =      0.3917153631E-04 (   0.013%) 
+  total energy              =        -76.4691110932
+  maxdiff in density matrix =      0.3917155306E-04 (   0.013%) 
  Iteration           21
-  total electronic energy   =        -85.5772373060
+  total electronic energy   =        -85.5772373057
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.4691110985
-  maxdiff in density matrix =      0.1386213161E-04 (   1.034%) 
+  total energy              =        -76.4691110982
+  maxdiff in density matrix =      0.1386215150E-04 (   1.034%) 
  Iteration           22
-  total electronic energy   =        -85.5772373083
+  total electronic energy   =        -85.5772373079
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.4691111008
-  maxdiff in density matrix =      0.3114105521E-04 (   0.010%) 
+  total energy              =        -76.4691111004
+  maxdiff in density matrix =      0.3114108092E-04 (   0.010%) 
  Iteration           23
   total electronic energy   =        -85.5772373095
   nuclear repulsion energy  =          9.1081262075
   total energy              =        -76.4691111021
-  maxdiff in density matrix =      0.1728902290E-04 (   1.287%) 
+  maxdiff in density matrix =      0.1728905117E-04 (   1.287%) 
  Iteration           24
-  total electronic energy   =        -85.5772373103
+  total electronic energy   =        -85.5772373105
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.4691111029
- Tot number el.   9.99866569732769     
+  total energy              =        -76.4691111031
+  maxdiff in density matrix =      0.2899725952E-04 (   0.010%) 
+ Iteration           25
+  total electronic energy   =        -85.5772373110
+  nuclear repulsion energy  =          9.1081262075
+  total energy              =        -76.4691111035
+ Tot number el.   9.9986658664514874     
  Initialze the atomic densities on each center
  Done
  Iteration            1
@@ -129,10 +134,10 @@
  SHAPE(grid)           4       32384
  npoints        32384
  end onel_pot_from_grid
-  total electronic energy   =        -75.3599860600
+  total electronic energy   =        -75.3599860627
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -66.2518598526
-  maxdiff in density matrix =      0.1222029614E+00 ( 189.432%) 
+  total energy              =        -66.2518598552
+  maxdiff in density matrix =      0.1222029711E+00 ( 189.432%) 
  Iteration            2
  in onel_pot_from_grid
  fitcase           2
@@ -140,10 +145,10 @@
  SHAPE(grid)           4       32384
  npoints        32384
  end onel_pot_from_grid
-  total electronic energy   =        -85.3188226589
+  total electronic energy   =        -85.3188226657
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.2106964514
-  maxdiff in density matrix =      0.8707006930E-01 (  32.965%) 
+  total energy              =        -76.2106964583
+  maxdiff in density matrix =      0.8707007200E-01 (  32.965%) 
  Iteration            3
  in onel_pot_from_grid
  fitcase           2
@@ -151,10 +156,10 @@
  SHAPE(grid)           4       32384
  npoints        32384
  end onel_pot_from_grid
-  total electronic energy   =        -85.2928118365
+  total electronic energy   =        -85.2928118438
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1846856290
-  maxdiff in density matrix =      0.4461420757E-01 (  18.367%) 
+  total energy              =        -76.1846856363
+  maxdiff in density matrix =      0.4461421182E-01 (  18.367%) 
  Iteration            4
  in onel_pot_from_grid
  fitcase           2
@@ -162,10 +167,10 @@
  SHAPE(grid)           4       32384
  npoints        32384
  end onel_pot_from_grid
-  total electronic energy   =        -85.2887389481
+  total electronic energy   =        -85.2887389545
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1806127406
-  maxdiff in density matrix =      0.1274187681E-01 (   4.528%) 
+  total energy              =        -76.1806127471
+  maxdiff in density matrix =      0.1274189926E-01 (   4.528%) 
  Iteration            5
  in onel_pot_from_grid
  fitcase           2
@@ -173,10 +178,10 @@
  SHAPE(grid)           4       32384
  npoints        32384
  end onel_pot_from_grid
-  total electronic energy   =        -85.2881513445
+  total electronic energy   =        -85.2881513507
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1800251370
-  maxdiff in density matrix =      0.7939425541E-02 (   3.082%) 
+  total energy              =        -76.1800251432
+  maxdiff in density matrix =      0.7939428368E-02 (   3.082%) 
  Iteration            6
  in onel_pot_from_grid
  fitcase           2
@@ -184,10 +189,10 @@
  SHAPE(grid)           4       32384
  npoints        32384
  end onel_pot_from_grid
-  total electronic energy   =        -85.2881095615
+  total electronic energy   =        -85.2881095877
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1799833540
-  maxdiff in density matrix =      0.3810347005E-02 (   1.337%) 
+  total energy              =        -76.1799833803
+  maxdiff in density matrix =      0.3810293836E-02 (   1.337%) 
  Iteration            7
  in onel_pot_from_grid
  fitcase           2
@@ -195,10 +200,10 @@
  SHAPE(grid)           4       32384
  npoints        32384
  end onel_pot_from_grid
-  total electronic energy   =        -85.2881263868
+  total electronic energy   =        -85.2881263974
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1800001793
-  maxdiff in density matrix =      0.1478447978E-02 (   0.568%) 
+  total energy              =        -76.1800001900
+  maxdiff in density matrix =      0.1478342026E-02 (   0.568%) 
  Iteration            8
  in onel_pot_from_grid
  fitcase           2
@@ -206,10 +211,10 @@
  SHAPE(grid)           4       32384
  npoints        32384
  end onel_pot_from_grid
-  total electronic energy   =        -85.2881411101
+  total electronic energy   =        -85.2881411176
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1800149026
-  maxdiff in density matrix =      0.1347999545E-02 (   0.468%) 
+  total energy              =        -76.1800149101
+  maxdiff in density matrix =      0.1348223692E-02 (   0.468%) 
  Iteration            9
  in onel_pot_from_grid
  fitcase           2
@@ -217,10 +222,10 @@
  SHAPE(grid)           4       32384
  npoints        32384
  end onel_pot_from_grid
-  total electronic energy   =        -85.2881495550
+  total electronic energy   =        -85.2881495614
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1800233475
-  maxdiff in density matrix =      0.4764751420E-03 (   0.165%) 
+  total energy              =        -76.1800233539
+  maxdiff in density matrix =      0.4762803683E-03 (   0.165%) 
  Iteration           10
  in onel_pot_from_grid
  fitcase           2
@@ -228,10 +233,10 @@
  SHAPE(grid)           4       32384
  npoints        32384
  end onel_pot_from_grid
-  total electronic energy   =        -85.2881539251
+  total electronic energy   =        -85.2881539308
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1800277176
-  maxdiff in density matrix =      0.5658891102E-03 (   0.196%) 
+  total energy              =        -76.1800277234
+  maxdiff in density matrix =      0.5659041195E-03 (   0.196%) 
  Iteration           11
  in onel_pot_from_grid
  fitcase           2
@@ -239,10 +244,10 @@
  SHAPE(grid)           4       32384
  npoints        32384
  end onel_pot_from_grid
-  total electronic energy   =        -85.2881561059
+  total electronic energy   =        -85.2881561117
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1800298984
-  maxdiff in density matrix =      0.3028266211E-03 (   0.105%) 
+  total energy              =        -76.1800299042
+  maxdiff in density matrix =      0.3027666479E-03 (   0.105%) 
  Iteration           12
  in onel_pot_from_grid
  fitcase           2
@@ -250,10 +255,10 @@
  SHAPE(grid)           4       32384
  npoints        32384
  end onel_pot_from_grid
-  total electronic energy   =        -85.2881572099
+  total electronic energy   =        -85.2881572163
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1800310024
-  maxdiff in density matrix =      0.2706417880E-03 (   0.093%) 
+  total energy              =        -76.1800310089
+  maxdiff in density matrix =      0.2706422638E-03 (   0.093%) 
  Iteration           13
  in onel_pot_from_grid
  fitcase           2
@@ -261,10 +266,10 @@
  SHAPE(grid)           4       32384
  npoints        32384
  end onel_pot_from_grid
-  total electronic energy   =        -85.2881577800
+  total electronic energy   =        -85.2881577861
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1800315725
-  maxdiff in density matrix =      0.1628586579E-03 (   0.056%) 
+  total energy              =        -76.1800315786
+  maxdiff in density matrix =      0.1628294976E-03 (   0.056%) 
  Iteration           14
  in onel_pot_from_grid
  fitcase           2
@@ -272,10 +277,10 @@
  SHAPE(grid)           4       32384
  npoints        32384
  end onel_pot_from_grid
-  total electronic energy   =        -85.2881580766
+  total electronic energy   =        -85.2881580827
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1800318691
-  maxdiff in density matrix =      0.1349802701E-03 (   0.046%) 
+  total energy              =        -76.1800318752
+  maxdiff in density matrix =      0.1349991390E-03 (   0.047%) 
  Iteration           15
  in onel_pot_from_grid
  fitcase           2
@@ -283,10 +288,10 @@
  SHAPE(grid)           4       32384
  npoints        32384
  end onel_pot_from_grid
-  total electronic energy   =        -85.2881582319
+  total electronic energy   =        -85.2881582381
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1800320244
-  maxdiff in density matrix =      0.8356649411E-04 (   0.029%) 
+  total energy              =        -76.1800320306
+  maxdiff in density matrix =      0.8354153286E-04 (   0.029%) 
  Iteration           16
  in onel_pot_from_grid
  fitcase           2
@@ -294,10 +299,10 @@
  SHAPE(grid)           4       32384
  npoints        32384
  end onel_pot_from_grid
-  total electronic energy   =        -85.2881583138
+  total electronic energy   =        -85.2881583198
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1800321063
-  maxdiff in density matrix =      0.7049332029E-04 (   0.024%) 
+  total energy              =        -76.1800321124
+  maxdiff in density matrix =      0.7051794295E-04 (   0.024%) 
  Iteration           17
  in onel_pot_from_grid
  fitcase           2
@@ -305,10 +310,10 @@
  SHAPE(grid)           4       32384
  npoints        32384
  end onel_pot_from_grid
-  total electronic energy   =        -85.2881583569
+  total electronic energy   =        -85.2881583630
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1800321495
-  maxdiff in density matrix =      0.4183811866E-04 (   0.014%) 
+  total energy              =        -76.1800321555
+  maxdiff in density matrix =      0.4181159229E-04 (   0.014%) 
  Iteration           18
  in onel_pot_from_grid
  fitcase           2
@@ -316,10 +321,10 @@
  SHAPE(grid)           4       32384
  npoints        32384
  end onel_pot_from_grid
-  total electronic energy   =        -85.2881583796
+  total electronic energy   =        -85.2881583852
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1800321721
-  maxdiff in density matrix =      0.3823726847E-04 (   0.013%) 
+  total energy              =        -76.1800321777
+  maxdiff in density matrix =      0.3826558645E-04 (   0.013%) 
  Iteration           19
  in onel_pot_from_grid
  fitcase           2
@@ -327,10 +332,10 @@
  SHAPE(grid)           4       32384
  npoints        32384
  end onel_pot_from_grid
-  total electronic energy   =        -85.2881583915
+  total electronic energy   =        -85.2881583976
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1800321840
-  maxdiff in density matrix =      0.2017520169E-04 (   0.007%) 
+  total energy              =        -76.1800321901
+  maxdiff in density matrix =      0.2014550573E-04 (   0.007%) 
  Iteration           20
  in onel_pot_from_grid
  fitcase           2
@@ -338,10 +343,10 @@
  SHAPE(grid)           4       32384
  npoints        32384
  end onel_pot_from_grid
-  total electronic energy   =        -85.2881587650
+  total electronic energy   =        -85.2881587716
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1800325575
-  maxdiff in density matrix =      0.1098269122E-03 ( 455.677%) 
+  total energy              =        -76.1800325641
+  maxdiff in density matrix =      0.1099476994E-03 ( 455.406%) 
  Iteration           21
  in onel_pot_from_grid
  fitcase           2
@@ -349,10 +354,9 @@
  SHAPE(grid)           4       32384
  npoints        32384
  end onel_pot_from_grid
-  total electronic energy   =        -85.2881587646
+  total electronic energy   =        -85.2881587711
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1800325571
- Tot number el.   9.99852471029375     
+  total energy              =        -76.1800325636
 Options: 
 activefile  =  H2O.xyz
 berthamodpath  =  ../src
@@ -382,9 +386,7 @@ Matrix dimension:  224
      level shift:  -1.0
 
 pyad job type : adf, grid type : 1, functional (enviro) : BLYP, e/d thresh : 1.00e-08
-
 grid specs (accuracy / radial & spherical points)
-
 4.0
  --------------------------------------------------
  Running ADF single point job
@@ -421,7 +423,7 @@ grid specs (accuracy / radial & spherical points)
 
    NOSYMFIT
 
-   Output will be written to :  pyadf_joboutput.28732.out
+   Output will be written to :  pyadf_joboutput.9369.out
 
  Running main job ...
 
@@ -507,7 +509,7 @@ grid specs (accuracy / radial & spherical points)
 
    NOSYMFIT
 
-   Output will be written to :  pyadf_joboutput.28732.out
+   Output will be written to :  pyadf_joboutput.9369.out
 
  Running main job ...
 
@@ -524,7 +526,7 @@ grid specs (accuracy / radial & spherical points)
 
    Calculated property :  density dens Options: {'fit': False}
 
-   Output will be written to :  pyadf_joboutput.28732.out
+   Output will be written to :  pyadf_joboutput.9369.out
 
  Running main job ...
 
@@ -541,7 +543,7 @@ grid specs (accuracy / radial & spherical points)
 
    Calculated property :  density grad Options: {'fit': False}
 
-   Output will be written to :  pyadf_joboutput.28732.out
+   Output will be written to :  pyadf_joboutput.9369.out
 
  Running main job ...
 
@@ -558,7 +560,7 @@ grid specs (accuracy / radial & spherical points)
 
    Calculated property :  density hess Options: {'fit': False}
 
-   Output will be written to :  pyadf_joboutput.28732.out
+   Output will be written to :  pyadf_joboutput.9369.out
 
  Running main job ...
 
@@ -575,7 +577,7 @@ grid specs (accuracy / radial & spherical points)
 
    Calculated property :  potential nuc Options: {}
 
-   Output will be written to :  pyadf_joboutput.28732.out
+   Output will be written to :  pyadf_joboutput.9369.out
 
  Running main job ...
 
@@ -592,7 +594,7 @@ grid specs (accuracy / radial & spherical points)
 
    Calculated property :  potential coul Options: {}
 
-   Output will be written to :  pyadf_joboutput.28732.out
+   Output will be written to :  pyadf_joboutput.9369.out
 
  Running main job ...
 
@@ -625,20 +627,23 @@ Currently defined exchange-correlation functional:
 
 functional is of  LDA  class
 functional is of  LDA  class
-Totaltime:     27.756015062332153  (CPU time:  99.687745936 ) s 
-MainRun Time:  27.751235246658325  (CPU time:  99.65005879600001 ) s 
-Dipx     -28.906875208480525
-Dipy     -0.7354825777062655
-Dipz     0.0004154475997615995
+Totaltime:     26.116993188858032  (CPU time:  95.615951329 ) s 
+MainRun Time:  26.112472772598267  (CPU time:  95.579988754 ) s 
+Dump ground state unperturbed density density0.cube
+Dipx     -28.90685370979636
+Dipy     -0.7354991755954765
+Dipz     0.00041593079040199446
+Dump ground state unperturbed density density.cube
 Dipole moment analitical: Tr(D dip_mat)
-Dip x     -28.906875208480525
-Dip y     -0.7354825777062655
-Dip z     0.0004154475997615995
+Dip x     -28.90685370979636
+Dip y     -0.7354991755954765
+Dip z     0.00041593079040199446
 TEST dipole moment from density on grid numerical integration
   
 Type density <class 'numpy.ndarray'> (32384, 10)
-Scalar product density.weigt 9.998524710293749
-Dip x density.weigt 29.005427558200893
-Dip y density.weigt 0.7081046059221842
-Dip z density.weigt -0.0007364692484994606
+Scalar product density.weigt 9.998524711596758
+Dip x density.weigt 29.00542744407626
+Dip y density.weigt 0.7081042785098243
+Dip z density.weigt -0.0007367318393001754
   
+ Tot number el.   9.9985247115967599     
