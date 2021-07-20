@@ -168,7 +168,16 @@ class pyemb:
     def set_options(self, param, gtype=1, func='BLYP', basis ='AUG/ADZP', \
         f_nad={'xc' : 'lda', 'kin' : 'tfk'}, thresh=1.0e-8):
 
-        self.__acc_int = param      # can be a list of integers or a float
+        if isinstance (param, float) or \
+            isinstance (param, list):
+
+            if isinstance (param, list):
+                if not all(isinstance(x, int) for x in param):
+                    raise TypeError("param (parameter 1) must be a float or a list of integer")
+
+            self.__acc_int = param      # can be a list of integers or a float
+        else:
+            raise TypeError("param (parameter 1) must be a float or a list of integer")
 
         self.set_grid_type(gtype)
         self.set_enviro_func(func)
