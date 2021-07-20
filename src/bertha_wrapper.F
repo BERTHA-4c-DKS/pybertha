@@ -29,6 +29,9 @@ c     potential to add
       real, allocatable :: cfit(:)
       real, pointer :: grid(:,:), pot(:)
 
+c     restart from memory data 
+      logical :: restartmem 
+
       contains
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -46,6 +49,8 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       addpot = .FALSE.
       verbose = verbosity
       dumpfiles = dumpfilesin
+
+      restartmem = .FALSE.
 
       if (verbose .eq. 1) call writeversion ()
 
@@ -76,7 +81,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine bertha_main(fittcoefffname, vctfilename, ovapfilename,
      +                       fittfname, eigen, ovap_ptr, eige_ptr, 
-     +                       fock_ptr) 
+     +                       fock_ptr, restart_eige) 
 
       implicit none
 
@@ -84,8 +89,9 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       character*(*), intent(in) :: fittcoefffname, vctfilename,
      >   ovapfilename, fittfname
-      real (c_double), intent(out) :: ovap_ptr(*), eige_ptr(*), 
-     +                                fock_ptr(*)
+      real (c_double), intent(out) :: ovap_ptr(*), fock_ptr(*),
+     >                                eige_ptr(*)
+      real (c_double), intent(in) :: restart_eige(*)
 
       complex, parameter :: czero = (0.0,0.0)
 
@@ -118,6 +124,10 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       cputime11 = cputime ()
 
+      if (restartmem) irun = 0
+
+c      print *, "Here " , irun, restartmem
+ 
       if (dumpfiles .eq. 1) then 
         open (unit=11, file=fittcoefffname, err=9999,
      +        status ="unknown")
@@ -144,8 +154,8 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       do nuca = 1,ncent
         do nucb = 1,nuca-1
           dist = sqrt((coord(1,nuca)-coord(1,nucb))**2 +
-     + (coord(2,nuca)-coord(2,nucb))**2 +
-     + (coord(3,nuca)-coord(3,nucb))**2)
+     +      (coord(2,nuca)-coord(2,nucb))**2 +
+     +      (coord(3,nuca)-coord(3,nucb))**2)
           erep = erep + znuc(nuca) * znuc(nucb) / dist
         end do
       end do
@@ -238,22 +248,37 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
           if (allocated(olddensity)) olddensity = c
         endif
 
-
         ioccm0 = nocc
       else
-        inquire(file=vctfilename, exist=filefound)
-        if (.not.filefound) call errmsg('Restart file not found.')
+        if (restartmem) then
 
-        open (unit=10, file=vctfilename, err=9999, status='unknown')
-        rewind(unit=10)
-        read (10, '(I5,I5)') nocc, ndim
-        do iocc = nshift+1,nshift+nocc
-          read(10,'(E23.15)') eigen(iocc)
-          do i=1,ndim
-            read(10,'(E17.10,1X,E17.10)') c(i,iocc)
+c          print *, "Here " , irun
+          
+          counter = 1
+          do j = 1, ndim
+            do i = 1, ndim
+              c(j,i) = complex(restart_eige(counter), restart_eige(counter+1))
+              counter = counter + 2
+            enddo
+          enddo
+
+        else
+
+          inquire(file=vctfilename, exist=filefound)
+          if (.not.filefound) call errmsg('Restart file not found.')
+
+          open (unit=10, file=vctfilename, err=9999, status='unknown')
+          rewind(unit=10)
+          read (10, '(I5,I5)') nocc, ndim
+          do iocc = nshift+1,nshift+nocc
+            read(10,'(E23.15)') eigen(iocc)
+            do i=1,ndim
+              read(10,'(E17.10,1X,E17.10)') c(i,iocc)
+            end do
           end do
-        end do
-        close(unit=10)
+          close(unit=10)
+
+        endif
 
         ioccm0 = nocc
         call dens()
@@ -279,7 +304,6 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         read(11,*) v
         cfit(:) = v(:)
 
-
         a=0
         excfit=0.0
 
@@ -298,7 +322,6 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
           v = v + pp 
           deallocate(pp)
         endif
-
 
         fock=(0.0,0.0) 
 
@@ -356,14 +379,11 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         allocate(zz(nfitt), stat=rc)
         if (rc.ne.0) call errmsg('error allocating memory')
 
-
         call v_calculation(nfitt,fitcase,v)
-
 
         timetomt2 = walltime ()
         ctimetomt2 = cputime ()
         call factlu(nfitt,v)
-
 !! 
         cfit(:) = v(:)
 
@@ -413,7 +433,6 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
           end do
         end do
 ! #### end  Calculation of Tr(D(V_xc+J))    
-
 !  For Embedding
 
         if (addpot) then
@@ -430,8 +449,6 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
           deallocate(pp)
         endif
-
-
 
         deallocate(v)
         deallocate(zz)
@@ -768,6 +785,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       deallocate(cfit)
       
       addpot = .FALSE.
+      restartmem = .FALSE.
 
       if (verbose .eq. 1) call writeversion ()
 
@@ -886,8 +904,6 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       call v_calculation(nfitt,fitcase,v)
       call factlu(nfitt,v)
 
-
-
       call jfitenergy(v,nfitt,efittcoul)
       a = 0
       excfit = 0.0
@@ -931,12 +947,8 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
           deallocate(pp)
       endif
 
-
       deallocate(v)
       deallocate(zz)
-
-
-
 
       call oneel(monoelectronenergy)
 
@@ -1222,19 +1234,24 @@ c     avoid explicit copy
       grid => ingrid 
       pot => inpot
 
-
-
-      do i=1,npoints
+c      do i=1,npoints
 c        write(*, '(A,F15.5,F15.5,F15.5,F15.5)'), "FORTRAN L: ", 
 c     +     grid(1,i), grid(2,i), grid(3,i), grid(4,i)
 c        write(*, '(F30.5,A,F23.5)') pot(i), " vs ", 
 c     +     grid(1,i)*grid(2,i)*grid(3,i)*grid(4,i)
 c        inpot(i) = -0.00*ingrid(1,i)/0.5291772106
-      enddo
+c      enddo
 
       end subroutine bertha_set_embpot_on_grid
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
+      subroutine bertha_set_restart_mem ()
+
+      implicit none
+
+      restartmem = .TRUE.
+
+      end subroutine bertha_set_restart_mem
 
       end module

@@ -680,7 +680,7 @@ class pybertha:
                 ctypes.c_double(margin), ctypes.c_double(drx), ctypes.c_double(dry), \
                 ctypes.c_double(drz), in_fname, in_fittfname)
 
-    def run(self):
+    def run(self, restart_eige = None):
         """
         This is the method to perform the SCF computation.
         """
@@ -705,6 +705,11 @@ class pybertha:
             in_ovapfilename = ctypes.c_char_p(self.__ovapfilename.encode('utf-8'))
             in_fittfname = ctypes.c_char_p(self.__fittfname.encode('utf-8'))
 
+            if restart_eige is None:
+                restart_eige = numpy.zeros(1, dtype=numpy.double)
+            else:
+                self.__bertha.set_restart_mem()
+
             start = time.time()
             cstart = time.process_time()
 
@@ -717,7 +722,8 @@ class pybertha:
                           ctypes.c_void_p(eigen.ctypes.data), \
                           ctypes.c_void_p(ovapbuffer.ctypes.data), \
                           ctypes.c_void_p(eigenvctbu.ctypes.data), \
-                          ctypes.c_void_p(fockbuffer.ctypes.data)])
+                          ctypes.c_void_p(fockbuffer.ctypes.data), \
+                          ctypes.c_void_p(restart_eige.ctypes.data)])
                 maint.daemon = True
                 maint.start()
                 while maint.is_alive():
@@ -730,7 +736,8 @@ class pybertha:
                     ctypes.c_void_p(eigen.ctypes.data), \
                     ctypes.c_void_p(ovapbuffer.ctypes.data), \
                     ctypes.c_void_p(eigenvctbu.ctypes.data), \
-                    ctypes.c_void_p(fockbuffer.ctypes.data))
+                    ctypes.c_void_p(fockbuffer.ctypes.data), \
+                    ctypes.c_void_p(restart_eige.ctypes.data))
 
             end = time.time()
             cend = time.process_time()

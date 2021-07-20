@@ -1,18 +1,9 @@
 import argparse
-import ctypes
 import numpy
+import time
 import sys
-import re
 
 import os.path
-
-from numpy.linalg import eigvalsh
-from scipy.linalg import eigh
-
-import json
-from json import encoder
-
-import time
 
 from dataclasses import dataclass
 
@@ -32,31 +23,6 @@ class pyberthaoption:
     eda_nocv_info: bool =False
     eda_nocv_frag_file: str = "info_eda_nocv_fragX.json"
 
-
-##########################################################################################
-
-def get_json_data(pberthaopt, etotal, erep, ecoul, exc, ndim, nocc, occeigv):
-
-    json_data = {}
-    for arg in vars(pberthaopt):
-        #print(type(arg), arg, getattr(pberthaopt, arg))
-        if arg.find("__") < 0:
-            json_data[arg] = getattr(pberthaopt, arg)
-
-    othervals = {
-            'etotal': etotal,
-            'erep'  : erep, 
-            'ecoul' : ecoul, 
-            'exc'  : exc, 
-            'ndim' : ndim,
-            'nocc' : nocc, 
-            'occeigv_REAL' : numpy.real(occeigv).tolist(),  
-            'occeigv_IMAG' : numpy.imag(occeigv).tolist() 
-            }
-
-    json_data.update(othervals)
-
-    return json_data
 
 ##########################################################################################
 
@@ -107,7 +73,7 @@ def runspbertha (pberthaopt):
     start = time.time()
     cstart = time.process_time() 
     
-    ovapm, eigem, fockm, eigen = bertha.run()
+    ovapm, eigemfirst, fockm, eigen = bertha.run()
     
     end = time.time()
     cend = time.process_time()
@@ -176,7 +142,7 @@ def runspbertha (pberthaopt):
     start = time.time()
     cstart = time.process_time() 
     
-    ovapm, eigem, fockm, eigen = bertha.run()
+    ovapm, eigem, fockm, eigen = bertha.run(eigemfirst)
     
     end = time.time()
     cend = time.process_time()
@@ -186,7 +152,6 @@ def runspbertha (pberthaopt):
             " (CPU time: " , bertha.get_mainrunctime(), ") s ")
     
     sys.stdout.flush()
-    
     
     if (fockm is None) or (eigen is None) or (fockm is None) \
             or (eigen is None):
@@ -216,7 +181,6 @@ def runspbertha (pberthaopt):
     
     
     bertha.finalize()
- 
     
 
 ##########################################################################################
