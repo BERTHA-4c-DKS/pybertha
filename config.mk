@@ -24,7 +24,7 @@ LIBXC=yes
 # export OMP_NUM_THREADS=4
 USEOPENMP=no
 
-BERTHAROOT=/home/redo/Project_Bertha/bertha_ng
+BERTHAROOT=/home/matteod/bertha_ng
 
 ###
 ## NO BLUEGENE
@@ -153,7 +153,7 @@ FFLAGS += -fPIC
 ifeq ($(LIBXC),yes)
   # Use libxc of a distribution DIRLIBXC to be set version 4.3.X is needed 
   #DIRLIBXC = /usr/lib/x86_64-linux-gnu
-  DIRLIBXC = /usr/local/libxc
+  DIRLIBXC = /home/matteod/anaconda3/envs/p4env
   CFLAGS += -DLIBXC 
   FFLAGS += -DLIBXC 
   INCLUDE += -I$(DIRLIBXC)/include
