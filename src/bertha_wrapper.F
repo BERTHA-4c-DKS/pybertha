@@ -252,12 +252,16 @@ c      print *, "Here " , irun, restartmem
       else
         if (restartmem) then
 
-c          print *, "Here " , irun
+c          print *, "Here " , ndim, nocc
           
           counter = 1
           do j = 1, ndim
             do i = 1, ndim
-              c(j,i) = complex(restart_eige(counter), restart_eige(counter+1))
+              
+              if ((i.ge.nshift+1).and.(i.le.nshift+nocc)) then
+                c(j,i) = complex(restart_eige(counter), restart_eige(counter+1))
+              endif 
+
               counter = counter + 2
             enddo
           enddo
