@@ -365,6 +365,9 @@ def runspberthaembed (pberthaopt):
             break
         Dold = Da
         Eold = etotal2
+
+        bertha.finalize()
+        
     print("Dipole moment analitical: Tr(D dip_mat)")
 
     dipx_val = numpy.trace(numpy.matmul(Da,dipx_mat)).real
