@@ -6,14 +6,12 @@ import sys
 import re
 
 import os.path
-sys.path.append('/home/matteod/pybertha/pyemb')
-sys.path.append("/home/matteod/build/xcfun/build/lib/python")
-sys.path.append("/home/matteod/pybertha/psi4rt")
-sys.path.append("/home/matteod/pybertha/src")
-sys.path.append("/home/matteod/build/pyadf/src")
-
-os.environ['PYBERTHAROOT'] = "/home/matteod/pybertha/"
-os.environ['RTHOME'] = "/home/matteod/pybertha/psi4rt"
+sys.path.append('/home/redo/BERTHA/pybertha/pyemb')
+sys.path.append("/home/redo/BERTHA/xcfun/build/lib/python")
+sys.path.append("/home/redo/BERTHA/pybertha/src")
+sys.path.append("/home/redo/BERTHA/pyadf/src")
+os.environ['PYBERTHAROOT'] = "/home/redo/BERTHA/pybertha/"
+os.environ['RTHOME'] = "/home/redo/BERTHA/pybertha/psi4rt"
 sys.path.append(os.environ['PYBERTHAROOT']+"/src")
 sys.path.append(os.environ['RTHOME'])
 
@@ -347,9 +345,10 @@ def runspberthaembed (pberthaopt):
         Da = numpy.matmul(occeigv,numpy.conjugate(occeigv.transpose()))
         diffD = Da - Dold
         diffE = etotal2 -Eold
-        norm_D=np.linalg.norm(diffD,'fro') 
-        print("2-norm of diffD  = %30.15f ... outer iteration :%i"%((diffD), (out_iter +1) ))
-        print("E(actual)-E(prev)= %30.15f ... outer iteration :%i"%((diffE), (out_iter +1) ))
+        norm_D=numpy.linalg.norm(diffD,'fro') 
+        
+        print("2-norm of diffD  = ", diffD, " ... outer iteration :%i"%(out_iter +1))
+        print("E(actual)-E(prev)= ", diffE, " ... outer iteration :%i"%(out_iter +1))
         if ( norm_D<(1.0e-3) and diffE <(1.0e-6)):
             iocc = 0
             for i in range(ndim):
