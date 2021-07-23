@@ -296,6 +296,19 @@ def runspberthaembed (pberthaopt):
         print("")
         print("total electronic energy  = %30.15f ... outer iteration :%i"%((etotal2-(sfact*nocc)), (out_iter +1) ))
         print("mean value of embed pot  = %30.15f ... outer iteration :%i"%((emb_avg_in), (out_iter +1) ))
+
+        erep = bertha.get_erep()
+        etotal = bertha.get_etotal()
+        ecoul  = bertha.get_eecoul()
+        exc    = bertha.get_eexc()
+        
+        print("outer iteration : ", out_iter +1)
+        print("total electronic energy  = %30.15f"%(etotal-(sfact*nocc)))
+        print("nuclear repulsion energy = %30.15f"%(erep))
+        print("total energy             = %30.15f"%(etotal+erep-(sfact*nocc)))
+        print("coulomb energy           = %30.15f"%(ecoul))
+        print("Exc     energy           = %30.15f"%(exc))
+
         if lin_emb :
 
             rho = bertha.get_density_on_grid(grid)
@@ -367,7 +380,7 @@ def runspberthaembed (pberthaopt):
         Eold = etotal2
 
         bertha.finalize()
-        
+
     print("Dipole moment analitical: Tr(D dip_mat)")
 
     dipx_val = numpy.trace(numpy.matmul(Da,dipx_mat)).real
