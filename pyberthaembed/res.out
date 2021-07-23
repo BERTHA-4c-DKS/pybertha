@@ -99,45 +99,20 @@
   total electronic energy   =        -85.5772373007
   nuclear repulsion energy  =          9.1081262075
   total energy              =        -76.4691110932
-  maxdiff in density matrix =      0.3917155306E-04 (   0.013%) 
- Iteration           21
-  total electronic energy   =        -85.5772373057
-  nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.4691110982
-  maxdiff in density matrix =      0.1386215150E-04 (   1.034%) 
- Iteration           22
-  total electronic energy   =        -85.5772373079
-  nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.4691111004
-  maxdiff in density matrix =      0.3114108092E-04 (   0.010%) 
- Iteration           23
-  total electronic energy   =        -85.5772373095
-  nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.4691111021
-  maxdiff in density matrix =      0.1728905117E-04 (   1.287%) 
- Iteration           24
-  total electronic energy   =        -85.5772373105
-  nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.4691111031
-  maxdiff in density matrix =      0.2899725952E-04 (   0.010%) 
- Iteration           25
-  total electronic energy   =        -85.5772373110
-  nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.4691111035
 Options: 
 activefile  =  H2O.xyz
 berthamodpath  =  ../src
 debug  =  False
-dumpfiles  =  False
+dumpfiles  =  True
 eda_nocv_frag_file  =  info_eda_nocv_fragX.json
 eda_nocv_info  =  False
 envirofile  =  NH3.xyz
 fitcoefffile  =  fitcoeff.txt
 fittfile  =  fitt2.inp
 inputfile  =  input.inp
-linemb  =  True
+linemb  =  False
 ovapfile  =  ovap.txt
-thresh  =  1e-11
+thresh  =  1e-10
 vctfile  =  vct.txt
 verbosity  =  -1
 wrapperso  =  ../lib/bertha_wrapper.so
@@ -145,7 +120,7 @@ wrapperso  =  ../lib/bertha_wrapper.so
 
 
 Verbosity       :  -1
-Dumpfiles       :  0
+Dumpfiles       :  1
 
 Matrix dimension:  224
             nocc:  10
@@ -153,132 +128,102 @@ Matrix dimension:  224
            nopen:  0
      level shift:  -1.0
 
- Tot number el.   9.9986658664514874     
+ Tot number el.   9.9986656591969378     
  Initialze the atomic densities on each center
  Done
  Iteration            1
-  total electronic energy   =        -75.3599860626
+  total electronic energy   =        -85.2875772023
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -66.2518598551
-  maxdiff in density matrix =      0.1222029711E+00 ( 189.432%) 
+  total energy              =        -76.1794509948
+  maxdiff in density matrix =      0.7057465152E-02 (   9.382%) 
  Iteration            2
-  total electronic energy   =        -85.3188226656
+  total electronic energy   =        -85.2879769435
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.2106964582
-  maxdiff in density matrix =      0.8707007200E-01 (  32.965%) 
+  total energy              =        -76.1798507360
+  maxdiff in density matrix =      0.2614051440E-02 (   3.714%) 
  Iteration            3
-  total electronic energy   =        -85.2928118436
+  total electronic energy   =        -85.2880902344
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1846856361
-  maxdiff in density matrix =      0.4461421182E-01 (  18.367%) 
+  total energy              =        -76.1799640269
+  maxdiff in density matrix =      0.1283324328E-02 (   0.437%) 
  Iteration            4
-  total electronic energy   =        -85.2887389546
+  total electronic energy   =        -85.2881308965
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1806127471
-  maxdiff in density matrix =      0.1274189928E-01 (   4.528%) 
+  total energy              =        -76.1800046890
+  maxdiff in density matrix =      0.8606645438E-03 (  17.868%) 
  Iteration            5
-  total electronic energy   =        -85.2881513510
+  total electronic energy   =        -85.2881463250
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1800251435
-  maxdiff in density matrix =      0.7939428369E-02 (   3.082%) 
+  total energy              =        -76.1800201175
+  maxdiff in density matrix =      0.5870855734E-03 (  14.343%) 
  Iteration            6
-  total electronic energy   =        -85.2881095877
+  total electronic energy   =        -85.2881523768
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1799833802
-  maxdiff in density matrix =      0.3810293829E-02 (   1.337%) 
+  total energy              =        -76.1800261693
+  maxdiff in density matrix =      0.4308308032E-03 (  12.020%) 
  Iteration            7
-  total electronic energy   =        -85.2881263974
+  total electronic energy   =        -85.2881554755
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1800001899
-  maxdiff in density matrix =      0.1478342028E-02 (   0.568%) 
+  total energy              =        -76.1800292681
+  maxdiff in density matrix =      0.3482492339E-03 (   0.119%) 
  Iteration            8
-  total electronic energy   =        -85.2881411174
+  total electronic energy   =        -85.2881604535
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1800149099
-  maxdiff in density matrix =      0.1348223671E-02 (   0.468%) 
+  total energy              =        -76.1800342460
+  maxdiff in density matrix =      0.1057838959E-02 (   0.364%) 
  Iteration            9
-  total electronic energy   =        -85.2881495612
+  total electronic energy   =        -85.2881585616
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1800233538
-  maxdiff in density matrix =      0.4762803784E-03 (   0.165%) 
+  total energy              =        -76.1800323541
+  maxdiff in density matrix =      0.6810713083E-03 (  27.439%) 
  Iteration           10
-  total electronic energy   =        -85.2881539308
+  total electronic energy   =        -85.2881589947
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1800277233
-  maxdiff in density matrix =      0.5659041158E-03 (   0.196%) 
+  total energy              =        -76.1800327872
+  maxdiff in density matrix =      0.7964665980E-04 (   2.993%) 
  Iteration           11
-  total electronic energy   =        -85.2881561119
+  total electronic energy   =        -85.2881591458
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1800299045
-  maxdiff in density matrix =      0.3027666521E-03 (   0.105%) 
+  total energy              =        -76.1800329383
+  maxdiff in density matrix =      0.6504858894E-04 (   0.060%) 
  Iteration           12
-  total electronic energy   =        -85.2881572159
+  total electronic energy   =        -85.2881591065
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1800310084
-  maxdiff in density matrix =      0.2706422529E-03 (   0.093%) 
+  total energy              =        -76.1800328991
+  maxdiff in density matrix =      0.7709384834E-04 (   0.027%) 
  Iteration           13
-  total electronic energy   =        -85.2881577860
+  total electronic energy   =        -85.2881590034
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1800315785
-  maxdiff in density matrix =      0.1628295045E-03 (   0.056%) 
+  total energy              =        -76.1800327959
+  maxdiff in density matrix =      0.4287295200E-04 (   0.135%) 
  Iteration           14
-  total electronic energy   =        -85.2881580828
+  total electronic energy   =        -85.2881590283
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1800318753
-  maxdiff in density matrix =      0.1349991352E-03 (   0.047%) 
+  total energy              =        -76.1800328208
+  maxdiff in density matrix =      0.4984539542E-04 (   0.017%) 
  Iteration           15
-  total electronic energy   =        -85.2881582382
+  total electronic energy   =        -85.2881590360
   nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1800320308
-  maxdiff in density matrix =      0.8354153221E-04 (   0.029%) 
- Iteration           16
-  total electronic energy   =        -85.2881583198
-  nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1800321124
-  maxdiff in density matrix =      0.7051795243E-04 (   0.024%) 
- Iteration           17
-  total electronic energy   =        -85.2881583626
-  nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1800321552
-  maxdiff in density matrix =      0.4181157237E-04 (   0.014%) 
- Iteration           18
-  total electronic energy   =        -85.2881583853
-  nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1800321778
-  maxdiff in density matrix =      0.3826560442E-04 (   0.013%) 
- Iteration           19
-  total electronic energy   =        -85.2881583979
-  nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1800321904
-  maxdiff in density matrix =      0.2014549676E-04 (   0.007%) 
- Iteration           20
-  total electronic energy   =        -85.2881587717
-  nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1800325642
-  maxdiff in density matrix =      0.1099477282E-03 ( 455.406%) 
- Iteration           21
-  total electronic energy   =        -85.2881587711
-  nuclear repulsion energy  =          9.1081262075
-  total energy              =        -76.1800325637
+  total energy              =        -76.1800328285
 
 Final results 
-eigenvalue     1         -18.76492612
-eigenvalue     2         -18.76492612
-eigenvalue     3          -0.89815867
-eigenvalue     4          -0.89815867
-eigenvalue     5          -0.45437222
-eigenvalue     6          -0.45437222
-eigenvalue     7          -0.30252221
-eigenvalue     8          -0.30252221
-eigenvalue     9          -0.22524086
-eigenvalue    10          -0.22524086
-      lumo                 0.02426641
+eigenvalue     1         -18.76491545
+eigenvalue     2         -18.76491545
+eigenvalue     3          -0.89815147
+eigenvalue     4          -0.89815147
+eigenvalue     5          -0.45436395
+eigenvalue     6          -0.45436395
+eigenvalue     7          -0.30251171
+eigenvalue     8          -0.30251171
+eigenvalue     9          -0.22523628
+eigenvalue    10          -0.22523628
+      lumo                 0.02428043
 
-total electronic energy  =            -85.577237310969281
+total electronic energy  =            -85.577237300674682
 nuclear repulsion energy =              9.108126207473831
-total energy             =            -76.469111103495450
-coulomb energy           =             93.840559564686387
-Exc     energy           =             -9.351648813696416
+total energy             =            -76.469111093200851
+coulomb energy           =             93.840728545975921
+Exc     energy           =             -9.351654301617788
 pyad job type : adf, grid type : 1, functional (enviro) : BLYP, e/d thresh : 1.00e-08
 grid specs (accuracy / radial & spherical points)
 4.0
@@ -317,7 +262,7 @@ grid specs (accuracy / radial & spherical points)
 
    NOSYMFIT
 
-   Output will be written to :  pyadf_joboutput.18409.out
+   Output will be written to :  pyadf_joboutput.6675.out
 
  Running main job ...
 
@@ -403,7 +348,7 @@ grid specs (accuracy / radial & spherical points)
 
    NOSYMFIT
 
-   Output will be written to :  pyadf_joboutput.18409.out
+   Output will be written to :  pyadf_joboutput.6675.out
 
  Running main job ...
 
@@ -420,7 +365,7 @@ grid specs (accuracy / radial & spherical points)
 
    Calculated property :  density dens Options: {'fit': False}
 
-   Output will be written to :  pyadf_joboutput.18409.out
+   Output will be written to :  pyadf_joboutput.6675.out
 
  Running main job ...
 
@@ -437,7 +382,7 @@ grid specs (accuracy / radial & spherical points)
 
    Calculated property :  density grad Options: {'fit': False}
 
-   Output will be written to :  pyadf_joboutput.18409.out
+   Output will be written to :  pyadf_joboutput.6675.out
 
  Running main job ...
 
@@ -454,7 +399,7 @@ grid specs (accuracy / radial & spherical points)
 
    Calculated property :  density hess Options: {'fit': False}
 
-   Output will be written to :  pyadf_joboutput.18409.out
+   Output will be written to :  pyadf_joboutput.6675.out
 
  Running main job ...
 
@@ -471,7 +416,7 @@ grid specs (accuracy / radial & spherical points)
 
    Calculated property :  potential nuc Options: {}
 
-   Output will be written to :  pyadf_joboutput.18409.out
+   Output will be written to :  pyadf_joboutput.6675.out
 
  Running main job ...
 
@@ -488,7 +433,7 @@ grid specs (accuracy / radial & spherical points)
 
    Calculated property :  potential coul Options: {}
 
-   Output will be written to :  pyadf_joboutput.18409.out
+   Output will be written to :  pyadf_joboutput.6675.out
 
  Running main job ...
 
@@ -522,149 +467,186 @@ Currently defined exchange-correlation functional:
 functional is of  LDA  class
 functional is of  LDA  class
 Dump ground state unperturbed density density0.cube
-unperturbed Dipx     -28.90685370979636
-unperturbed Dipy     -0.7354991755954765
-unperturbed Dipz     0.00041593079040199446
+unperturbed Dipx     -28.906937461702658
+unperturbed Dipy     -0.73557217768992
+unperturbed Dipz     0.00041059836486917277
 
-total electronic energy  =            -85.288158771149511 ... outer iteration :1
-mean value of embed pot  =              0.290348290546031 ... outer iteration :1
+total electronic energy  =            -85.288159035984535 ... outer iteration :1
+mean value of embed pot  =              0.290346493248527 ... outer iteration :1
+
+Embed_xcfun: a module to calculate FDE embedding potentialswith density functionals
+
+Using the XCFun library, version  1.99
+XCFun DFT library Copyright 2009-2011 Ulf Ekstrom and contributors.
+See http://dftlibs.org/xcfun/ for more information.
+
+This is free software; see the source code for copying conditions.
+There is ABSOLUTELY NO WARRANTY; not even for MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. For details see the documentation.
+Scientific users of this library should cite
+U. Ekstrom, L. Visscher, R. Bast, A. J. Thorvaldsen and K. Ruud;
+J.Chem.Theor.Comp. 2010, DOI: 10.1021/ct100117s
+ Tot number el.   9.9985247975018705     
+ Initialze the atomic densities on each center
+ Done
+ Iteration            1
+  total electronic energy   =        -85.2881951017
+  nuclear repulsion energy  =          9.1081262075
+  total energy              =        -76.1800688942
+  maxdiff in density matrix =      0.7992588992E-04 (   1.058%) 
+ Iteration            2
+  total electronic energy   =        -85.2881951374
+  nuclear repulsion energy  =          9.1081262075
+  total energy              =        -76.1800689299
+  maxdiff in density matrix =      0.4881959123E-04 (   0.017%) 
+ Iteration            3
+  total electronic energy   =        -85.2881953431
+  nuclear repulsion energy  =          9.1081262075
+  total energy              =        -76.1800691356
+  maxdiff in density matrix =      0.4171835517E-04 (   0.557%) 
+ Iteration            4
+  total electronic energy   =        -85.2881953420
+  nuclear repulsion energy  =          9.1081262075
+  total energy              =        -76.1800691345
+ Tot number el.   9.9985276064213373     
+ Initialze the atomic densities on each center
+ Done
+ Iteration            1
+  total electronic energy   =        -85.2881939659
+  nuclear repulsion energy  =          9.1081262075
+  total energy              =        -76.1800677584
+  maxdiff in density matrix =      0.3587366199E-04 (   0.012%) 
+ Iteration            2
+  total electronic energy   =        -85.2881939656
+  nuclear repulsion energy  =          9.1081262075
+  total energy              =        -76.1800677582
+ Tot number el.   9.9985272864913757     
+ Initialze the atomic densities on each center
+ Done
+ Iteration            1
+  total electronic energy   =        -85.2881939152
+  nuclear repulsion energy  =          9.1081262075
+  total energy              =        -76.1800677078
+  maxdiff in density matrix =      0.3480864190E-04 (   0.012%) 
+ Iteration            2
+  total electronic energy   =        -85.2881939147
+  nuclear repulsion energy  =          9.1081262075
+  total energy              =        -76.1800677072
+
+
+Currently defined kinetic energy functional:
+            tfk with weight 1.000000
+
+Currently defined exchange-correlation functional:
+            lda with weight 1.000000
+
+
+functional is of  LDA  class
+functional is of  LDA  class
+2-norm of diffD  =  0.06442203985563888  ... outer iteration :1
+E(actual)-E(prev)=  0.2890782646901471  ... outer iteration :1
+DE_emb(actual-new)  =              0.002508907898508 ... outer iteration :1
+
+total electronic energy  =            -85.288195341970749 ... outer iteration :2
+mean value of embed pot  =              0.287837585350020 ... outer iteration :2
+
+Embed_xcfun: a module to calculate FDE embedding potentialswith density functionals
+
+Using the XCFun library, version  1.99
+XCFun DFT library Copyright 2009-2011 Ulf Ekstrom and contributors.
+See http://dftlibs.org/xcfun/ for more information.
+
+This is free software; see the source code for copying conditions.
+There is ABSOLUTELY NO WARRANTY; not even for MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. For details see the documentation.
+Scientific users of this library should cite
+U. Ekstrom, L. Visscher, R. Bast, A. J. Thorvaldsen and K. Ruud;
+J.Chem.Theor.Comp. 2010, DOI: 10.1021/ct100117s
+
+
+Currently defined kinetic energy functional:
+            tfk with weight 1.000000
+
+Currently defined exchange-correlation functional:
+            lda with weight 1.000000
+
+
+functional is of  LDA  class
+functional is of  LDA  class
+2-norm of diffD  =  0.0010022388812612735  ... outer iteration :2
+E(actual)-E(prev)=  -3.6305986213847063e-05  ... outer iteration :2
+DE_emb(actual-new)  =             -0.000009784707206 ... outer iteration :2
+
+total electronic energy  =            -85.288193965627215 ... outer iteration :3
+mean value of embed pot  =              0.287847370057226 ... outer iteration :3
+
+Embed_xcfun: a module to calculate FDE embedding potentialswith density functionals
+
+Using the XCFun library, version  1.99
+XCFun DFT library Copyright 2009-2011 Ulf Ekstrom and contributors.
+See http://dftlibs.org/xcfun/ for more information.
+
+This is free software; see the source code for copying conditions.
+There is ABSOLUTELY NO WARRANTY; not even for MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. For details see the documentation.
+Scientific users of this library should cite
+U. Ekstrom, L. Visscher, R. Bast, A. J. Thorvaldsen and K. Ruud;
+J.Chem.Theor.Comp. 2010, DOI: 10.1021/ct100117s
+
+
+Currently defined kinetic energy functional:
+            tfk with weight 1.000000
+
+Currently defined exchange-correlation functional:
+            lda with weight 1.000000
+
+
+functional is of  LDA  class
+functional is of  LDA  class
+2-norm of diffD  =  3.869714522191778e-05  ... outer iteration :3
+E(actual)-E(prev)=  1.376343533365798e-06  ... outer iteration :3
+DE_emb(actual-new)  =             -0.000000910689535 ... outer iteration :3
+
+total electronic energy  =            -85.288193914652311 ... outer iteration :4
+mean value of embed pot  =              0.287848280746761 ... outer iteration :4
+
+Embed_xcfun: a module to calculate FDE embedding potentialswith density functionals
+
+Using the XCFun library, version  1.99
+XCFun DFT library Copyright 2009-2011 Ulf Ekstrom and contributors.
+See http://dftlibs.org/xcfun/ for more information.
+
+This is free software; see the source code for copying conditions.
+There is ABSOLUTELY NO WARRANTY; not even for MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. For details see the documentation.
+Scientific users of this library should cite
+U. Ekstrom, L. Visscher, R. Bast, A. J. Thorvaldsen and K. Ruud;
+J.Chem.Theor.Comp. 2010, DOI: 10.1021/ct100117s
+
+
+Currently defined kinetic energy functional:
+            tfk with weight 1.000000
+
+Currently defined exchange-correlation functional:
+            lda with weight 1.000000
+
+
+functional is of  LDA  class
+functional is of  LDA  class
+2-norm of diffD  =  1.5013949041912203e-05  ... outer iteration :4
+E(actual)-E(prev)=  5.0974904297618195e-08  ... outer iteration :4
+DE_emb(actual-new)  =             -0.000000324664550 ... outer iteration :4
 Dump ground state perturbed density density.cube
 Dipole moment analitical: Tr(D dip_mat)
-Dip x     -29.023522453801437
-Dip y     -0.7362134172646572
-Dip z     0.0005484425276851798
+Dip x     -29.022834497911955
+Dip y     -0.7360733500530436
+Dip z     0.00036998344903835104
 TEST dipole moment from density on grid numerical integration
   
 Type density <class 'numpy.ndarray'> (32384, 10)
-Scalar product density.weigt 9.998524711596467
-Dip x density.weigt 29.00542744398182
-Dip y density.weigt 0.7081042784364949
-Dip z density.weigt -0.000736731934891488
+Scalar product density.weigt 9.998527269672538
+Dip x density.weigt 29.00469481222145
+Dip y density.weigt 0.708119491015575
+Dip z density.weigt -0.00037747923383479876
   
- Tot number el.   9.9985247115964224     
- in onel_pot_from_grid
- fitcase           2
- nfit           70
- SHAPE(grid)           4       32384
- npoints        32384
- end onel_pot_from_grid
- in onel_pot_from_grid
- fitcase           2
- nfit           70
- SHAPE(grid)           4       32384
- npoints        32384
- end onel_pot_from_grid
- in onel_pot_from_grid
- fitcase           2
- nfit           70
- SHAPE(grid)           4       32384
- npoints        32384
- end onel_pot_from_grid
- in onel_pot_from_grid
- fitcase           2
- nfit           70
- SHAPE(grid)           4       32384
- npoints        32384
- end onel_pot_from_grid
- in onel_pot_from_grid
- fitcase           2
- nfit           70
- SHAPE(grid)           4       32384
- npoints        32384
- end onel_pot_from_grid
- in onel_pot_from_grid
- fitcase           2
- nfit           70
- SHAPE(grid)           4       32384
- npoints        32384
- end onel_pot_from_grid
- in onel_pot_from_grid
- fitcase           2
- nfit           70
- SHAPE(grid)           4       32384
- npoints        32384
- end onel_pot_from_grid
- in onel_pot_from_grid
- fitcase           2
- nfit           70
- SHAPE(grid)           4       32384
- npoints        32384
- end onel_pot_from_grid
- in onel_pot_from_grid
- fitcase           2
- nfit           70
- SHAPE(grid)           4       32384
- npoints        32384
- end onel_pot_from_grid
- in onel_pot_from_grid
- fitcase           2
- nfit           70
- SHAPE(grid)           4       32384
- npoints        32384
- end onel_pot_from_grid
- in onel_pot_from_grid
- fitcase           2
- nfit           70
- SHAPE(grid)           4       32384
- npoints        32384
- end onel_pot_from_grid
- in onel_pot_from_grid
- fitcase           2
- nfit           70
- SHAPE(grid)           4       32384
- npoints        32384
- end onel_pot_from_grid
- in onel_pot_from_grid
- fitcase           2
- nfit           70
- SHAPE(grid)           4       32384
- npoints        32384
- end onel_pot_from_grid
- in onel_pot_from_grid
- fitcase           2
- nfit           70
- SHAPE(grid)           4       32384
- npoints        32384
- end onel_pot_from_grid
- in onel_pot_from_grid
- fitcase           2
- nfit           70
- SHAPE(grid)           4       32384
- npoints        32384
- end onel_pot_from_grid
- in onel_pot_from_grid
- fitcase           2
- nfit           70
- SHAPE(grid)           4       32384
- npoints        32384
- end onel_pot_from_grid
- in onel_pot_from_grid
- fitcase           2
- nfit           70
- SHAPE(grid)           4       32384
- npoints        32384
- end onel_pot_from_grid
- in onel_pot_from_grid
- fitcase           2
- nfit           70
- SHAPE(grid)           4       32384
- npoints        32384
- end onel_pot_from_grid
- in onel_pot_from_grid
- fitcase           2
- nfit           70
- SHAPE(grid)           4       32384
- npoints        32384
- end onel_pot_from_grid
- in onel_pot_from_grid
- fitcase           2
- nfit           70
- SHAPE(grid)           4       32384
- npoints        32384
- end onel_pot_from_grid
- in onel_pot_from_grid
- fitcase           2
- nfit           70
- SHAPE(grid)           4       32384
- npoints        32384
- end onel_pot_from_grid
+ Tot number el.   9.9985272696725112     

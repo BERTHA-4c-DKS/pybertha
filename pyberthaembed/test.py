@@ -147,7 +147,10 @@ def runspberthaembed (pberthaopt):
     #main run here
 
     ovapm, eigem, fockm, eigen = bertha.run()
-    
+
+    if pberthaopt.dumpfiles :
+       os.rename(vctfilename,'unpert_vct.txt') 
+
     end = time.time()
     cend = time.process_time()
 
@@ -265,7 +268,7 @@ def runspberthaembed (pberthaopt):
     #bertha.set_fittfname(fittfname)
     
     #if lin_emb=True, a single scf is performed at constant Vemb
-    maxiter = 3 
+    maxiter = 10 
     Dold = Da0 
     Eold = etotal
     lin_emb = pberthaopt.linemb
@@ -347,8 +350,9 @@ def runspberthaembed (pberthaopt):
         diffE = etotal2 -Eold
         norm_D=numpy.linalg.norm(diffD,'fro') 
         
-        print("2-norm of diffD  = ", diffD, " ... outer iteration :%i"%(out_iter +1))
+        print("2-norm of diffD  = ", norm_D, " ... outer iteration :%i"%(out_iter +1))
         print("E(actual)-E(prev)= ", diffE, " ... outer iteration :%i"%(out_iter +1))
+        print("DE_emb(actual-new)  = %30.15f ... outer iteration :%i"%((emb_avg_in-emb_avg), (out_iter +1) ))
         if ( norm_D<(1.0e-3) and diffE <(1.0e-6)):
             iocc = 0
             for i in range(ndim):
@@ -359,7 +363,7 @@ def runspberthaembed (pberthaopt):
     
             Da = numpy.matmul(occeigv,numpy.conjugate(occeigv.transpose()))
       
-            print("Dump ground state unperturbed density density.cube")
+            print("Dump ground state perturbed density density.cube")
             bertha.density_to_cube(Da.T, "density.cube",margin=5.0)
             bertha.finalize()
             break
