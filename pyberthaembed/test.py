@@ -6,12 +6,12 @@ import sys
 import re
 
 import os.path
-sys.path.append('/home/redo/BERTHA/pybertha/pyemb')
-sys.path.append("/home/redo/BERTHA/xcfun/build/lib/python")
-sys.path.append("/home/redo/BERTHA/pybertha/src")
-sys.path.append("/home/redo/BERTHA/pyadf/src")
-os.environ['PYBERTHAROOT'] = "/home/redo/BERTHA/pybertha/"
-os.environ['RTHOME'] = "/home/redo/BERTHA/pybertha/psi4rt"
+sys.path.append('/home/matteod/pybertha/pyemb')
+sys.path.append("/home/matteod/xcfun/build/lib/python")
+sys.path.append("/home/matteod/pybertha/src")
+sys.path.append("/home/matteod/build/pyadf/src")
+os.environ['PYBERTHAROOT'] = "/home/matteod/pybertha/"
+os.environ['RTHOME'] = "/home/matteod/pybertha/psi4rt"
 sys.path.append(os.environ['PYBERTHAROOT']+"/src")
 sys.path.append(os.environ['RTHOME'])
 
@@ -196,7 +196,8 @@ def runspberthaembed (pberthaopt):
         exit(1)
 
     embfactory = pyembmod.pyemb(activefname,envirofname,'adf') #jobtype='adf' is default de facto
-    embfactory.set_options(4.0)  # only the integration accuracy parameter is specified 
+    #grid_param =[50,110] # psi4 grid parameters (see Psi4 grid table)
+    embfactory.set_options(param=4.0,gtype=2,basis='AUG/ADZP')  # several paramenters to be specified in input
    
     print(embfactory.get_options())
 
@@ -214,12 +215,12 @@ def runspberthaembed (pberthaopt):
 
     #TEST density on grid
 
-    #print("TEST density on grid")
-    #print("Type density", type(density), density.shape)
-    #print("Scalar product" , "density.weigt", numpy.dot(density,grid[:,3]))
-    #print("Dip x" , "density.weigt", numpy.dot(density*grid[:,3],grid[:,0]))
-    #print("Dip y" , "density.weigt", numpy.dot(density*grid[:,3],grid[:,1]))
-    #print("Dip z" , "density.weigt", numpy.dot(density*grid[:,3],grid[:,2]))
+    print("TEST density on grid")
+    print("Type density", type(density), density.shape)
+    print("Scalar product" , "density.weigt", numpy.dot(density,grid[:,3]))
+    print("Dip x" , "density.weigt", -1.*numpy.dot(density[:,0]*grid[:,3],grid[:,0]))
+    print("Dip y" , "density.weigt", -1.*numpy.dot(density[:,0]*grid[:,3],grid[:,1]))
+    print("Dip z" , "density.weigt", -1.*numpy.dot(density[:,0]*grid[:,3],grid[:,2]))
 
     """
     for i in range(npoints):
@@ -255,9 +256,9 @@ def runspberthaembed (pberthaopt):
     dipy_ref = numpy.trace(numpy.matmul(Da0,dipy_mat)).real
     dipz_ref = numpy.trace(numpy.matmul(Da0,dipz_mat)).real
 
-    print("unperturbed Dipx    ",dipx_ref)
-    print("unperturbed Dipy    ",dipy_ref)
-    print("unperturbed Dipz    ",dipz_ref)
+    print("unperturbed Dip x    ",dipx_ref)
+    print("unperturbed Dip y    ",dipy_ref)
+    print("unperturbed Dip z    ",dipz_ref)
 
     bertha.finalize()
 
@@ -399,9 +400,9 @@ def runspberthaembed (pberthaopt):
     print("  ")
     print("Type density", type(density), density.shape)
     print("Scalar product" , "density.weigt", numpy.dot(density[:,0],grid[:,3]))
-    print("Dip x" , "density.weigt", numpy.dot(density[:,0]*grid[:,3],grid[:,0]))
-    print("Dip y" , "density.weigt", numpy.dot(density[:,0]*grid[:,3],grid[:,1]))
-    print("Dip z" , "density.weigt", numpy.dot(density[:,0]*grid[:,3],grid[:,2]))
+    print("Dip x" , "density.weigt", -1.*numpy.dot(density[:,0]*grid[:,3],grid[:,0]))
+    print("Dip y" , "density.weigt", -1.*numpy.dot(density[:,0]*grid[:,3],grid[:,1]))
+    print("Dip z" , "density.weigt", -1.*numpy.dot(density[:,0]*grid[:,3],grid[:,2]))
 
     print("  ")
     #print("TEST one electron potential (embedding) in g-spinor")

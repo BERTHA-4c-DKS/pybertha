@@ -565,6 +565,12 @@ if __name__ == "__main__":
       res = fde_util.embpot2mat(phi,nbas,pot,ws,lpos)
     else:
       res = np.zeros_like(D)
+      phi = None
+      agrid = None
+      densgrad = None 
+      denshess = None
+      isolated_elpot_enviro = None
+
 
     #########################################################
     """
@@ -693,21 +699,22 @@ if __name__ == "__main__":
     print('       xc energy: %.16f hartree' % Exc)
 
     dipz = np.matmul(np.array(D),np.array(dipole[2]))
-    dipvalz = np.trace(2.0*dipz) + Ndip[2]
+    dipvalz = np.trace(2.0*dipz) #+ Ndip[2]
     dipy = np.matmul(np.array(D),np.array(dipole[1]))
-    dipvaly = np.trace(2.0*dipy) + Ndip[1]
+    dipvaly = np.trace(2.0*dipy) #+ Ndip[1]
     dipx = np.matmul(np.array(D),np.array(dipole[0]))
-    dipvalx = np.trace(2.0*dipx) + Ndip[0]
+    dipvalx = np.trace(2.0*dipx) #+ Ndip[0]
     fout = open("emb_res.txt", "w")
     conv = 2.541765 # 1 unit of electric dipole moment (au) = 2.541765 Debye
-    fout.write('polarized dipole: %.16f, %.16f, %.16f Debye\n' %  (dipvalx*conv,dipvaly*conv,dipvalz*conv))
+    conv = 1.0 # for atomic units
+    fout.write('polarized dipole: %.16f, %.16f, %.16f a.u\n' %  (dipvalx*conv,dipvaly*conv,dipvalz*conv))
     dipz = np.matmul(np.array(Dref),np.array(dipole[2]))
-    dipvalz = np.trace(2.0*dipz) + Ndip[2]
+    dipvalz = np.trace(2.0*dipz) #+ Ndip[2]
     dipy = np.matmul(np.array(Dref),np.array(dipole[1]))
-    dipvaly = np.trace(2.0*dipy) + Ndip[1]
+    dipvaly = np.trace(2.0*dipy) #+ Ndip[1]
     dipx = np.matmul(np.array(Dref),np.array(dipole[0]))
-    dipvalx = np.trace(2.0*dipx) + Ndip[0]
-    fout.write('unpolarized dipole: %.16f, %.16f, %.16f Debye\n' %  (dipvalx*conv,dipvaly*conv,dipvalz*conv))
+    dipvalx = np.trace(2.0*dipx) #+ Ndip[0]
+    fout.write('unpolarized dipole: %.16f, %.16f, %.16f a.u\n' %  (dipvalx*conv,dipvaly*conv,dipvalz*conv))
     print("Ndip : %.8f, %.8f, %.8f\n" % (Ndip[0],Ndip[1],Ndip[2]))
     fout.close()
 
