@@ -7,7 +7,7 @@ import re
 
 import os.path
 sys.path.append('/home/matteod/pybertha/pyemb')
-sys.path.append("/home/matteod/xcfun/build/lib/python")
+sys.path.append("/home/matteod/build/xcfun/build/lib/python")
 sys.path.append("/home/matteod/pybertha/src")
 sys.path.append("/home/matteod/build/pyadf/src")
 os.environ['PYBERTHAROOT'] = "/home/matteod/pybertha/"
@@ -197,7 +197,7 @@ def runspberthaembed (pberthaopt):
 
     embfactory = pyembmod.pyemb(activefname,envirofname,'adf') #jobtype='adf' is default de facto
     #grid_param =[50,110] # psi4 grid parameters (see Psi4 grid table)
-    embfactory.set_options(param=4.0,gtype=2,basis='AUG/ADZP')  # several paramenters to be specified in input
+    embfactory.set_options(param=4.0,gtype=2,basis='AUG/ADZP')  # several paramenters to be specified in input- e.g AUG/ADZP for ADF, aug-cc-pvdz for psi4
    
     print(embfactory.get_options())
 
@@ -217,7 +217,7 @@ def runspberthaembed (pberthaopt):
 
     print("TEST density on grid")
     print("Type density", type(density), density.shape)
-    print("Scalar product" , "density.weigt", numpy.dot(density,grid[:,3]))
+    print("Scalar product" , "density.weigt", numpy.dot(density[:,0],grid[:,3]))
     print("Dip x" , "density.weigt", -1.*numpy.dot(density[:,0]*grid[:,3],grid[:,0]))
     print("Dip y" , "density.weigt", -1.*numpy.dot(density[:,0]*grid[:,3],grid[:,1]))
     print("Dip z" , "density.weigt", -1.*numpy.dot(density[:,0]*grid[:,3],grid[:,2]))
@@ -250,7 +250,7 @@ def runspberthaembed (pberthaopt):
     Da0 = numpy.matmul(occeigv,numpy.conjugate(occeigv.transpose()))
   
     print("Dump ground state unperturbed density density0.cube")
-    bertha.density_to_cube(Da0.T, "density0.cube",margin=5.0)
+    bertha.density_to_cube(Da0.T, "density0.cube",drx=0.1,dry=0.1,drz=0.1,margin=5.5)
 
     dipx_ref = numpy.trace(numpy.matmul(Da0,dipx_mat)).real
     dipy_ref = numpy.trace(numpy.matmul(Da0,dipy_mat)).real
@@ -330,7 +330,7 @@ def runspberthaembed (pberthaopt):
             Da = numpy.matmul(occeigv,numpy.conjugate(occeigv.transpose()))
       
             print("Dump ground state perturbed density density.cube")
-            bertha.density_to_cube(Da.T, "density.cube",margin=5.0)
+            bertha.density_to_cube(Da.T, "density.cube",drx=0.1,dry=0.1,drz=0.1,margin=5.5)
             bertha.finalize()
             break
 
@@ -378,7 +378,7 @@ def runspberthaembed (pberthaopt):
             Da = numpy.matmul(occeigv,numpy.conjugate(occeigv.transpose()))
       
             print("Dump ground state perturbed density density.cube")
-            bertha.density_to_cube(Da.T, "density.cube",margin=5.0)
+            bertha.density_to_cube(Da.T, "density.cube",drx=0.1,dry=0.1,drz=0.1,margin=5.5)
             bertha.finalize()
             break
         Dold = Da
