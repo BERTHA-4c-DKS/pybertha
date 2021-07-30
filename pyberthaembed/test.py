@@ -352,7 +352,9 @@ def runspberthaembed (pberthaopt):
         # form the density matrix
         occeigv = numpy.zeros((ndim,nocc), dtype=numpy.complex128)
         iocc = 0
- 
+        #debug
+        print("ndim : %i\n" % ndim) 
+        print("nshift : %i\n" % nshift) 
         for i in range(ndim):
             if i >= nshift and iocc < nocc:
                 for j in range(ndim):
