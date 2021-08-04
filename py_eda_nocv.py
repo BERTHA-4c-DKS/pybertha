@@ -132,6 +132,8 @@ def runnocveda (nocvedaopt):
             " (CPU time: " , bertha.get_mainrunctime(), ") s ")
     
     sys.stdout.flush()
+
+
     
     if (fockm is None) or (eigen is None) or (fockm is None) \
             or (eigen is None):
@@ -171,10 +173,78 @@ def runnocveda (nocvedaopt):
     print("")
     print("Compute density matrix ")
     density = numpy.matmul(occeigv, numpy.conjugate(occeigv.transpose()), out=None)
-    density = numpy.matmul(density, ovapm)
-    trace = density.trace()
+    trace = numpy.matmul(density, ovapm).trace()
     print("Trace (%20.10f, %20.10fi)"%(trace.real, trace.imag))
     print("")
+
+#  INIT REALTIME MODULE
+    bertha.realtime_init()
+
+    """
+    Calculation of the electronic dipole (a.u)
+    """
+    normalise = 1
+    dip_mat = None
+    dipx_mat, dipy_mat, dipz_mat = \
+            bertha.get_realtime_dipolematrix (0, normalise)
+
+#    print("")
+#    print("Compute electronic dipole (a.u.)")
+    edipx = numpy.matmul(density, dipx_mat).trace()
+    edipy = numpy.matmul(density, dipy_mat).trace()
+    edipz = numpy.matmul(density, dipz_mat).trace()
+#    print("ele_dipx =  %20.10f"%(edipx.real))
+#    print("ele_dipy =  %20.10f"%(edipy.real))
+#    print("ele_dipz =  %20.10f"%(edipz.real))
+    """
+    End calculation of the electronic dipole (a.u)
+    """
+    """
+    Calculation of the Nuclear dipole (a.u)
+    """
+#    print("Compute nuclear dipole (a.u.)")
+
+    numofatom = bertha.get_natoms()
+    tmpcoords = []
+    tmpz      = []
+
+    for i in range(numofatom):
+
+         tmpcoords.append(list(bertha.get_coords(i))[0:3])
+         tmpz.append(list(bertha.get_coords(i))[3])
+
+    matcoords  = numpy.array(tmpcoords)
+    vecZ       = numpy.array(tmpz)
+    vec_nuc_dip= numpy.matmul(vecZ.T,matcoords)
+
+    nucdipx = vec_nuc_dip[0]
+    nucdipy = vec_nuc_dip[1]
+    nucdipz = vec_nuc_dip[2]
+#    print(vec_nuc_dip)
+
+#    print("nuc_dipx =  %20.10f"%(nucdipx))
+#    print("nuc_dipy =  %20.10f"%(nucdipy))
+#    print("nuc_dipz =  %20.10f"%(nucdipz))
+    """
+    End calculation of the Nuclear dipole (a.u)
+    """
+
+    print("MOLECULAR PROPERTIES:...")
+    print("  ")
+    print("Dipole Moment: ")
+    print("Axis   electronic dipole (a.u.)    nuclear dipole (a.u.)      Total dipole (a.u.)      Total dipole (Debye) ")
+    print(" x     %20.10f    %20.10f     %20.10f      %20.10f "%(edipx.real, nucdipx, edipx.real+nucdipx, (edipx.real+nucdipx)*2.541580))
+    print(" y     %20.10f    %20.10f     %20.10f      %20.10f "%(edipy.real, nucdipy, edipy.real+nucdipy, (edipy.real+nucdipy)*2.541580))
+    print(" z     %20.10f    %20.10f     %20.10f      %20.10f "%(edipz.real, nucdipz, edipz.real+nucdipz, (edipz.real+nucdipz)*2.541580))
+    print("  ")
+    tot_dip_vec = numpy.array([edipx.real+nucdipx,edipy.real+nucdipy,edipz.real+nucdipz])
+    print("Molecular dipole module:  %20.10f (a.u.)  %20.10f (Debye) "%(numpy.linalg.norm(tot_dip_vec), numpy.linalg.norm(tot_dip_vec)*2.541580))
+
+
+#   END DIPOLE CALCULATION
+
+
+
 
     drx = nocvedaopt.deltax
     dry = nocvedaopt.deltay
@@ -367,7 +437,7 @@ def runnocveda (nocvedaopt):
         #bertha.density_to_cube(deltanocv.T, label+".cube", margin, drx, dry, drz )  
     
     ######  TEST
-    bertha.realtime_init()
+#    bertha.realtime_init()
     
 #    fockm1 = bertha.get_realtime_fock(dmat.T)
 #    erep   = bertha.get_erep()
@@ -525,6 +595,7 @@ def runnocveda (nocvedaopt):
          bertha.density_to_cube(nocvmin.T, "nocv-"+str(j)+".cube", margin, drx, dry, drz )  
          bertha.density_to_cube(nocvplus.T, "nocv+"+str(j)+".cube", margin, drx, dry, drz )  
          bertha.density_to_cube(deltanocv.T, label+".cube", margin, drx, dry, drz )  
+
     
     bertha.finalize()
 
