@@ -95,7 +95,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       complex, parameter :: czero = (0.0,0.0)
 
-      integer :: counter, icent, j, ii, jj, i, iter, 
+      integer :: counter, icent, j, i, iter, 
      + nuca, nucb, nucc, nuccnt, rc, istate, a, iocc
 
       real, allocatable :: v(:), zz(:)
@@ -259,7 +259,7 @@ c          print *, "Here " , ndim, nocc
             do i = 1, ndim
               
               if ((i.ge.nshift+1).and.(i.le.nshift+nocc)) then
-                c(j,i) = complex(restart_eige(counter), restart_eige(counter+1))
+                c(j,i) = cmplx(restart_eige(counter), restart_eige(counter+1))
               endif 
 
               counter = counter + 2
@@ -1216,7 +1216,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       real, intent(in), target :: ingrid(4,npoints)
       real, intent(in), target :: inpot(npoints)
 
-      integer :: i, ierr
+c      integer :: i, ierr
 
 
 c      do i=1,npoints
