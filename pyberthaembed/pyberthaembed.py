@@ -46,6 +46,14 @@ class pyberthaembedoption:
     eda_nocv_info: bool
     eda_nocv_frag_file: str
     gtype: 2
+    param: 4.0
+    basis: 'AUG/ADZP'
+    denistyzero: "density0.cube"
+    density : "density.cube"
+    drx: 0.1
+    dry: 0.1
+    drz: 0.1
+    margin: 5.5
 
 ##########################################################################################
 
@@ -175,7 +183,9 @@ def runspberthaembed (pberthaopt, stdoutprint = True):
 
     embfactory = pyembmod.pyemb(activefname,envirofname,'adf') #jobtype='adf' is default de facto
     #grid_param =[50,110] # psi4 grid parameters (see Psi4 grid table)
-    embfactory.set_options(param=4.0, gtype=pberthaopt.gtype, basis='AUG/ADZP')  # several paramenters to be specified in input- e.g AUG/ADZP for ADF, aug-cc-pvdz for psi4
+    embfactory.set_options(param=pberthaopt.param, \
+       gtype=pberthaopt.gtype, basis=pberthaopt.basis) 
+    # several paramenters to be specified in input- e.g AUG/ADZP for ADF, aug-cc-pvdz for psi4
    
     print(embfactory.get_options())
 
@@ -204,7 +214,6 @@ def runspberthaembed (pberthaopt, stdoutprint = True):
 
     normalise = 1
     dip_mat = None
-   
 
     dipx_mat, dipy_mat, dipz_mat = \
             bertha.get_realtime_dipolematrix (0, normalise)
@@ -220,8 +229,10 @@ def runspberthaembed (pberthaopt, stdoutprint = True):
 
     Da0 = numpy.matmul(occeigv,numpy.conjugate(occeigv.transpose()))
   
-    print("Dump ground state unperturbed density density0.cube")
-    bertha.density_to_cube(Da0.T, "density0.cube",drx=0.1,dry=0.1,drz=0.1,margin=5.5)
+    print("Dump ground state unperturbed density " + pberthaopt.denistyzero)
+    bertha.density_to_cube(Da0.T, pberthaopt.denistyzero, \
+        drx=pberthaopt.drx, dry=pberthaopt.dry, drz=pberthaopt.drz, \
+        margin=pberthaopt.margin)
 
     dipx_ref = numpy.trace(numpy.matmul(Da0,dipx_mat)).real
     dipy_ref = numpy.trace(numpy.matmul(Da0,dipy_mat)).real
@@ -300,8 +311,9 @@ def runspberthaembed (pberthaopt, stdoutprint = True):
     
             Da = numpy.matmul(occeigv,numpy.conjugate(occeigv.transpose()))
       
-            print("Dump ground state perturbed density density.cube")
-            bertha.density_to_cube(Da.T, "density.cube",drx=0.1,dry=0.1,drz=0.1,margin=5.5)
+            print("Dump ground state perturbed density " + pberthaopt.density)
+            bertha.density_to_cube(Da.T, pberthaopt.density, drx=pberthaopt.drx, \
+              dry=pberthaopt.dry, drz=pberthaopt.drz, margin=pberthaopt.margin)
             bertha.finalize()
             break
 
