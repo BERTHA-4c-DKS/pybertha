@@ -1197,8 +1197,7 @@ c     +     grid(1,i), grid(2,i), grid(3,i), grid(4,i)
 
       enddo
 
-      
-      print*, 'Tot number el.', dot_product(density(:),grid(4,:))     
+c      print*, 'Tot number el.', dot_product(density(:),grid(4,:))     
 c     call function in bertha_ng return density 
 c     call get_density_on_grid (grid, density)
 
