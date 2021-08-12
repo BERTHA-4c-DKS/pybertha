@@ -133,16 +133,16 @@ def runspberthaembed (pberthaopt, stdoutprint = True):
         print("")
     
 
-    start = time.time()
-    cstart = time.process_time() 
+    #start = time.time()
+    #cstart = time.process_time() 
 
     ovapm, eigem, fockm, eigen = bertha.run()
 
     if pberthaopt.dumpfiles :
        os.rename(vctfilename,'unpert_vct.txt') 
 
-    end = time.time()
-    cend = time.process_time()
+    #end = time.time()
+    #cend = time.process_time()
 
     if (fockm is None) or (eigen is None) or (fockm is None) \
             or (eigen is None):
@@ -187,14 +187,15 @@ def runspberthaembed (pberthaopt, stdoutprint = True):
     # several paramenters to be specified in input- e.g AUG/ADZP for ADF, aug-cc-pvdz for psi4
    
     if stdoutprint:
+        print("embfactory Options:")
         print(embfactory.get_options())
 
     embfactory.initialize()
     grid = embfactory.get_grid() 
     
     #DEBUG : quick check of grid
-    if stdoutprint:
-        print("Type grid", type(grid), grid.shape)
+    #if stdoutprint:
+    #    print("Type grid", type(grid), grid.shape)
     
     rho = bertha.get_density_on_grid(grid)
     density=numpy.zeros((rho.shape[0],10))
@@ -205,8 +206,8 @@ def runspberthaembed (pberthaopt, stdoutprint = True):
     #TEST density on grid
 
     if stdoutprint:
-        print("TEST density on grid")
-        print("Type density", type(density), density.shape)
+        #print("TEST density on grid")
+        #print("Type density", type(density), density.shape)
         print("Scalar product" , "density.weigt", numpy.dot(density[:,0],grid[:,3]))
         print("Dip x" , "density.weigt", -1.*numpy.dot(density[:,0]*grid[:,3],grid[:,0]))
         print("Dip y" , "density.weigt", -1.*numpy.dot(density[:,0]*grid[:,3],grid[:,1]))
@@ -401,7 +402,7 @@ def runspberthaembed (pberthaopt, stdoutprint = True):
         
         print("TEST dipole moment from density on grid numerical integration")
         print("  ")
-        print("Type density", type(density), density.shape)
+        #print("Type density", type(density), density.shape)
         print("Scalar product" , "density.weigt", numpy.dot(density[:,0],grid[:,3]))
         print("Dip x" , "density.weigt", -1.*numpy.dot(density[:,0]*grid[:,3],grid[:,0]))
         print("Dip y" , "density.weigt", -1.*numpy.dot(density[:,0]*grid[:,3],grid[:,1]))

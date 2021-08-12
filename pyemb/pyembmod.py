@@ -12,6 +12,67 @@ from pyadf.Plot.FileReaders import GridFunctionReader
 from pyadf.Plot.GridFunctions import GridFunctionFactory
 from pyadf.Plot.GridFunctions import GridFunctionContainer
 
+import io
+import threading
+
+from contextlib import redirect_stdout
+
+########################################################################################################
+
+def drain_pipe():
+
+  global captured_stdout
+  while True:
+    data = os.read(stdout_pipe[0], 1024)
+    if not data:
+      break
+    captured_stdout.append(data.decode("utf-8"))
+
+########################################################################################################
+
+def init_stdout_redirect ():
+
+    global stdout_fileno 
+    global stdout_save 
+    global stdout_pipe
+    global captured_stdout
+    
+    captured_stdout = []
+
+    stdout_fileno = sys.stdout.fileno()
+    stdout_save = os.dup(stdout_fileno)
+    stdout_pipe = os.pipe()
+    
+    os.dup2(stdout_pipe[1], stdout_fileno)
+    os.close(stdout_pipe[1])
+
+########################################################################################################
+
+def finalize_stdout_redirect (fname, writef=1):
+
+    global stdout_fileno 
+    global stdout_save 
+    global stdout_pipe 
+    global captured_stdout
+      
+    os.close(stdout_pipe[0])
+    os.dup2(stdout_save, stdout_fileno)
+    os.close(stdout_save)
+
+    if writef != 0:
+        fp = None
+        if writef == 1:
+          fp = open(psioufname, "w")
+        elif writef == 2:
+          fp = open(psioufname, "a")
+       
+        for line in captured_stdout:
+          fp.write(line)
+       
+        fp.close()
+
+########################################################################################################
+
 class Molecule():
 
   def __init__(self,fgeom='geom.xyz'):
@@ -57,7 +118,10 @@ class Molecule():
   
       return self.__ghosted
 
+########################################################################################################
+
 class GridDensityFactory():
+
   def __init__(self,mol,points,basis_set):
       
       self.__mol = mol
@@ -102,8 +166,8 @@ class GridDensityFactory():
       MO_dens = numpy.square(MO)
       rho = numpy.einsum('pm->p',MO_dens)
       return rho
-  # to be tested
-  def from_D(self,D,ovap):
+
+  def from_D(self,D,ovap): # to be tested
       temp=numpy.matmul(ovap,np.matmul(D.real,ovap))
       try:
         eigvals,eigvecs=scipy.linalg.eigh(temp,ovap,eigvals_only=False)
@@ -118,11 +182,14 @@ class GridDensityFactory():
       rho = numpy.einsum('pm->p',MO_dens)
       return rho
 
+########################################################################################################
+
 
 class PyEmbError(Exception):
     """Base class for exceptions in this module."""
     pass
 
+########################################################################################################
 
 class pyemb:
 
@@ -144,6 +211,14 @@ class pyemb:
         # options for xcfun 
         self.__f_nad_xc = 'lda'
         self.__f_nad_kin = 'tkf'
+        self.__adfoufname = ""
+        self.__psioufname = ""
+
+    def set_adf_filenameout (self, name):
+        self.__adfoufname = name
+
+    def set_psi4_filenameout (self, name):
+        self.__psioufname = name
 
     def set_active_fname (self, activefname):
 
@@ -290,57 +365,64 @@ class pyemb:
             if self.__grid_type <= 0 or self.__grid_type > 3:
               raise TypeError("gridtype must be 1,2 or 3 if jobtype is " + self.__jobtype)
 
-            adf_settings = pyadf.adfsettings()
-            adf_settings.set_save_tapes([21,10])
-            adf_settings.set_functional(self.__enviro_func)
-            adf_settings.set_convergence(self.__thresh_conv)
-            adf_settings.set_integration(accint=self.__acc_int)
-
-            m_active = pyadf.molecule(self.__activefname)
-            m_active.set_symmetry('NOSYM')
-            m_enviro = pyadf.molecule(self.__envirofname)
-            m_enviro.set_symmetry('NOSYM')
-     
-            m_tot = m_active + m_enviro
-            m_tot.set_symmetry('NOSYM')
-           
-            #  i) use adffragmentsjob grid | deafult
-            # ii) use the total sys (env+act)  grid
-            #iii) use the active sys grid
- 
-            r_isolated_enviro = pyadf.adfsinglepointjob(m_enviro, self.__basis_frzn, \
-               settings=adf_settings, options=['NOSYMFIT']).run()
-            if self.__grid_type == 1:
-                frags = [ pyadf.fragment(None,  [m_active]),
-                        pyadf.fragment(r_isolated_enviro, [m_enviro], isfrozen=True) ]
-                fde_res = pyadf.adffragmentsjob(frags, self.__basis_frzn, settings=adf_settings, options=['NOSYMFIT'])
-                fde_res=fde_res.run()
-                self.__agrid = pyadf.adfgrid(fde_res)
-            elif self.__grid_type == 2:
-                r_tot = pyadf.adfsinglepointjob(m_tot, self.__basis_frzn, settings=adf_settings, options=['NOSYMFIT']).run()
-                self.__agrid = pyadf.adfgrid(r_tot)
-            elif self.__grid_type == 3:
-                r_act = pyadf.adfsinglepointjob(m_active, self.__basis_frzn, settings=adf_settings, options=['NOSYMFIT']).run()
-                self.__agrid = pyadf.adfgrid(r_act)
+            f = io.StringIO()
+            with redirect_stdout(f):
+                adf_settings = pyadf.adfsettings()
+                adf_settings.set_save_tapes([21,10])
+                adf_settings.set_functional(self.__enviro_func)
+                adf_settings.set_convergence(self.__thresh_conv)
+                adf_settings.set_integration(accint=self.__acc_int)
+               
+                m_active = pyadf.molecule(self.__activefname)
+                m_active.set_symmetry('NOSYM')
+                m_enviro = pyadf.molecule(self.__envirofname)
+                m_enviro.set_symmetry('NOSYM')
+               
+                m_tot = m_active + m_enviro
+                m_tot.set_symmetry('NOSYM')
+               
+                #  i) use adffragmentsjob grid | deafult
+                # ii) use the total sys (env+act)  grid
+                #iii) use the active sys grid
+               
+                r_isolated_enviro = pyadf.adfsinglepointjob(m_enviro, self.__basis_frzn, \
+                   settings=adf_settings, options=['NOSYMFIT']).run()
+                if self.__grid_type == 1:
+                    frags = [ pyadf.fragment(None,  [m_active]),
+                            pyadf.fragment(r_isolated_enviro, [m_enviro], isfrozen=True) ]
+                    fde_res = pyadf.adffragmentsjob(frags, self.__basis_frzn, settings=adf_settings, options=['NOSYMFIT'])
+                    fde_res=fde_res.run()
+                    self.__agrid = pyadf.adfgrid(fde_res)
+                elif self.__grid_type == 2:
+                    r_tot = pyadf.adfsinglepointjob(m_tot, self.__basis_frzn, settings=adf_settings, options=['NOSYMFIT']).run()
+                    self.__agrid = pyadf.adfgrid(r_tot)
+                elif self.__grid_type == 3:
+                    r_act = pyadf.adfsinglepointjob(m_active, self.__basis_frzn, settings=adf_settings, options=['NOSYMFIT']).run()
+                    self.__agrid = pyadf.adfgrid(r_act)
+                
+                #elif self.__grid_type == 4:
+                #    #override 
+                #    adf_settings.set_functional("BLYP")
+                #    frags = [ pyadf.fragment(None,  [m_active]),
+                #            pyadf.fragment(r_isolated_enviro, [m_enviro], isfrozen=True) ]
+                #    fde_res = pyadf.adffragmentsjob(frags, basis="AUG/ADZP", settings=adf_settings, \
+                #          fde=fde_act_opts, options=['NOSYMFIT\n EXCITATIONS\n  ONLYSING\n  LOWEST 2\nEND'])
+                #    fde_res=fde_res.run()
+                #    __agrid = pyadf.adfgrid(fde_res) 
+                
+                self.__isolated_dens_enviro  = r_isolated_enviro.get_density(grid=self.__agrid, \
+                              fit=False, order=2) #grid=grid_active=agrid
+                isolated_vnuc_enviro  = r_isolated_enviro.get_potential(grid=self.__agrid,\
+                  pot='nuc')
+                isolated_coul_enviro  = r_isolated_enviro.get_potential(grid=self.__agrid,\
+                  pot='coul')
+                self.__isolated_elpot_enviro = isolated_vnuc_enviro + isolated_coul_enviro
             
-            #elif self.__grid_type == 4:
-            #    #override 
-            #    adf_settings.set_functional("BLYP")
-            #    frags = [ pyadf.fragment(None,  [m_active]),
-            #            pyadf.fragment(r_isolated_enviro, [m_enviro], isfrozen=True) ]
-            #    fde_res = pyadf.adffragmentsjob(frags, basis="AUG/ADZP", settings=adf_settings, \
-            #          fde=fde_act_opts, options=['NOSYMFIT\n EXCITATIONS\n  ONLYSING\n  LOWEST 2\nEND'])
-            #    fde_res=fde_res.run()
-            #    __agrid = pyadf.adfgrid(fde_res) 
-            
-            self.__isolated_dens_enviro  = r_isolated_enviro.get_density(grid=self.__agrid, \
-                          fit=False, order=2) #grid=grid_active=agrid
-            isolated_vnuc_enviro  = r_isolated_enviro.get_potential(grid=self.__agrid,\
-              pot='nuc')
-            isolated_coul_enviro  = r_isolated_enviro.get_potential(grid=self.__agrid,\
-              pot='coul')
-            self.__isolated_elpot_enviro = isolated_vnuc_enviro + isolated_coul_enviro
-      
+            if self.__adfoufname != "":
+                fp = open(self.__adfoufname, "w")
+                fp.write(f.getvalue())
+                fp.close()
+    
             self.__init = True
 
         elif self.__jobtype == 'psi4':
@@ -358,6 +440,10 @@ class pyemb:
             if not all(isinstance(x, int) for x in self.__acc_int):
               raise TypeError("param (parameter 1) must be a list of integer when jobtype " + 
                        self.__jobtype )
+
+            init_stdout_redirect ()
+            t = threading.Thread(target=drain_pipe)
+            t.start()
 
             psi4.set_options({'basis' : self.__basis_frzn,
                     'puream' : 'True',
@@ -387,7 +473,6 @@ class pyemb:
             else:
                 build_superfunctional = psi4.driver.dft_funcs.build_superfunctional  
             
-
             if self.__grid_type == 2:
                mol_obj=psi4.geometry(tot.geom_str())
             elif self.__grid_type == 3:
@@ -430,7 +515,8 @@ class pyemb:
 
             elpot_enviro = numpy.array(enviro_epc.compute_esp_over_grid_in_memory( psi4_matrix ))
             psi4.core.clean()
-            
+
+           
             #represent the environ density on the grid
             environment=GridDensityFactory(enviro_obj,points,self.__basis_frzn)
             enviro_dens = environment.from_Cocc(numpy.asarray(enviro_wfn.Ca()))
@@ -444,6 +530,16 @@ class pyemb:
             self.__isolated_dens_enviro =  GridFunctionContainer([dens_gf_enviro, densgrad, denshess])
 
             self.__isolated_elpot_enviro = GridFunctionFactory.newGridFunction(self.__agrid,numpy.ascontiguousarray(elpot_enviro,dtype=numpy.float_), gf_type="potential") 
+
+            os.close(stdout_fileno)
+            t.join()
+            
+            towrite = 1
+            if self.__psioufname == "":
+                towrite = 0
+
+            finalize_stdout_redirect(self.__psioufname, towrite)
+ 
             self.__init = True
         else: 
             raise PyEmbError ("incompatible job type")
@@ -471,34 +567,42 @@ class pyemb:
             npoints = self.__agrid.npoints
             
             if len(density.shape) == 2 and density.shape[1] == 10 :
-        
                     if (npoints != density.shape[0]):
                         raise PyEmbError ("incomaptible grid dimension")
             else:
                 raise TypeError("input must be a numpy.ndarray npoints X 10")
-                    
-            density_gf = GridFunctionFactory.newGridFunction(self.__agrid,numpy.ascontiguousarray(density[:,0]), gf_type="density")
-            densgrad = GridFunctionFactory.newGridFunction(self.__agrid, numpy.ascontiguousarray(density[:, 1:4]))
-            denshess = GridFunctionFactory.newGridFunction(self.__agrid, numpy.ascontiguousarray(density[:, 4:10]))  
-            
-            #wrapper container
-            density_act = GridFunctionContainer([density_gf, densgrad, denshess])
-            
-            embed_settings = pyadf.EmbedXCFunSettings()
-            embed_settings.set_fun_nad_xc ({self.__f_nad_xc  : 1.0})
-            embed_settings.set_fun_nad_kin({self.__f_nad_kin : 1.0})
-            
-            embed_settings.show_functionals()
-            
-            embed_eval = pyadf.PyEmbed.EmbedXCFunEvaluator(settings=embed_settings)
-        
-            nadpot_active=embed_eval.get_nad_pot(density_act, self.__isolated_dens_enviro)
-            embpot = self.__isolated_elpot_enviro + nadpot_active
-        
-            #get the potential as numpy.ndarray
-            pot = embpot.get_values()
-            pot = numpy.ascontiguousarray(pot, dtype=numpy.double)
-            
+
+            pot = None
+
+            f = io.StringIO()
+            with redirect_stdout(f):
+                density_gf = GridFunctionFactory.newGridFunction(self.__agrid,numpy.ascontiguousarray(density[:,0]), gf_type="density")
+                densgrad = GridFunctionFactory.newGridFunction(self.__agrid, numpy.ascontiguousarray(density[:, 1:4]))
+                denshess = GridFunctionFactory.newGridFunction(self.__agrid, numpy.ascontiguousarray(density[:, 4:10]))  
+                
+                #wrapper container
+                density_act = GridFunctionContainer([density_gf, densgrad, denshess])
+                
+                embed_settings = pyadf.EmbedXCFunSettings()
+                embed_settings.set_fun_nad_xc ({self.__f_nad_xc  : 1.0})
+                embed_settings.set_fun_nad_kin({self.__f_nad_kin : 1.0})
+                
+                embed_settings.show_functionals()
+                
+                embed_eval = pyadf.PyEmbed.EmbedXCFunEvaluator(settings=embed_settings)
+              
+                nadpot_active=embed_eval.get_nad_pot(density_act, self.__isolated_dens_enviro)
+                embpot = self.__isolated_elpot_enviro + nadpot_active
+              
+                #get the potential as numpy.ndarray
+                pot = embpot.get_values()
+                pot = numpy.ascontiguousarray(pot, dtype=numpy.double)
+
+            if self.__adfoufname != "":
+                fp = open(self.__adfoufname, "w")
+                fp.write(f.getvalue())
+                fp.close()
+ 
             return pot
         else:
             raise PyEmbError ("Need to be initialized")
@@ -521,3 +625,5 @@ class pyemb:
         # options for xcfun 
         self.__f_nad_xc = 'lda'
         self.__f_nad_kin = 'tkf'
+        self.__adfoufname = ""
+        self.__psioufname = ""
