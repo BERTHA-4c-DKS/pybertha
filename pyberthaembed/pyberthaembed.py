@@ -45,15 +45,15 @@ class pyberthaembedoption:
     berthamodpath: str
     eda_nocv_info: bool
     eda_nocv_frag_file: str
-    gtype: 2
-    param: 4.0
-    basis: 'AUG/ADZP'
-    denistyzero: "density0.cube"
-    density : "density.cube"
-    drx: 0.1
-    dry: 0.1
-    drz: 0.1
-    margin: 5.5
+    gtype: int = 2
+    param: float = 4.0
+    basis: str = 'AUG/ADZP'
+    denistyzero: str = "density0.cube"
+    density : str = "density.cube"
+    drx: float = 0.1
+    dry: float = 0.1
+    drz: float = 0.1
+    margin: float = 5.5
 
 ##########################################################################################
 
