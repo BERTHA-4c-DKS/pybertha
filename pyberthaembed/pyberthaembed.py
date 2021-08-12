@@ -45,10 +45,11 @@ class pyberthaembedoption:
     berthamodpath: str
     eda_nocv_info: bool
     eda_nocv_frag_file: str
+    gtype: 2
 
 ##########################################################################################
 
-def runspberthaembed (pberthaopt, ):
+def runspberthaembed (pberthaopt, stdoutprint = True):
 
     sys.path.insert(0, pberthaopt.berthamodpath)
     import berthamod
@@ -174,7 +175,7 @@ def runspberthaembed (pberthaopt, ):
 
     embfactory = pyembmod.pyemb(activefname,envirofname,'adf') #jobtype='adf' is default de facto
     #grid_param =[50,110] # psi4 grid parameters (see Psi4 grid table)
-    embfactory.set_options(param=4.0,gtype=2,basis='AUG/ADZP')  # several paramenters to be specified in input- e.g AUG/ADZP for ADF, aug-cc-pvdz for psi4
+    embfactory.set_options(param=4.0, gtype=pberthaopt.gtype, basis='AUG/ADZP')  # several paramenters to be specified in input- e.g AUG/ADZP for ADF, aug-cc-pvdz for psi4
    
     print(embfactory.get_options())
 
@@ -421,6 +422,8 @@ if __name__ == "__main__":
     parser.add_argument("--eda_nocv_info", help="set to dump info useful for py_eda_nocv",action='store_true',default=False)
     parser.add_argument("--eda_nocv_frag_file", help="set a file (default: info_eda_nocv_fragX.json)",
             required=False, type=str, default="info_eda_nocv_fragX.json")
+    parser.add_argument("--gridtype", help="set gridtype (default: 2)",
+            required=False, type=int, default=3)
     
     args = parser.parse_args()
 
@@ -442,5 +445,6 @@ if __name__ == "__main__":
     pberthaopt.eda_nocv_frag_file = args.eda_nocv_frag_file
     pberthaopt.activefile = args.geomA
     pberthaopt.envirofile = args.geomB
+    pberthaopt.gtype = args.gridtype
 
     runspberthaembed (pberthaopt)
