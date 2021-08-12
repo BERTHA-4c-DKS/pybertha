@@ -178,6 +178,9 @@ class pyemb:
         if not isinstance(gtype, int):
             raise TypeError("input must be an integer")
 
+        if gtype <= 0 or gtype > 3:
+            raise TypeError("input must be an integer i : 0 <= i <= 3")
+
         self.__grid_type = gtype
 
     def get_grid_type(self):
@@ -281,6 +284,12 @@ class pyemb:
 
         if self.__jobtype == 'adf':
 
+            if not isinstance (self.__acc_int, float):
+              raise TypeError("param (parameter 1) must be a float if jobtype is " + self.__jobtype)
+            
+            if self.__grid_type <= 0 or self.__grid_type > 3:
+              raise TypeError("gridtype must be 1,2 or 3 if jobtype is " + self.__jobtype)
+
             adf_settings = pyadf.adfsettings()
             adf_settings.set_save_tapes([21,10])
             adf_settings.set_functional(self.__enviro_func)
@@ -335,9 +344,20 @@ class pyemb:
             self.__init = True
 
         elif self.__jobtype == 'psi4':
-            #temporary placeholder
+            
             if len(self.__acc_int) != 2  :
                raise PyEmbError ("input must be a list (radial and spherical points) ")
+
+            if self.__grid_type <= 1 or self.__grid_type > 3:
+              raise TypeError("gridtype must be 2 or 3 if jobtype is " + self.__jobtype)
+
+            if not isinstance (self.__acc_int, list):
+              raise TypeError("param (parameter 1) must be a list of integer if jobtype " +
+               self.__jobtype )
+
+            if not all(isinstance(x, int) for x in self.__acc_int):
+              raise TypeError("param (parameter 1) must be a list of integer when jobtype " + 
+                       self.__jobtype )
 
             psi4.set_options({'basis' : self.__basis_frzn,
                     'puream' : 'True',

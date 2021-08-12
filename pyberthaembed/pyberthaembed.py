@@ -6,12 +6,12 @@ import sys
 import re
 
 import os.path
-sys.path.append('/home/matteod/pybertha/pyemb')
-sys.path.append("/home/matteod/build/xcfun/build/lib/python")
-sys.path.append("/home/matteod/pybertha/src")
-sys.path.append("/home/matteod/build/pyadf/src")
-os.environ['PYBERTHAROOT'] = "/home/matteod/pybertha/"
-os.environ['RTHOME'] = "/home/matteod/pybertha/psi4rt"
+sys.path.append('/home/redo/BERTHA/pybertha/pyemb')
+sys.path.append("/home/redo/BERTHA/xcfun/build/lib/python")
+sys.path.append("/home/redo/BERTHA/pybertha/src")
+sys.path.append("/home/redo/BERTHA/pyadf/src")
+os.environ['PYBERTHAROOT'] = "/home/redo/BERTHA/pybertha/"
+os.environ['RTHOME'] = "/home/redo/BERTHA/pybertha/psi4rt"
 sys.path.append(os.environ['PYBERTHAROOT']+"/src")
 sys.path.append(os.environ['RTHOME'])
 
@@ -48,7 +48,7 @@ class pyberthaembedoption:
 
 ##########################################################################################
 
-def runspberthaembed (pberthaopt):
+def runspberthaembed (pberthaopt, ):
 
     sys.path.insert(0, pberthaopt.berthamodpath)
     import berthamod
@@ -64,6 +64,11 @@ def runspberthaembed (pberthaopt):
     if not os.path.isfile(pberthaopt.wrapperso):
         print("SO File ", pberthaopt.wrapperso, " does not exist")
         exit(1)
+
+    ovapm = None 
+    eigem = None 
+    fockm = None  
+    eigen = None
     
     bertha = berthamod.pybertha(pberthaopt.wrapperso)
     
@@ -115,36 +120,8 @@ def runspberthaembed (pberthaopt):
     print("")
     
 
-    #generate the unperturbed ground state density
-    """
-    npoints = 10
-    grid = numpy.zeros((npoints, 4))
-    grid = numpy.ascontiguousarray(grid, dtype=numpy.double)
-    pot = numpy.zeros(npoints)
-    pot = numpy.ascontiguousarray(pot, dtype=numpy.double)
-
-    x = -1.0
-    y = -100.0
-    z = -1000.0
-    w = 1.0
-    for i in range(npoints):
-        grid[i,0] = x
-        grid[i,1] = y
-        grid[i,2] = z
-        grid[i,3] = w
-
-        pot[i] = x*y*z*w
-
-        x += 1.0
-        y += 1.0
-        z += 1.0
-        w += 0.1
-    """
-
     start = time.time()
     cstart = time.process_time() 
-
-    #main run here
 
     ovapm, eigem, fockm, eigen = bertha.run()
 
@@ -221,13 +198,6 @@ def runspberthaembed (pberthaopt):
     print("Dip x" , "density.weigt", -1.*numpy.dot(density[:,0]*grid[:,3],grid[:,0]))
     print("Dip y" , "density.weigt", -1.*numpy.dot(density[:,0]*grid[:,3],grid[:,1]))
     print("Dip z" , "density.weigt", -1.*numpy.dot(density[:,0]*grid[:,3],grid[:,2]))
-
-    """
-    for i in range(npoints):
-        val = grid[i,0] * grid[i,1]  * grid[i,2] * grid[i,3]
-        print("Python L: %15.5f vs %15.5f"%(density[i], val))
-    """
-
 
     bertha.realtime_init()
 
@@ -412,6 +382,8 @@ def runspberthaembed (pberthaopt):
     #print("Dip x" , "from finite field", dipx)
     
     sys.stdout.flush()
+
+    return ovapm, eigem, fockm, eigen 
 
 ##########################################################################################
 
