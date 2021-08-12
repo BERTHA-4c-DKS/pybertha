@@ -59,26 +59,32 @@ class pyberthaembedoption:
 
 def runspberthaembed (pberthaopt, stdoutprint = True):
 
-    sys.path.insert(0, pberthaopt.berthamodpath)
-    import berthamod
-    
-    print("Options: ")
-    for att in [a for a in dir(pberthaopt) if not a.startswith('__')]:
-        print(att, " = ", getattr(pberthaopt, att)) 
-    print("")
-    print("")
-
-    print("")
-    
-    if not os.path.isfile(pberthaopt.wrapperso):
-        print("SO File ", pberthaopt.wrapperso, " does not exist")
-        exit(1)
-
     ovapm = None 
     eigem = None 
     fockm = None  
     eigen = None
+
+    verbosity = -1
+    verbosity = pberthaopt.verbosity
+
+    if not stdoutprint:
+        verbosity = 0
+
+    sys.path.insert(0, pberthaopt.berthamodpath)
+    import berthamod
     
+    if stdoutprint:
+    	print("Options: ")
+    	for att in [a for a in dir(pberthaopt) if not a.startswith('__')]:
+        	print(att, " = ", getattr(pberthaopt, att)) 
+    	print("")
+    	print("")
+
+    	print("")
+    
+    if not os.path.isfile(pberthaopt.wrapperso):
+        raise Exception("SO File ", pberthaopt.wrapperso, " does not exist")
+
     bertha = berthamod.pybertha(pberthaopt.wrapperso)
     
     fittcoefffname = pberthaopt.fitcoefffile
@@ -87,15 +93,12 @@ def runspberthaembed (pberthaopt, stdoutprint = True):
     
     fnameinput = pberthaopt.inputfile
     if not os.path.isfile(fnameinput):
-        print("File ", fnameinput, " does not exist")
-        exit(1)
+        raise Exception("File ", fnameinput, " does not exist")
     
     fittfname = pberthaopt.fittfile
     if not os.path.isfile(fittfname):
-        print("File ", fittfname , " does not exist")
-        exit(1)
+        raise Exception("File ", fittfname , " does not exist")
     
-    verbosity = pberthaopt.verbosity
     dumpfiles = int(pberthaopt.dumpfiles)
     
     bertha.set_fittcoefffname(fittcoefffname)
@@ -117,16 +120,17 @@ def runspberthaembed (pberthaopt, stdoutprint = True):
     nocc = bertha.get_nocc()
     sfact = bertha.get_sfact()
     nopen = bertha.get_nopen()
-    
-    print("Verbosity       : ", verbosity)
-    print("Dumpfiles       : ", dumpfiles)
-    print("")
-    print("Matrix dimension: ", ndim)
-    print("            nocc: ", nocc)
-    print("          nshift: ", nshift)
-    print("           nopen: ", nopen)
-    print("     level shift: ", sfact)
-    print("")
+
+    if stdoutprint:
+        print("Verbosity       : ", verbosity)
+        print("Dumpfiles       : ", dumpfiles)
+        print("")
+        print("Matrix dimension: ", ndim)
+        print("            nocc: ", nocc)
+        print("          nshift: ", nshift)
+        print("           nopen: ", nopen)
+        print("     level shift: ", sfact)
+        print("")
     
 
     start = time.time()
@@ -140,46 +144,41 @@ def runspberthaembed (pberthaopt, stdoutprint = True):
     end = time.time()
     cend = time.process_time()
 
-    sys.stdout.flush()
-    
-    
     if (fockm is None) or (eigen is None) or (fockm is None) \
             or (eigen is None):
-        print("Error in bertha run")
-        exit(-1)
+        raise Exception("Error in bertha run")
     
-    
-    print("")
-    print("Final results ")
-    for i in range(nocc+nopen):
-        print("eigenvalue %5d %20.8f"%(i+1, eigen[i+nshift]-sfact))
+    if stdoutprint:
+        sys.stdout.flush()
+        print("")
+        print("Final results ")
+        for i in range(nocc+nopen):
+            print("eigenvalue %5d %20.8f"%(i+1, eigen[i+nshift]-sfact))
         
-    print("      lumo       %20.8f"%(eigen[i+nshift+1]))
+        print("      lumo       %20.8f"%(eigen[i+nshift+1]))
     
     erep = bertha.get_erep()
     etotal = bertha.get_etotal()
     ecoul  = bertha.get_eecoul()
     exc    = bertha.get_eexc()
     
-    
-    print("")
-    print("total electronic energy  = %30.15f"%(etotal-(sfact*nocc)))
-    print("nuclear repulsion energy = %30.15f"%(erep))
-    print("total energy             = %30.15f"%(etotal+erep-(sfact*nocc)))
-    print("coulomb energy           = %30.15f"%(ecoul))
-    print("Exc     energy           = %30.15f"%(exc))
+    if stdoutprint:
+        print("")
+        print("total electronic energy  = %30.15f"%(etotal-(sfact*nocc)))
+        print("nuclear repulsion energy = %30.15f"%(erep))
+        print("total energy             = %30.15f"%(etotal+erep-(sfact*nocc)))
+        print("coulomb energy           = %30.15f"%(ecoul))
+        print("Exc     energy           = %30.15f"%(exc))
     
     #initialize pyembed instance
 
     activefname = pberthaopt.activefile
     if not os.path.isfile(activefname):
-        print("File ", activefname , " does not exist")
-        exit(1)
+        raise Exception("File ", activefname , " does not exist")
     
     envirofname = pberthaopt.envirofile
     if not os.path.isfile(envirofname):
-        print("File ", envirofname , " does not exist")
-        exit(1)
+        raise Exception("File ", envirofname , " does not exist")
 
     embfactory = pyembmod.pyemb(activefname,envirofname,'adf') #jobtype='adf' is default de facto
     #grid_param =[50,110] # psi4 grid parameters (see Psi4 grid table)
@@ -187,13 +186,15 @@ def runspberthaembed (pberthaopt, stdoutprint = True):
        gtype=pberthaopt.gtype, basis=pberthaopt.basis) 
     # several paramenters to be specified in input- e.g AUG/ADZP for ADF, aug-cc-pvdz for psi4
    
-    print(embfactory.get_options())
+    if stdoutprint:
+        print(embfactory.get_options())
 
     embfactory.initialize()
     grid = embfactory.get_grid() 
     
     #DEBUG : quick check of grid
-    print("Type grid", type(grid), grid.shape)
+    if stdoutprint:
+        print("Type grid", type(grid), grid.shape)
     
     rho = bertha.get_density_on_grid(grid)
     density=numpy.zeros((rho.shape[0],10))
@@ -203,12 +204,13 @@ def runspberthaembed (pberthaopt, stdoutprint = True):
 
     #TEST density on grid
 
-    print("TEST density on grid")
-    print("Type density", type(density), density.shape)
-    print("Scalar product" , "density.weigt", numpy.dot(density[:,0],grid[:,3]))
-    print("Dip x" , "density.weigt", -1.*numpy.dot(density[:,0]*grid[:,3],grid[:,0]))
-    print("Dip y" , "density.weigt", -1.*numpy.dot(density[:,0]*grid[:,3],grid[:,1]))
-    print("Dip z" , "density.weigt", -1.*numpy.dot(density[:,0]*grid[:,3],grid[:,2]))
+    if stdoutprint:
+        print("TEST density on grid")
+        print("Type density", type(density), density.shape)
+        print("Scalar product" , "density.weigt", numpy.dot(density[:,0],grid[:,3]))
+        print("Dip x" , "density.weigt", -1.*numpy.dot(density[:,0]*grid[:,3],grid[:,0]))
+        print("Dip y" , "density.weigt", -1.*numpy.dot(density[:,0]*grid[:,3],grid[:,1]))
+        print("Dip z" , "density.weigt", -1.*numpy.dot(density[:,0]*grid[:,3],grid[:,2]))
 
     bertha.realtime_init()
 
@@ -229,7 +231,9 @@ def runspberthaembed (pberthaopt, stdoutprint = True):
 
     Da0 = numpy.matmul(occeigv,numpy.conjugate(occeigv.transpose()))
   
-    print("Dump ground state unperturbed density " + pberthaopt.denistyzero)
+    if stdoutprint:
+        print("Dump ground state unperturbed density " + pberthaopt.denistyzero)
+    
     bertha.density_to_cube(Da0.T, pberthaopt.denistyzero, \
         drx=pberthaopt.drx, dry=pberthaopt.dry, drz=pberthaopt.drz, \
         margin=pberthaopt.margin)
@@ -238,9 +242,10 @@ def runspberthaembed (pberthaopt, stdoutprint = True):
     dipy_ref = numpy.trace(numpy.matmul(Da0,dipy_mat)).real
     dipz_ref = numpy.trace(numpy.matmul(Da0,dipz_mat)).real
 
-    print("unperturbed Dip x    ",dipx_ref)
-    print("unperturbed Dip y    ",dipy_ref)
-    print("unperturbed Dip z    ",dipz_ref)
+    if stdoutprint:
+        print("unperturbed Dip x    ",dipx_ref)
+        print("unperturbed Dip y    ",dipy_ref)
+        print("unperturbed Dip z    ",dipz_ref)
 
     bertha.finalize()
 
@@ -279,21 +284,23 @@ def runspberthaembed (pberthaopt, stdoutprint = True):
         emb_avg_in = numpy.dot(density[:,0]*grid[:,3],pot)
         #print
 
-        print("")
-        print("total electronic energy  = %30.15f ... outer iteration :%i"%((etotal2-(sfact*nocc)), (out_iter +1) ))
-        print("mean value of embed pot  = %30.15f ... outer iteration :%i"%((emb_avg_in), (out_iter +1) ))
+        if stdoutprint:
+            print("")
+            print("total electronic energy  = %30.15f ... outer iteration :%i"%((etotal2-(sfact*nocc)), (out_iter +1) ))
+            print("mean value of embed pot  = %30.15f ... outer iteration :%i"%((emb_avg_in), (out_iter +1) ))
 
         erep = bertha.get_erep()
         etotal = bertha.get_etotal()
         ecoul  = bertha.get_eecoul()
         exc    = bertha.get_eexc()
         
-        print("outer iteration : ", out_iter +1)
-        print("total electronic energy  = %30.15f"%(etotal-(sfact*nocc)))
-        print("nuclear repulsion energy = %30.15f"%(erep))
-        print("total energy             = %30.15f"%(etotal+erep-(sfact*nocc)))
-        print("coulomb energy           = %30.15f"%(ecoul))
-        print("Exc     energy           = %30.15f"%(exc))
+        if stdoutprint:
+            print("outer iteration : ", out_iter +1)
+            print("total electronic energy  = %30.15f"%(etotal-(sfact*nocc)))
+            print("nuclear repulsion energy = %30.15f"%(erep))
+            print("total energy             = %30.15f"%(etotal+erep-(sfact*nocc)))
+            print("coulomb energy           = %30.15f"%(ecoul))
+            print("Exc     energy           = %30.15f"%(exc))
 
         if lin_emb :
 
@@ -311,7 +318,9 @@ def runspberthaembed (pberthaopt, stdoutprint = True):
     
             Da = numpy.matmul(occeigv,numpy.conjugate(occeigv.transpose()))
       
-            print("Dump ground state perturbed density " + pberthaopt.density)
+            if stdoutprint:
+                print("Dump ground state perturbed density " + pberthaopt.density)
+            
             bertha.density_to_cube(Da.T, pberthaopt.density, drx=pberthaopt.drx, \
               dry=pberthaopt.dry, drz=pberthaopt.drz, margin=pberthaopt.margin)
             bertha.finalize()
@@ -336,8 +345,10 @@ def runspberthaembed (pberthaopt, stdoutprint = True):
         occeigv = numpy.zeros((ndim,nocc), dtype=numpy.complex128)
         iocc = 0
         #debug
-        print("ndim : %i\n" % ndim) 
-        print("nshift : %i\n" % nshift) 
+        if stdoutprint:
+            print("ndim : %i\n" % ndim) 
+            print("nshift : %i\n" % nshift) 
+        
         for i in range(ndim):
             if i >= nshift and iocc < nocc:
                 for j in range(ndim):
@@ -349,9 +360,11 @@ def runspberthaembed (pberthaopt, stdoutprint = True):
         diffE = etotal2 -Eold
         norm_D=numpy.linalg.norm(diffD,'fro') 
         
-        print("2-norm of diffD  = ", norm_D, " ... outer iteration :%i"%(out_iter +1))
-        print("E(actual)-E(prev)= ", diffE, " ... outer iteration :%i"%(out_iter +1))
-        print("DE_emb(actual-new)  = %30.15f ... outer iteration :%i"%((emb_avg_in-emb_avg), (out_iter +1) ))
+        if stdoutprint:
+            print("2-norm of diffD  = ", norm_D, " ... outer iteration :%i"%(out_iter +1))
+            print("E(actual)-E(prev)= ", diffE, " ... outer iteration :%i"%(out_iter +1))
+            print("DE_emb(actual-new)  = %30.15f ... outer iteration :%i"%((emb_avg_in-emb_avg), (out_iter +1) ))
+
         if ( norm_D<(1.0e-3) and diffE <(1.0e-6)):
             iocc = 0
             for i in range(ndim):
@@ -362,39 +375,40 @@ def runspberthaembed (pberthaopt, stdoutprint = True):
     
             Da = numpy.matmul(occeigv,numpy.conjugate(occeigv.transpose()))
       
-            print("Dump ground state perturbed density density.cube")
+            if stdoutprint:
+                print("Dump ground state perturbed density density.cube")
+
             bertha.density_to_cube(Da.T, "density.cube",drx=0.1,dry=0.1,drz=0.1,margin=5.5)
             bertha.finalize()
             break
+
         Dold = Da
         Eold = etotal2
 
         bertha.finalize()
 
-    print("Dipole moment analitical: Tr(D dip_mat)")
+    if stdoutprint:
+        print("Dipole moment analitical: Tr(D dip_mat)")
 
     dipx_val = numpy.trace(numpy.matmul(Da,dipx_mat)).real
     dipy_val = numpy.trace(numpy.matmul(Da,dipy_mat)).real
     dipz_val = numpy.trace(numpy.matmul(Da,dipz_mat)).real
 
-    print("Dip x    ",dipx_val)
-    print("Dip y    ",dipy_val)
-    print("Dip z    ",dipz_val)
-
-    print("TEST dipole moment from density on grid numerical integration")
-    print("  ")
-    print("Type density", type(density), density.shape)
-    print("Scalar product" , "density.weigt", numpy.dot(density[:,0],grid[:,3]))
-    print("Dip x" , "density.weigt", -1.*numpy.dot(density[:,0]*grid[:,3],grid[:,0]))
-    print("Dip y" , "density.weigt", -1.*numpy.dot(density[:,0]*grid[:,3],grid[:,1]))
-    print("Dip z" , "density.weigt", -1.*numpy.dot(density[:,0]*grid[:,3],grid[:,2]))
-
-    print("  ")
-    #print("TEST one electron potential (embedding) in g-spinor")
-    #print("Potential used -x*E and x*E evaluating dipole via finite field")
-    #print("Dip x" , "from finite field", dipx)
-    
-    sys.stdout.flush()
+    if stdoutprint:
+        print("Dip x    ",dipx_val)
+        print("Dip y    ",dipy_val)
+        print("Dip z    ",dipz_val)
+        
+        print("TEST dipole moment from density on grid numerical integration")
+        print("  ")
+        print("Type density", type(density), density.shape)
+        print("Scalar product" , "density.weigt", numpy.dot(density[:,0],grid[:,3]))
+        print("Dip x" , "density.weigt", -1.*numpy.dot(density[:,0]*grid[:,3],grid[:,0]))
+        print("Dip y" , "density.weigt", -1.*numpy.dot(density[:,0]*grid[:,3],grid[:,1]))
+        print("Dip z" , "density.weigt", -1.*numpy.dot(density[:,0]*grid[:,3],grid[:,2]))
+        
+        print("  ")
+        sys.stdout.flush()
 
     return ovapm, eigem, fockm, eigen 
 
