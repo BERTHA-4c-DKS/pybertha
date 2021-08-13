@@ -11,4 +11,4 @@ Journal of Chemical Physics, 2020, https://doi.org/10.1063/5.0002831
 
 Matteo De Santis, Leonardo Belpassi, Christoph R. Jacob, AndrÃ© Severo Pereira Gomes, Francesco Tarantelli, Lucas Visscher, and Loriano Storchi, "Environmental effects with Frozen Density Embedding in Real-Time Time-Dependent Density Functional Theory using localized basis functions", Journal of Chemical Theory and Computation, 2020, https://doi.org/10.1021/acs.jctc.0c00603
 
-In the lib dir you'll find the SO compiled for Linux Ubuntu 18.04.4 LTS
+In the lib dir you'll find the SO compiled for Linux Ubuntu 
