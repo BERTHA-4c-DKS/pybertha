@@ -1,36 +1,15 @@
 import argparse
-import ctypes
-from os import X_OK
 import numpy
 import sys
-import re
 
 import os.path
-sys.path.append('/home/redo/BERTHA/pybertha/pyemb')
-sys.path.append("/home/redo/BERTHA/xcfun/build/lib/python")
-sys.path.append("/home/redo/BERTHA/pybertha/src")
-sys.path.append("/home/redo/BERTHA/pyadf/src")
-os.environ['PYBERTHAROOT'] = "/home/redo/BERTHA/pybertha/"
-os.environ['RTHOME'] = "/home/redo/BERTHA/pybertha/psi4rt"
-sys.path.append(os.environ['PYBERTHAROOT']+"/src")
-sys.path.append(os.environ['RTHOME'])
-
-import pyembmod
-
-from numpy.linalg import eigvalsh
-from scipy.linalg import eigh
-
-import json
-from json import encoder
-
-import time
 
 from dataclasses import dataclass
 
+MAXIT = 100
+
 @dataclass
 class pyberthaembedoption:
-    inputfile: str
-    fittfile: str
     activefile: str
     envirofile :str 
     fitcoefffile: str
@@ -45,6 +24,8 @@ class pyberthaembedoption:
     berthamodpath: str
     eda_nocv_info: bool
     eda_nocv_frag_file: str
+    inputfile: str = "input.inp"
+    fittfile: str = "fitt2.inp"
     gtype: int = 2
     param: float = 4.0
     basis: str = 'AUG/ADZP'
@@ -70,8 +51,8 @@ def runspberthaembed (pberthaopt, stdoutprint = True):
     if not stdoutprint:
         verbosity = 0
 
-    sys.path.insert(0, pberthaopt.berthamodpath)
     import berthamod
+    import pyembmod
     
     if stdoutprint:
     	print("Options: ")
@@ -132,17 +113,10 @@ def runspberthaembed (pberthaopt, stdoutprint = True):
         print("     level shift: ", sfact)
         print("")
     
-
-    #start = time.time()
-    #cstart = time.process_time() 
-
     ovapm, eigem, fockm, eigen = bertha.run()
 
     if pberthaopt.dumpfiles :
        os.rename(vctfilename,'unpert_vct.txt') 
-
-    #end = time.time()
-    #cend = time.process_time()
 
     if (fockm is None) or (eigen is None) or (fockm is None) \
             or (eigen is None):
@@ -154,7 +128,6 @@ def runspberthaembed (pberthaopt, stdoutprint = True):
         print("Final results ")
         for i in range(nocc+nopen):
             print("eigenvalue %5d %20.8f"%(i+1, eigen[i+nshift]-sfact))
-        
         print("      lumo       %20.8f"%(eigen[i+nshift+1]))
     
     erep = bertha.get_erep()
@@ -418,14 +391,11 @@ def runspberthaembed (pberthaopt, stdoutprint = True):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-f","--inputfile", help="Specify BERTHA input file (default: input.inp)", required=False, 
-            type=str, default="input.inp")
     parser.add_argument("-gA","--geomA", help="Specify active system (Angstrom) geometry (default: geomA.xyz)", required=False, 
             type=str, default="geomA.xyz")
     parser.add_argument("-gB","--geomB", help="Specify frozen system (Angstrom) geometry (default: geomB.xyz)", required=False, 
             type=str, default="geomB.xyz")
-    parser.add_argument("-t","--fittfile", help="Specify BERTHA fitting input file (default: fitt2.inp)", required=False, 
-            type=str, default="fitt2.inp")
+
     parser.add_argument("-c","--fitcoefffile", help="Specify BERTHA fitcoeff output file (default: fitcoeff.txt)",
             required=False, type=str, default="fitcoeff.txt")
     parser.add_argument("-e","--vctfile", help="Specify BERTHA vct output file (default: vct.txt)", required=False, 
@@ -444,20 +414,48 @@ if __name__ == "__main__":
             type=numpy.float64, default=1.0e-11)
     parser.add_argument("--wrapperso", help="set wrapper SO (default = ../../lib/bertha_wrapper.so)", 
             required=False, type=str, default="../lib/bertha_wrapper.so")
-    parser.add_argument("--berthamodpath", help="set berthamod path (default = ../src)", 
-            required=False, type=str, default="../src")
     parser.add_argument("--eda_nocv_info", help="set to dump info useful for py_eda_nocv",action='store_true',default=False)
     parser.add_argument("--eda_nocv_frag_file", help="set a file (default: info_eda_nocv_fragX.json)",
             required=False, type=str, default="info_eda_nocv_fragX.json")
     parser.add_argument("--gridtype", help="set gridtype (default: 2)",
             required=False, type=int, default=3)
-    
+
+    parser.add_argument("-j","--jsonbasisfile", \
+        help="Specify BERTHA JSON file for fitting and basis (default: fullsets.json)", \
+        required=False, type=str, default="fullsets.json")
+    parser.add_argument("-b","--basisset", \
+        help="Specify BERTHA basisset \"atomname1:basisset1,atomname2:basisset2,...\"", \
+        required=True, type=str, default="")
+    parser.add_argument("-t","--fittset", \
+        help="Specify BERTHA fitting set \"atomname1:fittset1,atomname2:fittset2,...\"", \
+        required=True, type=str, default="")
+    parser.add_argument("--convertlengthunit", help="Specify a length converter [default=1.0]", \
+        type=float, default=1.0)
+    parser.add_argument("--functxc", help="EX-POTENTIAL available: LDA,B88P86,HCTH93,BLYP (default=BLYP)", \
+        type=str, default="BLYP")
+    parser.add_argument("--berthamodpaths", help="set berthamod and all other modules path [\"path1;path2;...\"] (default = ../src)", 
+        required=False, type=str, default="../src")
+
     args = parser.parse_args()
+  
+    for path in args.berthamodpaths.split(";"):
+        sys.path.append(path)
+
+    import pybgen
+
+    pygenoption_fraga = pybgen.berthainputoption
+    pygenoption_fraga.inputfile = args.geomA
+    pygenoption_fraga.jsonbasisfile = args.jsonbasisfile
+    pygenoption_fraga.fittset = args.fittset
+    pygenoption_fraga.basisset = args.basisset
+    pygenoption_fraga.functxc = args.functxc
+    pygenoption_fraga.convertlengthunit = args.convertlengthunit
+    pygenoption_fraga.maxit = MAXIT
+
+    pybgen.generateinputfiles (pygenoption_fraga)
 
     pberthaopt = pyberthaembedoption
 
-    pberthaopt.inputfile = args.inputfile
-    pberthaopt.fittfile = args.fittfile
     pberthaopt.fitcoefffile = args.fitcoefffile
     pberthaopt.vctfile = args.vctfile
     pberthaopt.ovapfile = args.ovapfile
@@ -467,7 +465,6 @@ if __name__ == "__main__":
     pberthaopt.verbosity = args.verbosity
     pberthaopt.thresh = args.thresh
     pberthaopt.wrapperso = args.wrapperso
-    pberthaopt.berthamodpath = args.berthamodpath
     pberthaopt.eda_nocv_info = args.eda_nocv_info
     pberthaopt.eda_nocv_frag_file = args.eda_nocv_frag_file
     pberthaopt.activefile = args.geomA
