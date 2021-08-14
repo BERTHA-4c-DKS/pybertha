@@ -253,8 +253,6 @@ def runspberthaembed (pberthaopt, stdoutprint = True):
     #bertha.set_fittcoefffname(fittcoefffname)
     #bertha.set_ovapfilename(ovapfilename)
     #bertha.set_vctfilename(vctfilename)
-    #bertha.set_fnameinput(fnameinput)
-    #bertha.set_fittfname(fittfname)
     
     #if lin_emb=True, a single scf is performed at constant Vemb
     maxiter = 10 
@@ -263,6 +261,9 @@ def runspberthaembed (pberthaopt, stdoutprint = True):
     lin_emb = pberthaopt.linemb
 
     for out_iter in range (maxiter):
+
+        bertha.set_fnameinput(fnameinput)
+        bertha.set_fittfname(fittfname)
 
         bertha.set_thresh(pberthaopt.thresh)
         
@@ -450,7 +451,7 @@ if __name__ == "__main__":
     parser.add_argument("--eda_nocv_frag_file", help="set a file (default: info_eda_nocv_fragX.json)",
             required=False, type=str, default="info_eda_nocv_fragX.json")
     parser.add_argument("--gridtype", help="set gridtype (default: 2)",
-            required=False, type=int, default=3)
+            required=False, type=int, default=2)
     
     args = parser.parse_args()
 
