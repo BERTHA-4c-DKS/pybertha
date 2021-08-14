@@ -379,6 +379,7 @@ def normal_run_init (args):
        func = calc_params['func_type']
     # the basisset object
     basisset = mol_wfn.basisset()
+    fo = open(dbgfnames[0], "w")
     #print("analytic : %i" % analytic)
     if (analytic):
         print('Perturb density with analytic delta')
@@ -387,6 +388,8 @@ def normal_run_init (args):
        
         #dip_mat is transformed to the reference MO basis
         dip_mo=np.matmul(np.conjugate(C.T),np.matmul(dip_mat,C))
+        if (do_weighted == 99) or (do_weighted == -1):
+            dip_mo=util.dipole_selection(dip_mo,do_weighted,ndocc,occlist,virtlist,fo,debug)
         u0 = util.exp_opmat(dip_mo,np.float_(-k))
         Dp_init= np.matmul(u0,np.matmul(Dp_0,np.conjugate(u0.T)))
         func_t0 = k
@@ -403,7 +406,6 @@ def normal_run_init (args):
         #print('trace D(0+): %.8f' % np.trace(Dp_init).real)       
         #print(testene+Nuc_rep)                                    
 
-    fo = open(dbgfnames[0], "w")
     
     #containers
     ene_list = []
