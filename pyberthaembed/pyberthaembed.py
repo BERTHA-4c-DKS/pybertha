@@ -1,6 +1,8 @@
 import argparse
+import shutil
 import numpy
 import sys
+import os
 
 import os.path
 
@@ -442,6 +444,12 @@ if __name__ == "__main__":
     for path in args.berthamodpaths.split(";"):
         sys.path.append(path)
 
+    for resdir in ["./resultfiles", "./jobtempdir"]:
+      if os.path.isdir(resdir):
+         print ("  Removing "+ resdir )
+         shutil.rmtree(resdir)
+
+
     import pybgen
 
     pygenoption_fraga = pybgen.berthainputoption
@@ -452,6 +460,12 @@ if __name__ == "__main__":
     pygenoption_fraga.functxc = args.functxc
     pygenoption_fraga.convertlengthunit = args.convertlengthunit
     pygenoption_fraga.maxit = MAXIT
+
+    for filename in ["input.inp", "fitt2.inp"]:
+      try:
+        os.remove(filename)
+      except OSError:
+        pass
 
     pybgen.generateinputfiles (pygenoption_fraga)
 
