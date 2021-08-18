@@ -7,6 +7,7 @@ import os
 import os.path
 
 from dataclasses import dataclass
+from pathlib import Path
 
 MAXIT = 100
 
@@ -37,10 +38,11 @@ class pyberthaembedoption:
     dry: float = 0.1
     drz: float = 0.1
     margin: float = 5.5
+    restartfname : str = "restart.npy.npz" 
 
 ##########################################################################################
 
-def runspberthaembed (pberthaopt, stdoutprint = True):
+def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
 
     ovapm = None 
     eigem = None 
@@ -68,8 +70,6 @@ def runspberthaembed (pberthaopt, stdoutprint = True):
     if not os.path.isfile(pberthaopt.wrapperso):
         raise Exception("SO File ", pberthaopt.wrapperso, " does not exist")
 
-    bertha = berthamod.pybertha(pberthaopt.wrapperso)
-    
     fittcoefffname = pberthaopt.fitcoefffile
     vctfilename = pberthaopt.vctfile
     ovapfilename = pberthaopt.ovapfile
@@ -83,69 +83,102 @@ def runspberthaembed (pberthaopt, stdoutprint = True):
         raise Exception("File ", fittfname , " does not exist")
     
     dumpfiles = int(pberthaopt.dumpfiles)
-    
-    bertha.set_fittcoefffname(fittcoefffname)
-    bertha.set_ovapfilename(ovapfilename)
-    bertha.set_vctfilename(vctfilename)
-    bertha.set_fnameinput(fnameinput)
-    bertha.set_fittfname(fittfname)
-    bertha.set_thresh(pberthaopt.thresh)
-    
-    bertha.set_verbosity(verbosity)
-    bertha.set_dumpfiles(dumpfiles)
-    
-    bertha.set_densitydiff(1)
-    
-    bertha.init()
-    
-    ndim = bertha.get_ndim()
-    nshift = bertha.get_nshift()
-    nocc = bertha.get_nocc()
-    sfact = bertha.get_sfact()
-    nopen = bertha.get_nopen()
 
-    if stdoutprint:
-        print("Verbosity       : ", verbosity)
-        print("Dumpfiles       : ", dumpfiles)
-        print("")
-        print("Matrix dimension: ", ndim)
-        print("            nocc: ", nocc)
-        print("          nshift: ", nshift)
-        print("           nopen: ", nopen)
-        print("     level shift: ", sfact)
-        print("")
-    
-    ovapm, eigem, fockm, eigen = bertha.run()
+    eigem = None
+    rho = None
+    Da0 = None
+    etotal = 0.0
+    dipx_ref = 0.0
+    dipy_ref = 0.0
+    dipz_ref = 0.0
 
-    if pberthaopt.dumpfiles :
-       os.rename(vctfilename,'unpert_vct.txt') 
+    bertha = berthamod.pybertha(pberthaopt.wrapperso)
 
-    if (fockm is None) or (eigen is None) or (fockm is None) \
-            or (eigen is None):
-        raise Exception("Error in bertha run")
+    if not restart:
+        try:
+            os.remove(pberthaopt.restartfname)
+        except OSError:
+            pass
+
+        bertha.set_fittcoefffname(fittcoefffname)
+        bertha.set_ovapfilename(ovapfilename)
+        bertha.set_vctfilename(vctfilename)
+        bertha.set_fnameinput(fnameinput)
+        bertha.set_fittfname(fittfname)
+        bertha.set_thresh(pberthaopt.thresh)
     
-    if stdoutprint:
-        sys.stdout.flush()
-        print("")
-        print("Final results ")
-        for i in range(nocc+nopen):
-            print("eigenvalue %5d %20.8f"%(i+1, eigen[i+nshift]-sfact))
-        print("      lumo       %20.8f"%(eigen[i+nshift+1]))
+        bertha.set_verbosity(verbosity)
+        bertha.set_dumpfiles(dumpfiles)
     
-    erep = bertha.get_erep()
-    etotal = bertha.get_etotal()
-    ecoul  = bertha.get_eecoul()
-    exc    = bertha.get_eexc()
+        bertha.set_densitydiff(1)
     
-    if stdoutprint:
-        print("")
-        print("total electronic energy  = %30.15f"%(etotal-(sfact*nocc)))
-        print("nuclear repulsion energy = %30.15f"%(erep))
-        print("total energy             = %30.15f"%(etotal+erep-(sfact*nocc)))
-        print("coulomb energy           = %30.15f"%(ecoul))
-        print("Exc     energy           = %30.15f"%(exc))
+        bertha.init()
     
-    #initialize pyembed instance
+        ndim = bertha.get_ndim()
+        nshift = bertha.get_nshift()
+        nocc = bertha.get_nocc()
+        sfact = bertha.get_sfact()
+        nopen = bertha.get_nopen()
+
+        if stdoutprint:
+            print("Verbosity       : ", verbosity)
+            print("Dumpfiles       : ", dumpfiles)
+            print("")
+            print("Matrix dimension: ", ndim)
+            print("            nocc: ", nocc)
+            print("          nshift: ", nshift)
+            print("           nopen: ", nopen)
+            print("     level shift: ", sfact)
+            print("")
+    
+        ovapm, eigem, fockm, eigen = bertha.run()
+
+        if pberthaopt.dumpfiles :
+            os.rename(vctfilename,'unpert_vct.txt') 
+
+        if (fockm is None) or (eigen is None) or (fockm is None) \
+                or (eigen is None):
+            raise Exception("Error in bertha run")
+    
+        if stdoutprint:
+            sys.stdout.flush()
+            print("")
+            print("Final results ")
+            for i in range(nocc+nopen):
+                print("eigenvalue %5d %20.8f"%(i+1, eigen[i+nshift]-sfact))
+            print("      lumo       %20.8f"%(eigen[i+nshift+1]))
+    
+        erep = bertha.get_erep()
+        etotal = bertha.get_etotal()
+        ecoul = bertha.get_eecoul()
+        exc = bertha.get_eexc()
+    
+        if stdoutprint:
+            print("")
+            print("total electronic energy  = %30.15f"%(etotal-(sfact*nocc)))
+            print("nuclear repulsion energy = %30.15f"%(erep))
+            print("total energy             = %30.15f"%(etotal+erep-(sfact*nocc)))
+            print("coulomb energy           = %30.15f"%(ecoul))
+            print("Exc     energy           = %30.15f"%(exc))
+    else:
+        if stdoutprint:
+            print("Restart: ")
+
+        my_file = Path(pberthaopt.restartfname)
+        if not my_file.is_file():
+            raise Exception(pberthaopt.restartfname + " does not exist restart=on")
+
+        alldata = numpy.load(pberthaopt.restartfname) 
+
+        eigem = alldata["eigem"]
+        Da0 = alldata["Da0"]
+        rho = alldata["rho"]
+        etotalnpa = alldata["etotalnpa"]
+
+        etotal = etotalnpa[0]
+        dipx_ref = etotalnpa[1]
+        dipy_ref = etotalnpa[2] 
+        dipz_ref = etotalnpa[3] 
 
     activefname = pberthaopt.activefile
     if not os.path.isfile(activefname):
@@ -167,73 +200,87 @@ def runspberthaembed (pberthaopt, stdoutprint = True):
 
     embfactory.initialize()
     grid = embfactory.get_grid() 
-    
-    #DEBUG : quick check of grid
-    #if stdoutprint:
-    #    print("Type grid", type(grid), grid.shape)
-    
-    rho = bertha.get_density_on_grid(grid)
+
+    if not restart:
+        rho = bertha.get_density_on_grid(grid)
+
+    if stdoutprint:
+        print("Grid dimensions : " , grid.shape)
+        print(" Rho dimensions : " , rho.shape)
+
     density=numpy.zeros((rho.shape[0],10))
     density[:,0] = rho
-   
+
     pot = embfactory.get_potential(density)    
 
-    #TEST density on grid
+    if not restart:
 
-    if stdoutprint:
-        #print("TEST density on grid")
-        #print("Type density", type(density), density.shape)
-        print("Scalar product" , "density.weigt", numpy.dot(density[:,0],grid[:,3]))
-        print("Dip x" , "density.weigt", -1.*numpy.dot(density[:,0]*grid[:,3],grid[:,0]))
-        print("Dip y" , "density.weigt", -1.*numpy.dot(density[:,0]*grid[:,3],grid[:,1]))
-        print("Dip z" , "density.weigt", -1.*numpy.dot(density[:,0]*grid[:,3],grid[:,2]))
+        if stdoutprint:
+            #print("TEST density on grid")
+            #print("Type density", type(density), density.shape)
+            print("Scalar product" , "density.weigt", numpy.dot(density[:,0],grid[:,3]))
+            print("Dip x" , "density.weigt", -1.*numpy.dot(density[:,0]*grid[:,3],grid[:,0]))
+            print("Dip y" , "density.weigt", -1.*numpy.dot(density[:,0]*grid[:,3],grid[:,1]))
+            print("Dip z" , "density.weigt", -1.*numpy.dot(density[:,0]*grid[:,3],grid[:,2]))
 
-    bertha.realtime_init()
+        bertha.realtime_init()
 
-    normalise = 1
-    dip_mat = None
+        normalise = 1
 
-    dipx_mat, dipy_mat, dipz_mat = \
+        dipx_mat, dipy_mat, dipz_mat = \
             bertha.get_realtime_dipolematrix (0, normalise)
 
-    occeigv = numpy.zeros((ndim,nocc), dtype=numpy.complex128)
-    iocc = 0
+        occeigv = numpy.zeros((ndim,nocc), dtype=numpy.complex128)
+        iocc = 0
 
-    for i in range(ndim):
-        if i >= nshift and iocc < nocc:
-            for j in range(ndim):
-                occeigv[j, iocc] = eigem[j, i]
-            iocc = iocc + 1
+        for i in range(ndim):
+            if i >= nshift and iocc < nocc:
+                for j in range(ndim):
+                    occeigv[j, iocc] = eigem[j, i]
+                iocc = iocc + 1
 
-    Da0 = numpy.matmul(occeigv,numpy.conjugate(occeigv.transpose()))
+        Da0 = numpy.matmul(occeigv,numpy.conjugate(occeigv.transpose()))
   
-    if stdoutprint:
-        print("Dump ground state unperturbed density " + pberthaopt.denistyzero)
+        if stdoutprint:
+            print("Dump ground state unperturbed density " + pberthaopt.denistyzero)
     
-    bertha.density_to_cube(Da0.T, pberthaopt.denistyzero, \
-        drx=pberthaopt.drx, dry=pberthaopt.dry, drz=pberthaopt.drz, \
-        margin=pberthaopt.margin)
+        bertha.density_to_cube(Da0.T, pberthaopt.denistyzero, \
+            drx=pberthaopt.drx, dry=pberthaopt.dry, drz=pberthaopt.drz, \
+            margin=pberthaopt.margin)
 
-    dipx_ref = numpy.trace(numpy.matmul(Da0,dipx_mat)).real
-    dipy_ref = numpy.trace(numpy.matmul(Da0,dipy_mat)).real
-    dipz_ref = numpy.trace(numpy.matmul(Da0,dipz_mat)).real
+        dipx_ref = numpy.trace(numpy.matmul(Da0,dipx_mat)).real
+        dipy_ref = numpy.trace(numpy.matmul(Da0,dipy_mat)).real
+        dipz_ref = numpy.trace(numpy.matmul(Da0,dipz_mat)).real
+
+        bertha.finalize()
+
+        etotalnpa = numpy.zeros((4))
+        etotalnpa[0] = etotal 
+        etotalnpa[1] = dipx_ref
+        etotalnpa[2] = dipy_ref
+        etotalnpa[3] = dipz_ref
+
+        numpy.savez(pberthaopt.restartfname, eigem=eigem, \
+            Da0=Da0, rho=rho, etotalnpa=etotalnpa) 
 
     if stdoutprint:
         print("unperturbed Dip x    ",dipx_ref)
         print("unperturbed Dip y    ",dipy_ref)
         print("unperturbed Dip z    ",dipz_ref)
-
-    bertha.finalize()
-
-    #bertha.set_fittcoefffname(fittcoefffname)
-    #bertha.set_ovapfilename(ovapfilename)
-    #bertha.set_vctfilename(vctfilename)
     
     #if lin_emb=True, a single scf is performed at constant Vemb
     maxiter = 10 
     Dold = Da0 
     Eold = etotal
     lin_emb = pberthaopt.linemb
+
+    dipx_val = 0.0
+    dipy_val = 0.0
+    dipz_val = 0.0
+
+    dipx_mat = None
+    dipy_mat = None
+    dipz_mat = None
 
     for out_iter in range (maxiter):
 
@@ -248,6 +295,12 @@ def runspberthaembed (pberthaopt, stdoutprint = True):
         bertha.set_densitydiff(1)
   
         bertha.init()
+
+        ndim = bertha.get_ndim()
+        nshift = bertha.get_nshift()
+        nocc = bertha.get_nocc()
+        sfact = bertha.get_sfact()
+        nopen = bertha.get_nopen()
         
         # run with Vemb included
         bertha.set_embpot_on_grid(grid, pot)
@@ -268,8 +321,8 @@ def runspberthaembed (pberthaopt, stdoutprint = True):
 
         erep = bertha.get_erep()
         etotal = bertha.get_etotal()
-        ecoul  = bertha.get_eecoul()
-        exc    = bertha.get_eexc()
+        ecoul = bertha.get_eecoul()
+        exc = bertha.get_eexc()
         
         if stdoutprint:
             print("outer iteration : ", out_iter +1)
@@ -280,7 +333,6 @@ def runspberthaembed (pberthaopt, stdoutprint = True):
             print("Exc     energy           = %30.15f"%(exc))
 
         if lin_emb :
-
             rho = bertha.get_density_on_grid(grid)
             density=numpy.zeros((rho.shape[0],10))
             density[:,0] = rho
@@ -362,6 +414,13 @@ def runspberthaembed (pberthaopt, stdoutprint = True):
         Dold = Da
         Eold = etotal2
 
+        bertha.realtime_init()
+
+        normalise = 1
+
+        dipx_mat, dipy_mat, dipz_mat = \
+            bertha.get_realtime_dipolematrix (0, normalise)
+
         bertha.finalize()
 
     if stdoutprint:
@@ -438,6 +497,9 @@ if __name__ == "__main__":
         type=str, default="BLYP")
     parser.add_argument("--berthamodpaths", help="set berthamod and all other modules path [\"path1;path2;...\"] (default = ../src)", 
         required=False, type=str, default="../src")
+
+    parser.add_argument("--restart", help="Force restart from a previous initial single-point",
+        required=False, action="store_true", default=False)
     
     args = parser.parse_args()
   
@@ -448,7 +510,6 @@ if __name__ == "__main__":
       if os.path.isdir(resdir):
          print ("  Removing "+ resdir )
          shutil.rmtree(resdir)
-
 
     import pybgen
 
@@ -486,4 +547,4 @@ if __name__ == "__main__":
     pberthaopt.envirofile = args.geomB
     pberthaopt.gtype = args.gridtype
 
-    runspberthaembed (pberthaopt)
+    runspberthaembed (pberthaopt, args.restart)
