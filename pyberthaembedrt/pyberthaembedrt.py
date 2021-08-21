@@ -20,6 +20,36 @@ berthamodpath = os.getenv("BERTHA_API_PATH", "../src")
 sys.path.insert(0, berthamodpath)
 import berthamod
 import rtutil
+import pyembmod
+
+@dataclass
+class pyberthaembedoption:
+    activefile: str
+    envirofile :str 
+    fitcoefffile: str
+    vctfile: str
+    ovapfile: str
+    dumpfiles: bool
+    debug: bool
+    linemb: bool
+    verbosity: int
+    thresh: numpy.float64
+    wrapperso: str
+    berthamodpath: str
+    eda_nocv_info: bool
+    eda_nocv_frag_file: str
+    inputfile: str = "input.inp"
+    fittfile: str = "fitt2.inp"
+    gtype: int = 2
+    param: float = 4.0
+    basis: str = 'AUG/ADZP'
+    denistyzero: str = "density0.cube"
+    density : str = "density.cube"
+    drx: float = 0.1
+    dry: float = 0.1
+    drz: float = 0.1
+    margin: float = 5.5
+    restartfname : str = "restart.npy.npz" 
 
 ##########################################################################################
 
@@ -489,7 +519,7 @@ def restart_run(args):
  
 ##########################################################################################
 
-def normal_run(args):
+def normal_run(pberthaopt,args):
 
     print("Options: ")
     print(args) 
@@ -500,12 +530,12 @@ def normal_run(args):
         print("SO File ", args.wrapperso, " does not exist")
         return False
     
-    bertha = berthamod.pybertha(args.wrapperso)
 
-    ovapm, eigem, fockm, eigen = single_point (args, bertha)
+    ovapm, eigem, fockm, eigen = runspberthaembed (pberthaopt, restart = False, stdoutprint = True) 
     if ovapm is None:
         return False
 
+    bertha = berthamod.pybertha(args.wrapperso)
     ndim = bertha.get_ndim()
     nshift = bertha.get_nshift()
     nocc = bertha.get_nocc()
@@ -638,6 +668,31 @@ def normal_run(args):
         #transform back Dp_int
         Da=numpy.matmul(C,numpy.matmul(Dp_init,numpy.conjugate(C.T)))
         D_0=Dp_init
+    
+    # emfactory -> embedding pootential corresponding to Da
+    activefname = pberthaopt.activefile
+    if not os.path.isfile(activefname):
+        raise Exception("File ", activefname , " does not exist")
+    
+    envirofname = pberthaopt.envirofile
+    if not os.path.isfile(envirofname):
+        raise Exception("File ", envirofname , " does not exist")
+
+    embfactory = pyembmod.pyemb(activefname,envirofname,'adf') #jobtype='adf' is default de facto
+    #grid_param =[50,110] # psi4 grid parameters (see Psi4 grid table)
+    embfactory.set_options(param=pberthaopt.param, \
+       gtype=pberthaopt.gtype, basis=pberthaopt.basis) 
+    # several paramenters to be specified in input- e.g AUG/ADZP for ADF, aug-cc-pvdz for psi4
+
+    embfactory.initialize()
+    grid = embfactory.get_grid() 
+    rho = bertha.get_density_on_grid(grid)
+    density=numpy.zeros((rho.shape[0],10))
+    density[:,0] = rho
+
+    pot = embfactory.get_potential(density)
+    bertha.set_embpot_on_grid(grid, pot)
+
 
     print("Start first mo_fock_mid_forwd_eval ")
     
@@ -723,6 +778,7 @@ def normal_run(args):
     print("")
     
     fock_mid_backwd = numpy.copy(fock_mid_init)
+    
 
     return run_iterations_from_to (1, niter, bertha, args, fock_mid_backwd, \
             dt, dip_mat, C, C_inv, ovapm, ndim, debug, Dp_ti, dip_list, ene_list, \
@@ -738,11 +794,33 @@ def main():
        listpulses += " "
    
    parser = argparse.ArgumentParser()
+   #minimal options for FDE
+   parser.add_argument("-gA","--geomA", help="Specify active system (Angstrom) geometry (default: geomA.xyz)", required=False, 
+           type=str, default="geomA.xyz")
+   parser.add_argument("-gB","--geomB", help="Specify frozen system (Angstrom) geometry (default: geomB.xyz)", required=False, 
+           type=str, default="geomB.xyz")
+   parser.add_argument("-l", "--linemb", help="Linearized embedding on: the outer loop is skipped", required=False, 
+           default=False, action="store_true")
+   parser.add_argument("--gridtype", help="set gridtype (default: 2)",
+           required=False, type=int, default=2)
+
+   parser.add_argument("-j","--jsonbasisfile", \
+       help="Specify BERTHA JSON file for fitting and basis (default: fullsets.json)", \
+       required=False, type=str, default="fullsets.json")
+   parser.add_argument("-b","--basisset", \
+       help="Specify BERTHA basisset \"atomname1:basisset1,atomname2:basisset2,...\"", \
+       required=True, type=str, default="")
+   parser.add_argument("-t","--fittset", \
+       help="Specify BERTHA fitting set \"atomname1:fittset1,atomname2:fittset2,...\"", \
+       required=True, type=str, default="")
+   parser.add_argument("--convertlengthunit", help="Specify a length converter [default=1.0]", \
+       type=float, default=1.0)
+   parser.add_argument("--functxc", help="EX-POTENTIAL available: LDA,B88P86,HCTH93,BLYP (default=BLYP)", \
+       type=str, default="BLYP")
+   parser.add_argument("--berthamodpaths", help="set berthamod and all other modules path [\"path1;path2;...\"] (default = ../src)", 
+        required=False, type=str, default="../src")
+   #END
    
-   parser.add_argument("-f","--inputfile", help="Specify BERTHA input file (default: input.inp)", required=False, 
-           type=str, default="input.inp")
-   parser.add_argument("-t","--fittfile", help="Specify BERTHA fitting input file (default: fitt2.inp)", required=False, 
-           type=str, default="fitt2.inp")
    parser.add_argument("-c","--fitcoefffile", help="Specify BERTHA fitcoeff output file (default: fitcoeff.txt)",
            required=False, type=str, default="fitcoeff.txt")
    parser.add_argument("-e","--vctfile", help="Specify BERTHA vct output file (default: vct.txt)", required=False, 
@@ -792,12 +870,56 @@ def main():
            required=False, default=False, action="store_true")
    
    args = parser.parse_args()
+   for path in args.berthamodpaths.split(";"):
+       sys.path.append(path)
+
+   for resdir in ["./resultfiles", "./jobtempdir"]:
+     if os.path.isdir(resdir):
+        print ("  Removing "+ resdir )
+        shutil.rmtree(resdir)
+
+   import pybgen
+
+   pygenoption_fraga = pybgen.berthainputoption
+   pygenoption_fraga.inputfile = args.geomA
+   pygenoption_fraga.jsonbasisfile = args.jsonbasisfile
+   pygenoption_fraga.fittset = args.fittset
+   pygenoption_fraga.basisset = args.basisset
+   pygenoption_fraga.functxc = args.functxc
+   pygenoption_fraga.convertlengthunit = args.convertlengthunit
+   pygenoption_fraga.maxit = MAXIT
+
+   for filename in ["input.inp", "fitt2.inp"]:
+     try:
+       os.remove(filename)
+     except OSError:
+       pass
+
+   pybgen.generateinputfiles (pygenoption_fraga)
+
+   pberthaopt = pyberthaembedoption
+
+   pberthaopt.fitcoefffile = args.fitcoefffile
+   pberthaopt.vctfile = args.vctfile
+   pberthaopt.ovapfile = args.ovapfile
+   pberthaopt.dumpfiles = args.dumpfiles
+   pberthaopt.debug = args.debug
+   pberthaopt.linemb = args.linemb
+   pberthaopt.verbosity = args.verbosity
+   pberthaopt.thresh = args.thresh
+   pberthaopt.wrapperso = args.wrapperso
+   pberthaopt.eda_nocv_info = args.eda_nocv_info
+   pberthaopt.eda_nocv_frag_file = args.eda_nocv_frag_file
+   pberthaopt.activefile = args.geomA
+   pberthaopt.envirofile = args.geomB
+   pberthaopt.gtype = args.gridtype
+
 
    if (not args.restart):
        if args.totaltime < 0.0:
            args.totaltime = 1.0
 
-       if (not normal_run (args)):
+       if (not normal_run (pberthaopt,args)):
            exit(1)
    else:
       if (not restart_run (args)):

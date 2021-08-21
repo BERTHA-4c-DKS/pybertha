@@ -189,7 +189,7 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
         raise Exception("File ", envirofname , " does not exist")
 
     embfactory = pyembmod.pyemb(activefname,envirofname,'adf') #jobtype='adf' is default de facto
-    #grid_param =[50,110] # psi4 grid parameters (see Psi4 grid table)
+    grid_param =[50,110] # psi4 grid parameters (see Psi4 grid table)
     embfactory.set_options(param=pberthaopt.param, \
        gtype=pberthaopt.gtype, basis=pberthaopt.basis) 
     # several paramenters to be specified in input- e.g AUG/ADZP for ADF, aug-cc-pvdz for psi4
@@ -333,9 +333,9 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
             print("Exc     energy           = %30.15f"%(exc))
 
         if lin_emb :
-            rho = bertha.get_density_on_grid(grid)
-            density=numpy.zeros((rho.shape[0],10))
-            density[:,0] = rho
+            #rho = bertha.get_density_on_grid(grid)
+            #density=numpy.zeros((rho.shape[0],10))
+            #density[:,0] = rho
             occeigv = numpy.zeros((ndim,nocc), dtype=numpy.complex128)
 
             iocc = 0
