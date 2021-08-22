@@ -2,6 +2,7 @@ import argparse
 import os.path
 import ctypes
 import numpy
+import shutil
 import sys
 import re
 import os
@@ -20,7 +21,12 @@ berthamodpath = os.getenv("BERTHA_API_PATH", "../src")
 sys.path.insert(0, berthamodpath)
 import berthamod
 import rtutil
-import pyembmod
+import os.path
+
+from dataclasses import dataclass
+from pathlib import Path
+
+MAXIT = 100 
 
 @dataclass
 class pyberthaembedoption:
@@ -293,7 +299,7 @@ def run_iterations_from_to (startiter, niter, bertha, args, fock_mid_backwd, dt,
     for j in range(startiter, niter):
 
         sys.stdout.flush()
-
+        # here we set the embedding potential (updated at every step)
         start = time.time()
         cstart = time.process_time() 
     
@@ -521,24 +527,66 @@ def restart_run(args):
 
 def normal_run(pberthaopt,args):
 
+    import pyembmod
+    import pyberthaembed
     print("Options: ")
     print(args) 
     print("")
     print("")
 
-    if not os.path.isfile(args.wrapperso):
-        print("SO File ", args.wrapperso, " does not exist")
+    if not os.path.isfile(pberthaopt.wrapperso):
+        print("SO File ", pberthaopt.wrapperso, " does not exist")
         return False
     
 
-    ovapm, eigem, fockm, eigen = runspberthaembed (pberthaopt, restart = False, stdoutprint = True) 
+    ovapm, eigem, fockm, eigen, pot = pyberthaembed.runspberthaembed (pberthaopt, restart = False, stdoutprint = True)
+    print("CHECK")
+    print("eigem dim: %i,%i\n" % (eigem.shape[0],eigem.shape[1]))
     if ovapm is None:
         return False
 
-    bertha = berthamod.pybertha(args.wrapperso)
+    # emfactory -> embedding potential corresponding to Da
+    activefname = pberthaopt.activefile
+    if not os.path.isfile(activefname):
+        raise Exception("File ", activefname , " does not exist")
+    
+    envirofname = pberthaopt.envirofile
+    if not os.path.isfile(envirofname):
+        raise Exception("File ", envirofname , " does not exist")
+
+    embfactory = pyembmod.pyemb(activefname,envirofname,'adf') #jobtype='adf' is default de facto
+    #grid_param =[50,110] # psi4 grid parameters (see Psi4 grid table)
+    embfactory.set_options(param=pberthaopt.param, \
+       gtype=pberthaopt.gtype, basis=pberthaopt.basis) 
+    # several paramenters to be specified in input- e.g AUG/ADZP for ADF, aug-cc-pvdz for psi4
+
+    embfactory.initialize()
+    grid = embfactory.get_grid() 
+
+
+
+    bertha = berthamod.pybertha(pberthaopt.wrapperso)
+    
+    bertha.init()
+
     ndim = bertha.get_ndim()
     nshift = bertha.get_nshift()
     nocc = bertha.get_nocc()
+
+    # just an additional restart, so we can call bertha.realtime_init()
+    bertha.set_embpot_on_grid(grid, pot)
+
+    #the newly converged eigem and rho
+    ovapm, eigem, fockm, eigen = bertha.run(eigem)
+
+    rho = bertha.get_density_on_grid(grid)
+    density=numpy.zeros((rho.shape[0],10))
+    density[:,0] = rho
+
+    # the embedding potential from converged density
+    pot = embfactory.get_potential(density)
+    bertha.set_embpot_on_grid(grid, pot)
+    
     
     bertha.realtime_init()
     
@@ -551,6 +599,8 @@ def normal_run(pberthaopt,args):
     
     print("Debug: ", debug)
     print("dt : ", dt)
+    print("ndim : ", ndim)
+    print("nocc : ", nocc)
     print("Total time  : ", t_int)
     print("Number of iterations: ", niter)
     
@@ -669,33 +719,13 @@ def normal_run(pberthaopt,args):
         Da=numpy.matmul(C,numpy.matmul(Dp_init,numpy.conjugate(C.T)))
         D_0=Dp_init
     
-    # emfactory -> embedding pootential corresponding to Da
-    activefname = pberthaopt.activefile
-    if not os.path.isfile(activefname):
-        raise Exception("File ", activefname , " does not exist")
-    
-    envirofname = pberthaopt.envirofile
-    if not os.path.isfile(envirofname):
-        raise Exception("File ", envirofname , " does not exist")
-
-    embfactory = pyembmod.pyemb(activefname,envirofname,'adf') #jobtype='adf' is default de facto
-    #grid_param =[50,110] # psi4 grid parameters (see Psi4 grid table)
-    embfactory.set_options(param=pberthaopt.param, \
-       gtype=pberthaopt.gtype, basis=pberthaopt.basis) 
-    # several paramenters to be specified in input- e.g AUG/ADZP for ADF, aug-cc-pvdz for psi4
-
-    embfactory.initialize()
-    grid = embfactory.get_grid() 
-    rho = bertha.get_density_on_grid(grid)
-    density=numpy.zeros((rho.shape[0],10))
-    density[:,0] = rho
-
-    pot = embfactory.get_potential(density)
-    bertha.set_embpot_on_grid(grid, pot)
 
 
     print("Start first mo_fock_mid_forwd_eval ")
     
+    print("CHECK")
+    print("C dim : %i,%i\n" % (C.shape[0],C.shape[1]))
+    print("C^-1 dim : %i,%i\n" % (C_inv.shape[0],C_inv.shape[1]))
     fock_mid_init = rtutil.mo_fock_mid_forwd_eval(bertha,Da,fockm,0,numpy.float_(dt),\
             dip_mat,C,C_inv,ovapm,ndim, debug, fo, args.pulse, args.pulseFmax, args.pulsew, args.t0, args.pulseS, 
             args.propthresh)
@@ -908,8 +938,8 @@ def main():
    pberthaopt.verbosity = args.verbosity
    pberthaopt.thresh = args.thresh
    pberthaopt.wrapperso = args.wrapperso
-   pberthaopt.eda_nocv_info = args.eda_nocv_info
-   pberthaopt.eda_nocv_frag_file = args.eda_nocv_frag_file
+   #pberthaopt.eda_nocv_info = args.eda_nocv_info
+   #pberthaopt.eda_nocv_frag_file = args.eda_nocv_frag_file
    pberthaopt.activefile = args.geomA
    pberthaopt.envirofile = args.geomB
    pberthaopt.gtype = args.gridtype

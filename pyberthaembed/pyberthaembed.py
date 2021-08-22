@@ -23,6 +23,7 @@ class pyberthaembedoption:
     linemb: bool
     verbosity: int
     thresh: numpy.float64
+    #TODO : thresh for environ calc
     wrapperso: str
     berthamodpath: str
     eda_nocv_info: bool
@@ -31,7 +32,7 @@ class pyberthaembedoption:
     fittfile: str = "fitt2.inp"
     gtype: int = 2
     param: float = 4.0
-    basis: str = 'AUG/ADZP'
+    basis: str = 'aug-cc-pvdz'
     denistyzero: str = "density0.cube"
     density : str = "density.cube"
     drx: float = 0.1
@@ -189,7 +190,7 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
         raise Exception("File ", envirofname , " does not exist")
 
     embfactory = pyembmod.pyemb(activefname,envirofname,'adf') #jobtype='adf' is default de facto
-    grid_param =[50,110] # psi4 grid parameters (see Psi4 grid table)
+    #grid_param =[50,110] # psi4 grid parameters (see Psi4 grid table)
     embfactory.set_options(param=pberthaopt.param, \
        gtype=pberthaopt.gtype, basis=pberthaopt.basis) 
     # several paramenters to be specified in input- e.g AUG/ADZP for ADF, aug-cc-pvdz for psi4
@@ -394,7 +395,7 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
             print("E(actual)-E(prev)= ", diffE, " ... outer iteration :%i"%(out_iter +1))
             print("DE_emb(actual-new)  = %30.15f ... outer iteration :%i"%((emb_avg_in-emb_avg), (out_iter +1) ))
 
-        if ( norm_D<(1.0e-3) and diffE <(1.0e-6)):
+        if ( norm_D<(1.0e-6) and diffE <(1.0e-7)):
             iocc = 0
             for i in range(ndim):
                 if i >= nshift and iocc < nocc:
@@ -446,7 +447,7 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
         print("  ")
         sys.stdout.flush()
 
-    return ovapm, eigem, fockm, eigen 
+    return ovapm, eigem, fockm, eigen, pot 
 
 ##########################################################################################
 
