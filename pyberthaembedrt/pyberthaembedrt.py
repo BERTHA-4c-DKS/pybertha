@@ -290,7 +290,7 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
 
 ##########################################################################################
 
-def run_iterations_from_to (startiter, niter, bertha, args, fock_mid_backwd, dt, \
+def run_iterations_from_to (startiter, niter, bertha, embfactory, args, fock_mid_backwd, dt, \
         dip_mat, C, C_inv, ovapm, ndim, debug, Dp_ti, dip_list, ene_list, weight_list, \
         fo, D_ti, occlist):
 
@@ -300,6 +300,17 @@ def run_iterations_from_to (startiter, niter, bertha, args, fock_mid_backwd, dt,
 
         sys.stdout.flush()
         # here we set the embedding potential (updated at every step)
+        grid = emfactory.get_grid()
+        #bertha.get_realtime_fock has previously assigned  D_ti 
+        if args.iterative: 
+          if ( ( j % int(args.period/dt) ) == 0.0 ):
+             rho = bertha.get_density_on_grid(grid)
+             density=numpy.zeros((rho.shape[0],10))
+             density[:,0] = rho
+           
+             # the embedding potential from converged density
+             pot = embfactory.get_potential(density)
+             bertha.set_embpot_on_grid(grid, pot)
         start = time.time()
         cstart = time.process_time() 
     
@@ -448,6 +459,7 @@ def restart_run(args):
     args.pulseFmax = json_data['pulseFmax']
     args.pulsew = json_data['pulsew'] 
     args.dt = json_data['dt']
+    args.period = json_data['period']
     args.inputfile = json_data['inputfile']
     args.fittfile = json_data["fittfile"]
     args.fitcoefffile = json_data["fitcoefffile"]
@@ -519,7 +531,7 @@ def restart_run(args):
     if debug:
         fo = open("debug_info.txt", "w")
     
-    return run_iterations_from_to (jstart+1, niter, bertha, args, fock_mid_backwd, \
+    return run_iterations_from_to (jstart+1, niter, bertha, embfactory, args, fock_mid_backwd, \
             dt, dip_mat, C, C_inv, ovapm, ndim, debug, Dp_ti, dip_list, ene_list, \
             weight_list, fo, D_ti, occlist)
  
@@ -810,7 +822,7 @@ def normal_run(pberthaopt,args):
     fock_mid_backwd = numpy.copy(fock_mid_init)
     
 
-    return run_iterations_from_to (1, niter, bertha, args, fock_mid_backwd, \
+    return run_iterations_from_to (1, niter, bertha, embfactory, args, fock_mid_backwd, \
             dt, dip_mat, C, C_inv, ovapm, ndim, debug, Dp_ti, dip_list, ene_list, \
             weight_list, fo, D_ti, occlist)
     
@@ -861,6 +873,10 @@ def main():
            default=False, action="store_true")
    parser.add_argument("-m", "--dt", help="Specify dt to be used (default: 0.1)", required=False,
            default=0.1, type=numpy.float64)
+   parser.add_argument("--period", help="Time period of Vemb update during propagation",
+            default=0.1, type = float)
+   parser.add_argument("-i", "--iterative", help="Vemb is updated during propagation", required=False,
+            default=False, action="store_true")
    parser.add_argument("-T", "--totaltime", help="Specify total time (default: 1.0)", required=False,
            default=1.0, type=numpy.float64)
    parser.add_argument("--pulse", help="Specify the pulse to use [" + listpulses + "] default kick", required=False, 

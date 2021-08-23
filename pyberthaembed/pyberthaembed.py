@@ -32,7 +32,7 @@ class pyberthaembedoption:
     fittfile: str = "fitt2.inp"
     gtype: int = 2
     param: float = 4.0
-    basis: str = 'aug-cc-pvdz'
+    basis: str = 'AUG/ADZP'
     denistyzero: str = "density0.cube"
     density : str = "density.cube"
     drx: float = 0.1
