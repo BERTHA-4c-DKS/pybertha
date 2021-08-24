@@ -521,7 +521,6 @@ c          print *, "Here " , ndim, nocc
         eecoul  = efittcoul
         eexc    = excfit
 
-
         energy2 = excfit - etemp
 
         time1 = walltime ()
@@ -908,6 +907,9 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       call v_calculation(nfitt,fitcase,v)
       call factlu(nfitt,v)
 
+! Update cfit to get density on a grid
+      cfit(:) = v(:)
+      
       call jfitenergy(v,nfitt,efittcoul)
       a = 0
       excfit = 0.0
@@ -1188,12 +1190,12 @@ c      print*, 'end bertha_get_density_ongrid'
 c        write(*, '(A,F20.5,F20.5,F20.5,F20.5)'), "FORTRAN L: ", 
 c     +     grid(1,i), grid(2,i), grid(3,i), grid(4,i)
 
-      x = grid(1,i)
-      y = grid(2,i) 
-      z = grid(3,i) 
+        x = grid(1,i)
+        y = grid(2,i) 
+        z = grid(3,i) 
       
-      call  fit_dens(rho,hgf,x,y,z,cfit,nfitt,fitcase)
-        density(i) = rho 
+        call fit_dens(rho,hgf,x,y,z,cfit,nfitt,fitcase)
+        density(i) = rho * grid(4,i) 
 
       enddo
 

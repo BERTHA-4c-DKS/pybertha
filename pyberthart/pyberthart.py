@@ -233,7 +233,7 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
    
     #Energy expectation value at t = t_i_dt 
     fockm_ti_dt = bertha.get_realtime_fock(D_ti_dt.T)
-
+    
     """
     # to dump density og a grid 
     npoints = 50
@@ -267,7 +267,7 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
 
     numpy.savetxt("step_%d.txt"%(j), tosave)
     """
-     
+    
     ene_list.append(numpy.trace(numpy.matmul(D_ti_dt,fockm_ti_dt)))
     
     # update D_ti and Dp_ti for the next step
