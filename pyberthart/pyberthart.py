@@ -233,7 +233,41 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
    
     #Energy expectation value at t = t_i_dt 
     fockm_ti_dt = bertha.get_realtime_fock(D_ti_dt.T)
-   
+
+    """
+    # to dump density og a grid 
+    npoints = 50
+    grid = numpy.zeros((npoints*npoints*npoints, 4))
+    grid = numpy.ascontiguousarray(grid, dtype=numpy.double)
+    
+    dstep = 0.2
+    w = 1.0
+    idx = 0
+
+    x = 8.0
+    for ix in range(npoints):
+        y = 4.0
+        for iy in range(npoints):
+            z = -4.0
+            for iz in range(npoints):
+                grid[idx,0] = x
+                grid[idx,1] = y
+                grid[idx,2] = z
+                grid[idx,3] = w
+
+                idx += 1
+
+                z += dstep
+            y += dstep
+        x += dstep
+
+    density = bertha.get_density_on_grid(grid)
+
+    tosave = numpy.column_stack((grid, density))
+
+    numpy.savetxt("step_%d.txt"%(j), tosave)
+    """
+     
     ene_list.append(numpy.trace(numpy.matmul(D_ti_dt,fockm_ti_dt)))
     
     # update D_ti and Dp_ti for the next step
