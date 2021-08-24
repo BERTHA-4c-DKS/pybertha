@@ -909,7 +909,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 ! Update cfit to get density on a grid
       cfit(:) = v(:)
-      
+
       call jfitenergy(v,nfitt,efittcoul)
       a = 0
       excfit = 0.0
@@ -1195,8 +1195,9 @@ c     +     grid(1,i), grid(2,i), grid(3,i), grid(4,i)
         z = grid(3,i) 
       
         call fit_dens(rho,hgf,x,y,z,cfit,nfitt,fitcase)
-        density(i) = rho * grid(4,i) 
-
+c     do we need to multiply by the Weight ?
+c        density(i) = rho * grid(4,i) 
+        density(i) = rho
       enddo
 
 c      print*, 'Tot number el.', dot_product(density(:),grid(4,:))     
