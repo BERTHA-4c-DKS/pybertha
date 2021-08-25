@@ -23,11 +23,11 @@ class pyberthaembedoption:
     linemb: bool
     verbosity: int
     thresh: numpy.float64
-    #TODO : thresh for environ calc
     wrapperso: str
     berthamodpath: str
     eda_nocv_info: bool
     eda_nocv_frag_file: str
+    thresh_conv: numpy.float64 = 1.0e-8
     inputfile: str = "input.inp"
     fittfile: str = "fitt2.inp"
     gtype: int = 2
@@ -193,6 +193,7 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
     #grid_param =[50,110] # psi4 grid parameters (see Psi4 grid table)
     embfactory.set_options(param=pberthaopt.param, \
        gtype=pberthaopt.gtype, basis=pberthaopt.basis) 
+    embfactory.set_thresh_conv(pberthaopt.thresh_conv)
     # several paramenters to be specified in input- e.g AUG/ADZP for ADF, aug-cc-pvdz for psi4
    
     if stdoutprint:
@@ -467,6 +468,8 @@ if __name__ == "__main__":
             type=str, default="geomA.xyz")
     parser.add_argument("-gB","--geomB", help="Specify frozen system (Angstrom) geometry (default: geomB.xyz)", required=False, 
             type=str, default="geomB.xyz")
+    parser.add_argument("--embthresh", help="set EMB threshold (default = 1.0e-8)", required=False, 
+            type=numpy.float64, default=1.0e-8)
 
     parser.add_argument("-c","--fitcoefffile", help="Specify BERTHA fitcoeff output file (default: fitcoeff.txt)",
             required=False, type=str, default="fitcoeff.txt")
@@ -482,7 +485,7 @@ if __name__ == "__main__":
             default=False, action="store_true")
     parser.add_argument("-v", "--verbosity", help="Verbosity level 0 = minim, -1 = print iteration info, " + 
             "1 = maximum (defaul -1)", required=False, default=-1, type=int)
-    parser.add_argument("--thresh", help="det threshold (default = 1.0e-11)", required=False, 
+    parser.add_argument("--thresh", help="set bertha threshold (default = 1.0e-11)", required=False, 
             type=numpy.float64, default=1.0e-11)
     parser.add_argument("--wrapperso", help="set wrapper SO (default = ../../lib/bertha_wrapper.so)", 
             required=False, type=str, default="../lib/bertha_wrapper.so")
@@ -507,6 +510,9 @@ if __name__ == "__main__":
         type=str, default="BLYP")
     parser.add_argument("--berthamodpaths", help="set berthamod and all other modules path [\"path1;path2;...\"] (default = ../src)", 
         required=False, type=str, default="../src")
+    parser.add_argument("--berthamaxit", help="set bertha maxiterations (default = %d)"%(MAXIT), 
+        required=False, type=int, default=MAXIT)
+
 
     parser.add_argument("--restart", help="Force restart from a previous initial single-point",
         required=False, action="store_true", default=False)
@@ -530,7 +536,7 @@ if __name__ == "__main__":
     pygenoption_fraga.basisset = args.basisset
     pygenoption_fraga.functxc = args.functxc
     pygenoption_fraga.convertlengthunit = args.convertlengthunit
-    pygenoption_fraga.maxit = MAXIT
+    pygenoption_fraga.maxit = args.berthamaxit
 
     for filename in ["input.inp", "fitt2.inp"]:
       try:
@@ -556,5 +562,6 @@ if __name__ == "__main__":
     pberthaopt.activefile = args.geomA
     pberthaopt.envirofile = args.geomB
     pberthaopt.gtype = args.gridtype
+    pberthaopt.thresh_conv = args.embthresh
 
     runspberthaembed (pberthaopt, args.restart)
