@@ -272,6 +272,7 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
     #if lin_emb=True, a single scf is performed at constant Vemb
     maxiter = 10 
     Dold = Da0 
+    Da = Da0
     Eold = etotal
     lin_emb = pberthaopt.linemb
 
@@ -353,6 +354,14 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
             
             bertha.density_to_cube(Da.T, pberthaopt.density, drx=pberthaopt.drx, \
               dry=pberthaopt.dry, drz=pberthaopt.drz, margin=pberthaopt.margin)
+
+            bertha.realtime_init()
+
+            normalise = 1
+
+            dipx_mat, dipy_mat, dipz_mat = \
+              bertha.get_realtime_dipolematrix (0, normalise)
+
             bertha.finalize()
             break
 
