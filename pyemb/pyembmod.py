@@ -169,7 +169,7 @@ class GridDensityFactory():
       return rho
 
   def from_D(self,D,ovap): # to be tested
-      temp=numpy.matmul(ovap,np.matmul(D.real,ovap))
+      temp=numpy.matmul(ovap,numpy.matmul(D.real,ovap))
       try:
         eigvals,eigvecs=scipy.linalg.eigh(temp,ovap,eigvals_only=False)
       except scipy.linalg.LinAlgError:
@@ -254,7 +254,8 @@ class pyemb:
         if not isinstance(gtype, int):
             raise TypeError("input must be an integer")
 
-        if gtype <= 0 or gtype > 3:
+        #if gtype <= 0 or gtype > 3:
+        if  gtype > 3:
             raise TypeError("input must be an integer i : 0 <= i <= 3")
 
         self.__grid_type = gtype
@@ -431,7 +432,7 @@ class pyemb:
             if len(self.__acc_int) != 2  :
                raise PyEmbError ("input must be a list (radial and spherical points) ")
 
-            if self.__grid_type <= 1 or self.__grid_type > 3:
+            if self.__grid_type == 1 or self.__grid_type > 3:
               raise TypeError("gridtype must be 2 or 3 if jobtype is " + self.__jobtype)
 
             if not isinstance (self.__acc_int, list):
@@ -478,19 +479,39 @@ class pyemb:
                mol_obj=psi4.geometry(tot.geom_str())
             elif self.__grid_type == 3:
                mol_obj=psi4.geometry(m_active.geom_str())
+            elif self.__grid_type == -99:
+               print("Grid from extern file\n")
+               
 
             else:
                raise PyEmbError ("incompatible grid type")
 
-            basis_dummy = psi4.core.BasisSet.build(mol_obj, "ORBITAL", self.__basis_frzn)
-            
-            sup = build_superfunctional(self.__enviro_func, True)[0]
-            
-            Vpot = psi4.core.VBase.build(basis_dummy, sup, "RV")
-            Vpot.initialize()
-            
-            x, y, z, w = Vpot.get_np_xyzw()
-            Vpot.finalize()
+            if self.__grid_type == -99:
+               idx = 0
+               with open("grid.txt","r") as fgrid:
+                nlines = int(next(fgrid))
+                gridbin = numpy.zeros((nlines,4),dtype=numpy.float_)
+                for line in fgrid:
+                 raw = line.split()
+                 gridbin[idx,:]=raw
+                 idx += 1
+
+               fgrid.close() 
+               x = gridbin[:,0]
+               y = gridbin[:,1]
+               z = gridbin[:,2]
+               w = gridbin[:,3]
+
+            else:
+               basis_dummy = psi4.core.BasisSet.build(mol_obj, "ORBITAL", self.__basis_frzn)
+               
+               sup = build_superfunctional(self.__enviro_func, True)[0]
+               
+               Vpot = psi4.core.VBase.build(basis_dummy, sup, "RV")
+               Vpot.initialize()
+               
+               x, y, z, w = Vpot.get_np_xyzw()
+               Vpot.finalize()
           
             points = numpy.zeros((x.shape[0],4)) #dtype?
             points[: ,0] = x

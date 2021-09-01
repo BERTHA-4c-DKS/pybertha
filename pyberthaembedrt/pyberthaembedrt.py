@@ -39,11 +39,12 @@ class pyberthaembedoption:
     debug: bool
     linemb: bool
     verbosity: int
-    thresh: numpy.float64
     wrapperso: str
     berthamodpath: str
     eda_nocv_info: bool
     eda_nocv_frag_file: str
+    thresh: numpy.float64
+    thresh_conv: numpy.float64 = 1.0e-8
     inputfile: str = "input.inp"
     fittfile: str = "fitt2.inp"
     gtype: int = 2
@@ -300,7 +301,7 @@ def run_iterations_from_to (startiter, niter, bertha, embfactory, args, fock_mid
 
         sys.stdout.flush()
         # here we set the embedding potential (updated at every step)
-        grid = emfactory.get_grid()
+        grid = embfactory.get_grid()
         #bertha.get_realtime_fock has previously assigned  D_ti 
         if args.iterative: 
           if ( ( j % int(args.period/dt) ) == 0.0 ):
@@ -568,6 +569,7 @@ def normal_run(pberthaopt,args):
 
     embfactory = pyembmod.pyemb(activefname,envirofname,'adf') #jobtype='adf' is default de facto
     #grid_param =[50,110] # psi4 grid parameters (see Psi4 grid table)
+    #embfactory.set_options(param=grid_param, \
     embfactory.set_options(param=pberthaopt.param, \
        gtype=pberthaopt.gtype, basis=pberthaopt.basis) 
     # several paramenters to be specified in input- e.g AUG/ADZP for ADF, aug-cc-pvdz for psi4
@@ -841,6 +843,8 @@ def main():
            type=str, default="geomA.xyz")
    parser.add_argument("-gB","--geomB", help="Specify frozen system (Angstrom) geometry (default: geomB.xyz)", required=False, 
            type=str, default="geomB.xyz")
+   parser.add_argument("--embthresh", help="set EMB threshold (default = 1.0e-8)", required=False, 
+            type=numpy.float64, default=1.0e-8)
    parser.add_argument("-l", "--linemb", help="Linearized embedding on: the outer loop is skipped", required=False, 
            default=False, action="store_true")
    parser.add_argument("--gridtype", help="set gridtype (default: 2)",
@@ -953,6 +957,7 @@ def main():
    pberthaopt.linemb = args.linemb
    pberthaopt.verbosity = args.verbosity
    pberthaopt.thresh = args.thresh
+   pberthaopt.thresh_conv = args.embthresh
    pberthaopt.wrapperso = args.wrapperso
    #pberthaopt.eda_nocv_info = args.eda_nocv_info
    #pberthaopt.eda_nocv_frag_file = args.eda_nocv_frag_file

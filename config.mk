@@ -24,7 +24,7 @@ LIBXC=no
 # export OMP_NUM_THREADS=4
 USEOPENMP=no
 
-BERTHAROOT=/home/redo/Sources/BERTHA/bertha_ng
+BERTHAROOT=/home/matteod/bertha_ng
 
 ###
 ## NO BLUEGENE
