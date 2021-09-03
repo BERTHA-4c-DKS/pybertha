@@ -192,7 +192,6 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
     embfactory = pyembmod.pyemb(activefname,envirofname,'adf') #jobtype='adf' is default de facto
     #grid_param =[50,110] # psi4 grid parameters (see Psi4 grid table)
     embfactory.set_options(param=pberthaopt.param, \
-    embfactory.set_options(param=grid_param, \
        gtype=pberthaopt.gtype, basis=pberthaopt.basis) 
     embfactory.set_thresh_conv(pberthaopt.thresh_conv)
     # several paramenters to be specified in input- e.g AUG/ADZP for ADF, aug-cc-pvdz for psi4
