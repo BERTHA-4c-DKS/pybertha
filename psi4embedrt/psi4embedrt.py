@@ -257,9 +257,13 @@ def build_orbitals(diag):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    
+    parser.add_argument("-gA","--geom_act", help="Specify geometry file for active subsystem", required=True, 
+            type=str, default="geomA.xyz")
+    parser.add_argument("-gB","--geom_env", help="Specify geometry file for environment", required=True, 
+            type=str, default="geomB.xyz")
     parser.add_argument("-d", "--debug", help="Debug on, prints debug info to err.txt", required=False,
             default=False, action="store_true")
+            
     parser.add_argument("-f", "--fde", help="FDE on", required=False,
             default=False, action="store_true")
     parser.add_argument("-fcorr", "--fdecorr", help="FDE long range correction on", required=False,
@@ -272,10 +276,7 @@ if __name__ == "__main__":
             default=2, type = int)
     parser.add_argument("-p", "--period", help="Time period of Vemb update during propagation",
             default=0.1, type = float)
-    parser.add_argument("-g1","--geom_act", help="Specify geometry file for active subsystem", required=True, 
-            type=str, default="geom1.xyz")
-    parser.add_argument("-g2","--geom_env", help="Specify geometry file for environment", required=True, 
-            type=str, default="geom2.xyz")
+
     parser.add_argument("-w","--wkd", help="Specify the working dir", required=False, 
             type=str, default="./")
     parser.add_argument("-o","--obs", help="Specify the orbital basis set", required=False, 
