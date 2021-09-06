@@ -469,7 +469,7 @@ if __name__ == "__main__":
     t.join()
     finalize_stdout_redirect(psioufname)
 
-    if args.fde:
+    if not args.nofde:
       #build phi, the matrix containing the values of basis set on grid
       print("Building phi matrix")
 
