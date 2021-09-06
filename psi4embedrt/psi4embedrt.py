@@ -161,7 +161,7 @@ def scfiterations (args, maxiter, jk, H, Cocc, func, wfn, D, vemb, E, Eold, \
                 raise Exception("Maximum number of SCF cycles exceeded.\n")
             #end inner loop
         
-        if ( ((not args.nosscf) and (OUT_ITER > 1)) and args.fde ) :
+        if ( ((not args.nosscf) and (OUT_ITER > 1)) and (not args.fde) ) :
              
              diffv= vemb_in - vemb.np
              diffD= D.np-D_in
@@ -883,7 +883,7 @@ if __name__ == "__main__":
     # get a new vemb matrix
     #
     #get new density and elpot
-    if args.fde:
+    if not args.nofde:
       print("Start calculation of vemb(D_pol) starts")
       start=time.time()
       cstart =time.process_time()
@@ -1041,7 +1041,7 @@ if __name__ == "__main__":
 
     for j in range(1,niter+1):
         # now we have to update vemb :(
-        if (args.fde and args.iterative):
+        if ((not args.fde) and args.iterative):
           if ( ( j % int(args.period/dt) ) == 0.0 ):
             start_fde = time.time()
             cstart_fde = time.process_time()
