@@ -4,17 +4,17 @@ import time
 import shutil
 import os.path
 
-sys.path.append("/home/matteod/build/xcfun/build/lib/python")
+#sys.path.append("/home/matteod/build/xcfun/build/lib/python")
 #sys.path.append("/home/matteod/psi4conda/lib/python3.7")
-sys.path.append("/home/matteod/pybertha/psi4rt")
-sys.path.append("/home/matteod/pybertha/src")
-sys.path.append("/home/matteod/build/pyadf/src")
+#sys.path.append("/home/matteod/pybertha/psi4rt")
+#sys.path.append("/home/matteod/pybertha/src")
+#sys.path.append("/home/matteod/build/pyadf/src")
 
 #os.environ['PSIPATH']="/home/redo/BERTHAEmb/psi4conda/share/psi4/basis"
-os.environ['PYBERTHAROOT'] = "/home/matteod/pybertha/"
-os.environ['RTHOME'] = "/home/matteod/pybertha/psi4rt"
-sys.path.append(os.environ['PYBERTHAROOT']+"/src")
-sys.path.append(os.environ['RTHOME'])
+#os.environ['PYBERTHAROOT'] = "/home/matteod/pybertha/"
+#os.environ['RTHOME'] = "/home/matteod/pybertha/psi4rt"
+#sys.path.append(os.environ['PYBERTHAROOT']+"/src")
+#sys.path.append(os.environ['RTHOME'])
 #sys.path.append(os.environ['PSIPATH'])
 
 import psi4
@@ -263,7 +263,9 @@ if __name__ == "__main__":
             type=str, default="geomB.xyz")
     parser.add_argument("-d", "--debug", help="Debug on, prints debug info to err.txt", required=False,
             default=False, action="store_true")
-            
+    parser.add_argument("--modpaths", help="set berthamod and all other modules path [\"path1;path2;...\"] (default = ../src)", 
+            required=False, type=str, default="../src")
+
     parser.add_argument("-f", "--fde", help="FDE on", required=False,
             default=False, action="store_true")
     parser.add_argument("-fcorr", "--fdecorr", help="FDE long range correction on", required=False,
@@ -296,6 +298,14 @@ if __name__ == "__main__":
     #more option to be added
     
     args = parser.parse_args() #temporary
+
+    for path in args.modpaths.split(";"):
+        sys.path.append(path)
+
+    berthamodpaths = os.environ.get('PYBERTHA_MOD_PATH')
+
+    for path in berthamodpaths.split(";"):
+        sys.path.append(path)
 
     Dir = args.axis
     basis_set = args.obs
