@@ -88,6 +88,9 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
     
     dumpfiles = int(pberthaopt.dumpfiles)
 
+    static_field = pberthaopt.static_field
+    fmax = pberthaopt.fmax 
+    fdir = pberthaopt.fdir
     eigem = None
     rho = None
     Da0 = None
@@ -504,9 +507,9 @@ if __name__ == "__main__":
             required=False, type=str, default="info_eda_nocv_fragX.json")
     parser.add_argument("--gridtype", help="set gridtype (default: 2)",
             required=False, type=int, default=2)
-    parser.add_argument("--static_field", help="Add a static field to the SCF", required=False, 
+    parser.add_argument("--static_field", help="Add a static field to the SCF (default : False)", required=False, 
             default=False, action="store_true")
-    parser.add_argument("--fmax", help="Static field amplitude", required=False, 
+    parser.add_argument("--fmax", help="Static field amplitude (default : 1.0e-5)", required=False, 
             type=numpy.float64, default=1.0e-5)
     parser.add_argument("--fdir", help="External field direction (cartesian)  (default: 2)",
             required=False, type=int, default=2)
