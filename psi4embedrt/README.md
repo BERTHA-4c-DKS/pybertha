@@ -40,7 +40,11 @@ $ git clone git@gitlab.pyadf.org:loriano.storchi/pyadf.gi
 export PYBERTHA_MOD_PATH="/home/redo/BERTHA/pybertha/pyemb;/home/redo/BERTHA/xcfun/build/lib/python;/home/re
 do/BERTHA/pybertha/src;/home/redo/BERTHA/pyadf/src;/home/redo/BERTHA/berthaingen/pybgen;/home/redo/BERTHA/pybertha/psi4rt;/home/redo/BERTHA/pybertha/psi4rt"
 
-python psi4embedrt.py -gA H2O.xyz  -gB environment_cut2.xyz  -d --grid_opts 2 -a 2 --acc_int 4.0 -i -f --sscf
+python psi4embedrt.py -gA H2O.xyz  -gB environment_cut2.xyz  -d --grid_opts 2 -a 2 --acc_int 4.0 -i 
+
+# no realtime:
+
+python3 psi4embedrt.py -gA H2O.xyz -gB NH3.xyz  --jumprt
 
 
 

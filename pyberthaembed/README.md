@@ -3,7 +3,7 @@ conda activate p4env_oldversion
 
 
 python3 pyberthaembed.py -gA H2O.xyz -gB NH3.xyz  \
-  --berthamodpaths="/home/redo/BERTHA/pybertha/pyemb;/home/redo/BERTHA/xcfun/build/lib/python;/home/redo/BERTHA/pybertha/src;/home/redo/BERTHA/pyadf/src;/home/redo/BERTHA/berthaingen/pybgen;/home/redo/BERTHA/pybertha/psi4rt" \
+  --modpaths="/home/redo/BERTHA/pybertha/pyemb;/home/redo/BERTHA/xcfun/build/lib/python;/home/redo/BERTHA/pybertha/src;/home/redo/BERTHA/pyadf/src;/home/redo/BERTHA/berthaingen/pybgen;/home/redo/BERTHA/pybertha/psi4rt" \
   "H:aux4,N:aux4,O:aux4" -b "H:aug-cc-pvdz,O:aug-cc-pvdz,N:aug-cc-pvdz" --convertlengthunit=1.8897259886
 
 can use also PYBERTHA_MOD_PATH env variable to specify all PATHS:
