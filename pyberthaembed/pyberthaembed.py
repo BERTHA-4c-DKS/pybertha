@@ -485,6 +485,8 @@ if __name__ == "__main__":
             type=numpy.float64, default=1.0e-8)
     parser.add_argument("-d", "--debug", help="Debug on, prints debug info to debug_info.txt", required=False, 
             default=False, action="store_true")
+    parser.add_argument("--modpaths", help="set berthamod and all other modules path [\"path1;path2;...\"] (default = ../src)", 
+        required=False, type=str, default="../src")
 
     parser.add_argument("-c","--fitcoefffile", help="Specify BERTHA fitcoeff output file (default: fitcoeff.txt)",
             required=False, type=str, default="fitcoeff.txt")
@@ -527,8 +529,7 @@ if __name__ == "__main__":
         type=float, default=1.0)
     parser.add_argument("--functxc", help="EX-POTENTIAL available: LDA,B88P86,HCTH93,BLYP (default=BLYP)", \
         type=str, default="BLYP")
-    parser.add_argument("--berthamodpaths", help="set berthamod and all other modules path [\"path1;path2;...\"] (default = ../src)", 
-        required=False, type=str, default="../src")
+
     parser.add_argument("--berthamaxit", help="set bertha maxiterations (default = %d)"%(MAXIT), 
         required=False, type=int, default=MAXIT)
 
@@ -537,12 +538,12 @@ if __name__ == "__main__":
     
     args = parser.parse_args()
   
-    for path in args.berthamodpaths.split(";"):
+    for path in args.modpaths.split(";"):
         sys.path.append(path)
 
-    berthamodpaths = os.environ.get('PYBERTHA_MOD_PATH')
+    modpaths = os.environ.get('PYBERTHA_MOD_PATH')
 
-    for path in berthamodpaths.split(";"):
+    for path in modpaths.split(";"):
         sys.path.append(path)
 
     for resdir in ["./resultfiles", "./jobtempdir"]:
