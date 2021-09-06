@@ -161,7 +161,7 @@ def scfiterations (args, maxiter, jk, H, Cocc, func, wfn, D, vemb, E, Eold, \
                 raise Exception("Maximum number of SCF cycles exceeded.\n")
             #end inner loop
         
-        if ( (args.sscf and (OUT_ITER > 1)) and args.fde ) :
+        if ( ((not args.nosscf) and (OUT_ITER > 1)) and args.fde ) :
              
              diffv= vemb_in - vemb.np
              diffD= D.np-D_in
@@ -173,7 +173,7 @@ def scfiterations (args, maxiter, jk, H, Cocc, func, wfn, D, vemb, E, Eold, \
                 print("norm_D : %.12f\n" % norm_D)
                 print("norm_v : %.12f\n" % norm_v)
 
-        if ( args.sscf and args.fde ):
+        if ( (not args.nosscf) and (not args.nofde) ):
             # calc new emb potential
      
             # Here the calculation of vemb(D_inner) starts
@@ -265,20 +265,20 @@ if __name__ == "__main__":
     parser.add_argument("--jumprt", help="jump the RT ropagation", 
             required=False, action="store_true", default=False)
 
+    parser.add_argument("-f", "--nofde", help="FDE off", required=False,
+            default=True, action="store_false")
+    parser.add_argument("--nosscf", help="No SplitSCF for ground state FDE on", required=False,
+            default=True, action="store_false")
 
-    parser.add_argument("-f", "--fde", help="FDE on", required=False,
-            default=False, action="store_true")
     parser.add_argument("-fcorr", "--fdecorr", help="FDE long range correction on", required=False,
-            default=False, action="store_true")
-    parser.add_argument("--sscf", help="SplitSCF for ground state FDE on", required=False,
             default=False, action="store_true")
     parser.add_argument("-i", "--iterative", help="Vemb is updated during propagation", required=False,
             default=False, action="store_true")
+ 
     parser.add_argument("-a", "--axis", help="The axis of  electric field direction (x = 0, y = 1, z = 2, default 2)",
             default=2, type = int)
     parser.add_argument("-p", "--period", help="Time period of Vemb update during propagation",
             default=0.1, type = float)
-
     parser.add_argument("-w","--wkd", help="Specify the working dir", required=False, 
             type=str, default="./")
     parser.add_argument("-o","--obs", help="Specify the orbital basis set", required=False, 
@@ -331,7 +331,7 @@ if __name__ == "__main__":
     adfoufname = "./adf.out"
     psioufname = "./psi4.out"
 
-    if args.fde:
+    if not args.nofde:
     
       ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
       #ADF part
@@ -617,7 +617,7 @@ if __name__ == "__main__":
     # Set tolerances
     maxiter = 200
     E_conv = 1.0E-8
-    if args.sscf:
+    if not args.nosscf:
       D_conv = 1.0E-8
     else :
       D_conv = 1.0E-12
@@ -856,9 +856,9 @@ if __name__ == "__main__":
     
     #rt summary 
     fo  = open("err.txt", "w")
-    fo.write("total time :  %5.2f \ndt : %.3f \nFmax : %.8f\nFDE : %s\nSplit_scf : %s\nVemb update : %s\n\
+    fo.write("total time :  %5.2f \ndt : %.3f \nFmax : %.8f\nnoFDE : %s\nno Split_scf : %s\nVemb update : %s\n\
       period : %5.2f\n" % (time_int,dt,imp_opts['Fmax'],\
-      args.fde, args.sscf,args.iterative,args.period))
+      args.nofde, args.nosscf, args.iterative,args.period))
     #
     ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
     # analytic pertubation goes here
