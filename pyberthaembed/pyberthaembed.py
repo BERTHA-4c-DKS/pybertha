@@ -33,6 +33,9 @@ class pyberthaembedoption:
     gtype: int = 2
     param: float = 4.0
     basis: str = 'AUG/ADZP'
+    static_field : bool = False
+    fmax : numpy.float64 = 1.0e-5
+    fdir: int = 2
     denistyzero: str = "density0.cube"
     density : str = "density.cube"
     drx: float = 0.1
@@ -214,7 +217,10 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
     density=numpy.zeros((rho.shape[0],10))
     density[:,0] = rho
 
-    pot = embfactory.get_potential(density)    
+    pot = embfactory.get_potential(density) 
+    if static_field:
+      fpot=grid[:,fdir]*fmax 
+      pot += fpot
 
     if not restart:
 
@@ -499,6 +505,12 @@ if __name__ == "__main__":
             required=False, type=str, default="info_eda_nocv_fragX.json")
     parser.add_argument("--gridtype", help="set gridtype (default: 2)",
             required=False, type=int, default=2)
+    parser.add_argument("--static_field", help="Add a static field to the SCF", required=False, 
+            default=False, action="store_true")
+    parser.add_argument("--fmax", help="Static field amplitude", required=False, 
+            type=numpy.float64, default=1.0e-5)
+    parser.add_argument("--fdir", help="External field direction (cartesian)  (default: 2)",
+            required=False, type=int, default=2)
 
     parser.add_argument("-j","--jsonbasisfile", \
         help="Specify BERTHA JSON file for fitting and basis (default: fullsets.json)", \
@@ -561,6 +573,9 @@ if __name__ == "__main__":
     pberthaopt.linemb = args.linemb
     pberthaopt.verbosity = args.verbosity
     pberthaopt.thresh = args.thresh
+    pberthaopt.static_field = args.static_field
+    pberthaopt.fmax = args.fmax
+    pberthaopt.fdir = args.fdir
     pberthaopt.wrapperso = args.wrapperso
     pberthaopt.eda_nocv_info = args.eda_nocv_info
     pberthaopt.eda_nocv_frag_file = args.eda_nocv_frag_file
