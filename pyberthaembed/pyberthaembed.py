@@ -31,7 +31,7 @@ class pyberthaembedoption:
     inputfile: str = "input.inp"
     fittfile: str = "fitt2.inp"
     gtype: int = 2
-    param: float = 4.0
+    param: float = 10.0
     basis: str = 'AUG/ADZP'
     static_field : bool = False
     fmax : numpy.float64 = 1.0e-5
@@ -220,9 +220,10 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
     density[:,0] = rho
 
     pot = embfactory.get_potential(density) 
+    #DEBUG
+    #pot=numpy.zeros(rho.shape[0])
     if static_field:
       fpot=grid[:,fdir]*fmax 
-      pot += fpot
 
     if not restart:
 
@@ -280,7 +281,7 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
         print("unperturbed Dip z    ",dipz_ref)
     
     #if lin_emb=True, a single scf is performed at constant Vemb
-    maxiter = 10 
+    maxiter = 10
     Dold = Da0 
     Da = Da0
     Eold = etotal
@@ -315,7 +316,10 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
         nopen = bertha.get_nopen()
         
         # run with Vemb included
-        bertha.set_embpot_on_grid(grid, pot)
+        if static_field:
+           bertha.set_embpot_on_grid(grid, pot+fpot)
+        else:
+           bertha.set_embpot_on_grid(grid, pot)
         
         ovapm, eigem, fockm, eigen = bertha.run(eigem)
         etotal2 = bertha.get_etotal()
@@ -375,9 +379,9 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
             bertha.finalize()
             break
 
-        if out_iter == maxiter:
-            bertha.finalize()
-            raise Exception("Maximum number of SCF cycles exceeded.\n")
+        #if out_iter == (maxiter - 1):
+        #    bertha.finalize()
+        #    raise Exception("Maximum number of SCF cycles reached.\n")
 
         # calculate the embedding potential corresponding to the new density
 
@@ -385,7 +389,9 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
         density=numpy.zeros((rho.shape[0],10))
         density[:,0] = rho
        
-        pot = embfactory.get_potential(density) 
+        pot = embfactory.get_potential(density)
+        #DEBUG
+        #pot=numpy.zeros_like(rho)
    
         # the avg associated to new  embed pot
         emb_avg = numpy.dot(density[:,0]*grid[:,3],pot)
