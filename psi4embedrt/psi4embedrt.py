@@ -4,24 +4,21 @@ import time
 import shutil
 import os.path
 
-sys.path.append("/home/matteod/build/xcfun/build/lib/python")
+#sys.path.append("/home/matteod/build/xcfun/build/lib/python")
 #sys.path.append("/home/matteod/psi4conda/lib/python3.7")
-sys.path.append("/home/matteod/pybertha/psi4rt")
-sys.path.append("/home/matteod/pybertha/src")
-sys.path.append("/home/matteod/build/pyadf/src")
+#sys.path.append("/home/matteod/pybertha/psi4rt")
+#sys.path.append("/home/matteod/pybertha/src")
+#sys.path.append("/home/matteod/build/pyadf/src")
 
 #os.environ['PSIPATH']="/home/redo/BERTHAEmb/psi4conda/share/psi4/basis"
-os.environ['PYBERTHAROOT'] = "/home/matteod/pybertha/"
-os.environ['RTHOME'] = "/home/matteod/pybertha/psi4rt"
-sys.path.append(os.environ['PYBERTHAROOT']+"/src")
-sys.path.append(os.environ['RTHOME'])
+#os.environ['PYBERTHAROOT'] = "/home/matteod/pybertha/"
+#os.environ['RTHOME'] = "/home/matteod/pybertha/psi4rt"
+#sys.path.append(os.environ['PYBERTHAROOT']+"/src")
+#sys.path.append(os.environ['RTHOME'])
 #sys.path.append(os.environ['PSIPATH'])
 
 import psi4
-import util
-import rtutil
 import numpy as np
-import fde_util
 import argparse
 
 import io
@@ -257,9 +254,18 @@ def build_orbitals(diag):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    
+    parser.add_argument("-gA","--geom_act", help="Specify geometry file for active subsystem", required=True, 
+            type=str, default="geomA.xyz")
+    parser.add_argument("-gB","--geom_env", help="Specify geometry file for environment", required=True, 
+            type=str, default="geomB.xyz")
     parser.add_argument("-d", "--debug", help="Debug on, prints debug info to err.txt", required=False,
             default=False, action="store_true")
+    parser.add_argument("--modpaths", help="set berthamod and all other modules path [\"path1;path2;...\"] (default = ../src)", 
+            required=False, type=str, default="../src")
+    parser.add_argument("--jumprt", help="jump the RT ropagation", 
+            required=False, action="store_true", default=False)
+
+
     parser.add_argument("-f", "--fde", help="FDE on", required=False,
             default=False, action="store_true")
     parser.add_argument("-fcorr", "--fdecorr", help="FDE long range correction on", required=False,
@@ -272,10 +278,7 @@ if __name__ == "__main__":
             default=2, type = int)
     parser.add_argument("-p", "--period", help="Time period of Vemb update during propagation",
             default=0.1, type = float)
-    parser.add_argument("-g1","--geom_act", help="Specify geometry file for active subsystem", required=True, 
-            type=str, default="geom1.xyz")
-    parser.add_argument("-g2","--geom_env", help="Specify geometry file for environment", required=True, 
-            type=str, default="geom2.xyz")
+
     parser.add_argument("-w","--wkd", help="Specify the working dir", required=False, 
             type=str, default="./")
     parser.add_argument("-o","--obs", help="Specify the orbital basis set", required=False, 
@@ -295,6 +298,18 @@ if __name__ == "__main__":
     #more option to be added
     
     args = parser.parse_args() #temporary
+
+    for path in args.modpaths.split(";"):
+        sys.path.append(path)
+
+    modpaths = os.environ.get('PYBERTHA_MOD_PATH')
+
+    for path in modpaths.split(";"):
+        sys.path.append(path)
+
+    import util
+    import rtutil
+    import fde_util
 
     Dir = args.axis
     basis_set = args.obs
@@ -387,7 +402,8 @@ if __name__ == "__main__":
             adf_settings.set_functional("BLYP")
             frags = [ pyadf.fragment(None,  [m_active]),
                     pyadf.fragment(r_isolated_enviro, [m_enviro], isfrozen=True) ]
-            fde_res = pyadf.adffragmentsjob(frags, basis="AUG/ADZP", settings=adf_settings, fde=fde_act_opts, options=['NOSYMFIT\n EXCITATIONS\n  ONLYSING\n  LOWEST 2\nEND'])
+            fde_res = pyadf.adffragmentsjob(frags, basis="AUG/ADZP", settings=adf_settings, \
+		fde=fde_act_opts, options=['NOSYMFIT\n EXCITATIONS\n  ONLYSING\n  LOWEST 2\nEND'])
             fde_res=fde_res.run()
             agrid = pyadf.adfgrid(fde_res)
         
@@ -730,6 +746,9 @@ if __name__ == "__main__":
     t.join()
     finalize_stdout_redirect(psioufname)
     print("PSI4 out  " + psioufname)
+
+    if (args.jumprt):
+      exit()
 
     # check of D and Cocc
     ovap = np.array(S)

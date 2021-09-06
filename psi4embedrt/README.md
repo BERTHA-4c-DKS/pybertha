@@ -37,34 +37,10 @@ $ git clone git@gitlab.pyadf.org:loriano.storchi/pyadf.gi
 
 # need to edit the source psi4embedrt.py to specify some env variables, like the following:
 
-sys.path.append("/home/redo/BERTHAEmb/xcfun/build/lib64/python")
-sys.path.append("/home/redo/BERTHAEmb/psi4conda/lib/python3.7")
-sys.path.append("/home/redo/BERTHAEmb/pybertha/psi4rt")
-sys.path.append("/home/redo/BERTHAEmb/pybertha/src")
-sys.path.append("/home/redo/BERTHAEmb/pyadf/src")
+export PYBERTHA_MOD_PATH="/home/redo/BERTHA/pybertha/pyemb;/home/redo/BERTHA/xcfun/build/lib/python;/home/re
+do/BERTHA/pybertha/src;/home/redo/BERTHA/pyadf/src;/home/redo/BERTHA/berthaingen/pybgen;/home/redo/BERTHA/pybertha/psi4rt;/home/redo/BERTHA/pybertha/psi4rt"
 
-...
-
-os.environ['PSIPATH']="/home/redo/BERTHAEmb/psi4conda/share/psi4/basis"
-os.environ['PYBERTHAROOT'] = "/home/redo/BERTHAEmb/pybertha/"
-os.environ['RTHOME'] = "/home/redo/BERTHAEmb/pybertha/psi4rt"
-sys.path.append(os.environ['PYBERTHAROOT']+"/src")
-sys.path.append(os.environ['RTHOME'])
-sys.path.append(os.environ['PSIPATH'])
-
-
-# as you can see I am using a local version of pyadf the one that I ported to py3 
-# The same sys.path settings is needed in fde_util.py, so:
-
-sys.path.append("/home/redo/BERTHAEmb/xcfun/build/lib64/python")
-sys.path.append("/home/redo/BERTHAEmb/psi4conda/lib/python3.7")
-sys.path.append("/home/redo/BERTHAEmb/pybertha/psi4rt")
-sys.path.append("/home/redo/BERTHAEmb/pybertha/src")
-sys.path.append("/home/redo/BERTHAEmb/pyadf/src")
-
-# To run the code, some basic options:
-
-python psi4embedrt.py -g1 H2O.xyz  -g2 environment_cut2.xyz  -d --grid_opts 2 -a 2 --acc_int 4.0 -i -f --sscf
+python psi4embedrt.py -gA H2O.xyz  -gB environment_cut2.xyz  -d --grid_opts 2 -a 2 --acc_int 4.0 -i -f --sscf
 
 
 

@@ -195,7 +195,6 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
     embfactory = pyembmod.pyemb(activefname,envirofname,'adf') #jobtype='adf' is default de facto
     #grid_param =[50,110] # psi4 grid parameters (see Psi4 grid table)
     embfactory.set_options(param=pberthaopt.param, \
-    embfactory.set_options(param=grid_param, \
        gtype=pberthaopt.gtype, basis=pberthaopt.basis) 
     embfactory.set_thresh_conv(pberthaopt.thresh_conv)
     # several paramenters to be specified in input- e.g AUG/ADZP for ADF, aug-cc-pvdz for psi4
@@ -475,12 +474,14 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-gA","--geomA", help="Specify active system (Angstrom) geometry (default: geomA.xyz)", required=False, 
+    parser.add_argument("-gA","--geom_act", help="Specify active system (Angstrom) geometry (default: geomA.xyz)", required=False, 
             type=str, default="geomA.xyz")
-    parser.add_argument("-gB","--geomB", help="Specify frozen system (Angstrom) geometry (default: geomB.xyz)", required=False, 
+    parser.add_argument("-gB","--geom_env", help="Specify frozen system (Angstrom) geometry (default: geomB.xyz)", required=False, 
             type=str, default="geomB.xyz")
     parser.add_argument("--embthresh", help="set EMB threshold (default = 1.0e-8)", required=False, 
             type=numpy.float64, default=1.0e-8)
+    parser.add_argument("-d", "--debug", help="Debug on, prints debug info to debug_info.txt", required=False, 
+            default=False, action="store_true")
 
     parser.add_argument("-c","--fitcoefffile", help="Specify BERTHA fitcoeff output file (default: fitcoeff.txt)",
             required=False, type=str, default="fitcoeff.txt")
@@ -489,8 +490,6 @@ if __name__ == "__main__":
     parser.add_argument("-p","--ovapfile", help="Specify BERTHA ovap output file (default: ovap.txt)", required=False, 
             type=str, default="ovap.txt")
     parser.add_argument("-s", "--dumpfiles", help="Dumpfile on, default is off", required=False,
-            default=False, action="store_true")
-    parser.add_argument("-d", "--debug", help="Debug on, prints debug info to debug_info.txt", required=False, 
             default=False, action="store_true")
     parser.add_argument("-l", "--linemb", help="Linearized embedding on: the outer loop is skipped", required=False, 
             default=False, action="store_true")
@@ -530,13 +529,17 @@ if __name__ == "__main__":
     parser.add_argument("--berthamaxit", help="set bertha maxiterations (default = %d)"%(MAXIT), 
         required=False, type=int, default=MAXIT)
 
-
     parser.add_argument("--restart", help="Force restart from a previous initial single-point",
         required=False, action="store_true", default=False)
     
     args = parser.parse_args()
   
     for path in args.berthamodpaths.split(";"):
+        sys.path.append(path)
+
+    berthamodpaths = os.environ.get('PYBERTHA_MOD_PATH')
+
+    for path in berthamodpaths.split(";"):
         sys.path.append(path)
 
     for resdir in ["./resultfiles", "./jobtempdir"]:
@@ -547,7 +550,7 @@ if __name__ == "__main__":
     import pybgen
 
     pygenoption_fraga = pybgen.berthainputoption
-    pygenoption_fraga.inputfile = args.geomA
+    pygenoption_fraga.inputfile = args.geom_act
     pygenoption_fraga.jsonbasisfile = args.jsonbasisfile
     pygenoption_fraga.fittset = args.fittset
     pygenoption_fraga.basisset = args.basisset
@@ -579,8 +582,8 @@ if __name__ == "__main__":
     pberthaopt.wrapperso = args.wrapperso
     pberthaopt.eda_nocv_info = args.eda_nocv_info
     pberthaopt.eda_nocv_frag_file = args.eda_nocv_frag_file
-    pberthaopt.activefile = args.geomA
-    pberthaopt.envirofile = args.geomB
+    pberthaopt.activefile = args.geom_act
+    pberthaopt.envirofile = args.geom_env
     pberthaopt.gtype = args.gridtype
     pberthaopt.thresh_conv = args.embthresh
 
