@@ -18,10 +18,7 @@ import os.path
 #sys.path.append(os.environ['PSIPATH'])
 
 import psi4
-import util
-import rtutil
 import numpy as np
-import fde_util
 import argparse
 
 import io
@@ -265,6 +262,9 @@ if __name__ == "__main__":
             default=False, action="store_true")
     parser.add_argument("--modpaths", help="set berthamod and all other modules path [\"path1;path2;...\"] (default = ../src)", 
             required=False, type=str, default="../src")
+    parser.add_argument("--jumprt", help="jump the RT ropagation", 
+            required=False, action="store_true", default=False)
+
 
     parser.add_argument("-f", "--fde", help="FDE on", required=False,
             default=False, action="store_true")
@@ -302,10 +302,14 @@ if __name__ == "__main__":
     for path in args.modpaths.split(";"):
         sys.path.append(path)
 
-    berthamodpaths = os.environ.get('PYBERTHA_MOD_PATH')
+    modpaths = os.environ.get('PYBERTHA_MOD_PATH')
 
-    for path in berthamodpaths.split(";"):
+    for path in modpaths.split(";"):
         sys.path.append(path)
+
+    import util
+    import rtutil
+    import fde_util
 
     Dir = args.axis
     basis_set = args.obs
@@ -398,7 +402,8 @@ if __name__ == "__main__":
             adf_settings.set_functional("BLYP")
             frags = [ pyadf.fragment(None,  [m_active]),
                     pyadf.fragment(r_isolated_enviro, [m_enviro], isfrozen=True) ]
-            fde_res = pyadf.adffragmentsjob(frags, basis="AUG/ADZP", settings=adf_settings, fde=fde_act_opts, options=['NOSYMFIT\n EXCITATIONS\n  ONLYSING\n  LOWEST 2\nEND'])
+            fde_res = pyadf.adffragmentsjob(frags, basis="AUG/ADZP", settings=adf_settings, \
+		fde=fde_act_opts, options=['NOSYMFIT\n EXCITATIONS\n  ONLYSING\n  LOWEST 2\nEND'])
             fde_res=fde_res.run()
             agrid = pyadf.adfgrid(fde_res)
         
@@ -741,6 +746,9 @@ if __name__ == "__main__":
     t.join()
     finalize_stdout_redirect(psioufname)
     print("PSI4 out  " + psioufname)
+
+    if (args.jumprt):
+      exit()
 
     # check of D and Cocc
     ovap = np.array(S)
