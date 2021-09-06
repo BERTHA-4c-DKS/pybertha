@@ -161,7 +161,7 @@ def scfiterations (args, maxiter, jk, H, Cocc, func, wfn, D, vemb, E, Eold, \
                 raise Exception("Maximum number of SCF cycles exceeded.\n")
             #end inner loop
         
-        if ( ((not args.nosscf) and (OUT_ITER > 1)) and (not args.fde) ) :
+        if ( ((not args.nosscf) and (OUT_ITER > 1)) and (not args.nofde) ) :
              
              diffv= vemb_in - vemb.np
              diffD= D.np-D_in
