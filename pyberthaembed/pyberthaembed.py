@@ -488,27 +488,8 @@ if __name__ == "__main__":
     parser.add_argument("--modpaths", help="set berthamod and all other modules path [\"path1;path2;...\"] (default = ../src)", 
         required=False, type=str, default="../src")
 
-    parser.add_argument("-c","--fitcoefffile", help="Specify BERTHA fitcoeff output file (default: fitcoeff.txt)",
-            required=False, type=str, default="fitcoeff.txt")
-    parser.add_argument("-e","--vctfile", help="Specify BERTHA vct output file (default: vct.txt)", required=False, 
-            type=str, default="vct.txt")
-    parser.add_argument("-p","--ovapfile", help="Specify BERTHA ovap output file (default: ovap.txt)", required=False, 
-            type=str, default="ovap.txt")
-    parser.add_argument("-s", "--dumpfiles", help="Dumpfile on, default is off", required=False,
-            default=False, action="store_true")
     parser.add_argument("-l", "--linemb", help="Linearized embedding on: the outer loop is skipped", required=False, 
             default=False, action="store_true")
-    parser.add_argument("-v", "--verbosity", help="Verbosity level 0 = minim, -1 = print iteration info, " + 
-            "1 = maximum (defaul -1)", required=False, default=-1, type=int)
-    parser.add_argument("--thresh", help="set bertha threshold (default = 1.0e-11)", required=False, 
-            type=numpy.float64, default=1.0e-11)
-    parser.add_argument("--wrapperso", help="set wrapper SO (default = ../../lib/bertha_wrapper.so)", 
-            required=False, type=str, default="../lib/bertha_wrapper.so")
-    parser.add_argument("--eda_nocv_info", help="set to dump info useful for py_eda_nocv",action='store_true',default=False)
-    parser.add_argument("--eda_nocv_frag_file", help="set a file (default: info_eda_nocv_fragX.json)",
-            required=False, type=str, default="info_eda_nocv_fragX.json")
-    parser.add_argument("--gridtype", help="set gridtype (default: 2)",
-            required=False, type=int, default=2)
     parser.add_argument("--static_field", help="Add a static field to the SCF (default : False)", required=False, 
             default=False, action="store_true")
     parser.add_argument("--fmax", help="Static field amplitude (default : 1.0e-5)", required=False, 
@@ -516,9 +497,30 @@ if __name__ == "__main__":
     parser.add_argument("--fdir", help="External field direction (cartesian)  (default: 2)",
             required=False, type=int, default=2)
 
+    parser.add_argument("--restart", help="Force restart from a previous initial single-point",
+        required=False, action="store_true", default=False)
+    parser.add_argument("-c","--fitcoefffile", help="Specify BERTHA fitcoeff output file (default: fitcoeff.txt)",
+        required=False, type=str, default="fitcoeff.txt")
+    parser.add_argument("-e","--vctfile", help="Specify BERTHA vct output file (default: vct.txt)", required=False, 
+        type=str, default="vct.txt")
+    parser.add_argument("-p","--ovapfile", help="Specify BERTHA ovap output file (default: ovap.txt)", required=False, 
+        type=str, default="ovap.txt")
+    parser.add_argument("-s", "--dumpfiles", help="Dumpfile on, default is off", required=False,
+        default=False, action="store_true")
+    parser.add_argument("-v", "--verbosity", help="Verbosity level 0 = minim, -1 = print iteration info, " + 
+        "1 = maximum (defaul -1)", required=False, default=-1, type=int)
+    parser.add_argument("--thresh", help="set bertha threshold (default = 1.0e-11)", required=False, 
+        type=numpy.float64, default=1.0e-11)
+    parser.add_argument("--wrapperso", help="set wrapper SO (default = ../lib/bertha_wrapper.so)", 
+        required=False, type=str, default="../lib/bertha_wrapper.so")
+    parser.add_argument("--eda_nocv_info", help="set to dump info useful for py_eda_nocv",action='store_true',default=False)
+    parser.add_argument("--eda_nocv_frag_file", help="set a file (default: info_eda_nocv_fragX.json)",
+        required=False, type=str, default="info_eda_nocv_fragX.json")
+    parser.add_argument("--gridtype", help="set gridtype (default: 2)",
+        required=False, type=int, default=2)
     parser.add_argument("-j","--jsonbasisfile", \
         help="Specify BERTHA JSON file for fitting and basis (default: fullsets.json)", \
-        required=False, type=str, default="fullsets.json")
+       required=False, type=str, default="fullsets.json")
     parser.add_argument("-b","--basisset", \
         help="Specify BERTHA basisset \"atomname1:basisset1,atomname2:basisset2,...\"", \
         required=True, type=str, default="")
@@ -527,15 +529,12 @@ if __name__ == "__main__":
         required=True, type=str, default="")
     parser.add_argument("--convertlengthunit", help="Specify a length converter [default=1.0]", \
         type=float, default=1.0)
-    parser.add_argument("--functxc", help="EX-POTENTIAL available: LDA,B88P86,HCTH93,BLYP (default=BLYP)", \
+    parser.add_argument("--functxc", help="EXC-POTENTIAL available: LDA,B88P86,HCTH93,BLYP (default=BLYP)", \
         type=str, default="BLYP")
-
     parser.add_argument("--berthamaxit", help="set bertha maxiterations (default = %d)"%(MAXIT), 
         required=False, type=int, default=MAXIT)
 
-    parser.add_argument("--restart", help="Force restart from a previous initial single-point",
-        required=False, action="store_true", default=False)
-    
+   
     args = parser.parse_args()
   
     for path in args.modpaths.split(";"):

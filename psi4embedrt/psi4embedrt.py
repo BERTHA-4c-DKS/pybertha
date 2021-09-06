@@ -266,9 +266,9 @@ if __name__ == "__main__":
             required=False, action="store_true", default=False)
 
     parser.add_argument("-f", "--nofde", help="FDE off", required=False,
-            default=True, action="store_false")
+            default=False, action="store_true")
     parser.add_argument("--nosscf", help="No SplitSCF for ground state FDE on", required=False,
-            default=True, action="store_false")
+            default=False, action="store_true")
 
     parser.add_argument("-fcorr", "--fdecorr", help="FDE long range correction on", required=False,
             default=False, action="store_true")
