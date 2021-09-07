@@ -265,6 +265,17 @@ if __name__ == "__main__":
     parser.add_argument("--jumprt", help="jump the RT ropagation", 
             required=False, action="store_true", default=False)
 
+    parser.add_argument("--env_obs", help="Specify the orbital basis set for the enviroment (default: AUG/ADZP)", required=False, 
+            type=str, default="AUG/ADZP")
+    parser.add_argument("--env_func", help="Specify the function for the environment density (default: BLYP)", required=False, 
+            type=str, default="BLYP")
+    parser.add_argument("--act_obs", help="Specify the orbital basis set for the active system (deafult: aug-cc-pvdz)", required=False, 
+            type=str, default="aug-cc-pvdz")
+    parser.add_argument("--act_func", help="Specify the function for the active density (default: blyp)", required=False, 
+            type=str, default="blyp")
+    parser.add_argument("--grid_opts", help="Set the type of integration grid (1,2,3) 1) adffragmentsjob grid, 2) supramolecular grid (default), 3) active system grid",
+            default=2, type = int)
+
     parser.add_argument("-f", "--nofde", help="FDE off", required=False,
             default=False, action="store_true")
     parser.add_argument("--nosscf", help="No SplitSCF for ground state FDE on", required=False,
@@ -281,16 +292,8 @@ if __name__ == "__main__":
             default=0.1, type = float)
     parser.add_argument("-w","--wkd", help="Specify the working dir", required=False, 
             type=str, default="./")
-    parser.add_argument("-o","--obs", help="Specify the orbital basis set", required=False, 
-            type=str, default="aug-cc-pvdz")
-    parser.add_argument("-o1","--obs1", help="Specify the orbital basis set", required=False, 
-            type=str, default="AUG/ADZP")
     parser.add_argument("--select", help="Specify the occ-virt MO weighted dipole moment. (-2; 0 & 0 to activate) (default: 0; 0 & 0)",
             default="0; 0 & 0", type=str)
-    parser.add_argument("--adf_func", help="Specify the function for the environment density", required=False, 
-            type=str, default="BLYP")
-    parser.add_argument("--grid_opts", help="Set the type of integration grid (1,2,3) 1) adffragmentsjob grid (default), 2) supramolecular grid, 3) active system grid",
-            default=1, type = int)
     parser.add_argument("--acc_int", help="Set integration accuracy (default 4.0)",
             default=4.0, type = float)
     parser.add_argument("--inputfile", help="Set input filename, [default = input.inp]",
@@ -312,19 +315,22 @@ if __name__ == "__main__":
     import fde_util
 
     Dir = args.axis
-    basis_set = args.obs
+    basis_set = args.act_obs
     geomA = args.geom_act
     geomB = args.geom_env
     WD = args.wkd
     debug = args.debug 
+    func = args.act_func
     
     #basis_set : defined from input
 
     print("Read input ... ")
     
-    imp_opts, calc_params = util.set_params(args.inputfile)
-    func = calc_params['func_type'] # from input.inp. default : blyp
-    geom,mol = fde_util.set_input(geomA,basis_set)
+    if not args.jumprt:
+      imp_opts, calc_params = util.set_params(args.inputfile)
+      func = calc_params['func_type'] # from input.inp. default : blyp
+    
+    geom, mol = fde_util.set_input(geomA, basis_set)
     
     ene = None 
     wfn_scf = None
@@ -348,12 +354,12 @@ if __name__ == "__main__":
     
       adf_settings = pyadf.adfsettings()
       adf_settings.set_save_tapes([21,10])
-      adf_settings.set_functional(args.adf_func)
+      adf_settings.set_functional(args.env_func)
       adf_settings.set_convergence(1.0e-8)
       adf_settings.set_integration(accint=args.acc_int)
     
       # other options
-      basis_active = args.obs1
+      basis_env = args.env_obs
       fde_act_opts = {'TNAD' : 'THOMASFERMI' } #
     
       file_active = os.path.join (WD, geomA)
@@ -383,20 +389,20 @@ if __name__ == "__main__":
 
       f = io.StringIO()
       with redirect_stdout(f):
-        r_isolated_enviro = pyadf.adfsinglepointjob(m_enviro, basis_active, \
+        r_isolated_enviro = pyadf.adfsinglepointjob(m_enviro, basis_env, \
           settings=adf_settings, options=['NOSYMFIT']).run()
 
         if args.grid_opts == 1:
             frags = [ pyadf.fragment(None,  [m_active]),
                     pyadf.fragment(r_isolated_enviro, [m_enviro], isfrozen=True) ]
-            fde_res = pyadf.adffragmentsjob(frags, basis_active, settings=adf_settings, options=['NOSYMFIT'])
+            fde_res = pyadf.adffragmentsjob(frags, basis_env, settings=adf_settings, options=['NOSYMFIT'])
             fde_res=fde_res.run()
             agrid = pyadf.adfgrid(fde_res)
         elif args.grid_opts == 2:
-            r_tot = pyadf.adfsinglepointjob(m_tot, basis_active, settings=adf_settings, options=['NOSYMFIT']).run()
+            r_tot = pyadf.adfsinglepointjob(m_tot, basis_env, settings=adf_settings, options=['NOSYMFIT']).run()
             agrid = pyadf.adfgrid(r_tot)
         elif args.grid_opts == 3:
-            r_act = pyadf.adfsinglepointjob(m_active, basis_active, settings=adf_settings, options=['NOSYMFIT']).run()
+            r_act = pyadf.adfsinglepointjob(m_active, basis_env, settings=adf_settings, options=['NOSYMFIT']).run()
             agrid = pyadf.adfgrid(r_act)
         elif args.grid_opts == 4:
             adf_settings.set_functional("BLYP")

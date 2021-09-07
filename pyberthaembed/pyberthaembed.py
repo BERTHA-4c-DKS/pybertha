@@ -33,6 +33,7 @@ class pyberthaembedoption:
     gtype: int = 2
     param: float = 10.0
     basis: str = 'AUG/ADZP'
+    excfuncenv : str = "BLYP"
     static_field : bool = False
     fmax : numpy.float64 = 1.0e-5
     fdir: int = 2
@@ -199,6 +200,7 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
     #grid_param =[50,110] # psi4 grid parameters (see Psi4 grid table)
     embfactory.set_options(param=pberthaopt.param, \
        gtype=pberthaopt.gtype, basis=pberthaopt.basis) 
+    embfactory.set_enviro_func(pberthaopt.excfuncenv) 
     embfactory.set_thresh_conv(pberthaopt.thresh_conv)
     # several paramenters to be specified in input- e.g AUG/ADZP for ADF, aug-cc-pvdz for psi4
    
@@ -494,6 +496,23 @@ if __name__ == "__main__":
     parser.add_argument("--modpaths", help="set berthamod and all other modules path [\"path1;path2;...\"] (default = ../src)", 
         required=False, type=str, default="../src")
 
+    parser.add_argument("--act_obs", \
+        help="Specify BERTHA (Active system) basisset \"atomname1:basisset1,atomname2:basisset2,...\"", \
+        required=True, type=str, default="")
+    parser.add_argument("--act_fittset", \
+        help="Specify BERTHA (Active system) fitting set \"atomname1:fittset1,atomname2:fittset2,...\"", \
+        required=True, type=str, default="")
+    parser.add_argument("--act_func", 
+	help="Specify exchange–correlation energy functional for active system available: LDA,B88P86,HCTH93,BLYP (default=BLYP)", \
+        type=str, default="BLYP")
+    parser.add_argument("--env_obs", help="Specify the orbital basis set for the enviroment (default: AUG/ADZP)", required=False,
+            type=str, default="AUG/ADZP")
+    parser.add_argument("--env_func", help="Specify the function for the environment density (default: BLYP)", required=False,
+            type=str, default="BLYP")
+    parser.add_argument("--grid_opts", help="set gridtype (default: 2)",
+        required=False, type=int, default=2)
+
+
     parser.add_argument("-l", "--linemb", help="Linearized embedding on: the outer loop is skipped", required=False, 
             default=False, action="store_true")
     parser.add_argument("--static_field", help="Add a static field to the SCF (default : False)", required=False, 
@@ -522,21 +541,11 @@ if __name__ == "__main__":
     parser.add_argument("--eda_nocv_info", help="set to dump info useful for py_eda_nocv",action='store_true',default=False)
     parser.add_argument("--eda_nocv_frag_file", help="set a file (default: info_eda_nocv_fragX.json)",
         required=False, type=str, default="info_eda_nocv_fragX.json")
-    parser.add_argument("--gridtype", help="set gridtype (default: 2)",
-        required=False, type=int, default=2)
     parser.add_argument("-j","--jsonbasisfile", \
         help="Specify BERTHA JSON file for fitting and basis (default: fullsets.json)", \
        required=False, type=str, default="fullsets.json")
-    parser.add_argument("-b","--basisset", \
-        help="Specify BERTHA basisset \"atomname1:basisset1,atomname2:basisset2,...\"", \
-        required=True, type=str, default="")
-    parser.add_argument("-t","--fittset", \
-        help="Specify BERTHA fitting set \"atomname1:fittset1,atomname2:fittset2,...\"", \
-        required=True, type=str, default="")
     parser.add_argument("--convertlengthunit", help="Specify a length converter [default=1.0]", \
         type=float, default=1.0)
-    parser.add_argument("--functxc", help="EXC-POTENTIAL available: LDA,B88P86,HCTH93,BLYP (default=BLYP)", \
-        type=str, default="BLYP")
     parser.add_argument("--berthamaxit", help="set bertha maxiterations (default = %d)"%(MAXIT), 
         required=False, type=int, default=MAXIT)
 
@@ -561,9 +570,9 @@ if __name__ == "__main__":
     pygenoption_fraga = pybgen.berthainputoption
     pygenoption_fraga.inputfile = args.geom_act
     pygenoption_fraga.jsonbasisfile = args.jsonbasisfile
-    pygenoption_fraga.fittset = args.fittset
-    pygenoption_fraga.basisset = args.basisset
-    pygenoption_fraga.functxc = args.functxc
+    pygenoption_fraga.fittset = args.act_fittset
+    pygenoption_fraga.basisset = args.act_obs
+    pygenoption_fraga.functxc = args.act_func
     pygenoption_fraga.convertlengthunit = args.convertlengthunit
     pygenoption_fraga.maxit = args.berthamaxit
 
@@ -593,7 +602,9 @@ if __name__ == "__main__":
     pberthaopt.eda_nocv_frag_file = args.eda_nocv_frag_file
     pberthaopt.activefile = args.geom_act
     pberthaopt.envirofile = args.geom_env
-    pberthaopt.gtype = args.gridtype
+    pberthaopt.gtype = args.grid_opts
     pberthaopt.thresh_conv = args.embthresh
+    pberthaopt.basis = args.env_obs
+    pberthaopt.excfuncenv = args.env_func
 
     runspberthaembed (pberthaopt, args.restart)

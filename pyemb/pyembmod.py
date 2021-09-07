@@ -95,7 +95,6 @@ class Molecule():
          for line in data:
             self.__geometry += str(line)
       self.geom_init = self.__geometry        # store a 'copy' of the initialized geometry
-                                           
 
   def set_ghost(self):
       self.__ghosted=str()
