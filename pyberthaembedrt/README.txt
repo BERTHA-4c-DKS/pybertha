@@ -29,6 +29,10 @@ $ git clone git@github.com:BERTHA-4c-DKS/berthaingen.git
 
 $ export LD_LIBRARY_PATH+=:/home/redo/BERTHA/bertha_ng/lib
 
+# can use also PYBERTHA_MOD_PATH env variable to specify all PATHS:
+
+$ export PYBERTHA_MOD_PATH="/home/redo/BERTHA/pybertha/pyemb;/home/redo/BERTHA/xcfun/build/lib/python;/home/redo/BERTHA/pybertha/src;/home/redo/BERTHA/pyadf/src;/home/redo/BERTHA/berthaingen/pybgen;/home/redo/BERTHA/pybertha/psi4rt"
+
 # now run
 
 

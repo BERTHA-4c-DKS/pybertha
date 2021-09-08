@@ -16,9 +16,11 @@ import scipy.linalg as scila
 from numpy.linalg import eigvalsh
 from scipy.linalg import eigh
 
-berthamodpath = os.getenv("BERTHA_API_PATH", "../src")
+modpaths = os.environ.get('PYBERTHA_MOD_PATH')
 
-sys.path.insert(0, berthamodpath)
+for path in modpaths.split(";"):
+    sys.path.append(path)
+
 import berthamod
 import rtutil
 import os.path
@@ -863,7 +865,7 @@ def main():
        type=float, default=1.0)
    parser.add_argument("--functxc", help="EX-POTENTIAL available: LDA,B88P86,HCTH93,BLYP (default=BLYP)", \
        type=str, default="BLYP")
-   parser.add_argument("--berthamodpaths", help="set berthamod and all other modules path [\"path1;path2;...\"] (default = ../src)", 
+   parser.add_argument("--modpaths", help="set berthamod and all other modules path [\"path1;path2;...\"] (default = ../src)", 
         required=False, type=str, default="../src")
    #END
    
@@ -920,7 +922,7 @@ def main():
            required=False, default=False, action="store_true")
    
    args = parser.parse_args()
-   for path in args.berthamodpaths.split(";"):
+   for path in args.modpaths.split(";"):
        sys.path.append(path)
 
    for resdir in ["./resultfiles", "./jobtempdir"]:
