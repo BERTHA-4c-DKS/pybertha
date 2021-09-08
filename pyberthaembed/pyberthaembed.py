@@ -221,9 +221,10 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
     density=numpy.zeros((rho.shape[0],10))
     density[:,0] = rho
 
-    #pot = embfactory.get_potential(density) 
+    fpot = None
+    pot = embfactory.get_potential(density) 
     #DEBUG
-    pot=numpy.zeros(rho.shape[0])
+    #pot=numpy.zeros(rho.shape[0])
     if static_field:
       fpot=grid[:,fdir]*fmax 
 
@@ -391,9 +392,9 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
         density=numpy.zeros((rho.shape[0],10))
         density[:,0] = rho
         pot_old=pot 
-        #pot = embfactory.get_potential(density)
+        pot = embfactory.get_potential(density)
         #DEBUG
-        pot=numpy.zeros_like(rho)
+        #pot=numpy.zeros_like(rho)
    
         # the avg associated to new  embed pot
         emb_avg = numpy.dot(density[:,0]*grid[:,3],pot)
