@@ -31,7 +31,7 @@ class pyberthaembedoption:
     inputfile: str = "input.inp"
     fittfile: str = "fitt2.inp"
     gtype: int = 2
-    param: float = 10.0
+    param: float = 4.0
     basis: str = 'AUG/ADZP'
     excfuncenv : str = "BLYP"
     static_field : bool = False
@@ -221,9 +221,9 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
     density=numpy.zeros((rho.shape[0],10))
     density[:,0] = rho
 
-    pot = embfactory.get_potential(density) 
+    #pot = embfactory.get_potential(density) 
     #DEBUG
-    #pot=numpy.zeros(rho.shape[0])
+    pot=numpy.zeros(rho.shape[0])
     if static_field:
       fpot=grid[:,fdir]*fmax 
 
@@ -283,7 +283,7 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
         print("unperturbed Dip z    ",dipz_ref)
     
     #if lin_emb=True, a single scf is performed at constant Vemb
-    maxiter = 10
+    maxiter = 2
     Dold = Da0 
     Da = Da0
     Eold = etotal
@@ -390,10 +390,10 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
         rho = bertha.get_density_on_grid(grid)
         density=numpy.zeros((rho.shape[0],10))
         density[:,0] = rho
-       
-        pot = embfactory.get_potential(density)
+        pot_old=pot 
+        #pot = embfactory.get_potential(density)
         #DEBUG
-        #pot=numpy.zeros_like(rho)
+        pot=numpy.zeros_like(rho)
    
         # the avg associated to new  embed pot
         emb_avg = numpy.dot(density[:,0]*grid[:,3],pot)
@@ -415,22 +415,25 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
         Da = numpy.matmul(occeigv,numpy.conjugate(occeigv.transpose()))
         diffD = Da - Dold
         diffE = etotal2 -Eold
+        norm_pot = numpy.sqrt(numpy.sum((pot-pot_old)**2))
         norm_D=numpy.linalg.norm(diffD,'fro') 
         
         if stdoutprint:
             print("2-norm of diffD  = ", norm_D, " ... outer iteration :%i"%(out_iter +1))
             print("E(actual)-E(prev)= ", diffE, " ... outer iteration :%i"%(out_iter +1))
-            print("DE_emb(actual-new)  = %30.15f ... outer iteration :%i"%((emb_avg_in-emb_avg), (out_iter +1) ))
+            print("DE_emb(actual-prev)  = %30.15f ... outer iteration :%i"%((emb_avg_in-emb_avg), (out_iter +1) ))
+            print("norm_pot(actual-prev)  = %30.15f ... outer iteration :%i"%((norm_pot), (out_iter +1) ))
 
-        if ( norm_D<(1.0e-6) and diffE <(1.0e-7)):
-            iocc = 0
-            for i in range(ndim):
-                if i >= nshift and iocc < nocc:
-                    for j in range(ndim):
-                        occeigv[j, iocc] = eigem[j, i]
-                    iocc = iocc + 1
+        if ( norm_D<(1.0e-4) and norm_pot <(1.0e-6)):
+            #not needed?
+            #iocc = 0
+            #for i in range(ndim):
+            #    if i >= nshift and iocc < nocc:
+            #        for j in range(ndim):
+            #            occeigv[j, iocc] = eigem[j, i]
+            #        iocc = iocc + 1
     
-            Da = numpy.matmul(occeigv,numpy.conjugate(occeigv.transpose()))
+            #Da = numpy.matmul(occeigv,numpy.conjugate(occeigv.transpose()))
       
             if stdoutprint:
                 print("Dump ground state perturbed density density.cube")
@@ -453,7 +456,11 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
 
     if stdoutprint:
         print("Dipole moment analitical: Tr(D dip_mat)")
-
+    #DEBUG: NoneType dipx_mat
+    print("dipX_mat dim: %i,%i\n" % (dipx_mat.shape))
+    print("dipY_mat dim: %i,%i\n" % (dipy_mat.shape))
+    print("dipZ_mat dim: %i,%i\n" % (dipz_mat.shape))
+    print("Da dim: %i,%i\n" % (Da.shape))
     dipx_val = numpy.trace(numpy.matmul(Da,dipx_mat)).real
     dipy_val = numpy.trace(numpy.matmul(Da,dipy_mat)).real
     dipz_val = numpy.trace(numpy.matmul(Da,dipz_mat)).real
