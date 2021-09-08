@@ -438,6 +438,11 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
             if stdoutprint:
                 print("Dump ground state perturbed density density.cube")
 
+            bertha.realtime_init()
+
+            dipx_mat, dipy_mat, dipz_mat = \
+		bertha.get_realtime_dipolematrix (0, normalise)
+
             bertha.density_to_cube(Da.T, "density.cube",drx=0.1,dry=0.1,drz=0.1,margin=5.5)
             bertha.finalize()
             break
@@ -456,11 +461,11 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
 
     if stdoutprint:
         print("Dipole moment analitical: Tr(D dip_mat)")
-    #DEBUG: NoneType dipx_mat
-    print("dipX_mat dim: %i,%i\n" % (dipx_mat.shape))
-    print("dipY_mat dim: %i,%i\n" % (dipy_mat.shape))
-    print("dipZ_mat dim: %i,%i\n" % (dipz_mat.shape))
-    print("Da dim: %i,%i\n" % (Da.shape))
+        print("dipX_mat dim: %i,%i\n" % (dipx_mat.shape))
+        print("dipY_mat dim: %i,%i\n" % (dipy_mat.shape))
+        print("dipZ_mat dim: %i,%i\n" % (dipz_mat.shape))
+        print("Da dim: %i,%i\n" % (Da.shape))
+
     dipx_val = numpy.trace(numpy.matmul(Da,dipx_mat)).real
     dipy_val = numpy.trace(numpy.matmul(Da,dipy_mat)).real
     dipz_val = numpy.trace(numpy.matmul(Da,dipz_mat)).real
