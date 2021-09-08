@@ -346,8 +346,8 @@ class pyemb:
         
     def get_options(self):
 
-        outstr = "pyad job type : %s, grid type : %s, functional (enviro) : %s, e/d thresh : %.2e\n" \
-                    % (self.__jobtype,self.__grid_type,self.__enviro_func,self.__thresh_conv)
+        outstr = "pyemb job type : %s, grid type : %s, functional (enviro) : %s, e/d thresh : %.2e\n" \
+                    % (self.__jobtype, self.__grid_type, self.__enviro_func, self.__thresh_conv)
         outstr += "grid specs (accuracy / radial & spherical points)\n"
         outstr += str(self.__acc_int)
 
