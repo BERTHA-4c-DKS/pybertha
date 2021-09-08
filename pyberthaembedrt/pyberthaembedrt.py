@@ -21,44 +21,14 @@ modpaths = os.environ.get('PYBERTHA_MOD_PATH')
 for path in modpaths.split(";"):
     sys.path.append(path)
 
+import pyberthaembed
 import berthamod
 import rtutil
 import os.path
 
-from dataclasses import dataclass
 from pathlib import Path
 
 MAXIT = 100 
-
-@dataclass
-class pyberthaembedoption:
-    activefile: str
-    envirofile :str 
-    fitcoefffile: str
-    vctfile: str
-    ovapfile: str
-    dumpfiles: bool
-    debug: bool
-    linemb: bool
-    verbosity: int
-    wrapperso: str
-    berthamodpath: str
-    eda_nocv_info: bool
-    eda_nocv_frag_file: str
-    thresh: numpy.float64
-    thresh_conv: numpy.float64 = 1.0e-8
-    inputfile: str = "input.inp"
-    fittfile: str = "fitt2.inp"
-    gtype: int = 2
-    param: float = 4.0
-    basis: str = 'AUG/ADZP'
-    denistyzero: str = "density0.cube"
-    density : str = "density.cube"
-    drx: float = 0.1
-    dry: float = 0.1
-    drz: float = 0.1
-    margin: float = 5.5
-    restartfname : str = "restart.npy.npz" 
 
 ##########################################################################################
 
@@ -543,7 +513,6 @@ def restart_run(args):
 def normal_run(pberthaopt,args):
 
     import pyembmod
-    import pyberthaembed
     print("Options: ")
     print(args) 
     print("")
@@ -574,12 +543,11 @@ def normal_run(pberthaopt,args):
     #embfactory.set_options(param=grid_param, \
     embfactory.set_options(param=pberthaopt.param, \
        gtype=pberthaopt.gtype, basis=pberthaopt.basis) 
+    embfactory.set_enviro_func(pberthaopt.excfuncenv)
     # several paramenters to be specified in input- e.g AUG/ADZP for ADF, aug-cc-pvdz for psi4
 
     embfactory.initialize()
     grid = embfactory.get_grid() 
-
-
 
     bertha = berthamod.pybertha(pberthaopt.wrapperso)
     
@@ -841,30 +809,35 @@ def main():
    
    parser = argparse.ArgumentParser()
    #minimal options for FDE
-   parser.add_argument("-gA","--geomA", help="Specify active system (Angstrom) geometry (default: geomA.xyz)", required=False, 
+   parser.add_argument("-gA","--geom_act", help="Specify active system (Angstrom) geometry (default: geomA.xyz)", required=False, 
            type=str, default="geomA.xyz")
-   parser.add_argument("-gB","--geomB", help="Specify frozen system (Angstrom) geometry (default: geomB.xyz)", required=False, 
+   parser.add_argument("-gB","--geom_env", help="Specify frozen system (Angstrom) geometry (default: geomB.xyz)", required=False, 
            type=str, default="geomB.xyz")
+   parser.add_argument("--grid_opts", help="set gridtype (default: 2)",
+           required=False, type=int, default=2)
+   parser.add_argument("--act_obs", \
+       help="Specify BERTHA (Active system) basisset \"atomname1:basisset1,atomname2:basisset2,...\"", \
+       required=True, type=str, default="")
+   parser.add_argument("--act_fittset", \
+       help="Specify BERTHA (Active system) fitting set \"atomname1:fittset1,atomname2:fittset2,...\"", \
+       required=True, type=str, default="")
+   parser.add_argument("--act_func", help="Specify exchange–correlation energy functional for active system available: LDA,B88P86,HCTH93,BLYP (default=BLYP)", \
+       type=str, default="BLYP")
+   parser.add_argument("--env_obs", help="Specify the orbital basis set for the enviroment (default: AUG/ADZP)", required=False,
+       type=str, default="AUG/ADZP")
+   parser.add_argument("--env_func", help="Specify the function for the environment density (default: BLYP)", required=False,
+       type=str, default="BLYP")
+
+
    parser.add_argument("--embthresh", help="set EMB threshold (default = 1.0e-8)", required=False, 
             type=numpy.float64, default=1.0e-8)
    parser.add_argument("-l", "--linemb", help="Linearized embedding on: the outer loop is skipped", required=False, 
            default=False, action="store_true")
-   parser.add_argument("--gridtype", help="set gridtype (default: 2)",
-           required=False, type=int, default=2)
-
    parser.add_argument("-j","--jsonbasisfile", \
        help="Specify BERTHA JSON file for fitting and basis (default: fullsets.json)", \
        required=False, type=str, default="fullsets.json")
-   parser.add_argument("-b","--basisset", \
-       help="Specify BERTHA basisset \"atomname1:basisset1,atomname2:basisset2,...\"", \
-       required=True, type=str, default="")
-   parser.add_argument("-t","--fittset", \
-       help="Specify BERTHA fitting set \"atomname1:fittset1,atomname2:fittset2,...\"", \
-       required=True, type=str, default="")
    parser.add_argument("--convertlengthunit", help="Specify a length converter [default=1.0]", \
        type=float, default=1.0)
-   parser.add_argument("--functxc", help="EX-POTENTIAL available: LDA,B88P86,HCTH93,BLYP (default=BLYP)", \
-       type=str, default="BLYP")
    parser.add_argument("--modpaths", help="set berthamod and all other modules path [\"path1;path2;...\"] (default = ../src)", 
         required=False, type=str, default="../src")
    #END
@@ -933,11 +906,11 @@ def main():
    import pybgen
 
    pygenoption_fraga = pybgen.berthainputoption
-   pygenoption_fraga.inputfile = args.geomA
+   pygenoption_fraga.inputfile = args.geom_act
    pygenoption_fraga.jsonbasisfile = args.jsonbasisfile
-   pygenoption_fraga.fittset = args.fittset
-   pygenoption_fraga.basisset = args.basisset
-   pygenoption_fraga.functxc = args.functxc
+   pygenoption_fraga.fittset = args.act_fittset
+   pygenoption_fraga.basisset = args.act_obs
+   pygenoption_fraga.functxc = args.act_func
    pygenoption_fraga.convertlengthunit = args.convertlengthunit
    pygenoption_fraga.maxit = MAXIT
 
@@ -949,7 +922,7 @@ def main():
 
    pybgen.generateinputfiles (pygenoption_fraga)
 
-   pberthaopt = pyberthaembedoption
+   pberthaopt = pyberthaembed.pyberthaembedoption
 
    pberthaopt.fitcoefffile = args.fitcoefffile
    pberthaopt.vctfile = args.vctfile
@@ -963,10 +936,11 @@ def main():
    pberthaopt.wrapperso = args.wrapperso
    #pberthaopt.eda_nocv_info = args.eda_nocv_info
    #pberthaopt.eda_nocv_frag_file = args.eda_nocv_frag_file
-   pberthaopt.activefile = args.geomA
-   pberthaopt.envirofile = args.geomB
-   pberthaopt.gtype = args.gridtype
-
+   pberthaopt.activefile = args.geom_act
+   pberthaopt.envirofile = args.geom_env
+   pberthaopt.gtype = args.grid_opts
+   pberthaopt.basis = args.env_obs
+   pberthaopt.excfuncenv = args.env_func
 
    if (not args.restart):
        if args.totaltime < 0.0:
