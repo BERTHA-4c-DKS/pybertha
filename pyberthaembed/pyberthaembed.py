@@ -198,6 +198,7 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
 
     embfactory = pyembmod.pyemb(activefname,envirofname,'adf') #jobtype='adf' is default de facto
     #grid_param =[50,110] # psi4 grid parameters (see Psi4 grid table)
+    #embfactory.set_options(param=grid_param, \
     embfactory.set_options(param=pberthaopt.param, \
        gtype=pberthaopt.gtype, basis=pberthaopt.basis) 
     embfactory.set_enviro_func(pberthaopt.excfuncenv) 
@@ -284,7 +285,7 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
         print("unperturbed Dip z    ",dipz_ref)
     
     #if lin_emb=True, a single scf is performed at constant Vemb
-    maxiter = 2
+    maxiter = 20
     Dold = Da0 
     Da = Da0
     Eold = etotal
@@ -425,7 +426,7 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
             print("DE_emb(actual-prev)  = %30.15f ... outer iteration :%i"%((emb_avg_in-emb_avg), (out_iter +1) ))
             print("norm_pot(actual-prev)  = %30.15f ... outer iteration :%i"%((norm_pot), (out_iter +1) ))
 
-        if ( norm_D<(1.0e-4) and norm_pot <(1.0e-6)):
+        if ( norm_D<(1.0e-6) and norm_pot <(1.0e-4)):
             #not needed?
             #iocc = 0
             #for i in range(ndim):
