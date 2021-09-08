@@ -6,11 +6,29 @@ $ conda install cmake
 
 $ git clone git@github.com:lstorchi/xcfun.git
 $ cd xcfun
-$ python ./setup --pybindings --cmake-executable=/usr/local/cmake_3.6/bin/cmake
+$ python ./setup --pybindings 
 $ cd build
 $ make
 
 $ git clone git@gitlab.pyadf.org:loriano.storchi/pyadf.git
 
-# need to edit the source psi4embedrt.py to specify some env variables
+$ . /usr/local/adf2019.307/adfbashrc.sh 
+
+# Download and compile bertha_ng
+
+$ git clone git@github.com:BERTHA-4c-DKS/bertha_ng.git
+$ cd bertha_ng 
+$ make 
+
+# download berthaingen
+
+$ git clone git@github.com:BERTHA-4c-DKS/berthaingen.git
+
+# in pybertha edit the config.mk to spevify the bertha_ng dir BERTHAROOT=/home/redo/BERTHA/bertha_ng
+# you need also to export the LD_LIBRARY_PATH to the SOs whithin bertha_ng
+
+$ export LD_LIBRARY_PATH+=:/home/redo/BERTHA/bertha_ng/lib
+
+# now run
+
 
