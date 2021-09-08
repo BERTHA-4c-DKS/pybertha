@@ -162,7 +162,9 @@ class GridDensityFactory():
       self.__phi = numpy.array(funcs.basis_values()["PHI"])[:npoints, :self.__lpos.shape[0]]
 
   def from_Cocc(self,Cocc):
-      MO = numpy.matmul(self.__phi,Cocc) 
+      if (self.__phi.shape[1] != Cocc.shape[0]):
+        raise("Check Cocc and PHI dim")
+      MO = numpy.matmul(self.__phi,Cocc)
       MO_dens = numpy.square(MO)
       rho = numpy.einsum('pm->p',MO_dens)
       return rho
@@ -450,11 +452,7 @@ class pyemb:
                     'puream' : 'True',
                     'dft_radial_scheme' : 'becke',
                     'dft_radial_points':  self.__acc_int[0],
-                    'dft_spherical_points' : self.__acc_int[1],  #'dft_nuclear_scheme': 'treutler' | default
-                    'scf_type' : 'direct',                     #dft_radial_ and spherical_ points determine grid size
-                    'DF_SCF_GUESS': 'False',
-                    'd_convergence' : self.__thresh_conv,
-                    'e_convergence' : self.__thresh_conv})
+                    'dft_spherical_points' : self.__acc_int[1]})  #'dft_nuclear_scheme': 'treutler' | default
             #dummy pyadf molecule
             m_dummy = pyadf.molecule(self.__envirofname)
             
@@ -525,8 +523,14 @@ class pyemb:
                  dtype=numpy.float_),weights=numpy.ascontiguousarray(w,dtype=numpy.float_))
             # TODO : code for the calculation of ESP and isolated enviroment density
             #the quality of the grid for the environment gs calculation is set to 'good' (see Psi4 man)
-            psi4.set_options({'dft_radial_points':  75,
-                              'dft_spherical_points' : 434})  #'dft_nuclear_scheme': 'treutler' | default
+            psi4.set_options({'dft_radial_scheme' : 'becke',    #dft_radial_ and spherical_ points determine grid size
+                              'dft_radial_points':  75,
+                              'dft_spherical_points' : 434, #'dft_nuclear_scheme': 'treutler' | default
+                              'puream' : 'True',            
+                              'scf_type' : 'direct',                     
+                              'DF_SCF_GUESS': 'False',
+                              'd_convergence' : self.__thresh_conv,
+                              'e_convergence' : self.__thresh_conv})
             m_enviro.append('symmetry c1' +'\n' + 'no_com' + '\n' + 'no_reorient' + '\n')
             enviro_obj=psi4.geometry(m_enviro.geom_str())
             ene, enviro_wfn = psi4.energy(self.__enviro_func,return_wfn=True)
@@ -540,7 +544,7 @@ class pyemb:
            
             #represent the environ density on the grid
             environment=GridDensityFactory(enviro_obj,points,self.__basis_frzn)
-            enviro_dens = environment.from_Cocc(numpy.asarray(enviro_wfn.Ca()))
+            enviro_dens = environment.from_Cocc(numpy.asarray(enviro_wfn.Ca_subset("AO","OCC") ))
             density=numpy.zeros((x.shape[0],10))
             density[:,0] = 2.0*enviro_dens
 
