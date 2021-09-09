@@ -230,6 +230,7 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
     #pot=numpy.zeros(rho.shape[0])
     if static_field:
       fpot = grid[:,fdir]*fmax 
+      fpot = numpy.ascontiguousarray(fpot, dtype=numpy.double)
       if (pberthaopt.debug):
           numpy.savetxt ("initialfpot.txt", fpot)
 
@@ -325,10 +326,13 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
         
         # run with Vemb included
         if static_field:
-           if (pberthaopt.debug):
-           	numpy.savetxt ("fullpot%d.txt"%(out_iter), pot+fpot)
+           totpot = pot+fpot
+           totpot = numpy.ascontiguousarray(totpot, dtype=numpy.double)
 
-           bertha.set_embpot_on_grid(grid, pot+fpot)
+           if (pberthaopt.debug):
+           	numpy.savetxt ("fullpot%d.txt"%(out_iter), totpot)
+
+           bertha.set_embpot_on_grid(grid, totpot)
         else:
            if (pberthaopt.debug):
            	numpy.savetxt ("fullpot%d.txt"%(out_iter), pot)
