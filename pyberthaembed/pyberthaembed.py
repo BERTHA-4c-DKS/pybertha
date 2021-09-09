@@ -221,12 +221,16 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
     density=numpy.zeros((rho.shape[0],10))
     density[:,0] = rho
 
-    fpot = None
+    pot = None
     pot = embfactory.get_potential(density) 
+    if (pberthaopt.debug):
+        numpy.savetxt ("initialpot.txt", pot)
     #DEBUG
     #pot=numpy.zeros(rho.shape[0])
     if static_field:
       fpot=grid[:,fdir]*fmax 
+      if (pberthaopt.debug):
+          numpy.savetxt ("initialfpot.txt", fpot)
 
     if not restart:
 
@@ -320,8 +324,14 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
         
         # run with Vemb included
         if static_field:
+           if (pberthaopt.debug):
+           	numpy.savetxt ("fullpot%d.txt"%(out_iter), pot+fpot)
+
            bertha.set_embpot_on_grid(grid, pot+fpot)
         else:
+           if (pberthaopt.debug):
+           	numpy.savetxt ("fullpot%d.txt"%(out_iter), pot)
+ 
            bertha.set_embpot_on_grid(grid, pot)
         
         ovapm, eigem, fockm, eigen = bertha.run(eigem)
@@ -417,7 +427,7 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
         diffD = Da - Dold
         diffE = etotal2 -Eold
         norm_pot = numpy.sqrt(numpy.sum((pot-pot_old)**2))
-        norm_D=numpy.linalg.norm(diffD,'fro') 
+        norm_D = numpy.linalg.norm(diffD,'fro') 
         
         if stdoutprint:
             print("2-norm of diffD  = ", norm_D, " ... outer iteration :%i"%(out_iter +1))
