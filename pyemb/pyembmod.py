@@ -260,8 +260,8 @@ class pyemb:
             raise TypeError("input must be an integer")
 
         #if gtype <= 0 or gtype > 3:
-        if  gtype > 3:
-            raise TypeError("input must be an integer i : 0 <= i <= 3")
+        if  not((gtype >= 0 and gtype <= 3) or (gtype == 99)) :
+            raise TypeError("input must be an integer i : 0 <= i <= 3 or 99")
 
         self.__grid_type = gtype
 
@@ -369,8 +369,9 @@ class pyemb:
             if not isinstance (self.__acc_int, float):
               raise TypeError("param (parameter 1) must be a float if jobtype is " + self.__jobtype)
             
-            if self.__grid_type == 0 or self.__grid_type > 3:
-              raise TypeError("gridtype must be 1,2 or 3 if jobtype is " + self.__jobtype)
+            if not ((self.__grid_type > 0 and self.__grid_type <= 3) or \
+                     (self.__grid_type == 99)) :
+              raise TypeError("gridtype must be 1,2 or 3 or 99 if jobtype is " + self.__jobtype)
 
             f = io.StringIO()
             with redirect_stdout(f):
