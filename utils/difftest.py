@@ -13,8 +13,8 @@ for l in fp:
 
     print(v2-v1)
 
-    if (v2-v1) > max:
-        max = v2-v1
+    if (v2-v1) > mx:
+        mx = v2-v1
 
 
-print("Maxval: ", max)
+print("Maxval: ", mx)
