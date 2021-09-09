@@ -130,7 +130,7 @@ class GridDensityFactory():
       self.__phi = None
       self.__lpos = None # back-compatibility
       self.__nbas = None #
-      self.phi_builder()  
+      self.phi_builder()
       
   def phi_builder(self):
       
@@ -141,7 +141,7 @@ class GridDensityFactory():
 
       delta = 1.0e-2 #private parameter 
  
-      basis = psi4.core.BasisSet.build(self.__mol, 'ORBITAL',self.__basisset)
+      basis = psi4.core.BasisSet.build(self.__mol, 'ORBITAL',self.__basisset,puream=-1)
       basis_extents = psi4.core.BasisExtents(basis,delta)
  
       blockopoints = psi4.core.BlockOPoints(xs, ys, zs, ws,basis_extents)
@@ -162,7 +162,9 @@ class GridDensityFactory():
       self.__phi = numpy.array(funcs.basis_values()["PHI"])[:npoints, :self.__lpos.shape[0]]
 
   def from_Cocc(self,Cocc):
-      MO = numpy.matmul(self.__phi,Cocc) 
+      if (self.__phi.shape[1] != Cocc.shape[0]):
+        raise("Check Cocc and PHI dim")
+      MO = numpy.matmul(self.__phi,Cocc)
       MO_dens = numpy.square(MO)
       rho = numpy.einsum('pm->p',MO_dens)
       return rho
@@ -181,6 +183,10 @@ class GridDensityFactory():
       MO_dens = numpy.square(MO)
       rho = numpy.einsum('pm->p',MO_dens)
       return rho
+  def print_detail(self):
+      print("PHI dim: %i,%i\n" %(self.__phi.shape))
+      print("N. basis functions: %i\n" %(self.__nbas))
+      print("N. grid points %i\n" %(self.__phi.shape[0]))
 
 ########################################################################################################
 
@@ -363,7 +369,7 @@ class pyemb:
             if not isinstance (self.__acc_int, float):
               raise TypeError("param (parameter 1) must be a float if jobtype is " + self.__jobtype)
             
-            if self.__grid_type <= 0 or self.__grid_type > 3:
+            if self.__grid_type == 0 or self.__grid_type > 3:
               raise TypeError("gridtype must be 1,2 or 3 if jobtype is " + self.__jobtype)
 
             f = io.StringIO()
@@ -400,7 +406,22 @@ class pyemb:
                 elif self.__grid_type == 3:
                     r_act = pyadf.adfsinglepointjob(m_active, self.__basis_frzn, settings=adf_settings, options=['NOSYMFIT']).run()
                     self.__agrid = pyadf.adfgrid(r_act)
+                #PLACEHOLDER
+                elif self.__grid_type == -99:
+                    idx = 0
+                    with open("grid.dat","r") as fgrid:
+                     nlines = int(next(fgrid))
+                     points = numpy.zeros((nlines,4),dtype=numpy.float_)
+                     for line in fgrid:
+                      raw = line.split()
+                      points[idx,:]=raw
+                      idx += 1
+                    fgrid.close() 
                 
+                    self.__agrid=pyadf.customgrid(mol=m_tot,coords=numpy.ascontiguousarray(points[:,:3], \
+                         dtype=numpy.float_),weights=numpy.ascontiguousarray(points[:,3],dtype=numpy.float_))
+                #GridWriter.write_xyzw(grid=self.__agrid,filename='grid.check',add_comment=False)
+
                 #elif self.__grid_type == 4:
                 #    #override 
                 #    adf_settings.set_functional("BLYP")
@@ -411,8 +432,8 @@ class pyemb:
                 #    fde_res=fde_res.run()
                 #    __agrid = pyadf.adfgrid(fde_res) 
                 
-                self.__isolated_dens_enviro  = r_isolated_enviro.get_density(grid=self.__agrid, \
-                              fit=False, order=2) #grid=grid_active=agrid
+                self.__isolated_dens_enviro  = r_isolated_enviro.get_density(grid=self.__agrid,\
+                   fit=False, order=2) #grid=grid_active=agrid
                 isolated_vnuc_enviro  = r_isolated_enviro.get_potential(grid=self.__agrid,\
                   pot='nuc')
                 isolated_coul_enviro  = r_isolated_enviro.get_potential(grid=self.__agrid,\
@@ -445,16 +466,13 @@ class pyemb:
             init_stdout_redirect ()
             t = threading.Thread(target=drain_pipe)
             t.start()
-
+            
+            #psi4.core.set_output_file('debug_psi4.dat', False)
             psi4.set_options({'basis' : self.__basis_frzn,
                     'puream' : 'True',
                     'dft_radial_scheme' : 'becke',
                     'dft_radial_points':  self.__acc_int[0],
-                    'dft_spherical_points' : self.__acc_int[1],  #'dft_nuclear_scheme': 'treutler' | default
-                    'scf_type' : 'direct',                     #dft_radial_ and spherical_ points determine grid size
-                    'DF_SCF_GUESS': 'False',
-                    'd_convergence' : self.__thresh_conv,
-                    'e_convergence' : self.__thresh_conv})
+                    'dft_spherical_points' : self.__acc_int[1]})  #'dft_nuclear_scheme': 'treutler' | default
             #dummy pyadf molecule
             m_dummy = pyadf.molecule(self.__envirofname)
             
@@ -487,7 +505,7 @@ class pyemb:
 
             if self.__grid_type == -99:
                idx = 0
-               with open("grid.txt","r") as fgrid:
+               with open("grid.dat","r") as fgrid:
                 nlines = int(next(fgrid))
                 gridbin = numpy.zeros((nlines,4),dtype=numpy.float_)
                 for line in fgrid:
@@ -523,10 +541,17 @@ class pyemb:
             # prepare a custom pyadf grid object out of x,y,z,w. A mol object is only needed for cube dumping (see documentation)
             self.__agrid=pyadf.customgrid(mol=m_dummy,coords=numpy.ascontiguousarray(points[:,:3], \
                  dtype=numpy.float_),weights=numpy.ascontiguousarray(w,dtype=numpy.float_))
+            GridWriter.write_xyzw(grid=self.__agrid,filename='grid.txt',add_comment=False)
             # TODO : code for the calculation of ESP and isolated enviroment density
             #the quality of the grid for the environment gs calculation is set to 'good' (see Psi4 man)
-            psi4.set_options({'dft_radial_points':  75,
-                              'dft_spherical_points' : 434})  #'dft_nuclear_scheme': 'treutler' | default
+            psi4.set_options({'dft_radial_scheme' : 'becke',    #dft_radial_ and spherical_ points determine grid size
+                              'dft_radial_points':  75,
+                              'dft_spherical_points' : 434, #'dft_nuclear_scheme': 'treutler' | default
+                              'puream' : 'True',            
+                              'scf_type' : 'direct',                     
+                              'DF_SCF_GUESS': 'False',
+                              'd_convergence' : self.__thresh_conv,
+                              'e_convergence' : self.__thresh_conv})
             m_enviro.append('symmetry c1' +'\n' + 'no_com' + '\n' + 'no_reorient' + '\n')
             enviro_obj=psi4.geometry(m_enviro.geom_str())
             ene, enviro_wfn = psi4.energy(self.__enviro_func,return_wfn=True)
@@ -540,7 +565,8 @@ class pyemb:
            
             #represent the environ density on the grid
             environment=GridDensityFactory(enviro_obj,points,self.__basis_frzn)
-            enviro_dens = environment.from_Cocc(numpy.asarray(enviro_wfn.Ca()))
+            environment.print_detail()
+            enviro_dens = environment.from_Cocc(numpy.asarray(enviro_wfn.Ca_subset("AO","OCC") ))
             density=numpy.zeros((x.shape[0],10))
             density[:,0] = 2.0*enviro_dens
 
