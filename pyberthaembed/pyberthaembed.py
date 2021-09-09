@@ -222,14 +222,14 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
     density=numpy.zeros((rho.shape[0],10))
     density[:,0] = rho
 
-    pot = None
+    fpot = None
     pot = embfactory.get_potential(density) 
     if (pberthaopt.debug):
         numpy.savetxt ("initialpot.txt", pot)
     #DEBUG
     #pot=numpy.zeros(rho.shape[0])
     if static_field:
-      fpot=grid[:,fdir]*fmax 
+      fpot = grid[:,fdir]*fmax 
       if (pberthaopt.debug):
           numpy.savetxt ("initialfpot.txt", fpot)
 
