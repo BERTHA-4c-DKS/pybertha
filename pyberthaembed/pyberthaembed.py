@@ -44,6 +44,7 @@ class pyberthaembedoption:
     drz: float = 0.1
     margin: float = 5.5
     restartfname : str = "restart.npy.npz" 
+    gridfname : str = "grid.dat"
 
 ##########################################################################################
 
@@ -203,6 +204,7 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
        gtype=pberthaopt.gtype, basis=pberthaopt.basis) 
     embfactory.set_enviro_func(pberthaopt.excfuncenv) 
     embfactory.set_thresh_conv(pberthaopt.thresh_conv)
+    embfactory.set_grid_filename(pberthaopt.gridfname)
     # several paramenters to be specified in input- e.g AUG/ADZP for ADF, aug-cc-pvdz for psi4
 
     if (pberthaopt.debug):
@@ -546,7 +548,8 @@ if __name__ == "__main__":
             type=str, default="BLYP")
     parser.add_argument("--grid_opts", help="set gridtype (default: 2)",
         required=False, type=int, default=2)
-
+    parser.add_argument("--gridfnam", help="set grid filename (default = grid.dat)",
+        required=False, type=str, default="grid.dat")
 
     parser.add_argument("-l", "--linemb", help="Linearized embedding on: the outer loop is skipped", required=False, 
             default=False, action="store_true")
@@ -620,6 +623,8 @@ if __name__ == "__main__":
     pybgen.generateinputfiles (pygenoption_fraga)
 
     pberthaopt = pyberthaembedoption
+
+    pberthaopt.gridfname = args.gridfname
 
     pberthaopt.fitcoefffile = args.fitcoefffile
     pberthaopt.vctfile = args.vctfile

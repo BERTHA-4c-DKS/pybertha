@@ -220,6 +220,11 @@ class pyemb:
         self.__adfoufname = ""
         self.__psioufname = ""
 
+        self.__grifilename = "grid.dat"
+
+    def set_grid_filename (self, name):
+        self.__grifilename = name
+
     def set_adf_filenameout (self, name):
         self.__adfoufname = name
 
@@ -412,7 +417,7 @@ class pyemb:
                     idx = 0
 
                     try:
-                       with open("grid.dat","r") as fgrid:
+                       with open(self.__grifilename, "r") as fgrid:
                           nlines = int(next(fgrid))
                           points = numpy.zeros((nlines,4),dtype=numpy.float_)
                           for line in fgrid:
@@ -677,3 +682,5 @@ class pyemb:
         self.__f_nad_kin = 'tkf'
         self.__adfoufname = ""
         self.__psioufname = ""
+
+        self.__grifilename = "grid.dat"
