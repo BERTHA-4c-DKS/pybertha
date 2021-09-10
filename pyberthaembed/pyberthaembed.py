@@ -548,7 +548,7 @@ if __name__ == "__main__":
             type=str, default="BLYP")
     parser.add_argument("--grid_opts", help="set gridtype (default: 2)",
         required=False, type=int, default=2)
-    parser.add_argument("--gridfnam", help="set grid filename (default = grid.dat)",
+    parser.add_argument("--gridfname", help="set grid filename (default = grid.dat)",
         required=False, type=str, default="grid.dat")
 
     parser.add_argument("-l", "--linemb", help="Linearized embedding on: the outer loop is skipped", required=False, 
