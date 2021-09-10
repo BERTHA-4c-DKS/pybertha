@@ -4,6 +4,9 @@ $ conda activate p4env
 $ conda install -c anaconda swig
 $ conda install cmake
 
+$ pip3 install mendeleev
+$ pip3 install scipy
+
 $ git clone git@github.com:lstorchi/xcfun.git
 $ cd xcfun
 $ python ./setup --pybindings 
