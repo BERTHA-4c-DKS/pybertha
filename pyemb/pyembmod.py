@@ -260,8 +260,8 @@ class pyemb:
             raise TypeError("input must be an integer")
 
         #if gtype <= 0 or gtype > 3:
-        if  not((gtype >= 0 and gtype <= 3) or (gtype == 99)) :
-            raise TypeError("input must be an integer i : 0 <= i <= 3 or 99")
+        if  not((gtype >= 0 and gtype <= 3) or (gtype == -99)) :
+            raise TypeError("input must be an integer i : 0 <= i <= 3 or -99")
 
         self.__grid_type = gtype
 
@@ -370,8 +370,8 @@ class pyemb:
               raise TypeError("param (parameter 1) must be a float if jobtype is " + self.__jobtype)
             
             if not ((self.__grid_type > 0 and self.__grid_type <= 3) or \
-                     (self.__grid_type == 99)) :
-              raise TypeError("gridtype must be 1,2 or 3 or 99 if jobtype is " + self.__jobtype)
+                     (self.__grid_type == -99)) :
+              raise TypeError("gridtype must be 1,2 or 3 or -99 if jobtype is " + self.__jobtype)
 
             f = io.StringIO()
             with redirect_stdout(f):
@@ -410,19 +410,21 @@ class pyemb:
                 #PLACEHOLDER
                 elif self.__grid_type == -99:
                     idx = 0
-                    with open("grid.dat","r") as fgrid:
-                     nlines = int(next(fgrid))
-                     points = numpy.zeros((nlines,4),dtype=numpy.float_)
-                     for line in fgrid:
-                      raw = line.split()
-                      points[idx,:]=raw
-                      idx += 1
-                    fgrid.close() 
+
+                    try:
+                       with open("grid.dat","r") as fgrid:
+                          nlines = int(next(fgrid))
+                          points = numpy.zeros((nlines,4),dtype=numpy.float_)
+                          for line in fgrid:
+                             raw = line.split()
+                             points[idx,:]=raw
+                             idx += 1
+                    except IOError:
+                       raise IOError("File grid.dat does not exist")
                 
                     self.__agrid=pyadf.customgrid(mol=m_tot,coords=numpy.ascontiguousarray(points[:,:3], \
                          dtype=numpy.float_),weights=numpy.ascontiguousarray(points[:,3],dtype=numpy.float_))
                 #GridWriter.write_xyzw(grid=self.__agrid,filename='grid.check',add_comment=False)
-
                 #elif self.__grid_type == 4:
                 #    #override 
                 #    adf_settings.set_functional("BLYP")

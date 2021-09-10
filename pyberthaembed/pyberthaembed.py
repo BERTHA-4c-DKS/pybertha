@@ -204,6 +204,13 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
     embfactory.set_enviro_func(pberthaopt.excfuncenv) 
     embfactory.set_thresh_conv(pberthaopt.thresh_conv)
     # several paramenters to be specified in input- e.g AUG/ADZP for ADF, aug-cc-pvdz for psi4
+
+    if (pberthaopt.debug):
+       import uuid
+       filename = "adfout_" + str(uuid.uuid4()) + ".txt"
+       embfactory.set_adf_filenameout(filename)
+       filename = "psi4out_" + str(uuid.uuid4()) + ".txt"
+       embfactory.set_psi4_filenameout(filename)
    
     if stdoutprint:
         print("embfactory Options:")
