@@ -337,11 +337,33 @@ def runspbertha (pberthaopt):
 
 if __name__ == "__main__":
 
+    MAXIT = 100
+
     parser = argparse.ArgumentParser()
     parser.add_argument("-f","--inputfile", help="Specify BERTHA input file (default: input.inp)", required=False, 
             type=str, default="input.inp")
     parser.add_argument("-t","--fittfile", help="Specify BERTHA fitting input file (default: fitt2.inp)", required=False, 
             type=str, default="fitt2.inp")
+
+    parser.add_argument("-g","--geometry", help="Specify system (Angstrom) geometry", required=False, 
+        type=str, default="")
+    parser.add_argument("--obs", \
+        help="Specify BERTHA (Active system) basisset \"atomname1:basisset1,atomname2:basisset2,...\"", \
+        required=False, type=str, default="")
+    parser.add_argument("--fittset", \
+        help="Specify BERTHA (Active system) fitting set \"atomname1:fittset1,atomname2:fittset2,...\"", \
+        required=False, type=str, default="")
+    parser.add_argument("--func", 
+	help="Specify exchange–correlation energy functional for active system available: LDA,B88P86,HCTH93,BLYP (default=BLYP)", \
+        type=str, default="BLYP")
+    parser.add_argument("-j","--jsonbasisfile", \
+        help="Specify BERTHA JSON file for fitting and basis (default: fullsets.json)", \
+       required=False, type=str, default="fullsets.json")
+    parser.add_argument("--convertlengthunit", help="Specify a length converter [default=1.0]", \
+        type=float, default=1.0)
+    parser.add_argument("--berthamaxit", help="set bertha maxiterations (default = %d)"%(MAXIT), 
+        required=False, type=int, default=MAXIT)
+
     parser.add_argument("-c","--fitcoefffile", help="Specify BERTHA fitcoeff output file (default: fitcoeff.txt)",
             required=False, type=str, default="fitcoeff.txt")
     parser.add_argument("-e","--vctfile", help="Specify BERTHA vct output file (default: vct.txt)", required=False, 
@@ -358,7 +380,7 @@ if __name__ == "__main__":
             type=numpy.float64, default=1.0e-11)
     parser.add_argument("--wrapperso", help="set wrapper SO (default = ../../lib/bertha_wrapper.so)", 
             required=False, type=str, default="../lib/bertha_wrapper.so")
-    parser.add_argument("--berthamodpath", help="set berthamod path (default = ../src)", 
+    parser.add_argument("--modpaths", help="set berthamod path (default = ../src)", 
             required=False, type=str, default="../src")
     parser.add_argument("--eda_nocv_info", help="set to dump info useful for py_eda_nocv",action='store_true',default=False)
     parser.add_argument("--eda_nocv_frag_file", help="set a file (default: info_eda_nocv_fragX.json)",
@@ -391,10 +413,55 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    for path in args.modpaths.split(";"):
+        sys.path.append(path)
+
+    modpaths = os.environ.get('PYBERTHA_MOD_PATH')
+
+    for path in modpaths.split(";"):
+        sys.path.append(path)
+
     pberthaopt = pyberthaoption
 
-    pberthaopt.inputfile = args.inputfile
-    pberthaopt.fittfile = args.fittfile
+    if args.geometry != "":
+
+        if not os.path.isfile (args.geometry):
+            print("File ", args.geometry, " does not exist")
+            exit(1)
+
+        if args.fittset == "" or args.obs == "":
+            print("Need to specify fittset and basis set for each elements")
+            exit(1)
+
+        # generate input 
+        import pybgen
+
+        pygenoption = pybgen.berthainputoption
+        pygenoption.inputfile = args.geometry
+        pygenoption.jsonbasisfile = args.jsonbasisfile
+        pygenoption.fittset = args.fittset
+        pygenoption.basisset = args.obs
+        pygenoption.functxc = args.func
+        pygenoption.convertlengthunit = args.convertlengthunit
+        pygenoption.maxit = args.berthamaxit
+       
+        for filename in ["input.inp", "fitt2.inp"]:
+
+            if os.path.isfile(filename):
+                print("File ", filename, " will be overwritten")
+                try:
+                    os.remove(filename)
+                except OSError:
+                    pass
+
+        pybgen.generateinputfiles (pygenoption)
+
+        pberthaopt.inputfile = "input.inp"
+        pberthaopt.fittfile = "fitt2.inp"
+    else:
+        pberthaopt.inputfile = args.inputfile
+        pberthaopt.fittfile = args.fittfile
+
     pberthaopt.fitcoefffile = args.fitcoefffile
     pberthaopt.vctfile = args.vctfile
     pberthaopt.ovapfile = args.ovapfile
@@ -403,7 +470,7 @@ if __name__ == "__main__":
     pberthaopt.verbosity = args.verbosity
     pberthaopt.thresh = args.thresh
     pberthaopt.wrapperso = args.wrapperso
-    pberthaopt.berthamodpath = args.berthamodpath
+    pberthaopt.berthamodpath = args.modpaths
     pberthaopt.eda_nocv_info = args.eda_nocv_info
     pberthaopt.eda_nocv_frag_file = args.eda_nocv_frag_file
     pberthaopt.cube = args.cube
