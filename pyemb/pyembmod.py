@@ -183,6 +183,7 @@ class GridDensityFactory():
       MO_dens = numpy.square(MO)
       rho = numpy.einsum('pm->p',MO_dens)
       return rho
+
   def print_detail(self):
       print("PHI dim: %i,%i\n" %(self.__phi.shape))
       print("N. basis functions: %i\n" %(self.__nbas))
@@ -220,10 +221,10 @@ class pyemb:
         self.__adfoufname = ""
         self.__psioufname = ""
 
-        self.__grifilename = "grid.dat"
+        self.__gridfilename = "grid.dat"
 
     def set_grid_filename (self, name):
-        self.__grifilename = name
+        self.__gridfilename = name
 
     def set_adf_filenameout (self, name):
         self.__adfoufname = name
@@ -417,7 +418,7 @@ class pyemb:
                     idx = 0
 
                     try:
-                       with open(self.__grifilename, "r") as fgrid:
+                       with open(self.__gridfilename, "r") as fgrid:
                           nlines = int(next(fgrid))
                           points = numpy.zeros((nlines,4),dtype=numpy.float_)
                           for line in fgrid:
@@ -683,4 +684,4 @@ class pyemb:
         self.__adfoufname = ""
         self.__psioufname = ""
 
-        self.__grifilename = "grid.dat"
+        self.__gridfilename = "grid.dat"
