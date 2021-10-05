@@ -221,6 +221,9 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
     embfactory.initialize()
     grid = embfactory.get_grid() 
 
+    if (pberthaopt.debug):
+       numpy.savetxt ("grid.txt", grid)
+
     if not restart:
         rho = bertha.get_density_on_grid(grid)
 
