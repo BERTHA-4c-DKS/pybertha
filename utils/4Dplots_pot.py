@@ -101,6 +101,8 @@ ax2.set_zlabel('Z')
 #Show plots
 plt.show()
 
+S = S.reshape(100, 100, 100)
+
 mlab.pipeline.image_plane_widget(mlab.pipeline.scalar_field(S),
                             plane_orientation='x_axes',
                             slice_index=50,
