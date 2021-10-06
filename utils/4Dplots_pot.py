@@ -2,7 +2,11 @@ from os import path
 import numpy as np
 from mayavi import mlab
 from scipy.interpolate import RegularGridInterpolator
+from scipy.interpolate import griddata as gd
 
+
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as plt
 import sys
 
 filename = ""
@@ -36,38 +40,77 @@ for line in fp:
     else:
         print("ERROR at line ", line)
 
-print(len(set(xs)), len(xs))
+#print(len(set(xs)), len(xs))
+#print(len(set(ys)), len(ys))
+#print(len(set(zs)), len(zs))
 
-print(len(set(ys)), len(ys))
-
-print(len(set(zs)), len(zs))
-
-x, y, z = np.ogrid[min(xs):max(xs):100j, \
+#generate new grid
+xi, yi, zi = np.ogrid[min(xs):max(xs):100j, \
     min(ys):max(ys):100j, \
         min(zs):max(zs):100j]
 
-s = np.sin(x*y*z)/(x*y*z)
+X1 = xi.reshape(xi.shape[0],)
+Y1 = yi.reshape(yi.shape[1],)
+Z1 = zi.reshape(zi.shape[2],)
 
-print(s.shape)
+ar_len=len(X1)*len(Y1)*len(Z1)
+X = np.arange(ar_len,dtype=float)
+Y = np.arange(ar_len,dtype=float)
+Z = np.arange(ar_len,dtype=float)
 
-print(min(xs), max(xs))
+l=0
+for i in range(0,len(X1)):
+    for j in range(0,len(Y1)):
+        for k in range(0,len(Z1)):
+            X[l]=X1[i]
+            Y[l]=Y1[j]
+            Z[l]=Z1[k]
+            l=l+1
+
+print("Interpolate...")
+S = gd((xs,ys,zs), s, (X,Y,Z), method='linear')
+print("")
+
+#s = np.sin(x*y*z)/(x*y*z)
+print(S.shape, type(S))
+#print(min(xs), max(xs))
 
 #mlab.contour3d(s)
 
 
 #mlab.pipeline.volume(mlab.pipeline.scalar_field(s), vmin=0, vmax=0.8)
 
+#Plot original values
+fig1 = plt.figure()
+ax1=fig1.gca(projection='3d')
+sc1=ax1.scatter(xs, ys, zs, c=s, cmap=plt.hot())
+plt.colorbar(sc1)
+ax1.set_xlabel('X')
+ax1.set_ylabel('Y')
+ax1.set_zlabel('Z')
 
-mlab.pipeline.image_plane_widget(mlab.pipeline.scalar_field(s),
+#Plot interpolated values
+fig2 = plt.figure()
+ax2=fig2.gca(projection='3d')
+sc2=ax2.scatter(X, Y, Z, c=S, cmap=plt.hot())
+plt.colorbar(sc2)
+ax2.set_xlabel('X')
+ax2.set_ylabel('Y')
+ax2.set_zlabel('Z')
+
+#Show plots
+plt.show()
+
+mlab.pipeline.image_plane_widget(mlab.pipeline.scalar_field(S),
                             plane_orientation='x_axes',
                             slice_index=50,
                         )
-mlab.pipeline.image_plane_widget(mlab.pipeline.scalar_field(s),
+mlab.pipeline.image_plane_widget(mlab.pipeline.scalar_field(S),
                             plane_orientation='y_axes',
                             slice_index=50,
                         )
 mlab.outline()
-mlab.volume_slice(s, plane_orientation='x_axes', slice_index=30)
+mlab.volume_slice(S, plane_orientation='x_axes', slice_index=30)
 
 mlab.show()
 
