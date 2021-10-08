@@ -1047,7 +1047,7 @@ if __name__ == "__main__":
 
     for j in range(1,niter+1):
         # now we have to update vemb :(
-        if ((not args.fde) and args.iterative):
+        if ((not args.nofde) and args.iterative):
           if ( ( j % int(args.period/dt) ) == 0.0 ):
             start_fde = time.time()
             cstart_fde = time.process_time()
