@@ -9,6 +9,8 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 import sys
 
+N = 100
+
 filename = ""
 
 if len(sys.argv) != 2:
@@ -44,10 +46,13 @@ for line in fp:
 #print(len(set(ys)), len(ys))
 #print(len(set(zs)), len(zs))
 
+
+print(min(s), max(s))
+
 #generate new grid
-xi, yi, zi = np.ogrid[min(xs):max(xs):100j, \
-    min(ys):max(ys):100j, \
-        min(zs):max(zs):100j]
+xi, yi, zi = np.ogrid[min(xs):max(xs):N*1j, \
+    min(ys):max(ys):N*1j, \
+        min(zs):max(zs):N*1j]
 
 X1 = xi.reshape(xi.shape[0],)
 Y1 = yi.reshape(yi.shape[1],)
@@ -78,8 +83,6 @@ print(S.shape, type(S))
 #mlab.contour3d(s)
 
 
-#mlab.pipeline.volume(mlab.pipeline.scalar_field(s), vmin=0, vmax=0.8)
-
 #Plot original values
 fig1 = plt.figure()
 ax1=fig1.gca(projection='3d')
@@ -101,15 +104,20 @@ ax2.set_zlabel('Z')
 #Show plots
 plt.show()
 
-S = S.reshape(100, 100, 100)
+
+S = S.reshape(N, N, N)
+"""
+mlab.pipeline.volume(mlab.pipeline.scalar_field(S), vmin=0, vmax=500)
+
+"""
 
 mlab.pipeline.image_plane_widget(mlab.pipeline.scalar_field(S),
                             plane_orientation='x_axes',
-                            slice_index=50,
+                            slice_index=int(N/2),
                         )
 mlab.pipeline.image_plane_widget(mlab.pipeline.scalar_field(S),
                             plane_orientation='y_axes',
-                            slice_index=50,
+                            slice_index=int(N/2),
                         )
 mlab.outline()
 mlab.volume_slice(S, plane_orientation='x_axes', slice_index=30)
