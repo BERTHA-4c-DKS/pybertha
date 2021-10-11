@@ -12,6 +12,7 @@ import sys
 TYPES = 4
 N = 50
 CUTTHR = -0.1
+WEI = True
 
 gridfilename = ""
 fieldfilename = ""
@@ -25,7 +26,6 @@ else:
     TYPES =int(sys.argv[3])
 
 fp = open(gridfilename)
-grid = []
 w = []
 
 xs = []
@@ -39,7 +39,6 @@ for line in fp:
         y = np.float64(sline[1])
         z = np.float64(sline[2])
         v = np.float64(sline[3])
-        grid.append((x, y, z, v))
         w.append(v)
         xs.append(x)
         ys.append(y)
@@ -55,15 +54,19 @@ s = []
 rmin = np.float64("inf")
 rmax = np.float64("-inf")
 
-for line in fp:
+for i, line in enumerate(fp):
     v = np.float64(line)
+    #print(v, line, w[i])
     if v < rmin :
         rmin = v
     if v > rmax :
         rmax = v
-    if v < CUTTHR:
-        v = 0.0
-    s.append(v)
+    #if v < CUTTHR:
+    #    v = 0.0
+    if WEI :
+        s.append(v*w[i])
+    else:
+        s.append(v)
 
 fp.close()
 
