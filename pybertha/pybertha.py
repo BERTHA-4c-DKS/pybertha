@@ -1,8 +1,6 @@
 import argparse
-import ctypes
 import numpy
 import sys
-import re
 
 import os.path
 
@@ -43,6 +41,8 @@ class pyberthaoption:
     deltay: numpy.float64 = 0.2
     deltaz: numpy.float64 = 0.2
     lmargin: numpy.float64 = 10.0
+    gridfilename: str = ""
+    potfilename: str =  ""
 
 ##########################################################################################
 
@@ -411,6 +411,9 @@ if __name__ == "__main__":
     parser.add_argument("--zmax", help="cube zmax (default =  10.0)", required=False,
             type=numpy.float64, default=10.0)
 
+    parser.add_argument("--addgridpot", help="Import a custom grid potential [\"gridfile.txt;pofile.txt\"]", required=False,
+            type=str, default="")
+
     args = parser.parse_args()
 
     for path in args.modpaths.split(";"):
@@ -418,8 +421,20 @@ if __name__ == "__main__":
 
     modpaths = os.environ.get('PYBERTHA_MOD_PATH')
 
-    for path in modpaths.split(";"):
-        sys.path.append(path)
+    if not modpaths is None :
+        for path in modpaths.split(";"):
+            sys.path.append(path)
+
+    gridfilename = ""
+    potfilename = ""
+
+    if args.addgridpot != "":
+        if len(args.addgridpot.split(";")) == 2:
+            gridfilename = args.addgridpot.split(";")[0]
+            potfilename = args.addgridpot.split(";")[1]
+        else:
+            print("ERROR in --addgridpot, you need to specify two filenames ; separated")
+            exit(1)
 
     pberthaopt = pyberthaoption
 
@@ -485,10 +500,10 @@ if __name__ == "__main__":
     pberthaopt.xmax = args.xmax
     pberthaopt.ymax = args.ymax
     pberthaopt.zmax = args.zmax
+    pberthaopt.gridfilename = gridfilename
+    pberthaopt.potfilename = potfilename
 
-
-    import resource, sys
-
+    #import resource
     #rsrc = resource.RLIMIT_STACK
     #soft, hard = resource.getrlimit(rsrc)
     #print("Limit starts as:", soft, hard)
