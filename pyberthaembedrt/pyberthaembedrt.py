@@ -18,8 +18,9 @@ from scipy.linalg import eigh
 
 modpaths = os.environ.get('PYBERTHA_MOD_PATH')
 
-for path in modpaths.split(";"):
-    sys.path.append(path)
+if modpaths is not None :
+    for path in modpaths.split(";"):
+        sys.path.append(path)
 
 import pyberthaembed
 import berthamod

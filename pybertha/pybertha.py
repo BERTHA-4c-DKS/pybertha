@@ -421,7 +421,7 @@ if __name__ == "__main__":
 
     modpaths = os.environ.get('PYBERTHA_MOD_PATH')
 
-    if not modpaths is None :
+    if modpaths is not None :
         for path in modpaths.split(";"):
             sys.path.append(path)
 
