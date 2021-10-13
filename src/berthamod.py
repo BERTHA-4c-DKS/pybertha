@@ -62,6 +62,55 @@ def read_grid_file (filename):
 
 ###############################################################################
 
+def read_sgrid_file (filename):
+    grid = None
+    num = sum(1 for line in open(filename))
+
+    if os.path.isfile(filename):
+        fp = open(filename)
+
+        grid = numpy.zeros((num, 4))
+        grid = numpy.ascontiguousarray(grid, dtype=numpy.double)
+
+        for i, line in enumerate(fp):
+            sline = line.split()
+
+            if len(sline) != 4:
+                return None
+
+            for j, s in enumerate(sline):
+                if not isdouble(s):
+                    return None
+                else:
+                    grid[i, j] = numpy.double(s)
+
+        fp.close()
+
+    return grid
+
+###############################################################################
+
+def read_pot_file (filename):
+    pot = None
+
+    num = sum(1 for line in open(filename))
+
+    if os.path.isfile(filename):
+        fp = open(filename)
+        pot = numpy.zeros((num))
+        pot = numpy.ascontiguousarray(pot, dtype=numpy.double)
+
+        for i, line in enumerate(fp):
+            if not isdouble(line):
+                return None
+            pot[i] = numpy.double(line)
+
+        fp.close()
+
+    return pot
+
+###############################################################################
+
 def read_grid_ampot_file (filename):
     grid = None
     pot = None

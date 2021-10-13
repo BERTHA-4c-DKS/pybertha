@@ -146,7 +146,23 @@ def runspbertha (pberthaopt):
     start = time.time()
     cstart = time.process_time() 
 
-    #print(process.memory_info())  # in bytes 
+    #print(process.memory_info())  # in bytes
+
+    if pberthaopt.gridfilename != "" and \
+        pberthaopt.potfilename != "":
+
+        if os.path.isfile(pberthaopt.gridfilename) and \
+            os.path.isfile(pberthaopt.potfilename):
+            grid = berthamod.read_sgrid_file (pberthaopt.gridfilename)
+            pot = berthamod.read_pot_file (pberthaopt.potfilename)
+
+            if (pot is not None) and (grid is not None):
+                if grid.shape[0] == pot.shape[0]:
+                    bertha.set_embpot_on_grid(grid, pot)
+                else:
+                    print("ERROR: grid and pot files are not compatible")
+                    exit(1)
+
 
     ovapm, eigem, fockm, eigen = bertha.run()
     
