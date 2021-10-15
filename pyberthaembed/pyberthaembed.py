@@ -277,7 +277,7 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
         if stdoutprint:
             print("Dump ground state unperturbed density " + pberthaopt.denistyzero)
 
-        if pberthaopt.densityzer != "": 
+        if pberthaopt.densityzero != "": 
             bertha.density_to_cube(Da0.T, pberthaopt.denistyzero, \
                 drx=pberthaopt.drx, dry=pberthaopt.dry, drz=pberthaopt.drz, \
                 margin=pberthaopt.margin)
