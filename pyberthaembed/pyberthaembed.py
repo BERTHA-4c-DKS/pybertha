@@ -37,7 +37,7 @@ class pyberthaembedoption:
     static_field : bool = False
     fmax : numpy.float64 = 1.0e-5
     fdir: int = 2
-    denistyzero: str = ""
+    densityzero: str = ""
     density : str = ""
     drx: float = 0.1
     dry: float = 0.1
@@ -672,7 +672,7 @@ if __name__ == "__main__":
     pberthaopt.excfuncenv = args.env_func
 
     if args.cube:
-        pberthaopt.denistyzero = "density0.cube"
+        pberthaopt.densityzero = "density0.cube"
         pberthaopt.density = "density.cube"
         pberthaopt.drx = args.deltax 
         pberthaopt.dry = args.deltay
