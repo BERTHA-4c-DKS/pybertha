@@ -37,8 +37,8 @@ class pyberthaembedoption:
     static_field : bool = False
     fmax : numpy.float64 = 1.0e-5
     fdir: int = 2
-    denistyzero: str = "density0.cube"
-    density : str = "density.cube"
+    denistyzero: str = ""
+    density : str = ""
     drx: float = 0.1
     dry: float = 0.1
     drz: float = 0.1
@@ -276,10 +276,11 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
   
         if stdoutprint:
             print("Dump ground state unperturbed density " + pberthaopt.denistyzero)
-    
-        bertha.density_to_cube(Da0.T, pberthaopt.denistyzero, \
-            drx=pberthaopt.drx, dry=pberthaopt.dry, drz=pberthaopt.drz, \
-            margin=pberthaopt.margin)
+
+        if pberthaopt.densityzer != "": 
+            bertha.density_to_cube(Da0.T, pberthaopt.denistyzero, \
+                drx=pberthaopt.drx, dry=pberthaopt.dry, drz=pberthaopt.drz, \
+                margin=pberthaopt.margin)
 
         dipx_ref = numpy.trace(numpy.matmul(Da0,dipx_mat)).real
         dipy_ref = numpy.trace(numpy.matmul(Da0,dipy_mat)).real
@@ -342,12 +343,12 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
            totpot = numpy.ascontiguousarray(totpot, dtype=numpy.double)
 
            if (pberthaopt.debug):
-           	numpy.savetxt ("fullpot%d.txt"%(out_iter), totpot)
+           	    numpy.savetxt ("fullpot%d.txt"%(out_iter), totpot)
 
            bertha.set_embpot_on_grid(grid, totpot)
         else:
            if (pberthaopt.debug):
-           	numpy.savetxt ("fullpot%d.txt"%(out_iter), pot)
+                numpy.savetxt ("fullpot%d.txt"%(out_iter), pot)
  
            bertha.set_embpot_on_grid(grid, pot)
         
@@ -395,9 +396,10 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
       
             if stdoutprint:
                 print("Dump ground state perturbed density " + pberthaopt.density)
-            
-            bertha.density_to_cube(Da.T, pberthaopt.density, drx=pberthaopt.drx, \
-              dry=pberthaopt.dry, drz=pberthaopt.drz, margin=pberthaopt.margin)
+
+            if pberthaopt.density != "": 
+                bertha.density_to_cube(Da.T, pberthaopt.density, drx=pberthaopt.drx, \
+                    dry=pberthaopt.dry, drz=pberthaopt.drz, margin=pberthaopt.margin)
 
             bertha.realtime_init()
 
@@ -468,12 +470,19 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
 
             bertha.realtime_init()
 
-            dipx_mat, dipy_mat, dipz_mat = \
-		bertha.get_realtime_dipolematrix (0, normalise)
+            dipx_mat, dipy_mat, dipz_mat = bertha.get_realtime_dipolematrix (0, normalise)
 
-            bertha.density_to_cube(Da.T, "density.cube",drx=0.1,dry=0.1,drz=0.1,margin=5.5)
+            if pberthaopt.density != "":
+               bertha.density_to_cube(Da.T, pberthaopt.density,  drx=pberthaopt.drx, \
+                    dry=pberthaopt.dry, drz=pberthaopt.drz, margin=pberthaopt.margin)
+
             bertha.finalize()
             break
+
+        if out_iter == maxiter-1:
+            if pberthaopt.density != "":
+               bertha.density_to_cube(Da.T, pberthaopt.density,  drx=pberthaopt.drx, \
+                    dry=pberthaopt.dry, drz=pberthaopt.drz, margin=pberthaopt.margin)
 
         Dold = Da
         Eold = etotal2
@@ -590,6 +599,17 @@ if __name__ == "__main__":
     parser.add_argument("--berthamaxit", help="set bertha maxiterations (default = %d)"%(MAXIT), 
         required=False, type=int, default=MAXIT)
 
+    parser.add_argument("--cube", help="Specify if density need to be saved in cube file format (default: 0)", required=False,
+               default=False, action="store_true")
+    parser.add_argument("--deltax", help="cube dx step (default = 0.2)", required=False,
+            type=numpy.float64, default=0.2)
+    parser.add_argument("--deltay", help="cube dy step (default = 0.2)", required=False,
+            type=numpy.float64, default=0.2)
+    parser.add_argument("--deltaz", help="cube dz step (default = 0.2)", required=False,
+            type=numpy.float64, default=0.2)
+    parser.add_argument("--lmargin", help="cube margin parameter (default = 10.0)", required=False,
+            type=numpy.float64, default=10.0)
+
    
     args = parser.parse_args()
   
@@ -650,5 +670,13 @@ if __name__ == "__main__":
     pberthaopt.thresh_conv = args.embthresh
     pberthaopt.basis = args.env_obs
     pberthaopt.excfuncenv = args.env_func
+
+    if args.cube:
+        pberthaopt.denistyzero = "density0.cube"
+        pberthaopt.density = "density.cube"
+        pberthaopt.drx = args.deltax 
+        pberthaopt.dry = args.deltay
+        pberthaopt.drz = args.deltaz
+        pberthaopt.margin = args.lmargin
 
     runspberthaembed (pberthaopt, args.restart)
