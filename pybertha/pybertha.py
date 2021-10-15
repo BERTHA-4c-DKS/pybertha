@@ -162,6 +162,10 @@ def runspbertha (pberthaopt):
                 else:
                     print("ERROR: grid and pot files are not compatible")
                     exit(1)
+        else:
+            print("ERROR: "+ pberthaopt.gridfilename + " and/or " + 
+               pberthaopt.potfilename + " do not exist")
+            exit(1)
 
 
     ovapm, eigem, fockm, eigen = bertha.run()
