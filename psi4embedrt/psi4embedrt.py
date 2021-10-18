@@ -154,7 +154,7 @@ def scfiterations (args, maxiter, jk, H, Cocc, func, wfn, D, vemb, E, Eold, \
             F = psi4.core.Matrix.from_array(diis.extrapolate())
        
             # Diagonalize Fock matrix
-            C, Cocc, D = build_orbitals(F)
+            orbene, C, Cocc, D = build_orbitals(F)
        
             if SCF_ITER == maxiter:
                 psi4.core.clean()
@@ -226,7 +226,7 @@ def scfiterations (args, maxiter, jk, H, Cocc, func, wfn, D, vemb, E, Eold, \
              break # for args.fde = False, quit the outer loop of splitSCF scheme
     #end outer loop
 
-    return D, C, Cocc, F, SCF_E, twoel, Exc
+    return D, C, Cocc, F, SCF_E, twoel, Exc, orbene
 
     # Diagonalize routine
 
@@ -247,7 +247,7 @@ def build_orbitals(diag):
     
     D = psi4.core.Matrix.doublet(Cocc, Cocc, False, True)
       
-    return C, Cocc, D
+    return eigvals, C, Cocc, D
 
 ########################################################################################################
 
@@ -707,7 +707,7 @@ if __name__ == "__main__":
     start = time.time()
     cstart = time.process_time()
 
-    D, C, Cocc, F, SCF_E, twoel, Exc = scfiterations (args, maxiter, jk, H, Cocc, func, \
+    D, C, Cocc, F, SCF_E, twoel, Exc, orb_eigv = scfiterations (args, maxiter, jk, H, Cocc, func, \
       wfn, D, vemb, E, Eold, Fock_list, DIIS_error,  phi, agrid, densgrad, denshess, \
         isolated_elpot_enviro, E_conv, D_conv)
     
@@ -719,6 +719,15 @@ if __name__ == "__main__":
     print('Final DFT energy: %.16f hartree' % SCF_E)
     print('    twoel energy: %.16f hartree' % twoel)
     print('       xc energy: %.16f hartree' % Exc)
+    
+    print('Orbital Energies [Eh]\n')
+    print('Doubly Occupied:\n')
+    for k in range(ndocc):
+         print('%iA : %.6f' %(k+1,orb_eigv.np[k]))
+    print('Virtual:\n')
+
+    for k in range(ndocc,nbf):
+         print('%iA : %.6f'% (k+1,eig_eigv.np[k]))
 
     dipz = np.matmul(np.array(D),np.array(dipole[2]))
     dipvalz = np.trace(2.0*dipz) #+ Ndip[2]
