@@ -727,7 +727,7 @@ if __name__ == "__main__":
     print('Virtual:\n')
 
     for k in range(ndocc,nbf):
-         print('%iA : %.6f'% (k+1,eig_eigv.np[k]))
+         print('%iA : %.6f'% (k+1,orb_eigv.np[k]))
 
     dipz = np.matmul(np.array(D),np.array(dipole[2]))
     dipvalz = np.trace(2.0*dipz) #+ Ndip[2]
