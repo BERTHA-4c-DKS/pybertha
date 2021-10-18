@@ -220,8 +220,12 @@ def normal_run_init (args):
         exit(1)
    
     debug = args.debug
-    fgeom = args.geom
-    basis_set = args.obs
+    fgeomA = args.geomA
+    fgeomB = args.geomB
+    charge = args.charge
+
+    basis_set1 = args.obs1
+    basis_set2 = args.obs2
     direction = args.axis
     HL = args.principal
     
@@ -236,8 +240,22 @@ def normal_run_init (args):
     do_weighted = occlist.pop(0)
     virtlist = molist[1].split(";")
     virtlist = [int(m) for m in virtlist]
+    #geometry set
+    #print("Reaading geometry from ", fgeom)
+    geom,speclist, mol = util.set_input(fgeomA,fgeomB,charge)
+    psi4.core.IO.set_default_namespace("mol")
+    def basisspec_psi4_yo__anonymous775(mol,role):
+        mol.set_basis_all_atoms(basis_set2, role=role)
+        for k in speclist:
+          mol.set_basis_by_label(k, basis_set1,role=role)
+        return {}
 
-    psi4options = {'basis': basis_set,
+
+
+    #the basis set object for the complex: a composite basis set for rt applications
+    psi4.qcdb.libmintsbasisset.basishorde['USERDEFINED'] = basisspec_psi4_yo__anonymous775
+
+    psi4options = {'basis': 'userdefined',
                    'puream': use_am,
                    #'DF_BASIS_SCF' : 'cc-pvqz-jkfit',
                    'dft_radial_scheme' : 'becke',
@@ -250,9 +268,9 @@ def normal_run_init (args):
                    'scf_type': 'direct',
                    'DF_SCF_GUESS': 'False',
                    'cubeprop_tasks': ['density'],
-                   'CUBIC_GRID_OVERAGE' : [7.0,7.0,7.0],
+                   'CUBIC_GRID_OVERAGE' : [5.0,5.0,5.0],
                    'CUBEPROP_ISOCONTOUR_THRESHOLD' : 1.0,
-                   'CUBIC_GRID_SPACING' : [0.1,0.1,0.1],
+                   'CUBIC_GRID_SPACING' : [0.2,0.2,0.2],
                    'e_convergence': 1e-8,
                    'd_convergence': 1e-8}
 
@@ -285,14 +303,12 @@ def normal_run_init (args):
     ######################################
     #memory
     psi4.set_memory(int(2e9))
+    psi4.set_num_threads(psi4_nthreads)
     #output
     psi4.core.set_output_file(dbgfnames[1], False)
     #basis set options etc
     psi4.set_options(psi4options)
-    #geometry set
-    print("Reaading geometry from ", fgeom)
-    geom, mol = util.set_input(fgeom)
-    numpy_memory = 8
+    numpy_memory = 40
     #build dummy wfn
     mol_wfn = psi4.core.Wavefunction.build( \
             mol,psi4.core.get_global_option('basis'))
@@ -324,6 +340,7 @@ def normal_run_init (args):
     else:
         ene, wfn = psi4.energy(calc_params['func_type'],return_wfn=True)
     print("Using ", calc_params['func_type']) 
+    print(speclist)
     psi4.cubeprop(wfn)
     os.rename("Da.cube",cfnames[0])
     os.rename("Db.cube",cfnames[1])
@@ -505,8 +522,10 @@ def restart_init (args):
     args.principal = json_data["args.principal"]
     args.axis = json_data["args.axis"]
     args.select = json_data["args.select"]
-    args.geom = json_data["args.geom"]
-    args.obs = json_data["args.obs"]
+    args.geomA = json_data["args.geomA"]
+    args.geomB = json_data["args.geomB"]
+    args.obs1 = json_data["args.obs1"]
+    args.obs2 = json_data["args.obs2"]
     args.puream = json_data["args.puream"]
     args.psi4root = json_data["args.psi4root"]
     args.psi4basis = json_data["args.psi4basis"]
@@ -651,9 +670,15 @@ if __name__ == "__main__":
     parser.add_argument("--select", help="Specify the occ-virt MO weighted dipole moment. " + \
             "(-2; 0 & 0 to activate) (default: 0; 0 & 0)",
             default="0; 0 & 0", type=str)
-    parser.add_argument("-g","--geom", help="Specify geometry file", required=False, 
+    parser.add_argument("-gA","--geomA", help="Specify geometry file", required=False, 
             type=str, default="geom.xyz")
-    parser.add_argument("-o","--obs", help="Specify the orbital basis set", required=False, 
+    parser.add_argument("-gB","--geomB", help="Specify geometry file", required=False, 
+            type=str, default="geom.xyz")
+    parser.add_argument("-z", "--charge", help="The system charge  default 0)",
+            default=0, type = int)
+    parser.add_argument("-o1","--obs1", help="Specify the 'accurate' orbital basis set", required=False, 
+            type=str, default="cc-pvdz")
+    parser.add_argument("-o2","--obs2", help="Specify the 'general' orbital basis set", required=False, 
             type=str, default="cc-pvdz")
     parser.add_argument("--puream", help="Use pure am basis set", required=False, 
             default=False, action="store_true" )
@@ -721,7 +746,8 @@ if __name__ == "__main__":
 
     os.environ['PSI4ROOT']="/home/matteod/local/psi4rc/lib"
     os.environ['PYBERTHAROOT'] = "/home/matteod/pybertha/"
-
+    
+    psi4_nthreads = int(os.getenv('OMP_NUM_THREADS', 1))
 
     if args.psi4root != "":
         sys.path.append(args.psi4root)
@@ -755,6 +781,7 @@ if __name__ == "__main__":
 
         mol = psi4.geometry(geom)
         psi4.set_options(psi4options)
+        psi4.set_num_threads(psi4_nthreads)
         mol_wfn = psi4.core.Wavefunction.build( \
                 mol,psi4.core.get_global_option('basis'))
         basisset = mol_wfn.basisset()
