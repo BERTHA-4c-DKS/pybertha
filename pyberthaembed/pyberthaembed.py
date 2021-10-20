@@ -37,7 +37,7 @@ class pyberthaembedoption:
     static_field : bool = False
     fmax : numpy.float64 = 1.0e-5
     fdir: int = 2
-    denistyzero: str = ""
+    densityzero: str = ""
     density : str = ""
     drx: float = 0.1
     dry: float = 0.1
@@ -277,7 +277,7 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
         if stdoutprint:
             print("Dump ground state unperturbed density " + pberthaopt.denistyzero)
 
-        if pberthaopt.densityzer != "": 
+        if pberthaopt.densityzero != "": 
             bertha.density_to_cube(Da0.T, pberthaopt.denistyzero, \
                 drx=pberthaopt.drx, dry=pberthaopt.dry, drz=pberthaopt.drz, \
                 margin=pberthaopt.margin)
@@ -672,7 +672,7 @@ if __name__ == "__main__":
     pberthaopt.excfuncenv = args.env_func
 
     if args.cube:
-        pberthaopt.denistyzero = "density0.cube"
+        pberthaopt.densityzero = "density0.cube"
         pberthaopt.density = "density.cube"
         pberthaopt.drx = args.deltax 
         pberthaopt.dry = args.deltay
