@@ -18,7 +18,12 @@ if len(sys.argv) != 4:
 else:
     gridfilename = sys.argv[1]
     fieldfilename = sys.argv[2]
-    WEI =bool(sys.argv[3])
+
+    if (int(sys.argv[3]) == 1):
+        WEI = True
+    else:
+        WEI = False
+
 
 fp = open(gridfilename)
 w = []
