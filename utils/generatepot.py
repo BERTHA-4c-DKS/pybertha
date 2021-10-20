@@ -51,7 +51,8 @@ for i, v in enumerate(w):
     r = math.sqrt(x**2 + y**2 + z**2)
 
     if r >= rmin and r <= rmin+d:
-        s.append(0.302 / w[i])
+        #s.append(0.302 / w[i])
+        s.append(0.302 )
     else:
         s.append(0.000)
 

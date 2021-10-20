@@ -6,8 +6,8 @@ from scipy.interpolate import griddata as gd
 from gridData import Grid
 
 
-N = 100
-WEI = True
+N = 50
+WEI = False
 
 gridfilename = ""
 fieldfilename = ""
