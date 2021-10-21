@@ -275,10 +275,10 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
         Da0 = numpy.matmul(occeigv,numpy.conjugate(occeigv.transpose()))
   
         if stdoutprint:
-            print("Dump ground state unperturbed density " + pberthaopt.denistyzero)
+            print("Dump ground state unperturbed density " + pberthaopt.densityzero)
 
         if pberthaopt.densityzero != "": 
-            bertha.density_to_cube(Da0.T, pberthaopt.denistyzero, \
+            bertha.density_to_cube(Da0.T, pberthaopt.densityzero, \
                 drx=pberthaopt.drx, dry=pberthaopt.dry, drz=pberthaopt.drz, \
                 margin=pberthaopt.margin)
 
