@@ -2,6 +2,7 @@ import sys
 import numpy as np
 from scipy.interpolate import RegularGridInterpolator
 from scipy.interpolate import griddata as gd
+from scipy.interpolate import interpn as itp
 
 from gridData import Grid
 
@@ -118,12 +119,20 @@ for zv in Z:
 
 print("Steps: ", dxstep, dzstep, dystep)
 #print("        ", X[1]-X[0], Y[1]-Y[0], Z[1]-Z[0])
-#print(X)
-#print(Y)
-#print(Z)
+#for i, x in enumerate(X):
+#    print(x, Y[i], Z[i])
+
+
+print("Before fit Min Max: ", min(s), max(s))
 
 print("Interpolate...")
-S = gd((xs,ys,zs), s, (X,Y,Z), method='linear')
+S = gd((xs,ys,zs), s, (X,Y,Z), fill_value=0.0, method='linear')
+#S = itp((X,Y,Z), s, (xs,ys,zs), fill_value=0.0, method='linear')
+print("After fit Min Max: ", min(S), max(S))
+
+#for v in S:
+#    print (v)
+
 print("")
 
 #s = np.sin(x*y*z)/(x*y*z)
@@ -131,7 +140,7 @@ S = S.reshape(N, N, N)
 
 #print(S.shape, type(S))
 
-g = Grid(S, origin=[min(xs), min(ys), min(zs)], \
+g = Grid(S, origin=[min(X), min(Y), min(Z)], \
         delta=[dxstep, dystep, dzstep])
 
 g.export(fieldfilename.replace(".txt", ".dx"))

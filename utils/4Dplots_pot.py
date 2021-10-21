@@ -12,7 +12,7 @@ import sys
 TYPES = 4
 N = 50
 CUTTHR = -0.1
-WEI = True
+WEI = False
 
 gridfilename = ""
 fieldfilename = ""
@@ -108,8 +108,10 @@ for i in range(0,len(X1)):
             l=l+1
 
 print("Interpolate...")
-S = gd((xs,ys,zs), s, (X,Y,Z), method='linear')
+S = gd((xs,ys,zs), s, (X,Y,Z), fill_value=0.0, method='linear')
 print("")
+
+print("After fit Min Max: ", min(S), max(S))
 
 #s = np.sin(x*y*z)/(x*y*z)
 #print(S.shape, type(S))

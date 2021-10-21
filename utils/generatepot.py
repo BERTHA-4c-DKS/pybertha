@@ -34,10 +34,9 @@ for line in fp:
 
 fp.close() 
 
-print("X limits: ", min(xs), max(xs))
-print("Y limits: ", min(ys), max(zs))
-print("Z limits: ", min(zs), max(zs))
-
+#print("X limits: ", min(xs), max(xs))
+#print("Y limits: ", min(ys), max(zs))
+#print("Z limits: ", min(zs), max(zs))
 
 rmin = 5.8
 d = 1.9 
