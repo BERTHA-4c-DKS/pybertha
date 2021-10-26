@@ -10,7 +10,7 @@ if len(sys.argv) != 3:
     exit(1)
 else:
     filename = sys.argv[1]
-    iadd = int(sys.atgv[2])
+    iadd = int(sys.argv[2])
 
 #g = Grid(filename)
 gin = Grid(filename)
