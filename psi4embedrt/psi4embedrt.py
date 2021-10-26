@@ -57,7 +57,9 @@ def init_stdout_redirect ():
 
 ########################################################################################################
 
+
 def finalize_stdout_redirect (fname, writef=False):
+
 
     global stdout_fileno 
     global stdout_save 
@@ -122,6 +124,13 @@ def scfiterations (args, maxiter, jk, H, Cocc, func, wfn, D, vemb, E, Eold, \
             ####### 
             F.axpy(1.0, V)
             F.axpy(1.0, vemb)
+            if args.static_field:
+                fmax = args.fmax 
+                fdir = args.fdir
+                F.axpy(fmax,dipole[fdir])
+                print("fdir = %4.16f "%(fdir))
+                print("fmax = %4.16f "%(fmax))
+
             twoel = 2.00*np.trace(np.matmul(np.array(D),np.array(jk.J()[0])))
             # DIIS error build and update
             diis_e = psi4.core.Matrix.triplet(F, D, S, False, False, False)
@@ -132,6 +141,8 @@ def scfiterations (args, maxiter, jk, H, Cocc, func, wfn, D, vemb, E, Eold, \
        
             # SCF energy and update
             SCF_E = 2.0*H.vector_dot(D) + Enuc + Exc + twoel
+            if args.static_field:
+                     SCF_E = SCF_E + 2.0*np.trace(np.matmul(np.array(dipole[fdir]),np.array(D)))*fmax 
        
             dRMS = diis_e.rms()
        
@@ -267,6 +278,14 @@ if __name__ == "__main__":
 
     parser.add_argument("--env_obs", help="Specify the orbital basis set for the enviroment (default: AUG/ADZP)", required=False, 
             type=str, default="AUG/ADZP")
+
+    parser.add_argument("--static_field", help="Add a static field to the SCF (default : False)", required=False,
+            default=False, action="store_true")
+    parser.add_argument("--fmax", help="Static field amplitude (default : 1.0e-5)", required=False,
+            type=np.float64, default=1.0e-5)
+    parser.add_argument("--fdir", help="External field direction (cartesian)  (default: 2)",
+            required=False, type=int, default=2)
+
     parser.add_argument("--env_func", help="Specify the function for the environment density (default: BLYP)", required=False, 
             type=str, default="BLYP")
     parser.add_argument("--act_obs", help="Specify the orbital basis set for the active system (deafult: aug-cc-pvdz)", required=False, 
@@ -331,7 +350,7 @@ if __name__ == "__main__":
       func = calc_params['func_type'] # from input.inp. default : blyp
     
     geom, mol = fde_util.set_input(geomA, basis_set)
-    
+
     ene = None 
     wfn_scf = None
     adfoufname = "./adf.out"
@@ -467,6 +486,7 @@ if __name__ == "__main__":
     D = np.array(wfn_scf.Da())
     C0 = np.array(wfn_scf.Ca()) #unpolarized MOs - for later use
     Dref = np.copy(D)
+    Eref = ene
     mints = psi4.core.MintsHelper(wfn_scf.basisset())
     S = mints.ao_overlap()
     ndocc = wfn_scf.nalpha() 
@@ -738,15 +758,28 @@ if __name__ == "__main__":
     fout = open("emb_res.txt", "w")
     conv = 2.541765 # 1 unit of electric dipole moment (au) = 2.541765 Debye
     conv = 1.0 # for atomic units
-    fout.write('polarized dipole: %.16f, %.16f, %.16f a.u\n' %  (dipvalx*conv,dipvaly*conv,dipvalz*conv))
+    fout.write('polarized (embedding) dipole:  \n')
+    if args.static_field:
+     fout.write('External Field direction: %.16f \n' % args.fdir)
+     fout.write('External Filed strength (a.u.): %.7f \n' %args.fmax)
+    fout.write('polarized electron dipole: %.16f, %.16f, %.16f a.u\n' %  (dipvalx*conv,dipvaly*conv,dipvalz*conv))
+    fout.write('Nuclear dipole:            %.16f, %.16f, %.16f a.u\n' %  (Ndip[0]*conv,Ndip[1]*conv,Ndip[2]*conv))
+    fout.write('total dipole:              %.16f, %.16f, %.16f a.u\n' %  ((dipvalx+Ndip[0])*conv,(dipvaly+Ndip[1])*conv,(dipvalz+Ndip[2])*conv))
+    fout.write('Final DFT energy: %.16f hartree\n' % (SCF_E)) 
+
     dipz = np.matmul(np.array(Dref),np.array(dipole[2]))
     dipvalz = np.trace(2.0*dipz) #+ Ndip[2]
     dipy = np.matmul(np.array(Dref),np.array(dipole[1]))
     dipvaly = np.trace(2.0*dipy) #+ Ndip[1]
     dipx = np.matmul(np.array(Dref),np.array(dipole[0]))
     dipvalx = np.trace(2.0*dipx) #+ Ndip[0]
-    fout.write('unpolarized dipole: %.16f, %.16f, %.16f a.u\n' %  (dipvalx*conv,dipvaly*conv,dipvalz*conv))
+
+    fout.write('unpolarized (no embedding and no external field) dipole: \n')
+    fout.write('unpolarized electron dipole: %.16f, %.16f, %.16f a.u\n' %  (dipvalx*conv,dipvaly*conv,dipvalz*conv))
+    fout.write('Nuclear dipole:              %.16f, %.16f, %.16f a.u\n' %  (Ndip[0]*conv,Ndip[1]*conv,Ndip[2]*conv))
+    fout.write('total unpolarized  dipole:   %.16f, %.16f, %.16f a.u\n' %  ((dipvalx+Ndip[0])*conv,(dipvaly+Ndip[1])*conv,(dipvalz+Ndip[2])*conv))
     print("Ndip : %.8f, %.8f, %.8f\n" % (Ndip[0],Ndip[1],Ndip[2]))
+    fout.write('Final DFT energy: %.16f hartree' % (Eref)) 
     fout.close()
 
     init_stdout_redirect ()
