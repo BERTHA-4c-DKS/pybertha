@@ -13,7 +13,7 @@ gridfilename = ""
 fieldfilename = ""
 
 if len(sys.argv) != 4:
-    print("usage: ", sys.argv[0] , " gridfilename.txtn fieldfilename.txt WEI=[0,1]")
+    print("usage: ", sys.argv[0] , " gridfilename.txt fieldfilename.txt WEI=[0,1]")
     exit(1)
 else:
     gridfilename = sys.argv[1]

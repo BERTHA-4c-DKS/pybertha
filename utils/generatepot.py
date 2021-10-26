@@ -40,6 +40,7 @@ fp.close()
 
 rmin = 5.8
 d = 1.9 
+potval = -0.30134
 
 s = []
 for i, v in enumerate(w):
@@ -51,7 +52,7 @@ for i, v in enumerate(w):
 
     if r >= rmin and r <= rmin+d:
         #s.append(0.302 / w[i])
-        s.append(0.302 )
+        s.append(potval)
     else:
         s.append(0.000)
 
