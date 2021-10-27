@@ -6,7 +6,7 @@ filename = ""
 iadd = 0
 
 if len(sys.argv) != 3:
-    print("usage: ", sys.argv[0] , " gridfilename.txtb extrai")
+    print("usage: ", sys.argv[0] , " gridfilename.txt extrai")
     exit(1)
 else:
     filename = sys.argv[1]
