@@ -301,7 +301,7 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
         print("unperturbed Dip x    ",dipx_ref)
         print("unperturbed Dip y    ",dipy_ref)
         print("unperturbed Dip z    ",dipz_ref)
-    
+
     #if lin_emb=True, a single scf is performed at constant Vemb
     maxiter = 20
     Dold = Da0 
@@ -493,8 +493,63 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
 
         dipx_mat, dipy_mat, dipz_mat = \
             bertha.get_realtime_dipolematrix (0, normalise)
+        
+        """
+        Calculation of the Nuclear dipole (a.u)
+        """
+#####    print("Compute nuclear dipole (a.u.)")
+    
+        numofatom = bertha.get_natoms()
+        tmpcoords = []
+        tmpz      = []
+    
+        for i in range(numofatom):
+    
+             tmpcoords.append(list(bertha.get_coords(i))[0:3])
+             tmpz.append(list(bertha.get_coords(i))[3])
+    
+        matcoords  = numpy.array(tmpcoords)
+        vecZ       = numpy.array(tmpz)
+        vec_nuc_dip= numpy.matmul(vecZ.T,matcoords)
+    
+        nucdipx = vec_nuc_dip[0]
+        nucdipy = vec_nuc_dip[1]
+        nucdipz = vec_nuc_dip[2]
 
         bertha.finalize()
+
+
+    dipx_val = numpy.trace(numpy.matmul(Da,dipx_mat)).real
+    dipy_val = numpy.trace(numpy.matmul(Da,dipy_mat)).real
+    dipz_val = numpy.trace(numpy.matmul(Da,dipz_mat)).real
+
+    if stdoutprint:
+        print("")
+        print("Dip x    ",dipx_val)
+        print("Dip y    ",dipy_val)
+        print("Dip z    ",dipz_val)
+
+        print("MOLECULAR PROPERTIES of ACTIVE SYSTEM IN EMBEDDING:...")
+        print("  ")
+        print("Dipole Moment: ")
+        print("Axis   electronic dipole (a.u.)    nuclear dipole (a.u.)      Total dipole (a.u.)      Total dipole (Debye) ")
+        print(" x     %20.10f    %20.10f     %20.10f      %20.10f "%(dipx_val, nucdipx, dipx_val+nucdipx, (dipx_val+nucdipx)*2.541580))
+        print(" y     %20.10f    %20.10f     %20.10f      %20.10f "%(dipy_val, nucdipy, dipy_val+nucdipy, (dipy_val+nucdipy)*2.541580))
+        print(" z     %20.10f    %20.10f     %20.10f      %20.10f "%(dipz_val, nucdipz, dipz_val+nucdipz, (dipz_val+nucdipz)*2.541580))
+        print("  ")
+        tot_dip_vec = numpy.array([dipx_val+nucdipx,dipy_val+nucdipy,dipz_val+nucdipz])
+        print("Molecular dipole module:  %20.10f (a.u.)  %20.10f (Debye) "%(numpy.linalg.norm(tot_dip_vec), numpy.linalg.norm(tot_dip_vec)*2.541580))
+
+        print("MOLECULAR PROPERTIES OF FREE (without emebedding) ACTIVE SYSTEM")
+        print("  ")
+        print("Dipole Moment: ")
+        print("Axis   electronic dipole (a.u.)    nuclear dipole (a.u.)      Total dipole (a.u.)      Total dipole (Debye) ")
+        print(" x     %20.10f    %20.10f     %20.10f      %20.10f "%(dipx_ref, nucdipx, dipx_ref+nucdipx, (dipx_ref+nucdipx)*2.541580))
+        print(" y     %20.10f    %20.10f     %20.10f      %20.10f "%(dipy_ref, nucdipy, dipy_ref+nucdipy, (dipy_ref+nucdipy)*2.541580))
+        print(" z     %20.10f    %20.10f     %20.10f      %20.10f "%(dipz_ref, nucdipz, dipz_ref+nucdipz, (dipz_ref+nucdipz)*2.541580))
+        print("  ")
+        tot_dip_vec = numpy.array([dipx_ref+nucdipx,dipy_ref+nucdipy,dipz_ref+nucdipz])
+        print("Molecular dipole module:  %20.10f (a.u.)  %20.10f (Debye) "%(numpy.linalg.norm(tot_dip_vec), numpy.linalg.norm(tot_dip_vec)*2.541580))
 
     if stdoutprint:
         print("Dipole moment analitical: Tr(D dip_mat)")
@@ -503,15 +558,6 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
         print("dipZ_mat dim: %i,%i\n" % (dipz_mat.shape))
         print("Da dim: %i,%i\n" % (Da.shape))
 
-    dipx_val = numpy.trace(numpy.matmul(Da,dipx_mat)).real
-    dipy_val = numpy.trace(numpy.matmul(Da,dipy_mat)).real
-    dipz_val = numpy.trace(numpy.matmul(Da,dipz_mat)).real
-
-    if stdoutprint:
-        print("Dip x    ",dipx_val)
-        print("Dip y    ",dipy_val)
-        print("Dip z    ",dipz_val)
-        
         print("TEST dipole moment from density on grid numerical integration")
         print("  ")
         #print("Type density", type(density), density.shape)
