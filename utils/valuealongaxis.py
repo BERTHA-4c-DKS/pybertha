@@ -64,6 +64,22 @@ for iz in range(nz):
 #print(i0x, i0y, i0z)
 #print(x0, y0, z0)
 
+"""
+rmin = 5.8
+d = 1.9 
+potval = -0.30134
+
+x = g.origin[0]
+for i in range(nx):
+    if abs(x) >= rmin and abs(x) <= (rmin + d):
+        v = potval 
+    else :
+        v = 0.0 
+    print(x, v)
+    x = x + deltax
+
+"""
+
 i0z += iadd
 
 x = g.origin[0]
