@@ -49,3 +49,5 @@ $ python3 pyberthaembed.py -gA H2O.xyz -gB NH3.xyz --act_fittset "H:aux4,N:aux4,
 $ conda activate p4env_oldversion
 
 
+$ export PYBERTHA_MOD_PATH="/home/belp/EMBEDDING/pybertha/pyemb;/home/belp/EMBEDDING/xcfun/build/lib/python;/home/belp/EMBEDDING/pybertha/src;/home/belp/EMBEDDING/pyadf/src;/home/belp/EMBEDDING/berthaingen/pybgen;/home/belp/EMBEDDING/pybertha/psi4rt"
+

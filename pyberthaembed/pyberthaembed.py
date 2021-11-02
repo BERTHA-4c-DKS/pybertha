@@ -540,7 +540,7 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
         tot_dip_vec = numpy.array([dipx_val+nucdipx,dipy_val+nucdipy,dipz_val+nucdipz])
         print("Molecular dipole module:  %20.10f (a.u.)  %20.10f (Debye) "%(numpy.linalg.norm(tot_dip_vec), numpy.linalg.norm(tot_dip_vec)*2.541580))
 
-        print("MOLECULAR PROPERTIES OF FREE (without emebedding) ACTIVE SYSTEM")
+        print("MOLECULAR PROPERTIES of ACTIVE SYSTEM WITHOUT EMBEDDING (free active system):...")
         print("  ")
         print("Dipole Moment: ")
         print("Axis   electronic dipole (a.u.)    nuclear dipole (a.u.)      Total dipole (a.u.)      Total dipole (Debye) ")
