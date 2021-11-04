@@ -46,6 +46,8 @@ dx = (abs(min(xs)))/int(N/2)
 dy = (abs(min(ys)))/int(N/2)
 dz = (abs(min(zs)))/int(N/2)
 
+print("Regular_grid")
+print((N+1)**3)
 x = min(xs)
 for ix in range(N+1):
     y = min(ys)
@@ -53,7 +55,7 @@ for ix in range(N+1):
         z = min(zs)
         for iz in range(N+1):
             w = 1.0
-            print("%20.15f %20.15f %20.15f %10.5f"%(x, y, z, w))
+            print("%.15f %.15f %.15f %.5f"%(x, y, z, w))
             z += dz
         y += dy
     x += dx
