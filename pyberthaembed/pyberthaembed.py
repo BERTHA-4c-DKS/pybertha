@@ -93,6 +93,7 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
     static_field = pberthaopt.static_field
     fmax = pberthaopt.fmax 
     fdir = pberthaopt.fdir
+    nofde= pberthaopt.nofde
     eigem = None
     rho = None
     Da0 = None
@@ -340,6 +341,8 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
         # run with Vemb included
         if static_field:
            totpot = pot+fpot
+           if nofde:
+              totpot = fpot
            totpot = numpy.ascontiguousarray(totpot, dtype=numpy.double)
 
            if (pberthaopt.debug):
@@ -349,6 +352,9 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
         else:
            if (pberthaopt.debug):
                 numpy.savetxt ("fullpot%d.txt"%(out_iter), pot)
+           
+           if nofde:
+              pot=numpy.zeros_like(pot)
  
            bertha.set_embpot_on_grid(grid, pot)
         
@@ -407,6 +413,24 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
 
             dipx_mat, dipy_mat, dipz_mat = \
               bertha.get_realtime_dipolematrix (0, normalise)
+
+            numofatom = bertha.get_natoms()
+            tmpcoords = []
+            tmpz      = []
+    
+            for i in range(numofatom):
+    
+                 tmpcoords.append(list(bertha.get_coords(i))[0:3])
+                 tmpz.append(list(bertha.get_coords(i))[3])
+    
+            matcoords  = numpy.array(tmpcoords)
+            vecZ       = numpy.array(tmpz)
+            vec_nuc_dip= numpy.matmul(vecZ.T,matcoords)
+    
+            nucdipx = vec_nuc_dip[0]
+            nucdipy = vec_nuc_dip[1]
+            nucdipz = vec_nuc_dip[2]
+
 
             bertha.finalize()
             break
@@ -608,8 +632,9 @@ if __name__ == "__main__":
         required=False, type=int, default=2)
     parser.add_argument("--gridfname", help="set grid filename (default = grid.dat)",
         required=False, type=str, default="grid.dat")
-
-    parser.add_argument("-l", "--linemb", help="Linearized embedding on: the outer loop is skipped", required=False, 
+    parser.add_argument("-l", "--linemb", help="Linearized embedding on: the outer loop is skipped", required=False,
+            default=False, action="store_true")
+    parser.add_argument("--nofde", help="embedding off: just for test", required=False, 
             default=False, action="store_true")
     parser.add_argument("--static_field", help="Add a static field to the SCF (default : False)", required=False, 
             default=False, action="store_true")
@@ -617,7 +642,6 @@ if __name__ == "__main__":
             type=numpy.float64, default=1.0e-5)
     parser.add_argument("--fdir", help="External field direction (cartesian)  (default: 2)",
             required=False, type=int, default=2)
-
     parser.add_argument("--restart", help="Force restart from a previous initial single-point",
         required=False, action="store_true", default=False)
     parser.add_argument("-c","--fitcoefffile", help="Specify BERTHA fitcoeff output file (default: fitcoeff.txt)",
@@ -702,6 +726,7 @@ if __name__ == "__main__":
     pberthaopt.dumpfiles = args.dumpfiles
     pberthaopt.debug = args.debug
     pberthaopt.linemb = args.linemb
+    pberthaopt.nofde = args.nofde
     pberthaopt.verbosity = args.verbosity
     pberthaopt.thresh = args.thresh
     pberthaopt.static_field = args.static_field
