@@ -14,7 +14,7 @@ PROFILE=no
 USEINTEL=no
 
 #LIBXC
-LIBXC=no
+LIBXC=yes
 
 # use OpenMP with Intel there could be problem related to the stacksize
 # ulimit -s unlimited
@@ -24,7 +24,7 @@ LIBXC=no
 # export OMP_NUM_THREADS=4
 USEOPENMP=no
 
-BERTHAROOT=/home/redo/Project_Bertha/bertha_ng
+BERTHAROOT=/home/belp/EMBEDDING/bertha_ng
 
 ###
 ## NO BLUEGENE
@@ -152,12 +152,15 @@ FFLAGS += -fPIC
 
 ifeq ($(LIBXC),yes)
   # Use libxc of a distribution DIRLIBXC to be set version 4.3.X is needed 
-  #DIRLIBXC = /usr/lib/x86_64-linux-gnu
-  DIRLIBXC = /home/matteod/anaconda3/envs/p4env
-  CFLAGS += -DLIBXC 
-  FFLAGS += -DLIBXC 
+  #
+  # Use libxc of a distribution DIRLIBXC to be set libxc 4.3.x is needed
+  DIRLIBXC = /usr/lib/x86_64-linux-gnu
+  CFLAGS += -DLIBXC
+  FFLAGS += -DLIBXC
   INCLUDE += -I$(DIRLIBXC)/include
   LIBS += -L$(DIRLIBXC)/lib -lxcf90 -lxc
+#  LIBS += -L$(DIRLIBXC) -lxc
+
 endif
 
 ifeq ($(USEINTEL),yes)
