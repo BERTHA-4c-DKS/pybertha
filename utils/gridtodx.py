@@ -125,7 +125,7 @@ print("Steps: ", dxstep, dzstep, dystep)
 print("Before fit Min Max: ", min(s), max(s))
 
 print("Interpolate...")
-S = gd((xs,ys,zs), s, (X,Y,Z), fill_value=0.0, method='linear')
+S = gd((xs,ys,zs), s, (X,Y,Z), fill_value=0.0, method='nearest')
 #S = itp((X,Y,Z), s, (xs,ys,zs), fill_value=0.0, method='linear')
 print("After fit Min Max: ", min(S), max(S))
 
