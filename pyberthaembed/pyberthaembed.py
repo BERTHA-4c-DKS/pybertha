@@ -5,6 +5,7 @@ import sys
 import os
 
 import os.path
+import time
 
 from dataclasses import dataclass
 from pathlib import Path
@@ -319,6 +320,9 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
     dipz_mat = None
 
     for out_iter in range (maxiter):
+        time_iter_start = time.time()
+        process_time_iter_start = time.process_time()
+
 
         bertha.set_fnameinput(fnameinput)
         bertha.set_fittfname(fittfname)
@@ -441,11 +445,35 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
 
         # calculate the embedding potential corresponding to the new density
 
+        time_get_density_on_grid_start = time.time()
+        process_time_get_density_on_grid_start = time.process_time()
+
         rho = bertha.get_density_on_grid(grid)
+
+        time_get_density_on_grid_end= time.time()
+        process_time_get_density_on_grid_end= time.process_time()
+
+
+        print("Fitted density on grid time: %15.5f"%(time_get_density_on_grid_end - time_get_density_on_grid_start), \
+                    " (CPU time: %15.5f"%(process_time_get_density_on_grid_end - process_time_get_density_on_grid_start), ") s ")
+
         density=numpy.zeros((rho.shape[0],10))
         density[:,0] = rho
         pot_old=pot 
+
+        time_start = time.time()
+        process_time_start = time.process_time()
+
         pot = embfactory.get_potential(density)
+
+        time_end= time.time()
+        process_time_end= time.process_time()
+
+        print("Vemb pot on grid: embfactory.get_potential: %15.5f"%(time_end - time_start), \
+                    " (CPU time: %15.5f"%(process_time_end - process_time_start), ") s ")
+
+
+
         #DEBUG
         #pot=numpy.zeros_like(rho)
    
@@ -502,6 +530,16 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
 
             bertha.finalize()
             break
+
+        time_iter_end= time.time()
+        process_time_iter_end= time.process_time()
+
+        print(" Time for each extrenal iteration: %15.5f"%(time_iter_end - time_iter_start), \
+                    " (CPU time: %15.5f"%(process_time_iter_end - process_time_iter_start), ") s ")
+
+
+ 
+
 
         if out_iter == maxiter-1:
             if pberthaopt.density != "":
