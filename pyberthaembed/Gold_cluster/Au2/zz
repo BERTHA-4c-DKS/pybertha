@@ -1,0 +1,82 @@
+usage: pyberthaembed.py [-h] [-gA GEOM_ACT] [-gB GEOM_ENV]
+                        [--embthresh EMBTHRESH] [-d] [--modpaths MODPATHS]
+                        --act_obs ACT_OBS --act_fittset ACT_FITTSET
+                        [--act_func ACT_FUNC] [--env_obs ENV_OBS]
+                        [--env_func ENV_FUNC] [--grid_opts GRID_OPTS]
+                        [--gridfname GRIDFNAME] [-l] [--nofde]
+                        [--static_field] [--fmax FMAX] [--fdir FDIR]
+                        [--restart] [-c FITCOEFFFILE] [-e VCTFILE]
+                        [-p OVAPFILE] [-s] [-v VERBOSITY] [--thresh THRESH]
+                        [--wrapperso WRAPPERSO] [--eda_nocv_info]
+                        [--eda_nocv_frag_file EDA_NOCV_FRAG_FILE]
+                        [-j JSONBASISFILE]
+                        [--convertlengthunit CONVERTLENGTHUNIT]
+                        [--berthamaxit BERTHAMAXIT] [--cube] [--deltax DELTAX]
+                        [--deltay DELTAY] [--deltaz DELTAZ]
+                        [--lmargin LMARGIN]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -gA GEOM_ACT, --geom_act GEOM_ACT
+                        Specify active system (Angstrom) geometry (default:
+                        geomA.xyz)
+  -gB GEOM_ENV, --geom_env GEOM_ENV
+                        Specify frozen system (Angstrom) geometry (default:
+                        geomB.xyz)
+  --embthresh EMBTHRESH
+                        set EMB threshold (default = 1.0e-8)
+  -d, --debug           Debug on, prints debug info to debug_info.txt
+  --modpaths MODPATHS   set berthamod and all other modules path
+                        ["path1;path2;..."] (default = ../src)
+  --act_obs ACT_OBS     Specify BERTHA (Active system) basisset
+                        "atomname1:basisset1,atomname2:basisset2,..."
+  --act_fittset ACT_FITTSET
+                        Specify BERTHA (Active system) fitting set
+                        "atomname1:fittset1,atomname2:fittset2,..."
+  --act_func ACT_FUNC   Specify exchange–correlation energy functional for
+                        active system available: LDA,B88P86,HCTH93,BLYP
+                        (default=BLYP)
+  --env_obs ENV_OBS     Specify the orbital basis set for the enviroment
+                        (default: AUG/ADZP)
+  --env_func ENV_FUNC   Specify the function for the environment density
+                        (default: BLYP)
+  --grid_opts GRID_OPTS
+                        set gridtype (default: 2)
+  --gridfname GRIDFNAME
+                        set grid filename (default = grid.dat)
+  -l, --linemb          Linearized embedding on: the outer loop is skipped
+  --nofde               embedding off: just for test
+  --static_field        Add a static field to the SCF (default : False)
+  --fmax FMAX           Static field amplitude (default : 1.0e-5)
+  --fdir FDIR           External field direction (cartesian) (default: 2)
+  --restart             Force restart from a previous initial single-point
+  -c FITCOEFFFILE, --fitcoefffile FITCOEFFFILE
+                        Specify BERTHA fitcoeff output file (default:
+                        fitcoeff.txt)
+  -e VCTFILE, --vctfile VCTFILE
+                        Specify BERTHA vct output file (default: vct.txt)
+  -p OVAPFILE, --ovapfile OVAPFILE
+                        Specify BERTHA ovap output file (default: ovap.txt)
+  -s, --dumpfiles       Dumpfile on, default is off
+  -v VERBOSITY, --verbosity VERBOSITY
+                        Verbosity level 0 = minim, -1 = print iteration info,
+                        1 = maximum (defaul -1)
+  --thresh THRESH       set bertha threshold (default = 1.0e-11)
+  --wrapperso WRAPPERSO
+                        set wrapper SO (default = ../lib/bertha_wrapper.so)
+  --eda_nocv_info       set to dump info useful for py_eda_nocv
+  --eda_nocv_frag_file EDA_NOCV_FRAG_FILE
+                        set a file (default: info_eda_nocv_fragX.json)
+  -j JSONBASISFILE, --jsonbasisfile JSONBASISFILE
+                        Specify BERTHA JSON file for fitting and basis
+                        (default: fullsets.json)
+  --convertlengthunit CONVERTLENGTHUNIT
+                        Specify a length converter [default=1.0]
+  --berthamaxit BERTHAMAXIT
+                        set bertha maxiterations (default = 100)
+  --cube                Specify if density need to be saved in cube file
+                        format (default: 0)
+  --deltax DELTAX       cube dx step (default = 0.2)
+  --deltay DELTAY       cube dy step (default = 0.2)
+  --deltaz DELTAZ       cube dz step (default = 0.2)
+  --lmargin LMARGIN     cube margin parameter (default = 10.0)

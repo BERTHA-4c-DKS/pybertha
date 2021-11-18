@@ -1,0 +1,15 @@
+Bertha.run including embedd (pp calc)     :        17.40204  (CPU time:        17.40111 ) s 
+Fitted density on grid time               :         0.22089  (CPU time:         0.22089 ) s 
+Vemb pot on grid: embfactory.get_potential:         0.89542  (CPU time:         0.89540 ) s 
+Time for each extrenal iteration          :        18.65811  (CPU time:        18.65716 ) s 
+Bertha.run including embedd (pp calc)     :        17.35809  (CPU time:        17.35738 ) s 
+Fitted density on grid time               :         0.22113  (CPU time:         0.22108 ) s 
+Vemb pot on grid: embfactory.get_potential:         0.89451  (CPU time:         0.89449 ) s 
+Time for each extrenal iteration          :        18.61042  (CPU time:        18.60962 ) s 
+Bertha.run including embedd (pp calc)     :        17.37389  (CPU time:        17.37284 ) s 
+Fitted density on grid time               :         0.22096  (CPU time:         0.22096 ) s 
+Vemb pot on grid: embfactory.get_potential:         0.89181  (CPU time:         0.89180 ) s 
+Time for each extrenal iteration          :        18.62438  (CPU time:        18.62330 ) s 
+Time for onel_pot_from_grid  walltime                         0.23  cputime       0.23
+Time for onel_pot_from_grid  walltime                         0.23  cputime       0.23
+Time for onel_pot_from_grid  walltime                         0.23  cputime       0.23

@@ -1,0 +1,1586 @@
+BERTHA version: 0.11.0 
+ total dimension of the matrix:   2480
+
+ Add to Fit case 2 (or 6) 0 or 1 exact coulomb on
+  total dimension of the matrix:   2480
+
+ total number of fitting function of type c is         614
+ total number of function blocks is          40
+
+ mc =         614
+ the selected case is           2
+ the total number of fittin function is         614
+ the total number of fittin function is         614
+ center            1  num. of func.          620
+ center            2  num. of func.          620
+ ************************************************************
+
+
+         molecular geometry a: cartesian coordinates         
+
+ center        x-coordinate    y-coordinate    z-coordinate
+============================================================
+   au           -6.066647       -3.080060       -2.126574
+ ------------------------------------------------------------
+   au           -2.188449       -0.464264       -1.181705
+ ------------------------------------------------------------
+
+
+                 molecular geometry b: r-matrix              
+
+ c1  c2       bond distance  c1  c2  c3     angle (degrees)  
+============================================================
+  au  au          4.772377
+ ------------------------------------------------------------
+
+
+
+
+           initialze the atomic densities on each center   
+
+
+  lqn:  0 occ:    2   2   2   2   2   1
+  lqn:  1 occ:    6   6   6   6
+  lqn:  2 occ:   10  10  10
+  lqn:  3 occ:   14
+  ----------------------------------------
+  initializing atomic densities for z =  79
+  ----------------------------------------
+  iteration:   1 total energy:  -28836.130748
+  iteration:   2 total energy:  -20499.096734
+  iteration:   3 total energy:  -18566.071579
+  iteration:   4 total energy:  -19046.080367
+  iteration:   5 total energy:  -19048.186172
+  iteration:   6 total energy:  -18952.549128
+  iteration:   7 total energy:  -18998.976434
+  iteration:   8 total energy:  -18985.457225
+  iteration:   9 total energy:  -18986.871849
+  iteration:  10 total energy:  -18987.499768
+  iteration:  11 total energy:  -18987.042403
+  iteration:  12 total energy:  -18987.201221
+  iteration:  13 total energy:  -18987.168895
+  iteration:  14 total energy:  -18987.169051
+  lqn:  0 occ:    2   2   2   2   2   1
+  lqn:  1 occ:    6   6   6   6
+  lqn:  2 occ:   10  10  10
+  lqn:  3 occ:   14
+  ----------------------------------------
+  initializing atomic densities for z =  79
+  ----------------------------------------
+  iteration:   1 total energy:  -28836.130748
+  iteration:   2 total energy:  -20499.096734
+  iteration:   3 total energy:  -18566.071579
+  iteration:   4 total energy:  -19046.080367
+  iteration:   5 total energy:  -19048.186172
+  iteration:   6 total energy:  -18952.549128
+  iteration:   7 total energy:  -18998.976434
+  iteration:   8 total energy:  -18985.457225
+  iteration:   9 total energy:  -18986.871849
+  iteration:  10 total energy:  -18987.499768
+  iteration:  11 total energy:  -18987.042403
+  iteration:  12 total energy:  -18987.201221
+  iteration:  13 total energy:  -18987.168895
+  iteration:  14 total energy:  -18987.169051
+=============================================================
+Time for hden walltime                         2.16  cputime       2.16
+
+Time for the factlu walltime                   0.00  cputime       0.00
+  warning: grid not yet implemented, for z =  79
+  set to default maximum values
+
+
+  warning: grid not yet implemented, for z =  79
+  set to default maximum values
+
+
+ total fitted density   158.00121751712146     
+ functional energy  -728.14122833532213     
+  
+ vxc[fit]*rho[fit] =   -952.87513002284641     
+  
+Time for the zz walltime                       0.62  cputime       0.62
+Total time for the fitting walltime           12.24  cputime      12.24
+
+ ******** energies values ********* 
+  
+ ******** energies fitted values ********* 
+  
+ coulomb  energy(fitting)     :    16047.865046168850     
+ Exc(rhofit)                  :   -728.14122833532213     
+  
+Time for oneel walltime                        5.74  cputime       5.74
+
+Time for shftlv                                0.00  cputime       0.00
+
+Time for the io walltime                       0.07  cputime       0.07
+
+ iteration number:            1
+ level shift parameter =   -2.0000000000000000     
+ eigenvalue number, e:           1  -2961.8723519476675     
+ eigenvalue number, e:           2  -2961.8723519472887     
+ eigenvalue number, e:           3  -2961.8723519433015     
+ eigenvalue number, e:           4  -2961.8723519420541     
+ eigenvalue number, e:           5  -521.47838385477132     
+ eigenvalue number, e:           6  -521.47838385442674     
+ eigenvalue number, e:           7  -521.47838385365094     
+ eigenvalue number, e:           8  -521.47838385287923     
+ eigenvalue number, e:           9  -500.24670510766214     
+ eigenvalue number, e:          10  -500.24670510752338     
+ eigenvalue number, e:          11  -500.24670493307519     
+ eigenvalue number, e:          12  -500.24670493290409     
+ eigenvalue number, e:          13  -432.75073224175867     
+ eigenvalue number, e:          14  -432.75073224159911     
+ eigenvalue number, e:          15  -432.75073224115908     
+ eigenvalue number, e:          16  -432.75073224098378     
+ eigenvalue number, e:          17  -432.75072377402921     
+ eigenvalue number, e:          18  -432.75072377398232     
+ eigenvalue number, e:          19  -432.75072377351302     
+ eigenvalue number, e:          20  -432.75072377348715     
+ eigenvalue number, e:          21  -122.07349494037629     
+ eigenvalue number, e:          22  -122.07349494027193     
+ eigenvalue number, e:          23  -122.07349493934855     
+ eigenvalue number, e:          24  -122.07349493876038     
+ eigenvalue number, e:          25  -112.49053145418473     
+ eigenvalue number, e:          26  -112.49053145377388     
+ eigenvalue number, e:          27  -112.49053145316938     
+ eigenvalue number, e:          28  -112.49053145236017     
+ eigenvalue number, e:          29  -97.567389565675256     
+ eigenvalue number, e:          30  -97.567389565556695     
+ eigenvalue number, e:          31  -97.567389563865902     
+ eigenvalue number, e:          32  -97.567389563662630     
+ eigenvalue number, e:          33  -97.567323289583712     
+ eigenvalue number, e:          34  -97.567323289342625     
+ eigenvalue number, e:          35  -97.567323288254173     
+ eigenvalue number, e:          36  -97.567323288196562     
+ eigenvalue number, e:          37  -81.613142798393511     
+ eigenvalue number, e:          38  -81.613142798156076     
+ eigenvalue number, e:          39  -81.613142793567064     
+ eigenvalue number, e:          40  -81.613142793322695     
+ eigenvalue number, e:          41  -81.613092085698113     
+ eigenvalue number, e:          42  -81.613092085604649     
+ eigenvalue number, e:          43  -81.613092085499346     
+ eigenvalue number, e:          44  -81.613092085471550     
+ eigenvalue number, e:          45  -78.400637485112398     
+ eigenvalue number, e:          46  -78.400637484752579     
+ eigenvalue number, e:          47  -78.400637471749533     
+ eigenvalue number, e:          48  -78.400637471550198     
+ eigenvalue number, e:          49  -78.400619774070762     
+ eigenvalue number, e:          50  -78.400619774017997     
+ eigenvalue number, e:          51  -78.400619765466644     
+ eigenvalue number, e:          52  -78.400619765407910     
+ eigenvalue number, e:          53  -78.400569862628359     
+ eigenvalue number, e:          54  -78.400569862582202     
+ eigenvalue number, e:          55  -78.400569859521823     
+ eigenvalue number, e:          56  -78.400569859512316     
+ eigenvalue number, e:          57  -25.202759880929523     
+ eigenvalue number, e:          58  -25.202759880828491     
+ eigenvalue number, e:          59  -25.202759860866561     
+ eigenvalue number, e:          60  -25.202759860862368     
+ eigenvalue number, e:          61  -21.098172910309216     
+ eigenvalue number, e:          62  -21.098172910284937     
+ eigenvalue number, e:          63  -21.098172893465044     
+ eigenvalue number, e:          64  -21.098172893422674     
+ eigenvalue number, e:          65  -17.496987213801432     
+ eigenvalue number, e:          66  -17.496987213670248     
+ eigenvalue number, e:          67  -17.496987045055498     
+ eigenvalue number, e:          68  -17.496987044878523     
+ eigenvalue number, e:          69  -17.496616956377903     
+ eigenvalue number, e:          70  -17.496616956350685     
+ eigenvalue number, e:          71  -17.496616843201810     
+ eigenvalue number, e:          72  -17.496616843179169     
+ eigenvalue number, e:          73  -10.764229702038175     
+ eigenvalue number, e:          74  -10.764229702022849     
+ eigenvalue number, e:          75  -10.764229700743211     
+ eigenvalue number, e:          76  -10.764229700698245     
+ eigenvalue number, e:          77  -10.763840957891020     
+ eigenvalue number, e:          78  -10.763840957826009     
+ eigenvalue number, e:          79  -10.763840951234775     
+ eigenvalue number, e:          80  -10.763840951139837     
+ eigenvalue number, e:          81  -10.089675673822875     
+ eigenvalue number, e:          82  -10.089675673620597     
+ eigenvalue number, e:          83  -10.089675551439061     
+ eigenvalue number, e:          84  -10.089675551238862     
+ eigenvalue number, e:          85  -10.089559832654309     
+ eigenvalue number, e:          86  -10.089559832523712     
+ eigenvalue number, e:          87  -10.089559661651819     
+ eigenvalue number, e:          88  -10.089559661509345     
+ eigenvalue number, e:          89  -10.089162326616320     
+ eigenvalue number, e:          90  -10.089162326396897     
+ eigenvalue number, e:          91  -10.089162257870210     
+ eigenvalue number, e:          92  -10.089162257656865     
+ eigenvalue number, e:          93  -2.1662059359553867     
+ eigenvalue number, e:          94  -2.1662059357804111     
+ eigenvalue number, e:          95  -2.1657185346915195     
+ eigenvalue number, e:          96  -2.1657185343086969     
+ eigenvalue number, e:          97  -1.4410987664516273     
+ eigenvalue number, e:          98  -1.4410987662597092     
+ eigenvalue number, e:          99  -1.4410875211623231     
+ eigenvalue number, e:         100  -1.4410875211126530     
+ eigenvalue number, e:         101  -1.4409222572818887     
+ eigenvalue number, e:         102  -1.4409222572548641     
+ eigenvalue number, e:         103  -1.4409184343778310     
+ eigenvalue number, e:         104  -1.4409184343407713     
+ eigenvalue number, e:         105  -1.4404701379689788     
+ eigenvalue number, e:         106  -1.4404701377044686     
+ eigenvalue number, e:         107  -1.4404697224113288     
+ eigenvalue number, e:         108  -1.4404697222282938     
+ eigenvalue number, e:         109  -1.2958658349143803     
+ eigenvalue number, e:         110  -1.2958658349075236     
+ eigenvalue number, e:         111  -1.2958393182017156     
+ eigenvalue number, e:         112  -1.2958393181618151     
+ eigenvalue number, e:         113  -1.2957832276246273     
+ eigenvalue number, e:         114  -1.2957832275621204     
+ eigenvalue number, e:         115  -1.2957656252456609     
+ eigenvalue number, e:         116  -1.2957656252364842     
+ eigenvalue number, e:         117  -1.2955364183424347     
+ eigenvalue number, e:         118  -1.2955364182829592     
+ eigenvalue number, e:         119  -1.2955329696599422     
+ eigenvalue number, e:         120  -1.2955329696068900     
+ eigenvalue number, e:         121  -1.2951420341502118     
+ eigenvalue number, e:         122  -1.2951420339921382     
+ eigenvalue number, e:         123  -1.2951419674829610     
+ eigenvalue number, e:         124  -1.2951419674635938     
+ eigenvalue number, e:         125 -0.82084590018386550     
+ eigenvalue number, e:         126 -0.82084589901725602     
+ eigenvalue number, e:         127 -0.81962105828521814     
+ eigenvalue number, e:         128 -0.81962105713720090     
+ eigenvalue number, e:         129 -0.20130399197201276     
+ eigenvalue number, e:         130 -0.20130399175705405     
+ eigenvalue number, e:         131 -0.19547998595905014     
+ eigenvalue number, e:         132 -0.19547998559304824     
+ eigenvalue number, e:         133 -0.19444043479726769     
+ eigenvalue number, e:         134 -0.19444043472077865     
+ eigenvalue number, e:         135 -0.19443179102519892     
+ eigenvalue number, e:         136 -0.19443179071697214     
+ eigenvalue number, e:         137   1.5625310086076971     
+ eigenvalue number, e:         138   1.5625310086670263     
+ eigenvalue number, e:         139   1.5850234704781265     
+ eigenvalue number, e:         140   1.5850234705713691     
+ eigenvalue number, e:         141   1.5949792274926615     
+ eigenvalue number, e:         142   1.5949792275047572     
+ eigenvalue number, e:         143   1.6014745674522630     
+ eigenvalue number, e:         144   1.6014745674913036     
+ eigenvalue number, e:         145   1.6432772822475208     
+ eigenvalue number, e:         146   1.6432772823226964     
+ eigenvalue number, e:         147   1.6526225039922653     
+ eigenvalue number, e:         148   1.6526225040858598     
+ eigenvalue number, e:         149   1.6596812425565888     
+ eigenvalue number, e:         150   1.6596812427692416     
+ eigenvalue number, e:         151   1.6701796660359567     
+ eigenvalue number, e:         152   1.6701796662186337     
+ eigenvalue number, e:         153   1.6768431313018217     
+ eigenvalue number, e:         154   1.6768431313553762     
+ eigenvalue number, e:         155   1.6821094274821480     
+ eigenvalue number, e:         156   1.6821094275445214     
+ eigenvalue number, e:         157   1.7019832769807675     
+ eigenvalue number, e:         158   1.7019832771814356     
+ lumo               e:         159 -0.19461170092196101     
+ total electronic energy =   -39079.871791410937     
+ nuclear repulsion energy =    1307.7339747306999     
+ total energy =   -37772.137816680239     
+  
+ -----------------------------------------------
+Time for dens walltime                         0.22  cputime       0.22
+
+=============================================================
+Total time for iteration    1 walltime        38.47  cputime      38.43
+
+ convergence not obtained in the maximum number
+ of iterations
+  
+ **********************************************
+ final output:
+ convergence obtained in           2      iterations
+  
+ bond length =   -1.1817046000000000     
+ total energy =   -37772.137816680239     
+  
+ total cpu-time used (sec):  -60.608725000000007     
+ **********************************************
+Time for cube is:   0.0000
+  Removing ./resultfiles
+Options: 
+activefile  =  au2.xyz
+basis  =  DZ
+debug  =  False
+density  =  
+densityzero  =  
+drx  =  0.1
+dry  =  0.1
+drz  =  0.1
+dumpfiles  =  False
+eda_nocv_frag_file  =  info_eda_nocv_fragX.json
+eda_nocv_info  =  False
+envirofile  =  w8.xyz
+excfuncenv  =  BLYP
+fdir  =  2
+fitcoefffile  =  fitcoeff.txt
+fittfile  =  fitt2.inp
+fmax  =  1e-05
+gridfname  =  grid.dat
+gtype  =  2
+inputfile  =  input.inp
+linemb  =  False
+margin  =  5.5
+nofde  =  False
+ovapfile  =  ovap.txt
+param  =  4.0
+restartfname  =  restart.npy.npz
+static_field  =  False
+thresh  =  1e-11
+thresh_conv  =  1e-08
+vctfile  =  vct.txt
+verbosity  =  1
+wrapperso  =  /home/belp/EMBEDDING/pybertha/lib/bertha_wrapper.so
+
+
+
+Verbosity       :  1
+Dumpfiles       :  0
+
+Matrix dimension:  2480
+            nocc:  158
+          nshift:  1240
+           nopen:  0
+     level shift:  -2.0
+
+BERTHA version: 0.11.0 
+BERTHA version: 0.11.0 
+ total dimension of the matrix:   2480
+
+ Add to Fit case 2 (or 6) 0 or 1 exact coulomb on
+  total dimension of the matrix:   2480
+
+ total number of fitting function of type c is         614
+ total number of function blocks is          40
+
+ mc =         614
+ the selected case is           2
+ the total number of fittin function is         614
+ the total number of fittin function is         614
+ center            1  num. of func.          620
+ center            2  num. of func.          620
+ ************************************************************
+
+
+         molecular geometry a: cartesian coordinates         
+
+ center        x-coordinate    y-coordinate    z-coordinate
+============================================================
+   au           -6.066647       -3.080060       -2.126574
+ ------------------------------------------------------------
+   au           -2.188449       -0.464264       -1.181705
+ ------------------------------------------------------------
+
+
+                 molecular geometry b: r-matrix              
+
+ c1  c2       bond distance  c1  c2  c3     angle (degrees)  
+============================================================
+  au  au          4.772377
+ ------------------------------------------------------------
+
+
+
+
+=============================================================
+Time for hden walltime                         2.01  cputime       2.00
+
+Time for the factlu walltime                   0.00  cputime       0.00
+  warning: grid not yet implemented, for z =  79
+  set to default maximum values
+
+
+  warning: grid not yet implemented, for z =  79
+  set to default maximum values
+
+
+ total fitted density   158.00193081571391     
+ functional energy  -734.45086703004210     
+  
+ vxc[fit]*rho[fit] =   -961.25020552239994     
+  
+Time for the zz walltime                       0.58  cputime       0.58
+Time for onel_pot_from_grid  walltime                         0.31  cputime       0.31
+
+Total time for the fitting walltime           23.22  cputime      23.18
+
+ ******** energies values ********* 
+  
+ ******** energies fitted values ********* 
+  
+ coulomb  energy(fitting)     :    16263.298962955330     
+ Exc(rhofit)                  :   -734.45086703004210     
+  
+Time for oneel walltime                        4.96  cputime       4.95
+
+Time for shftlv                                6.08  cputime       6.07
+
+Time for the io walltime                       0.07  cputime       0.07
+
+ iteration number:            1
+ level shift parameter =   -2.0000000000000000     
+ eigenvalue number, e:           1  -2960.8899529431528     
+ eigenvalue number, e:           2  -2960.8899529430432     
+ eigenvalue number, e:           3  -2960.8875413877781     
+ eigenvalue number, e:           4  -2960.8875413859682     
+ eigenvalue number, e:           5  -520.91736064056022     
+ eigenvalue number, e:           6  -520.91736064055249     
+ eigenvalue number, e:           7  -520.91495007802087     
+ eigenvalue number, e:           8  -520.91495007624815     
+ eigenvalue number, e:           9  -499.59722545488222     
+ eigenvalue number, e:          10  -499.59722545481497     
+ eigenvalue number, e:          11  -499.59481471448498     
+ eigenvalue number, e:          12  -499.59481471388278     
+ eigenvalue number, e:          13  -432.16287380083952     
+ eigenvalue number, e:          14  -432.16287380083202     
+ eigenvalue number, e:          15  -432.16268671762145     
+ eigenvalue number, e:          16  -432.16268671740039     
+ eigenvalue number, e:          17  -432.16046310612580     
+ eigenvalue number, e:          18  -432.16046310553241     
+ eigenvalue number, e:          19  -432.16027614386127     
+ eigenvalue number, e:          20  -432.16027614369420     
+ eigenvalue number, e:          21  -122.11410726558314     
+ eigenvalue number, e:          22  -122.11410726538296     
+ eigenvalue number, e:          23  -122.11169637989569     
+ eigenvalue number, e:          24  -122.11169637906963     
+ eigenvalue number, e:          25  -112.48544947058922     
+ eigenvalue number, e:          26  -112.48544947051334     
+ eigenvalue number, e:          27  -112.48303889598549     
+ eigenvalue number, e:          28  -112.48303889554349     
+ eigenvalue number, e:          29  -97.631228763044163     
+ eigenvalue number, e:          30  -97.631228762981664     
+ eigenvalue number, e:          31  -97.630048370902287     
+ eigenvalue number, e:          32  -97.630048370854254     
+ eigenvalue number, e:          33  -97.628816662614341     
+ eigenvalue number, e:          34  -97.628816662170948     
+ eigenvalue number, e:          35  -97.627638660360716     
+ eigenvalue number, e:          36  -97.627638660211090     
+ eigenvalue number, e:          37  -81.573782774701030     
+ eigenvalue number, e:          38  -81.573782774219893     
+ eigenvalue number, e:          39  -81.572741823832033     
+ eigenvalue number, e:          40  -81.572741823753503     
+ eigenvalue number, e:          41  -81.571371426841054     
+ eigenvalue number, e:          42  -81.571371426778796     
+ eigenvalue number, e:          43  -81.570332028088174     
+ eigenvalue number, e:          44  -81.570332028022861     
+ eigenvalue number, e:          45  -78.384053848709698     
+ eigenvalue number, e:          46  -78.384053848392938     
+ eigenvalue number, e:          47  -78.383152063745158     
+ eigenvalue number, e:          48  -78.383152063362473     
+ eigenvalue number, e:          49  -78.382661802773697     
+ eigenvalue number, e:          50  -78.382661802664657     
+ eigenvalue number, e:          51  -78.381652687105259     
+ eigenvalue number, e:          52  -78.381652686925207     
+ eigenvalue number, e:          53  -78.380705771463013     
+ eigenvalue number, e:          54  -78.380705771272062     
+ eigenvalue number, e:          55  -78.380277492227123     
+ eigenvalue number, e:          56  -78.380277492007224     
+ eigenvalue number, e:          57  -25.977081085424413     
+ eigenvalue number, e:          58  -25.977081085169573     
+ eigenvalue number, e:          59  -25.974658421036615     
+ eigenvalue number, e:          60  -25.974658420100575     
+ eigenvalue number, e:          61  -21.872719782337395     
+ eigenvalue number, e:          62  -21.872719782205550     
+ eigenvalue number, e:          63  -21.870301226390886     
+ eigenvalue number, e:          64  -21.870301225438432     
+ eigenvalue number, e:          65  -18.347826296438182     
+ eigenvalue number, e:          66  -18.347826296331633     
+ eigenvalue number, e:          67  -18.346847776912007     
+ eigenvalue number, e:          68  -18.346847776840079     
+ eigenvalue number, e:          69  -18.345390049482429     
+ eigenvalue number, e:          70  -18.345390049266388     
+ eigenvalue number, e:          71  -18.344439958026566     
+ eigenvalue number, e:          72  -18.344439957993174     
+ eigenvalue number, e:          73  -11.622710389899007     
+ eigenvalue number, e:          74  -11.622710389798232     
+ eigenvalue number, e:          75  -11.621839158973847     
+ eigenvalue number, e:          76  -11.621839158827507     
+ eigenvalue number, e:          77  -11.620275976795412     
+ eigenvalue number, e:          78  -11.620275976628877     
+ eigenvalue number, e:          79  -11.619427364548192     
+ eigenvalue number, e:          80  -11.619427364393726     
+ eigenvalue number, e:          81  -10.971643540714007     
+ eigenvalue number, e:          82  -10.971643540673048     
+ eigenvalue number, e:          83  -10.970874033609373     
+ eigenvalue number, e:          84  -10.970874033501786     
+ eigenvalue number, e:          85  -10.969934541957034     
+ eigenvalue number, e:          86  -10.969934541828898     
+ eigenvalue number, e:          87  -10.969182844339842     
+ eigenvalue number, e:          88  -10.969182844043067     
+ eigenvalue number, e:          89  -10.968275093623546     
+ eigenvalue number, e:          90  -10.968275093560582     
+ eigenvalue number, e:          91  -10.967725621318502     
+ eigenvalue number, e:          92  -10.967725621213134     
+ eigenvalue number, e:          93  -3.5983816268892337     
+ eigenvalue number, e:          94  -3.5983816268142474     
+ eigenvalue number, e:          95  -3.5955460578326743     
+ eigenvalue number, e:          96  -3.5955460578077814     
+ eigenvalue number, e:          97  -2.3635405626975245     
+ eigenvalue number, e:          98  -2.3635405626841912     
+ eigenvalue number, e:          99  -2.3629240997752632     
+ eigenvalue number, e:         100  -2.3629240997611198     
+ eigenvalue number, e:         101  -2.3622917294750003     
+ eigenvalue number, e:         102  -2.3622917294013641     
+ eigenvalue number, e:         103  -2.3610181721164540     
+ eigenvalue number, e:         104  -2.3610181715313736     
+ eigenvalue number, e:         105  -2.3604803552078035     
+ eigenvalue number, e:         106  -2.3604803551005737     
+ eigenvalue number, e:         107  -2.3599758110645919     
+ eigenvalue number, e:         108  -2.3599758107767048     
+ eigenvalue number, e:         109  -2.2946593112584006     
+ eigenvalue number, e:         110  -2.2946593110073525     
+ eigenvalue number, e:         111  -2.2916526417076106     
+ eigenvalue number, e:         112  -2.2916526400472623     
+ eigenvalue number, e:         113  -2.2309283022814617     
+ eigenvalue number, e:         114  -2.2309283022728161     
+ eigenvalue number, e:         115  -2.2302642979310132     
+ eigenvalue number, e:         116  -2.2302642979176106     
+ eigenvalue number, e:         117  -2.2299776619068039     
+ eigenvalue number, e:         118  -2.2299776618997633     
+ eigenvalue number, e:         119  -2.2294043467182734     
+ eigenvalue number, e:         120  -2.2294043466729514     
+ eigenvalue number, e:         121  -2.2283876736885357     
+ eigenvalue number, e:         122  -2.2283876734717643     
+ eigenvalue number, e:         123  -2.2278263295630598     
+ eigenvalue number, e:         124  -2.2278263294716796     
+ eigenvalue number, e:         125  -2.2274816963601785     
+ eigenvalue number, e:         126  -2.2274816963255475     
+ eigenvalue number, e:         127  -2.2271714808129204     
+ eigenvalue number, e:         128  -2.2271714806496226     
+ eigenvalue number, e:         129  -1.7293836957075390     
+ eigenvalue number, e:         130  -1.7293836955196489     
+ eigenvalue number, e:         131  -1.7219628641437623     
+ eigenvalue number, e:         132  -1.7219628640958060     
+ eigenvalue number, e:         133  -1.7203925145090975     
+ eigenvalue number, e:         134  -1.7203925143544216     
+ eigenvalue number, e:         135  -1.7191001052557935     
+ eigenvalue number, e:         136  -1.7191001048622359     
+ eigenvalue number, e:         137 -0.16403869124063997     
+ eigenvalue number, e:         138 -0.16403869115645486     
+ eigenvalue number, e:         139  -9.3512143545915638E-002
+ eigenvalue number, e:         140  -9.3512143496420563E-002
+ eigenvalue number, e:         141  -8.9745805151227653E-002
+ eigenvalue number, e:         142  -8.9745804985892352E-002
+ eigenvalue number, e:         143  -8.1639360778301029E-002
+ eigenvalue number, e:         144  -8.1639360732129074E-002
+ eigenvalue number, e:         145  -7.0447994625284061E-002
+ eigenvalue number, e:         146  -7.0447994453833207E-002
+ eigenvalue number, e:         147  -4.1797275752343488E-002
+ eigenvalue number, e:         148  -4.1797275710293569E-002
+ eigenvalue number, e:         149  -3.1686450871970084E-002
+ eigenvalue number, e:         150  -3.1686450853829484E-002
+ eigenvalue number, e:         151  -1.8164232551131310E-002
+ eigenvalue number, e:         152  -1.8164232498439681E-002
+ eigenvalue number, e:         153  -1.5537921006349098E-002
+ eigenvalue number, e:         154  -1.5537920926829152E-002
+ eigenvalue number, e:         155  -1.4068354093978996E-002
+ eigenvalue number, e:         156  -1.4068354049482146E-002
+ eigenvalue number, e:         157   1.0468697934020721E-003
+ eigenvalue number, e:         158   1.0468698256860254E-003
+ lumo               e:         159 -0.11281727085198780     
+ total electronic energy =   -39397.328418696365     
+ nuclear repulsion energy =    1307.7339747306999     
+ total energy =   -38089.594443965667     
+  
+ -----------------------------------------------
+Time for dens walltime                         0.23  cputime       0.23
+
+=============================================================
+Total time for iteration    1 walltime        54.75  cputime      54.61
+
+ convergence not obtained in the maximum number
+ of iterations
+  
+ **********************************************
+ final output:
+ convergence obtained in           2      iterations
+  
+ bond length =   -1.1817046000000000     
+ total energy =   -38089.594443965667     
+  
+ total cpu-time used (sec):  -54.911526000000009     
+ **********************************************
+Time for cube is:   0.0000
+BERTHA version: 0.11.0 
+BERTHA version: 0.11.0 
+ total dimension of the matrix:   2480
+
+ Add to Fit case 2 (or 6) 0 or 1 exact coulomb on
+  total dimension of the matrix:   2480
+
+ total number of fitting function of type c is         614
+ total number of function blocks is          40
+
+ mc =         614
+ the selected case is           2
+ the total number of fittin function is         614
+ the total number of fittin function is         614
+ center            1  num. of func.          620
+ center            2  num. of func.          620
+ ************************************************************
+
+
+         molecular geometry a: cartesian coordinates         
+
+ center        x-coordinate    y-coordinate    z-coordinate
+============================================================
+   au           -6.066647       -3.080060       -2.126574
+ ------------------------------------------------------------
+   au           -2.188449       -0.464264       -1.181705
+ ------------------------------------------------------------
+
+
+                 molecular geometry b: r-matrix              
+
+ c1  c2       bond distance  c1  c2  c3     angle (degrees)  
+============================================================
+  au  au          4.772377
+ ------------------------------------------------------------
+
+
+
+
+=============================================================
+Time for hden walltime                         2.00  cputime       2.00
+
+Time for the factlu walltime                   0.00  cputime       0.00
+  warning: grid not yet implemented, for z =  79
+  set to default maximum values
+
+
+  warning: grid not yet implemented, for z =  79
+  set to default maximum values
+
+
+ total fitted density   158.00192637574619     
+ functional energy  -728.56236773634623     
+  
+ vxc[fit]*rho[fit] =   -953.44214144819989     
+  
+Time for the zz walltime                       0.58  cputime       0.58
+Time for onel_pot_from_grid  walltime                         0.31  cputime       0.31
+
+Total time for the fitting walltime           23.02  cputime      23.00
+
+ ******** energies values ********* 
+  
+ ******** energies fitted values ********* 
+  
+ coulomb  energy(fitting)     :    16059.405090529217     
+ Exc(rhofit)                  :   -728.56236773634623     
+  
+Time for oneel walltime                        4.92  cputime       4.91
+
+Time for shftlv                                6.04  cputime       6.03
+
+Time for the io walltime                       0.07  cputime       0.07
+
+ iteration number:            1
+ level shift parameter =   -2.0000000000000000     
+ eigenvalue number, e:           1  -2963.4345922028415     
+ eigenvalue number, e:           2  -2963.4345922027196     
+ eigenvalue number, e:           3  -2963.4335023595172     
+ eigenvalue number, e:           4  -2963.4335023573835     
+ eigenvalue number, e:           5  -523.27169297121395     
+ eigenvalue number, e:           6  -523.27169297093678     
+ eigenvalue number, e:           7  -523.27059211946050     
+ eigenvalue number, e:           8  -523.27059211770552     
+ eigenvalue number, e:           9  -501.99698926962213     
+ eigenvalue number, e:          10  -501.99698926949759     
+ eigenvalue number, e:          11  -501.99589114924629     
+ eigenvalue number, e:          12  -501.99589114888323     
+ eigenvalue number, e:          13  -434.53151604454126     
+ eigenvalue number, e:          14  -434.53151604438801     
+ eigenvalue number, e:          15  -434.53139976241732     
+ eigenvalue number, e:          16  -434.53139976222587     
+ eigenvalue number, e:          17  -434.53041437205115     
+ eigenvalue number, e:          18  -434.53041437082572     
+ eigenvalue number, e:          19  -434.53030131533336     
+ eigenvalue number, e:          20  -434.53030131461207     
+ eigenvalue number, e:          21  -124.05736030841111     
+ eigenvalue number, e:          22  -124.05736030817324     
+ eigenvalue number, e:          23  -124.05623332284905     
+ eigenvalue number, e:          24  -124.05623332245035     
+ eigenvalue number, e:          25  -114.46314805506027     
+ eigenvalue number, e:          26  -114.46314805499621     
+ eigenvalue number, e:          27  -114.46202294629633     
+ eigenvalue number, e:          28  -114.46202294495342     
+ eigenvalue number, e:          29  -99.553274547338376     
+ eigenvalue number, e:          30  -99.553274547330403     
+ eigenvalue number, e:          31  -99.552440396892507     
+ eigenvalue number, e:          32  -99.552440396762535     
+ eigenvalue number, e:          33  -99.552145911603290     
+ eigenvalue number, e:          34  -99.552145911083883     
+ eigenvalue number, e:          35  -99.551313050513755     
+ eigenvalue number, e:          36  -99.551313050268305     
+ eigenvalue number, e:          37  -83.583006575298569     
+ eigenvalue number, e:          38  -83.583006574815556     
+ eigenvalue number, e:          39  -83.582263817813512     
+ eigenvalue number, e:          40  -83.582263817694781     
+ eigenvalue number, e:          41  -83.581882915732152     
+ eigenvalue number, e:          42  -83.581882915480264     
+ eigenvalue number, e:          43  -83.581141348574874     
+ eigenvalue number, e:          44  -83.581141348467398     
+ eigenvalue number, e:          45  -80.376038688559646     
+ eigenvalue number, e:          46  -80.376038688539381     
+ eigenvalue number, e:          47  -80.375411517516056     
+ eigenvalue number, e:          48  -80.375411517443496     
+ eigenvalue number, e:          49  -80.375038256116923     
+ eigenvalue number, e:          50  -80.375038255899398     
+ eigenvalue number, e:          51  -80.374926350876862     
+ eigenvalue number, e:          52  -80.374926350752219     
+ eigenvalue number, e:          53  -80.374244478642979     
+ eigenvalue number, e:          54  -80.374244478494575     
+ eigenvalue number, e:          55  -80.373945524716802     
+ eigenvalue number, e:          56  -80.373945524228375     
+ eigenvalue number, e:          57  -27.202885520616977     
+ eigenvalue number, e:          58  -27.202885520469671     
+ eigenvalue number, e:          59  -27.201722804972949     
+ eigenvalue number, e:          60  -27.201722803800749     
+ eigenvalue number, e:          61  -23.096054774824328     
+ eigenvalue number, e:          62  -23.096054774656267     
+ eigenvalue number, e:          63  -23.094891587360621     
+ eigenvalue number, e:          64  -23.094891585345920     
+ eigenvalue number, e:          65  -19.486650456274766     
+ eigenvalue number, e:          66  -19.486650456024844     
+ eigenvalue number, e:          67  -19.486224887395405     
+ eigenvalue number, e:          68  -19.486224887271707     
+ eigenvalue number, e:          69  -19.485465468191666     
+ eigenvalue number, e:          70  -19.485465467809131     
+ eigenvalue number, e:          71  -19.485071956845214     
+ eigenvalue number, e:          72  -19.485071956726784     
+ eigenvalue number, e:          73  -12.752301327946981     
+ eigenvalue number, e:          74  -12.752301327900179     
+ eigenvalue number, e:          75  -12.751928322757262     
+ eigenvalue number, e:          76  -12.751928322624581     
+ eigenvalue number, e:          77  -12.751114186328248     
+ eigenvalue number, e:          78  -12.751114186260608     
+ eigenvalue number, e:          79  -12.750772839894513     
+ eigenvalue number, e:          80  -12.750772839710075     
+ eigenvalue number, e:          81  -12.075877367349994     
+ eigenvalue number, e:          82  -12.075877367308852     
+ eigenvalue number, e:          83  -12.075210842544106     
+ eigenvalue number, e:          84  -12.075210842308239     
+ eigenvalue number, e:          85  -12.074550951648151     
+ eigenvalue number, e:          86  -12.074550951028595     
+ eigenvalue number, e:          87  -12.074452105031547     
+ eigenvalue number, e:          88  -12.074452104939400     
+ eigenvalue number, e:          89  -12.074038664930736     
+ eigenvalue number, e:          90  -12.074038664876017     
+ eigenvalue number, e:          91  -12.073433447519925     
+ eigenvalue number, e:          92  -12.073433447347059     
+ eigenvalue number, e:          93  -4.0826921933309679     
+ eigenvalue number, e:          94  -4.0826921932721199     
+ eigenvalue number, e:          95  -4.0812066055387479     
+ eigenvalue number, e:          96  -4.0812066045247111     
+ eigenvalue number, e:          97  -3.4316932759486862     
+ eigenvalue number, e:          98  -3.4316932757939220     
+ eigenvalue number, e:          99  -3.4310433860337017     
+ eigenvalue number, e:         100  -3.4310433860085388     
+ eigenvalue number, e:         101  -3.4305306651686491     
+ eigenvalue number, e:         102  -3.4305306651376091     
+ eigenvalue number, e:         103  -3.4303398801088241     
+ eigenvalue number, e:         104  -3.4303398797433191     
+ eigenvalue number, e:         105  -3.4299578234601693     
+ eigenvalue number, e:         106  -3.4299578233256494     
+ eigenvalue number, e:         107  -3.4294277240243352     
+ eigenvalue number, e:         108  -3.4294277237020490     
+ eigenvalue number, e:         109  -3.2851894784009685     
+ eigenvalue number, e:         110  -3.2851894783639750     
+ eigenvalue number, e:         111  -3.2846495667472730     
+ eigenvalue number, e:         112  -3.2846495667200335     
+ eigenvalue number, e:         113  -3.2842642129140049     
+ eigenvalue number, e:         114  -3.2842642128842812     
+ eigenvalue number, e:         115  -3.2838359814245761     
+ eigenvalue number, e:         116  -3.2838359813669902     
+ eigenvalue number, e:         117  -3.2837515323519471     
+ eigenvalue number, e:         118  -3.2837515323254616     
+ eigenvalue number, e:         119  -3.2834489161311398     
+ eigenvalue number, e:         120  -3.2834489159930378     
+ eigenvalue number, e:         121  -3.2831444769746776     
+ eigenvalue number, e:         122  -3.2831444769321694     
+ eigenvalue number, e:         123  -3.2827007916272333     
+ eigenvalue number, e:         124  -3.2827007915840856     
+ eigenvalue number, e:         125  -2.7345386699831078     
+ eigenvalue number, e:         126  -2.7345386698124621     
+ eigenvalue number, e:         127  -2.7327536279174627     
+ eigenvalue number, e:         128  -2.7327536273085835     
+ eigenvalue number, e:         129  -2.1150199002550556     
+ eigenvalue number, e:         130  -2.1150199001758567     
+ eigenvalue number, e:         131  -2.1084130604029641     
+ eigenvalue number, e:         132  -2.1084130603033877     
+ eigenvalue number, e:         133  -2.1061299176204740     
+ eigenvalue number, e:         134  -2.1061299175103754     
+ eigenvalue number, e:         135  -2.1044726053410390     
+ eigenvalue number, e:         136  -2.1044726052316003     
+ eigenvalue number, e:         137 -0.35421486308840677     
+ eigenvalue number, e:         138 -0.35421486292165527     
+ eigenvalue number, e:         139 -0.33348403733059673     
+ eigenvalue number, e:         140 -0.33348403723817643     
+ eigenvalue number, e:         141 -0.32220313290380931     
+ eigenvalue number, e:         142 -0.32220313279101953     
+ eigenvalue number, e:         143 -0.31536000996054492     
+ eigenvalue number, e:         144 -0.31536000971059153     
+ eigenvalue number, e:         145 -0.27528825686380953     
+ eigenvalue number, e:         146 -0.27528825678702118     
+ eigenvalue number, e:         147 -0.27059400082233687     
+ eigenvalue number, e:         148 -0.27059400062062400     
+ eigenvalue number, e:         149 -0.25878005127399195     
+ eigenvalue number, e:         150 -0.25878005122250558     
+ eigenvalue number, e:         151 -0.24838977383158412     
+ eigenvalue number, e:         152 -0.24838977378696647     
+ eigenvalue number, e:         153 -0.24714220952803601     
+ eigenvalue number, e:         154 -0.24714220949016141     
+ eigenvalue number, e:         155 -0.24031746763323447     
+ eigenvalue number, e:         156 -0.24031746762430561     
+ eigenvalue number, e:         157 -0.23578994072206205     
+ eigenvalue number, e:         158 -0.23578994055667923     
+ lumo               e:         159 -0.16551106407491506     
+ total electronic energy =   -39397.257607044936     
+ nuclear repulsion energy =    1307.7339747306999     
+ total energy =   -38089.523632314238     
+  
+ -----------------------------------------------
+Time for dens walltime                         0.23  cputime       0.23
+
+=============================================================
+Total time for iteration    1 walltime        53.80  cputime      53.75
+
+ convergence not obtained in the maximum number
+ of iterations
+  
+ **********************************************
+ final output:
+ convergence obtained in           2      iterations
+  
+ bond length =   -1.1817046000000000     
+ total energy =   -38089.523632314238     
+  
+ total cpu-time used (sec):  -54.059539999999998     
+ **********************************************
+Time for cube is:   0.0000
+
+Final results 
+eigenvalue     1       -2961.87235195
+eigenvalue     2       -2961.87235195
+eigenvalue     3       -2961.87235194
+eigenvalue     4       -2961.87235194
+eigenvalue     5        -521.47838385
+eigenvalue     6        -521.47838385
+eigenvalue     7        -521.47838385
+eigenvalue     8        -521.47838385
+eigenvalue     9        -500.24670511
+eigenvalue    10        -500.24670511
+eigenvalue    11        -500.24670493
+eigenvalue    12        -500.24670493
+eigenvalue    13        -432.75073224
+eigenvalue    14        -432.75073224
+eigenvalue    15        -432.75073224
+eigenvalue    16        -432.75073224
+eigenvalue    17        -432.75072377
+eigenvalue    18        -432.75072377
+eigenvalue    19        -432.75072377
+eigenvalue    20        -432.75072377
+eigenvalue    21        -122.07349494
+eigenvalue    22        -122.07349494
+eigenvalue    23        -122.07349494
+eigenvalue    24        -122.07349494
+eigenvalue    25        -112.49053145
+eigenvalue    26        -112.49053145
+eigenvalue    27        -112.49053145
+eigenvalue    28        -112.49053145
+eigenvalue    29         -97.56738957
+eigenvalue    30         -97.56738957
+eigenvalue    31         -97.56738956
+eigenvalue    32         -97.56738956
+eigenvalue    33         -97.56732329
+eigenvalue    34         -97.56732329
+eigenvalue    35         -97.56732329
+eigenvalue    36         -97.56732329
+eigenvalue    37         -81.61314280
+eigenvalue    38         -81.61314280
+eigenvalue    39         -81.61314279
+eigenvalue    40         -81.61314279
+eigenvalue    41         -81.61309209
+eigenvalue    42         -81.61309209
+eigenvalue    43         -81.61309209
+eigenvalue    44         -81.61309209
+eigenvalue    45         -78.40063749
+eigenvalue    46         -78.40063748
+eigenvalue    47         -78.40063747
+eigenvalue    48         -78.40063747
+eigenvalue    49         -78.40061977
+eigenvalue    50         -78.40061977
+eigenvalue    51         -78.40061977
+eigenvalue    52         -78.40061977
+eigenvalue    53         -78.40056986
+eigenvalue    54         -78.40056986
+eigenvalue    55         -78.40056986
+eigenvalue    56         -78.40056986
+eigenvalue    57         -25.20275988
+eigenvalue    58         -25.20275988
+eigenvalue    59         -25.20275986
+eigenvalue    60         -25.20275986
+eigenvalue    61         -21.09817291
+eigenvalue    62         -21.09817291
+eigenvalue    63         -21.09817289
+eigenvalue    64         -21.09817289
+eigenvalue    65         -17.49698721
+eigenvalue    66         -17.49698721
+eigenvalue    67         -17.49698705
+eigenvalue    68         -17.49698704
+eigenvalue    69         -17.49661696
+eigenvalue    70         -17.49661696
+eigenvalue    71         -17.49661684
+eigenvalue    72         -17.49661684
+eigenvalue    73         -10.76422970
+eigenvalue    74         -10.76422970
+eigenvalue    75         -10.76422970
+eigenvalue    76         -10.76422970
+eigenvalue    77         -10.76384096
+eigenvalue    78         -10.76384096
+eigenvalue    79         -10.76384095
+eigenvalue    80         -10.76384095
+eigenvalue    81         -10.08967567
+eigenvalue    82         -10.08967567
+eigenvalue    83         -10.08967555
+eigenvalue    84         -10.08967555
+eigenvalue    85         -10.08955983
+eigenvalue    86         -10.08955983
+eigenvalue    87         -10.08955966
+eigenvalue    88         -10.08955966
+eigenvalue    89         -10.08916233
+eigenvalue    90         -10.08916233
+eigenvalue    91         -10.08916226
+eigenvalue    92         -10.08916226
+eigenvalue    93          -2.16620594
+eigenvalue    94          -2.16620594
+eigenvalue    95          -2.16571853
+eigenvalue    96          -2.16571853
+eigenvalue    97          -1.44109877
+eigenvalue    98          -1.44109877
+eigenvalue    99          -1.44108752
+eigenvalue   100          -1.44108752
+eigenvalue   101          -1.44092226
+eigenvalue   102          -1.44092226
+eigenvalue   103          -1.44091843
+eigenvalue   104          -1.44091843
+eigenvalue   105          -1.44047014
+eigenvalue   106          -1.44047014
+eigenvalue   107          -1.44046972
+eigenvalue   108          -1.44046972
+eigenvalue   109          -1.29586583
+eigenvalue   110          -1.29586583
+eigenvalue   111          -1.29583932
+eigenvalue   112          -1.29583932
+eigenvalue   113          -1.29578323
+eigenvalue   114          -1.29578323
+eigenvalue   115          -1.29576563
+eigenvalue   116          -1.29576563
+eigenvalue   117          -1.29553642
+eigenvalue   118          -1.29553642
+eigenvalue   119          -1.29553297
+eigenvalue   120          -1.29553297
+eigenvalue   121          -1.29514203
+eigenvalue   122          -1.29514203
+eigenvalue   123          -1.29514197
+eigenvalue   124          -1.29514197
+eigenvalue   125          -0.82084590
+eigenvalue   126          -0.82084590
+eigenvalue   127          -0.81962106
+eigenvalue   128          -0.81962106
+eigenvalue   129          -0.20130399
+eigenvalue   130          -0.20130399
+eigenvalue   131          -0.19547999
+eigenvalue   132          -0.19547999
+eigenvalue   133          -0.19444043
+eigenvalue   134          -0.19444043
+eigenvalue   135          -0.19443179
+eigenvalue   136          -0.19443179
+eigenvalue   137           1.56253101
+eigenvalue   138           1.56253101
+eigenvalue   139           1.58502347
+eigenvalue   140           1.58502347
+eigenvalue   141           1.59497923
+eigenvalue   142           1.59497923
+eigenvalue   143           1.60147457
+eigenvalue   144           1.60147457
+eigenvalue   145           1.64327728
+eigenvalue   146           1.64327728
+eigenvalue   147           1.65262250
+eigenvalue   148           1.65262250
+eigenvalue   149           1.65968124
+eigenvalue   150           1.65968124
+eigenvalue   151           1.67017967
+eigenvalue   152           1.67017967
+eigenvalue   153           1.67684313
+eigenvalue   154           1.67684313
+eigenvalue   155           1.68210943
+eigenvalue   156           1.68210943
+eigenvalue   157           1.70198328
+eigenvalue   158           1.70198328
+      lumo                -0.19461170
+
+total electronic energy  =         -39079.871791410936567
+nuclear repulsion energy =           1307.733974730699856
+total energy             =         -37772.137816680238757
+coulomb energy           =          32095.730092337700626
+Exc     energy           =           -728.141228335322126
+embfactory Options:
+pyemb job type : adf, grid type : 2, functional (enviro) : BLYP, e/d thresh : 1.00e-08
+grid specs (accuracy / radial & spherical points)
+4.0
+Grid dimensions :  (157568, 4)
+ Rho dimensions :  (157568,)
+Scalar product density.weigt 157.99923045679645
+Dip x density.weigt 652.1490228869999
+Dip y density.weigt 279.99928591633295
+Dip z density.weigt 261.3528823438612
+Dump ground state unperturbed density 
+unperturbed Dip x     652.1526108667294
+unperturbed Dip y     280.00160311455414
+unperturbed Dip z     261.3539857009759
+
+total electronic energy  =         -39397.328418696364679 ... outer iteration :1
+mean value of embed pot  =             -1.469668235104718 ... outer iteration :1
+outer iteration :  1
+total electronic energy  =         -39397.328418696364679
+nuclear repulsion energy =           1307.733974730699856
+total energy             =         -38089.594443965666869
+coulomb energy           =          32526.597925910660706
+Exc     energy           =           -734.450867030042104
+Fitted density on grid time:         0.29135  (CPU time:         0.29072 ) s 
+Vemb pot on grid: embfactory.get_potential:         0.89882  (CPU time:         0.89829 ) s 
+ndim : 2480
+
+nshift : 1240
+
+2-norm of diffD  =  0.7968008955091073  ... outer iteration :1
+E(actual)-E(prev)=  -317.4566272854281  ... outer iteration :1
+DE_emb(actual-prev)  =              0.003121002193724 ... outer iteration :1
+norm_pot(actual-prev)  =              5.220834283722263 ... outer iteration :1
+ Time for each extrenal iteration:        56.76682  (CPU time:        56.62236 ) s 
+
+total electronic energy  =         -39397.257607044935867 ... outer iteration :2
+mean value of embed pot  =             -1.472789237298442 ... outer iteration :2
+outer iteration :  2
+total electronic energy  =         -39397.257607044935867
+nuclear repulsion energy =           1307.733974730699856BERTHA version: 0.11.0 
+BERTHA version: 0.11.0 
+ total dimension of the matrix:   2480
+
+ Add to Fit case 2 (or 6) 0 or 1 exact coulomb on
+  total dimension of the matrix:   2480
+
+ total number of fitting function of type c is         614
+ total number of function blocks is          40
+
+ mc =         614
+ the selected case is           2
+ the total number of fittin function is         614
+ the total number of fittin function is         614
+ center            1  num. of func.          620
+ center            2  num. of func.          620
+ ************************************************************
+
+
+         molecular geometry a: cartesian coordinates         
+
+ center        x-coordinate    y-coordinate    z-coordinate
+============================================================
+   au           -6.066647       -3.080060       -2.126574
+ ------------------------------------------------------------
+   au           -2.188449       -0.464264       -1.181705
+ ------------------------------------------------------------
+
+
+                 molecular geometry b: r-matrix              
+
+ c1  c2       bond distance  c1  c2  c3     angle (degrees)  
+============================================================
+  au  au          4.772377
+ ------------------------------------------------------------
+
+
+
+
+=============================================================
+Time for hden walltime                         1.97  cputime       1.97
+
+Time for the factlu walltime                   0.00  cputime       0.00
+  warning: grid not yet implemented, for z =  79
+  set to default maximum values
+
+
+  warning: grid not yet implemented, for z =  79
+  set to default maximum values
+
+
+ total fitted density   158.00193057014647     
+ functional energy  -733.21748349872416     
+  
+ vxc[fit]*rho[fit] =   -959.61688811693966     
+  
+Time for the zz walltime                       0.58  cputime       0.58
+Time for onel_pot_from_grid  walltime                         0.30  cputime       0.30
+
+Total time for the fitting walltime           23.11  cputime      23.10
+
+ ******** energies values ********* 
+  
+ ******** energies fitted values ********* 
+  
+ coulomb  energy(fitting)     :    16211.188588194387     
+ Exc(rhofit)                  :   -733.21748349872416     
+  
+Time for oneel walltime                        4.93  cputime       4.93
+
+Time for shftlv                                6.06  cputime       6.06
+
+Time for the io walltime                       0.07  cputime       0.07
+
+ iteration number:            1
+ level shift parameter =   -2.0000000000000000     
+ eigenvalue number, e:           1  -2961.4036937764340     
+ eigenvalue number, e:           2  -2961.4036937763453     
+ eigenvalue number, e:           3  -2961.4024867591497     
+ eigenvalue number, e:           4  -2961.4024867575167     
+ eigenvalue number, e:           5  -521.39195985255412     
+ eigenvalue number, e:           6  -521.39195985238950     
+ eigenvalue number, e:           7  -521.39075982330189     
+ eigenvalue number, e:           8  -521.39075982281861     
+ eigenvalue number, e:           9  -500.08073683107654     
+ eigenvalue number, e:          10  -500.08073683076287     
+ eigenvalue number, e:          11  -500.07953446059446     
+ eigenvalue number, e:          12  -500.07953446025545     
+ eigenvalue number, e:          13  -432.64025201507445     
+ eigenvalue number, e:          14  -432.64025201495127     
+ eigenvalue number, e:          15  -432.64014868888103     
+ eigenvalue number, e:          16  -432.64014868860363     
+ eigenvalue number, e:          17  -432.63904734977677     
+ eigenvalue number, e:          18  -432.63904734942753     
+ eigenvalue number, e:          19  -432.63895143561496     
+ eigenvalue number, e:          20  -432.63895143553998     
+ eigenvalue number, e:          21  -122.52546500261047     
+ eigenvalue number, e:          22  -122.52546500256712     
+ eigenvalue number, e:          23  -122.52428710059496     
+ eigenvalue number, e:          24  -122.52428709943220     
+ eigenvalue number, e:          25  -112.90145207595862     
+ eigenvalue number, e:          26  -112.90145207595546     
+ eigenvalue number, e:          27  -112.90027209102344     
+ eigenvalue number, e:          28  -112.90027209058513     
+ eigenvalue number, e:          29  -98.040258269239416     
+ eigenvalue number, e:          30  -98.040258268909867     
+ eigenvalue number, e:          31  -98.039395323638828     
+ eigenvalue number, e:          32  -98.039395323573615     
+ eigenvalue number, e:          33  -98.039080552241899     
+ eigenvalue number, e:          34  -98.039080552130869     
+ eigenvalue number, e:          35  -98.038219975973291     
+ eigenvalue number, e:          36  -98.038219975693167     
+ eigenvalue number, e:          37  -81.993572276027152     
+ eigenvalue number, e:          38  -81.993572275866555     
+ eigenvalue number, e:          39  -81.992815209744506     
+ eigenvalue number, e:          40  -81.992815209634529     
+ eigenvalue number, e:          41  -81.992389213636173     
+ eigenvalue number, e:          42  -81.992389213485595     
+ eigenvalue number, e:          43  -81.991634557197287     
+ eigenvalue number, e:          44  -81.991634556936091     
+ eigenvalue number, e:          45  -78.801449340314406     
+ eigenvalue number, e:          46  -78.801449340043973     
+ eigenvalue number, e:          47  -78.800808506757889     
+ eigenvalue number, e:          48  -78.800808506636869     
+ eigenvalue number, e:          49  -78.800427327275656     
+ eigenvalue number, e:          50  -78.800427327131089     
+ eigenvalue number, e:          51  -78.800279681291272     
+ eigenvalue number, e:          52  -78.800279680702445     
+ eigenvalue number, e:          53  -78.799584053299441     
+ eigenvalue number, e:          54  -78.799584052823761     
+ eigenvalue number, e:          55  -78.799278938934364     
+ eigenvalue number, e:          56  -78.799278938447216     
+ eigenvalue number, e:          57  -26.315116167994091     
+ eigenvalue number, e:          58  -26.315116167883247     
+ eigenvalue number, e:          59  -26.313986863211891     
+ eigenvalue number, e:          60  -26.313986862214513     
+ eigenvalue number, e:          61  -22.210494472419473     
+ eigenvalue number, e:          62  -22.210494472407934     
+ eigenvalue number, e:          63  -22.209366192844143     
+ eigenvalue number, e:          64  -22.209366191341861     
+ eigenvalue number, e:          65  -18.676444780389694     
+ eigenvalue number, e:          66  -18.676444780230533     
+ eigenvalue number, e:          67  -18.675894192660362     
+ eigenvalue number, e:          68  -18.675894192627108     
+ eigenvalue number, e:          69  -18.675307325757363     
+ eigenvalue number, e:          70  -18.675307325639238     
+ eigenvalue number, e:          71  -18.674785224887341     
+ eigenvalue number, e:          72  -18.674785224478491     
+ eigenvalue number, e:          73  -11.949482039505737     
+ eigenvalue number, e:          74  -11.949482039488592     
+ eigenvalue number, e:          75  -11.948998865148420     
+ eigenvalue number, e:          76  -11.948998865046693     
+ eigenvalue number, e:          77  -11.948341799092642     
+ eigenvalue number, e:          78  -11.948341798878376     
+ eigenvalue number, e:          79  -11.947891499586190     
+ eigenvalue number, e:          80  -11.947891499454339     
+ eigenvalue number, e:          81  -11.295610472214127     
+ eigenvalue number, e:          82  -11.295610472145361     
+ eigenvalue number, e:          83  -11.294943173335703     
+ eigenvalue number, e:          84  -11.294943173245953     
+ eigenvalue number, e:          85  -11.294359714860677     
+ eigenvalue number, e:          86  -11.294359714106946     
+ eigenvalue number, e:          87  -11.294151037759507     
+ eigenvalue number, e:          88  -11.294151037743745     
+ eigenvalue number, e:          89  -11.293795002811500     
+ eigenvalue number, e:          90  -11.293795002698916     
+ eigenvalue number, e:          91  -11.293185413054742     
+ eigenvalue number, e:          92  -11.293185412709077     
+ eigenvalue number, e:          93  -3.8198753173308750     
+ eigenvalue number, e:          94  -3.8198753170972868     
+ eigenvalue number, e:          95  -3.8185146932025846     
+ eigenvalue number, e:          96  -3.8185146927147118     
+ eigenvalue number, e:          97  -2.6789998897870291     
+ eigenvalue number, e:          98  -2.6789998897828564     
+ eigenvalue number, e:          99  -2.6783364926739095     
+ eigenvalue number, e:         100  -2.6783364925603284     
+ eigenvalue number, e:         101  -2.6778594886219702     
+ eigenvalue number, e:         102  -2.6778594885853257     
+ eigenvalue number, e:         103  -2.6776989046445143     
+ eigenvalue number, e:         104  -2.6776989043442141     
+ eigenvalue number, e:         105  -2.6773342439010825     
+ eigenvalue number, e:         106  -2.6773342438167367     
+ eigenvalue number, e:         107  -2.6767904026596145     
+ eigenvalue number, e:         108  -2.6767904024262963     
+ eigenvalue number, e:         109  -2.5446506070922226     
+ eigenvalue number, e:         110  -2.5446506070645176     
+ eigenvalue number, e:         111  -2.5441071904980621     
+ eigenvalue number, e:         112  -2.5441071904779671     
+ eigenvalue number, e:         113  -2.5437375478926088     
+ eigenvalue number, e:         114  -2.5437375478227739     
+ eigenvalue number, e:         115  -2.5433601551601255     
+ eigenvalue number, e:         116  -2.5433601550351304     
+ eigenvalue number, e:         117  -2.5432387457152830     
+ eigenvalue number, e:         118  -2.5432387456967103     
+ eigenvalue number, e:         119  -2.5429707785381934     
+ eigenvalue number, e:         120  -2.5429707780511874     
+ eigenvalue number, e:         121  -2.5426858407389821     
+ eigenvalue number, e:         122  -2.5426858406565955     
+ eigenvalue number, e:         123  -2.5422260533981040     
+ eigenvalue number, e:         124  -2.5422260532582737     
+ eigenvalue number, e:         125  -2.5041591136718404     
+ eigenvalue number, e:         126  -2.5041591132344498     
+ eigenvalue number, e:         127  -2.5022109372172388     
+ eigenvalue number, e:         128  -2.5022109366642438     
+ eigenvalue number, e:         129  -1.9227329470809633     
+ eigenvalue number, e:         130  -1.9227329470153061     
+ eigenvalue number, e:         131  -1.9143658533097390     
+ eigenvalue number, e:         132  -1.9143658532565277     
+ eigenvalue number, e:         133  -1.9131625107847676     
+ eigenvalue number, e:         134  -1.9131625107319938     
+ eigenvalue number, e:         135  -1.9114089448280325     
+ eigenvalue number, e:         136  -1.9114089446365186     
+ eigenvalue number, e:         137 -0.27081106580439895     
+ eigenvalue number, e:         138 -0.27081106573018410     
+ eigenvalue number, e:         139 -0.23415928105096517     
+ eigenvalue number, e:         140 -0.23415928086695237     
+ eigenvalue number, e:         141 -0.22134145884902967     
+ eigenvalue number, e:         142 -0.22134145873893374     
+ eigenvalue number, e:         143 -0.21084692142622208     
+ eigenvalue number, e:         144 -0.21084692129632110     
+ eigenvalue number, e:         145 -0.20425748398659760     
+ eigenvalue number, e:         146 -0.20425748378317055     
+ eigenvalue number, e:         147 -0.17843643788544927     
+ eigenvalue number, e:         148 -0.17843643785212882     
+ eigenvalue number, e:         149 -0.16432380390330525     
+ eigenvalue number, e:         150 -0.16432380383718836     
+ eigenvalue number, e:         151 -0.15731932183676500     
+ eigenvalue number, e:         152 -0.15731932182139063     
+ eigenvalue number, e:         153 -0.15103448195635094     
+ eigenvalue number, e:         154 -0.15103448182764367     
+ eigenvalue number, e:         155 -0.14906960651401890     
+ eigenvalue number, e:         156 -0.14906960648390566     
+ eigenvalue number, e:         157 -0.13804600945836976     
+ eigenvalue number, e:         158 -0.13804600938240830     
+ lumo               e:         159 -0.14204800266668352     
+ total electronic energy =   -39397.190117748672     
+ nuclear repulsion energy =    1307.7339747306999     
+ total energy =   -38089.456143017975     
+  
+ -----------------------------------------------
+Time for dens walltime                         0.23  cputime       0.23
+
+=============================================================
+Total time for iteration    1 walltime        54.60  cputime      54.58
+
+ convergence not obtained in the maximum number
+ of iterations
+  
+ **********************************************
+ final output:
+ convergence obtained in           2      iterations
+  
+ bond length =   -1.1817046000000000     
+ total energy =   -38089.456143017975     
+  
+ total cpu-time used (sec):  -54.878223999999989     
+ **********************************************
+Time for cube is:   0.0000
+BERTHA version: 0.11.0 
+
+total energy             =         -38089.523632314238057
+coulomb energy           =          32118.810181058433955
+Exc     energy           =           -728.562367736346232
+Fitted density on grid time:         0.28144  (CPU time:         0.28143 ) s 
+Vemb pot on grid: embfactory.get_potential:         0.89886  (CPU time:         0.89882 ) s 
+ndim : 2480
+
+nshift : 1240
+
+2-norm of diffD  =  0.6613495991865702  ... outer iteration :2
+E(actual)-E(prev)=  0.07081165142881218  ... outer iteration :2
+DE_emb(actual-prev)  =              0.001010758867843 ... outer iteration :2
+norm_pot(actual-prev)  =              0.838396056928667 ... outer iteration :2
+ Time for each extrenal iteration:        55.84283  (CPU time:        55.78886 ) s 
+
+total electronic energy  =         -39397.190117748672492 ... outer iteration :3
+mean value of embed pot  =             -1.473799996166285 ... outer iteration :3
+outer iteration :  3
+total electronic energy  =         -39397.190117748672492
+nuclear repulsion energy =           1307.733974730699856
+total energy             =         -38089.456143017974682
+coulomb energy           =          32422.377176388774387
+Exc     energy           =           -733.217483498724164
+Fitted density on grid time:         0.28435  (CPU time:         0.28427 ) s 
+Vemb pot on grid: embfactory.get_potential:         0.90246  (CPU time:         0.90223 ) s 
+ndim : 2480
+
+nshift : 1240
+
+2-norm of diffD  =  0.5370785105141926  ... outer iteration :3
+E(actual)-E(prev)=  0.06748929626337485  ... outer iteration :3
+DE_emb(actual-prev)  =              0.000522352986865 ... outer iteration :3
+norm_pot(actual-prev)  =              0.318568186902608 ... outer iteration :3
+ Time for each extrenal iteration:        56.73093  (CPU time:        56.71057 ) s 
+
+Dip x     652.1046242206116
+Dip y     280.06387460748095
+Dip z     261.2665225425809
+MOLECULAR PROPERTIES of ACTIVE SYSTEM IN EMBEDDING:...
+  
+Dipole Moment: 
+Axis   electronic dipole (a.u.)    nuclear dipole (a.u.)      Total dipole (a.u.)      Total dipole (Debye) 
+ x           652.1046242206         -652.1526108600            -0.0479866394             -0.1219618829 
+ y           280.0638746075         -280.0016031100             0.0622714975              0.1582679926 
+ z           261.2665225426         -261.3539857000            -0.0874631574             -0.2222946116 
+  
+Molecular dipole module:          0.1176021295 (a.u.)          0.2988952203 (Debye) 
+MOLECULAR PROPERTIES of ACTIVE SYSTEM WITHOUT EMBEDDING (free active system):...
+  
+Dipole Moment: 
+Axis   electronic dipole (a.u.)    nuclear dipole (a.u.)      Total dipole (a.u.)      Total dipole (Debye) 
+ x           652.1526108667         -652.1526108600             0.0000000067              0.0000000171 
+ y           280.0016031146         -280.0016031100             0.0000000046              0.0000000116 
+ z           261.3539857010         -261.3539857000             0.0000000010              0.0000000025 
+  
+Molecular dipole module:          0.0000000082 (a.u.)          0.0000000208 (Debye) 
+Dipole moment analitical: Tr(D dip_mat)
+dipX_mat dim: 2480,2480
+
+dipY_mat dim: 2480,2480
+
+dipZ_mat dim: 2480,2480
+
+Da dim: 2480,2480
+
+TEST dipole moment from density on grid numerical integration
+  
+Scalar product density.weigt 157.9993434531302
+Dip x density.weigt 652.1131534312885
+Dip y density.weigt 280.04818750849614
+Dip z density.weigt 261.2843076829931
+  
+Final results of SplitSCF
+eigenvalue     1       -2961.40369378
+eigenvalue     2       -2961.40369378
+eigenvalue     3       -2961.40248676
+eigenvalue     4       -2961.40248676
+eigenvalue     5        -521.39195985
+eigenvalue     6        -521.39195985
+eigenvalue     7        -521.39075982
+eigenvalue     8        -521.39075982
+eigenvalue     9        -500.08073683
+eigenvalue    10        -500.08073683
+eigenvalue    11        -500.07953446
+eigenvalue    12        -500.07953446
+eigenvalue    13        -432.64025202
+eigenvalue    14        -432.64025201
+eigenvalue    15        -432.64014869
+eigenvalue    16        -432.64014869
+eigenvalue    17        -432.63904735
+eigenvalue    18        -432.63904735
+eigenvalue    19        -432.63895144
+eigenvalue    20        -432.63895144
+eigenvalue    21        -122.52546500
+eigenvalue    22        -122.52546500
+eigenvalue    23        -122.52428710
+eigenvalue    24        -122.52428710
+eigenvalue    25        -112.90145208
+eigenvalue    26        -112.90145208
+eigenvalue    27        -112.90027209
+eigenvalue    28        -112.90027209
+eigenvalue    29         -98.04025827
+eigenvalue    30         -98.04025827
+eigenvalue    31         -98.03939532
+eigenvalue    32         -98.03939532
+eigenvalue    33         -98.03908055
+eigenvalue    34         -98.03908055
+eigenvalue    35         -98.03821998
+eigenvalue    36         -98.03821998
+eigenvalue    37         -81.99357228
+eigenvalue    38         -81.99357228
+eigenvalue    39         -81.99281521
+eigenvalue    40         -81.99281521
+eigenvalue    41         -81.99238921
+eigenvalue    42         -81.99238921
+eigenvalue    43         -81.99163456
+eigenvalue    44         -81.99163456
+eigenvalue    45         -78.80144934
+eigenvalue    46         -78.80144934
+eigenvalue    47         -78.80080851
+eigenvalue    48         -78.80080851
+eigenvalue    49         -78.80042733
+eigenvalue    50         -78.80042733
+eigenvalue    51         -78.80027968
+eigenvalue    52         -78.80027968
+eigenvalue    53         -78.79958405
+eigenvalue    54         -78.79958405
+eigenvalue    55         -78.79927894
+eigenvalue    56         -78.79927894
+eigenvalue    57         -26.31511617
+eigenvalue    58         -26.31511617
+eigenvalue    59         -26.31398686
+eigenvalue    60         -26.31398686
+eigenvalue    61         -22.21049447
+eigenvalue    62         -22.21049447
+eigenvalue    63         -22.20936619
+eigenvalue    64         -22.20936619
+eigenvalue    65         -18.67644478
+eigenvalue    66         -18.67644478
+eigenvalue    67         -18.67589419
+eigenvalue    68         -18.67589419
+eigenvalue    69         -18.67530733
+eigenvalue    70         -18.67530733
+eigenvalue    71         -18.67478522
+eigenvalue    72         -18.67478522
+eigenvalue    73         -11.94948204
+eigenvalue    74         -11.94948204
+eigenvalue    75         -11.94899887
+eigenvalue    76         -11.94899887
+eigenvalue    77         -11.94834180
+eigenvalue    78         -11.94834180
+eigenvalue    79         -11.94789150
+eigenvalue    80         -11.94789150
+eigenvalue    81         -11.29561047
+eigenvalue    82         -11.29561047
+eigenvalue    83         -11.29494317
+eigenvalue    84         -11.29494317
+eigenvalue    85         -11.29435971
+eigenvalue    86         -11.29435971
+eigenvalue    87         -11.29415104
+eigenvalue    88         -11.29415104
+eigenvalue    89         -11.29379500
+eigenvalue    90         -11.29379500
+eigenvalue    91         -11.29318541
+eigenvalue    92         -11.29318541
+eigenvalue    93          -3.81987532
+eigenvalue    94          -3.81987532
+eigenvalue    95          -3.81851469
+eigenvalue    96          -3.81851469
+eigenvalue    97          -2.67899989
+eigenvalue    98          -2.67899989
+eigenvalue    99          -2.67833649
+eigenvalue   100          -2.67833649
+eigenvalue   101          -2.67785949
+eigenvalue   102          -2.67785949
+eigenvalue   103          -2.67769890
+eigenvalue   104          -2.67769890
+eigenvalue   105          -2.67733424
+eigenvalue   106          -2.67733424
+eigenvalue   107          -2.67679040
+eigenvalue   108          -2.67679040
+eigenvalue   109          -2.54465061
+eigenvalue   110          -2.54465061
+eigenvalue   111          -2.54410719
+eigenvalue   112          -2.54410719
+eigenvalue   113          -2.54373755
+eigenvalue   114          -2.54373755
+eigenvalue   115          -2.54336016
+eigenvalue   116          -2.54336016
+eigenvalue   117          -2.54323875
+eigenvalue   118          -2.54323875
+eigenvalue   119          -2.54297078
+eigenvalue   120          -2.54297078
+eigenvalue   121          -2.54268584
+eigenvalue   122          -2.54268584
+eigenvalue   123          -2.54222605
+eigenvalue   124          -2.54222605
+eigenvalue   125          -2.50415911
+eigenvalue   126          -2.50415911
+eigenvalue   127          -2.50221094
+eigenvalue   128          -2.50221094
+eigenvalue   129          -1.92273295
+eigenvalue   130          -1.92273295
+eigenvalue   131          -1.91436585
+eigenvalue   132          -1.91436585
+eigenvalue   133          -1.91316251
+eigenvalue   134          -1.91316251
+eigenvalue   135          -1.91140894
+eigenvalue   136          -1.91140894
+eigenvalue   137          -0.27081107
+eigenvalue   138          -0.27081107
+eigenvalue   139          -0.23415928
+eigenvalue   140          -0.23415928
+eigenvalue   141          -0.22134146
+eigenvalue   142          -0.22134146
+eigenvalue   143          -0.21084692
+eigenvalue   144          -0.21084692
+eigenvalue   145          -0.20425748
+eigenvalue   146          -0.20425748
+eigenvalue   147          -0.17843644
+eigenvalue   148          -0.17843644
+eigenvalue   149          -0.16432380
+eigenvalue   150          -0.16432380
+eigenvalue   151          -0.15731932
+eigenvalue   152          -0.15731932
+eigenvalue   153          -0.15103448
+eigenvalue   154          -0.15103448
+eigenvalue   155          -0.14906961
+eigenvalue   156          -0.14906961
+eigenvalue   157          -0.13804601
+eigenvalue   158          -0.13804601
+      lumo                -0.14204800
+Time vtvec walltime                            0.88  cputime       0.88
+
+  jmatfitt parallelized time walltime          0.05  cputime       0.05
+Time for jmatfitt walltime                    10.65  cputime      10.65 MPI_Wtime       0.00
+Time for zhegv:    17.80 s
+Time vtvec walltime                            0.96  cputime       0.96
+
+  jmatfitt parallelized time walltime          0.06  cputime       0.06
+Time for jmatfitt walltime                    10.63  cputime      10.62 MPI_Wtime       0.00
+  jmatfitt parallelized time walltime          0.06  cputime       0.06
+Time for jmatfitt walltime                    10.65  cputime      10.63 MPI_Wtime       0.00
+Time for zhegv:    17.95 s
+Time vtvec walltime                            0.97  cputime       0.97
+
+  jmatfitt parallelized time walltime          0.06  cputime       0.06
+Time for jmatfitt walltime                    10.47  cputime      10.47 MPI_Wtime       0.00
+  jmatfitt parallelized time walltime          0.06  cputime       0.06
+Time for jmatfitt walltime                    10.60  cputime      10.58 MPI_Wtime       0.00
+Time for zhegv:    17.30 s
+Time vtvec walltime                            0.97  cputime       0.97
+
+  jmatfitt parallelized time walltime          0.05  cputime       0.05
+Time for jmatfitt walltime                    10.52  cputime      10.52 MPI_Wtime       0.00
+  jmatfitt parallelized time walltime          0.06  cputime       0.06
+Time for jmatfitt walltime                    10.65  cputime      10.65 MPI_Wtime       0.00
+Time for zhegv:    17.99 s
