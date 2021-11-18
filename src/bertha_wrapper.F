@@ -358,7 +358,7 @@ c          print *, "Here " , ndim, nocc
           write(6,*) "Iteration ", iter
         endif
 
-        if (verbose .eq. 1) write (0, 777)
+        if (verbose .eq. 1) write (6, 777)
         wtimeiter = walltime ()
         ctimeiter = cputime ()
         fock = czero
@@ -370,7 +370,7 @@ c          print *, "Here " , ndim, nocc
         time1 = walltime () - time1
         ctime1 = cputime() - ctime1
 
-        if (verbose .eq. 1) write (0, 6661 ) time1, ctime1
+        if (verbose .eq. 1) write (6, 6661 ) time1, ctime1
  6661   format ('Time for hden walltime                   ', f10.2,
      +  '  cputime ', f10.2,/)
 
@@ -394,7 +394,7 @@ c          print *, "Here " , ndim, nocc
         timetomt2 = walltime () - timetomt2
         ctimetomt2 = cputime () - ctimetomt2
 
-        if (verbose .eq. 1) write (0, 5678) timetomt2, ctimetomt2
+        if (verbose .eq. 1) write (6, 5678) timetomt2, ctimetomt2
  5678   format ('Time for the factlu walltime             ', 
      +          f10.2, '  cputime ', f10.2)
 
@@ -411,7 +411,7 @@ c          print *, "Here " , ndim, nocc
         timetomt2 = walltime () - timetomt2
         ctimetomt2 = cputime () - ctimetomt2
 
-        if (verbose .eq. 1) write (0, 5680) timetomt2, ctimetomt2
+        if (verbose .eq. 1) write (6, 5680) timetomt2, ctimetomt2
  5680   format ('Time for the zz walltime                 ', f10.2, 
      +          '  cputime ', f10.2)
 
@@ -439,13 +439,27 @@ c          print *, "Here " , ndim, nocc
 ! #### end  Calculation of Tr(D(V_xc+J))    
 !  For Embedding
 
+
         if (addpot) then
+
           allocate(pp(nfitt),stat=rc)
+
+        time1 = walltime ()
+        ctime1 = cputime()
+
           if (rc.ne.0) call errmsg('error allocating memory')
 
           if (associated(pot))     npoints = SIZE(pot)
 
           if (associated(grid))    call onel_pot_from_grid(grid, pot, npoints, nfitt, fitcase, pp)
+
+        time1 = walltime () - time1
+        ctime1 = cputime() - ctime1
+
+        if (verbose .eq. 1) write (*, 6662 ) time1, ctime1
+ 6662   format ('Time for onel_pot_from_grid  walltime                   ', f10.2,
+     +  '  cputime ', f10.2,/)
+
 
           v = v + pp
 
@@ -454,6 +468,11 @@ c          print *, "Here " , ndim, nocc
           deallocate(pp)
         endif
 
+
+
+
+
+
         deallocate(v)
         deallocate(zz)
 
@@ -461,7 +480,7 @@ c          print *, "Here " , ndim, nocc
         timetomt1 = walltime () - timetomt1
         ctimetomt1 = cputime () - ctimetomt1
 
-        if (verbose .eq. 1) write (0, 5679) timetomt1, ctimetomt1
+        if (verbose .eq. 1) write (6, 5679) timetomt1, ctimetomt1
  5679   format ('Total time for the fitting walltime      ', f10.2, 
      +          '  cputime ', f10.2, / )
 
@@ -554,7 +573,7 @@ c          write (6, *) " "
         
 c        ovap_ptr = c_loc(ovap(1,1))
 
-        if (verbose .eq. 1) write (0, 6664 ) time1, ctime1
+        if (verbose .eq. 1) write (6, 6664 ) time1, ctime1
  6664   format ('Time for oneel walltime                  ', f10.2,
      +          '  cputime ', f10.2, /)
         time1 = walltime ()
@@ -567,7 +586,7 @@ c        if (((iter.gt.1).and.(sfact.ne.(0.0))).or.(irun.eq.0).
      >     call shftlv()
         time1 = walltime () - time1
         ctime1 = cputime () - ctime1
-        if (verbose .eq. 1) write (0, 5564 ) time1, ctime1
+        if (verbose .eq. 1) write (6, 5564 ) time1, ctime1
  5564   format ('Time for shftlv                          ', f10.2,
      +          '  cputime ', f10.2, /)
 
@@ -641,7 +660,7 @@ c        end do
         wtimeio = walltime () - wtimeio
         ctimeio = cputime () - ctimeio
         
-        if (verbose .eq. 1) write (0, 3567) wtimeio, ctimeio
+        if (verbose .eq. 1) write (6, 3567) wtimeio, ctimeio
  3567   format ("Time for the io walltime                 ", 
      +        f10.2, "  cputime ", f10.2, /)
 
@@ -706,7 +725,7 @@ c        end do
         denswalltime = walltime () - denswalltime
         denscputime = cputime () - denscputime
 
-        if (verbose .eq. 1) write (0, 3457) denswalltime, denscputime
+        if (verbose .eq. 1) write (6, 3457) denswalltime, denscputime
  3457   format ('Time for dens walltime                   ', f10.2,
      +          '  cputime ', f10.2, /)
 
@@ -722,8 +741,8 @@ c        end do
         wtimeiter = walltime () - wtimeiter
         ctimeiter = cputime () - ctimeiter
 
-        if (verbose .eq. 1) write (0, 777)
-        if (verbose .eq. 1) write (0, 6666) iter, wtimeiter, ctimeiter
+        if (verbose .eq. 1) write (6, 777)
+        if (verbose .eq. 1) write (6, 6666) iter, wtimeiter, ctimeiter
  6666   format ("Total time for iteration ", I4, " walltime   ",
      +          F10.2, "  cputime ", F10.2, /)
       end do
@@ -736,8 +755,8 @@ c        end do
         wtimeiter = walltime () - wtimeiter
         ctimeiter = cputime () - ctimeiter
 
-        if (verbose .eq. 1) write (0, 777)
-        if (verbose .eq. 1) write (0, 6666) iter, wtimeiter, ctimeiter
+        if (verbose .eq. 1) write (6, 777)
+        if (verbose .eq. 1) write (6, 6666) iter, wtimeiter, ctimeiter
       endif
 
       cputime11 = cputime11 - cputime ()
@@ -768,7 +787,7 @@ c     call getresourcesusage ()
       !call gencubefile(ncent,coord,iznuc,nfitt,fitcase)
       wtimeiter = walltime () - wtimeiter
 
-      if (verbose .eq. 1) write (0, 6679) wtimeiter
+      if (verbose .eq. 1) write (6, 6679) wtimeiter
  6679 format ('Time for cube is: ', f8.4)
 
       call flush(6)
