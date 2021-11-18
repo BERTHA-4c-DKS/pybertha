@@ -11,8 +11,10 @@ if len(sys.argv) != 2:
 else:
     filename = sys.argv[1]
 
-gin = Grid(filename)
-g = gin.resample_factor(4)
+#gin = Grid(filename)
+#g = gin.resample_factor(4)
+
+g = Grid(filename)
 
 nx = g.grid.shape[0]
 ny = g.grid.shape[1]
@@ -22,7 +24,7 @@ deltax = g.delta[0]
 deltay = g.delta[1]
 deltaz = g.delta[2]
 
-dr = 3.0 * max(deltax, deltay, deltaz)
+dr = max(deltax, deltay, deltaz)
 
 xmin = g.origin[0]
 ymin = g.origin[1]
