@@ -15,7 +15,7 @@
 #define f_bertha_density_to_cube_limit bertha_wrapper_mp_bertha_density_to_cube_limit_
 #define f_bertha_get_density_ongrid bertha_wrapper_mp_bertha_get_density_ongrid_
 #define f_bertha_set_embpot_on_grid  bertha_wrapper_mp_bertha_set_embpot_on_grid_
-#define f_bertha_set_restart_mem __bertha_wrapper_mp_bertha_set_restart_mem_
+#define f_bertha_set_restart_mem bertha_wrapper_mp_bertha_set_restart_mem_
 
 #define f_ndim spec_mp_ndim_
 #define f_nshift spec_mp_nshift_

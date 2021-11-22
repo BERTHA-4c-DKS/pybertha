@@ -11,7 +11,7 @@ PROFILE=no
 
 #is used only by serial
 #use Intel compiler
-USEINTEL=no
+USEINTEL=yes
 
 #LIBXC
 LIBXC=no
@@ -22,9 +22,9 @@ LIBXC=no
 # export OMP_SCHEDULE=dynamic
 # export OMP_STACKSIZE=200M (KMP_.... for Intel)
 # export OMP_NUM_THREADS=4
-USEOPENMP=no
+USEOPENMP=yes
 
-BERTHAROOT=/home/redo/Project_Bertha/bertha_ng
+BERTHAROOT=/home/redo/BERTHA/bertha_ng
 
 ###
 ## NO BLUEGENE
@@ -168,8 +168,8 @@ endif
 LINKFLAGS = 
 
 ifeq ($(USEOPENMP),yes)
-  FFLAGS    += -fopenmp 
-  CFLAGS    += -fopenmp 
+  FFLAGS    += -fopenmp -DUSEOMPAPI
+  CFLAGS    += -fopenmp -DUSEOMPAPI
   LINKFLAGS += -fopenmp
 endif
 

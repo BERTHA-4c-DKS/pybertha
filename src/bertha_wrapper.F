@@ -1,5 +1,9 @@
       module bertha_wrapper
 
+#ifdef USEOMPAPI 
+      USE OMP_LIB 
+#endif 
+
       use, intrinsic :: iso_c_binding
 
       use spec, only: coord, znuc, cnuc, expset, iznuc, icrge, kvals,
@@ -121,6 +125,22 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       real, external :: walltime, cputime
 
       logical :: filefound
+
+#ifdef USEOMPAPI 
+      character(len=255) :: evariable
+      integer :: nt
+
+c      write(*,*) "Proc number: ", omp_get_num_procs()
+c      write(*,*) "Max thread Number: ", omp_get_max_threads()
+c      write(*,*) "Num of Threads: ", omp_get_num_threads()
+
+      call get_environment_variable("OMP_NUM_THREADS", evariable)
+      read(evariable,'(i)') nt
+      if (nt .ne. omp_get_num_threads()) CALL OMP_SET_NUM_THREADS(nt)
+
+c      write(*,*) "Num of Threads: ", omp_get_num_threads()
+c      WRITE (*,*) "OMP_NUM_THREADS : ", evariable
+#endif
 
       cputime11 = cputime ()
 
