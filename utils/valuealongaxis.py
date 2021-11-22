@@ -12,9 +12,9 @@ else:
     filename = sys.argv[1]
     iadd = int(sys.argv[2])
 
-#g = Grid(filename)
-gin = Grid(filename)
-g = gin.resample_factor(4)
+g = Grid(filename)
+#gin = Grid(filename)
+#g = gin.resample_factor(4)
 
 nx = g.grid.shape[0]
 ny = g.grid.shape[1]
