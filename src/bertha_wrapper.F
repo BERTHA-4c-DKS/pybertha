@@ -141,7 +141,7 @@ c      write(*,*) "Num of Threads: ", omp_get_num_threads()
 
 c      write(*,*) "Num of Threads: ", omp_get_num_threads()
 c      WRITE (*,*) "OMP_NUM_THREADS : ", evariable
-      call mkl_set_num_threads(4)
+      call mkl_set_num_threads(nt)
 #endif
 
       cputime11 = cputime ()
