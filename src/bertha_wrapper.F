@@ -1,5 +1,10 @@
       module bertha_wrapper
 
+#ifdef USEOMPAPI
+               USE OMP_LIB
+               USE mkl_service
+#endif 
+
       use, intrinsic :: iso_c_binding
 
       use spec, only: coord, znuc, cnuc, expset, iznuc, icrge, kvals,
@@ -107,7 +112,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
      + dist, r1x, r1y, r1z, d1, r2x, 
      + r2y, r2z, d2, scprod, ang, diff, eold, oldecoul, rthresh1, 
      + rthresh2, efittcoulplusexc, efittcoul, etemp, excfit, 
-     + exc, cputime11, timetomt1, ffre,
+     + exc, cputime11, wtime11, timetomt1, ffre,
      + ctimetomt1, timetomt2, ctimetomt2, wtimeiter, 
      + ctimeiter, ctime1, time1, ffim, ecoul
 
@@ -122,7 +127,25 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       logical :: filefound
 
+#ifdef USEOMPAPI 
+      character(len=255) :: evariable
+      integer :: nt
+
+c      write(*,*) "Proc number: ", omp_get_num_procs()
+c      write(*,*) "Max thread Number: ", omp_get_max_threads()
+c      write(*,*) "Num of Threads: ", omp_get_num_threads()
+
+      call get_environment_variable("OMP_NUM_THREADS", evariable)
+      read(evariable,'(i)') nt
+      if (nt .ne. omp_get_num_threads()) CALL OMP_SET_NUM_THREADS(nt)
+
+c      write(*,*) "Num of Threads: ", omp_get_num_threads()
+c      WRITE (*,*) "OMP_NUM_THREADS : ", evariable
+      call mkl_set_num_threads(4)
+#endif
+
       cputime11 = cputime ()
+      wtime11 = walltime ()
 
       if (restartmem) irun = 0
 
@@ -315,17 +338,31 @@ c          print *, "Here " , ndim, nocc
 
         v=v+zz
 
-        if (addpot) then 
+          
+
+
+        if (addpot) then
+
           allocate(pp(nfitt),stat=rc)
+
+        time1 = walltime ()
+        ctime1 = cputime()
+
           if (rc.ne.0) call errmsg('error allocating memory')
 
-          if (associated(pot))     npoints = SIZE(pot) 
-          
+          if (associated(pot))     npoints = SIZE(pot)
+
           if (associated(grid))    call onel_pot_from_grid(grid, pot, npoints, nfitt, fitcase, pp)
-          
+
+        time1 = walltime () - time1
+        ctime1 = cputime() - ctime1
+
+        if (verbose .eq. 1) write (*, 6662 ) time1, ctime1
+
           v = v + pp 
           deallocate(pp)
         endif
+
 
         fock=(0.0,0.0) 
 
@@ -358,7 +395,7 @@ c          print *, "Here " , ndim, nocc
           write(6,*) "Iteration ", iter
         endif
 
-        if (verbose .eq. 1) write (6, 777)
+        if (verbose .eq. 1) write (0, 777)
         wtimeiter = walltime ()
         ctimeiter = cputime ()
         fock = czero
@@ -370,7 +407,7 @@ c          print *, "Here " , ndim, nocc
         time1 = walltime () - time1
         ctime1 = cputime() - ctime1
 
-        if (verbose .eq. 1) write (6, 6661 ) time1, ctime1
+        if (verbose .eq. 1) write (0, 6661 ) time1, ctime1
  6661   format ('Time for hden walltime                   ', f10.2,
      +  '  cputime ', f10.2,/)
 
@@ -394,7 +431,7 @@ c          print *, "Here " , ndim, nocc
         timetomt2 = walltime () - timetomt2
         ctimetomt2 = cputime () - ctimetomt2
 
-        if (verbose .eq. 1) write (6, 5678) timetomt2, ctimetomt2
+        if (verbose .eq. 1) write (0, 5678) timetomt2, ctimetomt2
  5678   format ('Time for the factlu walltime             ', 
      +          f10.2, '  cputime ', f10.2)
 
@@ -411,7 +448,7 @@ c          print *, "Here " , ndim, nocc
         timetomt2 = walltime () - timetomt2
         ctimetomt2 = cputime () - ctimetomt2
 
-        if (verbose .eq. 1) write (6, 5680) timetomt2, ctimetomt2
+        if (verbose .eq. 1) write (0, 5680) timetomt2, ctimetomt2
  5680   format ('Time for the zz walltime                 ', f10.2, 
      +          '  cputime ', f10.2)
 
@@ -480,7 +517,7 @@ c          print *, "Here " , ndim, nocc
         timetomt1 = walltime () - timetomt1
         ctimetomt1 = cputime () - ctimetomt1
 
-        if (verbose .eq. 1) write (6, 5679) timetomt1, ctimetomt1
+        if (verbose .eq. 1) write (0, 5679) timetomt1, ctimetomt1
  5679   format ('Total time for the fitting walltime      ', f10.2, 
      +          '  cputime ', f10.2, / )
 
@@ -573,7 +610,7 @@ c          write (6, *) " "
         
 c        ovap_ptr = c_loc(ovap(1,1))
 
-        if (verbose .eq. 1) write (6, 6664 ) time1, ctime1
+        if (verbose .eq. 1) write (0, 6664 ) time1, ctime1
  6664   format ('Time for oneel walltime                  ', f10.2,
      +          '  cputime ', f10.2, /)
         time1 = walltime ()
@@ -586,7 +623,7 @@ c        if (((iter.gt.1).and.(sfact.ne.(0.0))).or.(irun.eq.0).
      >     call shftlv()
         time1 = walltime () - time1
         ctime1 = cputime () - ctime1
-        if (verbose .eq. 1) write (6, 5564 ) time1, ctime1
+        if (verbose .eq. 1) write (0, 5564 ) time1, ctime1
  5564   format ('Time for shftlv                          ', f10.2,
      +          '  cputime ', f10.2, /)
 
@@ -660,7 +697,7 @@ c        end do
         wtimeio = walltime () - wtimeio
         ctimeio = cputime () - ctimeio
         
-        if (verbose .eq. 1) write (6, 3567) wtimeio, ctimeio
+        if (verbose .eq. 1) write (0, 3567) wtimeio, ctimeio
  3567   format ("Time for the io walltime                 ", 
      +        f10.2, "  cputime ", f10.2, /)
 
@@ -725,7 +762,7 @@ c        end do
         denswalltime = walltime () - denswalltime
         denscputime = cputime () - denscputime
 
-        if (verbose .eq. 1) write (6, 3457) denswalltime, denscputime
+        if (verbose .eq. 1) write (0, 3457) denswalltime, denscputime
  3457   format ('Time for dens walltime                   ', f10.2,
      +          '  cputime ', f10.2, /)
 
@@ -741,8 +778,8 @@ c        end do
         wtimeiter = walltime () - wtimeiter
         ctimeiter = cputime () - ctimeiter
 
-        if (verbose .eq. 1) write (6, 777)
-        if (verbose .eq. 1) write (6, 6666) iter, wtimeiter, ctimeiter
+        if (verbose .eq. 1) write (0, 777)
+        if (verbose .eq. 1) write (0, 6666) iter, wtimeiter, ctimeiter
  6666   format ("Total time for iteration ", I4, " walltime   ",
      +          F10.2, "  cputime ", F10.2, /)
       end do
@@ -759,7 +796,8 @@ c        end do
         if (verbose .eq. 1) write (6, 6666) iter, wtimeiter, ctimeiter
       endif
 
-      cputime11 = cputime11 - cputime ()
+      cputime11 = cputime () - cputime11 
+      wtime11   = walltime () - wtime11 
 
       if (verbose .eq. 1) then
        write(6,*) ' '
@@ -770,7 +808,8 @@ c        end do
        write(6,*) 'bond length = ',coord(3,2)
        write(6,*) 'total energy = ',etotal+erep-(nocc*sfact)
        write(6,*) ' '
-       write(6,*) 'total cpu-time used (sec):', cputime11
+       write(6,*) 'total  cpu-time used (sec):', cputime11
+       write(6,*) 'total wall-time used (sec):', wtime11
        write(6,*) '**********************************************'
       endif
 

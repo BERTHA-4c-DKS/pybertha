@@ -11,7 +11,7 @@ PROFILE=no
 
 #is used only by serial
 #use Intel compiler
-USEINTEL=no
+USEINTEL=yes
 
 #LIBXC
 LIBXC=yes
@@ -22,7 +22,7 @@ LIBXC=yes
 # export OMP_SCHEDULE=dynamic
 # export OMP_STACKSIZE=200M (KMP_.... for Intel)
 # export OMP_NUM_THREADS=4
-USEOPENMP=no
+USEOPENMP=yes
 
 BERTHAROOT=/home/belp/EMBEDDING/bertha_ng
 
@@ -61,13 +61,12 @@ ifeq ($(FORBGQ),no)
     #	-L${MKLROOT}/lib/intel64 -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread -lm -ldl
 
     #static 
-    BLASLAPACK =  -Wl,--start-group $(MKLROOT)/lib/intel64/libmkl_intel_lp64.a $(MKLROOT)/lib/intel64/libmkl_sequential.a \
-    	$(MKLROOT)/lib/intel64/libmkl_core.a -Wl,--end-group -lpthread
+#    BLASLAPACK =  -Wl,--start-group $(MKLROOT)/lib/intel64/libmkl_intel_lp64.a $(MKLROOT)/lib/intel64/libmkl_sequential.a \
+#    	$(MKLROOT)/lib/intel64/libmkl_core.a -Wl,--end-group -lpthread
 
     #BLASLAPACK = -llapack -lblas
+    BLASLAPACK =  -mkl
     
-    FFLAGS+= -I${MKLROOT}/include/intel64/lp64 -mkl=parallel 
-
     INCLUDE = 
 
     ifeq ($(DEBUG),yes)
@@ -75,7 +74,7 @@ ifeq ($(FORBGQ),no)
       CFLAGS += -D_FILE_OFFSET_BITS=64 -O0 -g
     else
       #FFLAGS += -r8 -check all -check noarg_temp_created -traceback -warn all -O2 -132 
-      FFLAGS += -r8 -warn all -O3 -132
+      FFLAGS += -r8 -warn all -O3 -132 -mkl
       #FFLAGS += -C -O0 -r8 -warn all -132 -I./$(MODIR)
       CFLAGS += -D_FILE_OFFSET_BITS=64 -O3
     endif
@@ -88,9 +87,9 @@ ifeq ($(FORBGQ),no)
     INCLUDE = 
     
     # gnu standard
-    BLASLAPACK = -llapack -lblas
-    SCALAPACK=-L/usr/lib64/openmpi/lib/ -lscalapack 
-    BLACS=-L/usr/lib64/openmpi/lib/ -lmpiblacs
+#    BLASLAPACK = -llapack -lblas
+#    SCALAPACK=-L/usr/lib64/openmpi/lib/ -lscalapack 
+#    BLACS=-L/usr/lib64/openmpi/lib/ -lmpiblacs
 
     # gnu custom
     #BLACSDIR=/home/mat/local/lib
@@ -171,9 +170,9 @@ endif
 LINKFLAGS = 
 
 ifeq ($(USEOPENMP),yes)
-  FFLAGS    += -fopenmp 
-  CFLAGS    += -fopenmp 
-  LINKFLAGS += -fopenmp
+  FFLAGS    += -qopenmp -DUSEOMPAPI
+  CFLAGS    += -qopenmp -DUSEOMPAPI
+  LINKFLAGS += -qopenmp
 endif
 
 #FFLAGS += -DDUMPFOCKMTX
