@@ -14,7 +14,7 @@ PROFILE=no
 USEINTEL=yes
 
 #LIBXC
-LIBXC=yes
+LIBXC=no
 
 # use OpenMP with Intel there could be problem related to the stacksize
 # ulimit -s unlimited
@@ -172,7 +172,7 @@ LINKFLAGS =
 ifeq ($(USEOPENMP),yes)
   FFLAGS    += -qopenmp -DUSEOMPAPI
   CFLAGS    += -qopenmp -DUSEOMPAPI
-  LINKFLAGS += -qopenmp
+  LINKFLAGS += -qopenmp 
 endif
 
 #FFLAGS += -DDUMPFOCKMTX

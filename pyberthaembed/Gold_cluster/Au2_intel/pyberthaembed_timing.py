@@ -2,7 +2,7 @@ import argparse
 import shutil
 import numpy
 import sys
-#import psutil
+import psutil
 import os
 import os.path
 import time
@@ -152,8 +152,16 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
 
     
         print('THREAD %s '%(os.environ.get('OMP_NUM_THREADS')))
+        time_get_start = time.time()
+        process_time_start = time.process_time()
+
         ovapm, eigem, fockm, eigen = bertha.run()
-        print('THREAD %s '%(os.environ.get('OMP_NUM_THREADS')))
+
+        time_get_end= time.time()
+        process_time_end= time.process_time()
+
+        print("Initial bertha.run() including atomic calc (without embedding): %15.5f"%(time_get_end - time_get_start), \
+                     " (CPU time: %15.5f"%(process_time_end - process_time_start), ") s ")
 
         if pberthaopt.dumpfiles :
             os.rename(vctfilename,'unpert_vct.txt') 
@@ -210,6 +218,7 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
     if not os.path.isfile(envirofname):
         raise Exception("File ", envirofname , " does not exist")
 
+
     embfactory = pyembmod.pyemb(activefname,envirofname,'adf') #jobtype='adf' is default de facto
     #grid_param =[50,110] # psi4 grid parameters (see Psi4 grid table)
     #embfactory.set_options(param=grid_param, \
@@ -219,6 +228,7 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
     embfactory.set_thresh_conv(pberthaopt.thresh_conv)
     embfactory.set_grid_filename(pberthaopt.gridfname)
     # several paramenters to be specified in input- e.g AUG/ADZP for ADF, aug-cc-pvdz for psi4
+
 
     if (pberthaopt.debug):
        import uuid
@@ -231,14 +241,34 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
         print("embfactory Options:")
         print(embfactory.get_options())
 
+    time_start = time.time()
+    process_time_start = time.process_time()
+
     embfactory.initialize()
+
+    time_end= time.time()
+    process_time_end= time.process_time()
+    print("Initialize embfactory: %15.5f"%(time_end - time_start), \
+                            " (CPU time: %15.5f"%(process_time_end - process_time_start), ") s ")
+
     grid = embfactory.get_grid() 
 
     if (pberthaopt.debug):
        numpy.savetxt ("grid.txt", grid)
 
     if not restart:
-        rho = bertha.get_density_on_grid(grid)
+         time_get_density_on_grid_start = time.time()
+         process_time_get_density_on_grid_start = time.process_time()
+ 
+         rho = bertha.get_density_on_grid(grid)
+ 
+         time_get_density_on_grid_end= time.time()
+         process_time_get_density_on_grid_end= time.process_time()
+ 
+ 
+         print("Fitted density on grid time               : %15.5f"%(time_get_density_on_grid_end - time_get_density_on_grid_start), \
+                     " (CPU time: %15.5f"%(process_time_get_density_on_grid_end - process_time_get_density_on_grid_start), ") s ")
+
 
     if stdoutprint:
         print("Grid dimensions : " , grid.shape)
@@ -248,7 +278,17 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
     density[:,0] = rho
 
     fpot = None
-    pot = embfactory.get_potential(density) 
+
+    time_start = time.time()
+    process_time_start = time.process_time()
+
+    pot = embfactory.get_potential(density)
+
+    time_end= time.time()
+    process_time_end= time.process_time()
+    print("Vemb pot on grid: embfactory.get_potential: %15.5f"%(time_end - time_start), \
+                            " (CPU time: %15.5f"%(process_time_end - process_time_start), ") s ")
+
     if (pberthaopt.debug):
         numpy.savetxt ("initialpot.txt", pot)
     #DEBUG
@@ -316,7 +356,7 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
         print("unperturbed Dip z    ",dipz_ref)
 
     #if lin_emb=True, a single scf is performed at constant Vemb
-    maxiter = 3 
+    maxiter = 3
     Dold = Da0 
     Da = Da0
     Eold = etotal
@@ -331,8 +371,10 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
     dipz_mat = None
 
     for out_iter in range (maxiter):
-#        meminfo = psutil.Process().memory_info().rss / (1024 * 1024)
-#        print("Memory usage    : %15.5f Mb"%(meminfo))
+
+        meminfo = psutil.Process().memory_info().rss / (1024 * 1024)
+        print("Memory usage    : %15.5f Mb"%(meminfo))
+
         time_iter_start = time.time()
         process_time_iter_start = time.process_time()
 
@@ -559,8 +601,7 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
         time_iter_end= time.time()
         process_time_iter_end= time.process_time()
 
-        print("Time for each extrenal iteration          : %15.5f"%(time_iter_end - time_iter_start), \
-                    " (CPU time: %15.5f"%(process_time_iter_end - process_time_iter_start), ") s ")
+        print("Time for each external iteration          : %15.5f"%(time_iter_end - time_iter_start)," (CPU time: %15.5f"%(process_time_iter_end - process_time_iter_start), ") s ")
 
 
  

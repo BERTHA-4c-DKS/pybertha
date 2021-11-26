@@ -494,7 +494,7 @@ c          print *, "Here " , ndim, nocc
         ctime1 = cputime() - ctime1
 
         if (verbose .eq. 1) write (*, 6662 ) time1, ctime1
- 6662   format ('Time for onel_pot_from_grid  walltime                   ', f10.2,
+ 6662   format ('Time for onel_pot_from_grid (include int(Vexc|f_t) + FactlU)  walltime                   ', f10.2,
      +  '  cputime ', f10.2,/)
 
 
