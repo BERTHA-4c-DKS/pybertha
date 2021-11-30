@@ -1244,6 +1244,10 @@ c      print*, 'end bertha_get_density_ongrid'
 
       allocate(hgf(nfitt))
 
+!$OMP PARALLEL DO SCHEDULE(RUNTIME)
+!$OMP&   DEFAULT(NONE)
+!$OMP&   SHARED(npoints,grid,cfit,nfitt,fitcase,density)
+!$OMP&   PRIVATE(i,x,y,z,rho,hgf)
       do i=1,npoints
 c        write(*, '(A,F20.5,F20.5,F20.5,F20.5)'), "FORTRAN L: ", 
 c     +     grid(1,i), grid(2,i), grid(3,i), grid(4,i)
@@ -1257,6 +1261,7 @@ c     do we need to multiply by the Weight ?
 c        density(i) = rho * grid(4,i) 
         density(i) = rho
       enddo
+!$OMP END PARALLEL DO
 
 c      print*, 'Tot number el.', dot_product(density(:),grid(4,:))     
 c     call function in bertha_ng return density 
