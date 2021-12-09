@@ -269,6 +269,8 @@ if __name__ == "__main__":
             type=str, default="geomA.xyz")
     parser.add_argument("-gB","--geom_env", help="Specify geometry file for environment", required=True, 
             type=str, default="geomB.xyz")
+    parser.add_argument("--ghostB", help="Add ghosted B atoms to geomA", 
+            required=False, action="store_true", default=False)
     parser.add_argument("-d", "--debug", help="Debug on, prints debug info to err.txt", required=False,
             default=False, action="store_true")
     parser.add_argument("--modpaths", help="set berthamod and all other modules path [\"path1;path2;...\"] (default = ../src)", 
@@ -349,7 +351,7 @@ if __name__ == "__main__":
       imp_opts, calc_params = util.set_params(args.inputfile)
       func = calc_params['func_type'] # from input.inp. default : blyp
     
-    geom, mol = fde_util.set_input(geomA, basis_set)
+    geom, mol = fde_util.set_input(geomA, basis_set,geomB,args.ghostB)
 
     ene = None 
     wfn_scf = None

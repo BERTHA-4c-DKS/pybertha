@@ -65,17 +65,31 @@ def grid_plot(xs,ys,zs,ws):
  fig.savefig('./grid.png')
  plt.close(fig)
 
-def set_input(fgeom,basis_set):
+def set_input(fgeom,basis_set,fgeomB,ghostB):
   geomobj = str()
   with open(fgeom,"r") as f:
    next(f)
    next(f)
    for line in f:
     geomobj +=str(line)
+  f.close()
+
+  if ghostB:
+    ghost_str= str()
+    with open(fgeomB,"r") as f:
+     next(f)
+     next(f)
+     for line in f:
+      ghost_str +=str(line)
+    f.close()
+    tmp=ghost_str.split('\n')
+    tmp.pop()
+    for m in tmp:
+        geomobj+="@"+m.strip()+'\n'
+
   geomobj += "symmetry c1" +"\n" +"no_reorient" +"\n" +"no_com"
   #print(geomobj)
   mol =psi4.geometry(geomobj)
-  f.close()
   psi4.set_options({'BASIS': basis_set,
                     'puream' : 'True',
                     'dft_radial_scheme' : 'becke',
