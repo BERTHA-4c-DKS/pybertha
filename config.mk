@@ -173,7 +173,7 @@ ifeq ($(USEOPENMP),yes)
   LINKFLAGS += -fopenmp
 endif
 
-FFLAGS += -DDUMPFOCKMTX
+#FFLAGS += -DDUMPFOCKMTX
 
 MAKE = make
 
