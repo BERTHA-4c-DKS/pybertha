@@ -277,9 +277,10 @@ def runspbertha (pberthaopt):
     for i in range(numofatom):
         print(bertha.get_coords(i))
     
+
+    """
     outep = open("eps.txt", "w")
     
-    """
     griddim = 50
     
     xmin = 9.0
