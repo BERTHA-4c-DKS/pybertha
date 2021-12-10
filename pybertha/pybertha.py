@@ -1,5 +1,6 @@
 import argparse
 import numpy
+import uuid
 import sys
 
 import os.path
@@ -480,8 +481,17 @@ if __name__ == "__main__":
         pygenoption.functxc = args.func
         pygenoption.convertlengthunit = args.convertlengthunit
         pygenoption.maxit = args.berthamaxit
+
+        #pberthaopt.inputfile = "input.inp"
+        #pberthaopt.fittfile = "fitt2.inp"
        
-        for filename in ["input.inp", "fitt2.inp"]:
+        pberthaopt.inputfile = str(uuid.uuid4())
+        pberthaopt.fittfile = str(uuid.uuid4())  
+
+        pygenoption.berthainfname = pberthaopt.inputfile
+        pygenoption.berthafittfname = pberthaopt.fittfile 
+
+        for filename in [pberthaopt.inputfile , pberthaopt.fittfile]:
 
             if os.path.isfile(filename):
                 print("File ", filename, " will be overwritten")
@@ -492,8 +502,6 @@ if __name__ == "__main__":
 
         pybgen.generateinputfiles (pygenoption)
 
-        pberthaopt.inputfile = "input.inp"
-        pberthaopt.fittfile = "fitt2.inp"
     else:
         pberthaopt.inputfile = args.inputfile
         pberthaopt.fittfile = args.fittfile
@@ -535,3 +543,10 @@ if __name__ == "__main__":
     #sys.setrecursionlimit(10**6)
 
     runspbertha (pberthaopt)
+
+    for filename in [pberthaopt.inputfile , pberthaopt.fittfile]:
+        if os.path.isfile(filename):
+            try:
+                os.remove(filename)
+            except OSError:
+                pass
