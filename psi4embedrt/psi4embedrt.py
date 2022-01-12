@@ -322,6 +322,7 @@ if __name__ == "__main__":
     #more option to be added
     
     args = parser.parse_args() #temporary
+    rt_nthreads = int(os.getenv('OMP_NUM_THREADS', 1))
 
     for path in args.modpaths.split(";"):
         sys.path.append(path)
@@ -352,6 +353,7 @@ if __name__ == "__main__":
       func = calc_params['func_type'] # from input.inp. default : blyp
     
     geom, mol = fde_util.set_input(geomA, basis_set,geomB,args.ghostB)
+    psi4.set_num_threads(rt_nthreads)
 
     ene = None 
     wfn_scf = None
