@@ -6,7 +6,7 @@ from scipy.interpolate import interpn as itp
 
 from gridData import Grid
 
-N = 200
+N = 400
 WEI = False
 
 gridfilename = ""
