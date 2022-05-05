@@ -14,7 +14,7 @@ PROFILE=no
 USEINTEL=yes
 
 #LIBXC
-LIBXC=no
+LIBXC=yes
 
 # use OpenMP with Intel there could be problem related to the stacksize
 # ulimit -s unlimited
