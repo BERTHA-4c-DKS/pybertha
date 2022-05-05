@@ -5,7 +5,6 @@ import sys
 
 import os.path
 
-from numpy.linalg import eigvalsh
 from scipy.linalg import eigh
 
 import json

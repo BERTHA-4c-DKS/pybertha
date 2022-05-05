@@ -11,10 +11,10 @@ PROFILE=no
 
 #is used only by serial
 #use Intel compiler
-USEINTEL=yes
+USEINTEL=no
 
 #LIBXC
-LIBXC=no
+LIBXC=yes
 
 # use OpenMP with Intel there could be problem related to the stacksize
 # ulimit -s unlimited
@@ -22,9 +22,9 @@ LIBXC=no
 # export OMP_SCHEDULE=dynamic
 # export OMP_STACKSIZE=200M (KMP_.... for Intel)
 # export OMP_NUM_THREADS=4
-USEOPENMP=yes
+USEOPENMP=no
 
-BERTHAROOT=/home/redo/BERTHA/bertha_ng
+BERTHAROOT=${BerthaRootPath}/bertha_ng
 
 ###
 ## NO BLUEGENE
@@ -61,13 +61,12 @@ ifeq ($(FORBGQ),no)
     #	-L${MKLROOT}/lib/intel64 -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread -lm -ldl
 
     #static 
-    BLASLAPACK =  -Wl,--start-group $(MKLROOT)/lib/intel64/libmkl_intel_lp64.a $(MKLROOT)/lib/intel64/libmkl_sequential.a \
-    	$(MKLROOT)/lib/intel64/libmkl_core.a -Wl,--end-group -lpthread
+#    BLASLAPACK =  -Wl,--start-group $(MKLROOT)/lib/intel64/libmkl_intel_lp64.a $(MKLROOT)/lib/intel64/libmkl_sequential.a \
+#    	$(MKLROOT)/lib/intel64/libmkl_core.a -Wl,--end-group -lpthread
 
     #BLASLAPACK = -llapack -lblas
+    BLASLAPACK =  -mkl
     
-    FFLAGS+= -I${MKLROOT}/include/intel64/lp64 -mkl=parallel 
-
     INCLUDE = 
 
     ifeq ($(DEBUG),yes)
@@ -75,7 +74,7 @@ ifeq ($(FORBGQ),no)
       CFLAGS += -D_FILE_OFFSET_BITS=64 -O0 -g
     else
       #FFLAGS += -r8 -check all -check noarg_temp_created -traceback -warn all -O2 -132 
-      FFLAGS += -r8 -warn all -O3 -132
+      FFLAGS += -r8 -warn all -O3 -132 -mkl
       #FFLAGS += -C -O0 -r8 -warn all -132 -I./$(MODIR)
       CFLAGS += -D_FILE_OFFSET_BITS=64 -O3
     endif
@@ -88,9 +87,9 @@ ifeq ($(FORBGQ),no)
     INCLUDE = 
     
     # gnu standard
-    BLASLAPACK = -llapack -lblas
-    SCALAPACK=-L/usr/lib64/openmpi/lib/ -lscalapack 
-    BLACS=-L/usr/lib64/openmpi/lib/ -lmpiblacs
+#    BLASLAPACK = -llapack -lblas
+#    SCALAPACK=-L/usr/lib64/openmpi/lib/ -lscalapack 
+#    BLACS=-L/usr/lib64/openmpi/lib/ -lmpiblacs
 
     # gnu custom
     #BLACSDIR=/home/mat/local/lib
@@ -152,12 +151,15 @@ FFLAGS += -fPIC
 
 ifeq ($(LIBXC),yes)
   # Use libxc of a distribution DIRLIBXC to be set version 4.3.X is needed 
-  #DIRLIBXC = /usr/lib/x86_64-linux-gnu
-  DIRLIBXC = /home/matteod/anaconda3/envs/p4env
-  CFLAGS += -DLIBXC 
-  FFLAGS += -DLIBXC 
+  #
+  # Use libxc of a distribution DIRLIBXC to be set libxc 4.3.x is needed
+  DIRLIBXC = /usr/lib/x86_64-linux-gnu
+  CFLAGS += -DLIBXC
+  FFLAGS += -DLIBXC
   INCLUDE += -I$(DIRLIBXC)/include
   LIBS += -L$(DIRLIBXC)/lib -lxcf90 -lxc
+#  LIBS += -L$(DIRLIBXC) -lxc
+
 endif
 
 ifeq ($(USEINTEL),yes)
@@ -168,9 +170,15 @@ endif
 LINKFLAGS = 
 
 ifeq ($(USEOPENMP),yes)
-  FFLAGS    += -fopenmp -DUSEOMPAPI
-  CFLAGS    += -fopenmp -DUSEOMPAPI
-  LINKFLAGS += -fopenmp
+  ifeq ($(USEINTEL),yes)
+      FFLAGS    += -qopenmp -DUSEOMPAPI
+      CFLAGS    += -qopenmp -DUSEOMPAPI
+      LINKFLAGS += -qopenmp
+  else 
+    FFLAGS    += -fopenmp -DUSEOMPAPI
+    CFLAGS    += -fopenmp -DUSEOMPAPI
+    LINKFLAGS += -fopenmp
+  endif
 endif
 
 #FFLAGS += -DDUMPFOCKMTX

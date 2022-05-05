@@ -127,7 +127,7 @@ def scfiterations (args, maxiter, jk, H, Cocc, func, wfn, D, vemb, E, Eold, \
             if args.static_field:
                 fmax = args.fmax 
                 fdir = args.fdir
-                F.axpy(fmax,dipole[fdir])
+                F.axpy(-fmax,dipole[fdir])
                 print("fdir = %4.16f "%(fdir))
                 print("fmax = %4.16f "%(fmax))
 
@@ -142,7 +142,7 @@ def scfiterations (args, maxiter, jk, H, Cocc, func, wfn, D, vemb, E, Eold, \
             # SCF energy and update
             SCF_E = 2.0*H.vector_dot(D) + Enuc + Exc + twoel
             if args.static_field:
-                     SCF_E = SCF_E + 2.0*np.trace(np.matmul(np.array(dipole[fdir]),np.array(D)))*fmax 
+                     SCF_E = SCF_E - 2.0*np.trace(np.matmul(np.array(dipole[fdir]),np.array(D)))*fmax 
        
             dRMS = diis_e.rms()
        

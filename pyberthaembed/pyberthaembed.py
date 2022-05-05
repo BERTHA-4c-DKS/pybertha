@@ -5,6 +5,7 @@ import sys
 import os
 
 import os.path
+import time
 
 from dataclasses import dataclass
 from pathlib import Path
@@ -93,6 +94,7 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
     static_field = pberthaopt.static_field
     fmax = pberthaopt.fmax 
     fdir = pberthaopt.fdir
+    nofde= pberthaopt.nofde
     eigem = None
     rho = None
     Da0 = None
@@ -301,7 +303,7 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
         print("unperturbed Dip x    ",dipx_ref)
         print("unperturbed Dip y    ",dipy_ref)
         print("unperturbed Dip z    ",dipz_ref)
-    
+
     #if lin_emb=True, a single scf is performed at constant Vemb
     maxiter = 20
     Dold = Da0 
@@ -318,6 +320,9 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
     dipz_mat = None
 
     for out_iter in range (maxiter):
+        time_iter_start = time.time()
+        process_time_iter_start = time.process_time()
+
 
         bertha.set_fnameinput(fnameinput)
         bertha.set_fittfname(fittfname)
@@ -340,6 +345,8 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
         # run with Vemb included
         if static_field:
            totpot = pot+fpot
+           if nofde:
+              totpot = fpot
            totpot = numpy.ascontiguousarray(totpot, dtype=numpy.double)
 
            if (pberthaopt.debug):
@@ -349,6 +356,9 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
         else:
            if (pberthaopt.debug):
                 numpy.savetxt ("fullpot%d.txt"%(out_iter), pot)
+           
+           if nofde:
+              pot=numpy.zeros_like(pot)
  
            bertha.set_embpot_on_grid(grid, pot)
         
@@ -408,6 +418,24 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
             dipx_mat, dipy_mat, dipz_mat = \
               bertha.get_realtime_dipolematrix (0, normalise)
 
+            numofatom = bertha.get_natoms()
+            tmpcoords = []
+            tmpz      = []
+    
+            for i in range(numofatom):
+    
+                 tmpcoords.append(list(bertha.get_coords(i))[0:3])
+                 tmpz.append(list(bertha.get_coords(i))[3])
+    
+            matcoords  = numpy.array(tmpcoords)
+            vecZ       = numpy.array(tmpz)
+            vec_nuc_dip= numpy.matmul(vecZ.T,matcoords)
+    
+            nucdipx = vec_nuc_dip[0]
+            nucdipy = vec_nuc_dip[1]
+            nucdipz = vec_nuc_dip[2]
+
+
             bertha.finalize()
             break
 
@@ -417,11 +445,35 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
 
         # calculate the embedding potential corresponding to the new density
 
+        time_get_density_on_grid_start = time.time()
+        process_time_get_density_on_grid_start = time.process_time()
+
         rho = bertha.get_density_on_grid(grid)
+
+        time_get_density_on_grid_end= time.time()
+        process_time_get_density_on_grid_end= time.process_time()
+
+
+        print("Fitted density on grid time: %15.5f"%(time_get_density_on_grid_end - time_get_density_on_grid_start), \
+                    " (CPU time: %15.5f"%(process_time_get_density_on_grid_end - process_time_get_density_on_grid_start), ") s ")
+
         density=numpy.zeros((rho.shape[0],10))
         density[:,0] = rho
         pot_old=pot 
+
+        time_start = time.time()
+        process_time_start = time.process_time()
+
         pot = embfactory.get_potential(density)
+
+        time_end= time.time()
+        process_time_end= time.process_time()
+
+        print("Vemb pot on grid: embfactory.get_potential: %15.5f"%(time_end - time_start), \
+                    " (CPU time: %15.5f"%(process_time_end - process_time_start), ") s ")
+
+
+
         #DEBUG
         #pot=numpy.zeros_like(rho)
    
@@ -479,6 +531,16 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
             bertha.finalize()
             break
 
+        time_iter_end= time.time()
+        process_time_iter_end= time.process_time()
+
+        print(" Time for each extrenal iteration: %15.5f"%(time_iter_end - time_iter_start), \
+                    " (CPU time: %15.5f"%(process_time_iter_end - process_time_iter_start), ") s ")
+
+
+ 
+
+
         if out_iter == maxiter-1:
             if pberthaopt.density != "":
                bertha.density_to_cube(Da.T, pberthaopt.density,  drx=pberthaopt.drx, \
@@ -493,8 +555,63 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
 
         dipx_mat, dipy_mat, dipz_mat = \
             bertha.get_realtime_dipolematrix (0, normalise)
+        
+        """
+        Calculation of the Nuclear dipole (a.u)
+        """
+#####    print("Compute nuclear dipole (a.u.)")
+    
+        numofatom = bertha.get_natoms()
+        tmpcoords = []
+        tmpz      = []
+    
+        for i in range(numofatom):
+    
+             tmpcoords.append(list(bertha.get_coords(i))[0:3])
+             tmpz.append(list(bertha.get_coords(i))[3])
+    
+        matcoords  = numpy.array(tmpcoords)
+        vecZ       = numpy.array(tmpz)
+        vec_nuc_dip= numpy.matmul(vecZ.T,matcoords)
+    
+        nucdipx = vec_nuc_dip[0]
+        nucdipy = vec_nuc_dip[1]
+        nucdipz = vec_nuc_dip[2]
 
         bertha.finalize()
+
+
+    dipx_val = numpy.trace(numpy.matmul(Da,dipx_mat)).real
+    dipy_val = numpy.trace(numpy.matmul(Da,dipy_mat)).real
+    dipz_val = numpy.trace(numpy.matmul(Da,dipz_mat)).real
+
+    if stdoutprint:
+        print("")
+        print("Dip x    ",dipx_val)
+        print("Dip y    ",dipy_val)
+        print("Dip z    ",dipz_val)
+
+        print("MOLECULAR PROPERTIES of ACTIVE SYSTEM IN EMBEDDING:...")
+        print("  ")
+        print("Dipole Moment: ")
+        print("Axis   electronic dipole (a.u.)    nuclear dipole (a.u.)      Total dipole (a.u.)      Total dipole (Debye) ")
+        print(" x     %20.10f    %20.10f     %20.10f      %20.10f "%(dipx_val, nucdipx, dipx_val+nucdipx, (dipx_val+nucdipx)*2.541580))
+        print(" y     %20.10f    %20.10f     %20.10f      %20.10f "%(dipy_val, nucdipy, dipy_val+nucdipy, (dipy_val+nucdipy)*2.541580))
+        print(" z     %20.10f    %20.10f     %20.10f      %20.10f "%(dipz_val, nucdipz, dipz_val+nucdipz, (dipz_val+nucdipz)*2.541580))
+        print("  ")
+        tot_dip_vec = numpy.array([dipx_val+nucdipx,dipy_val+nucdipy,dipz_val+nucdipz])
+        print("Molecular dipole module:  %20.10f (a.u.)  %20.10f (Debye) "%(numpy.linalg.norm(tot_dip_vec), numpy.linalg.norm(tot_dip_vec)*2.541580))
+
+        print("MOLECULAR PROPERTIES of ACTIVE SYSTEM WITHOUT EMBEDDING (free active system):...")
+        print("  ")
+        print("Dipole Moment: ")
+        print("Axis   electronic dipole (a.u.)    nuclear dipole (a.u.)      Total dipole (a.u.)      Total dipole (Debye) ")
+        print(" x     %20.10f    %20.10f     %20.10f      %20.10f "%(dipx_ref, nucdipx, dipx_ref+nucdipx, (dipx_ref+nucdipx)*2.541580))
+        print(" y     %20.10f    %20.10f     %20.10f      %20.10f "%(dipy_ref, nucdipy, dipy_ref+nucdipy, (dipy_ref+nucdipy)*2.541580))
+        print(" z     %20.10f    %20.10f     %20.10f      %20.10f "%(dipz_ref, nucdipz, dipz_ref+nucdipz, (dipz_ref+nucdipz)*2.541580))
+        print("  ")
+        tot_dip_vec = numpy.array([dipx_ref+nucdipx,dipy_ref+nucdipy,dipz_ref+nucdipz])
+        print("Molecular dipole module:  %20.10f (a.u.)  %20.10f (Debye) "%(numpy.linalg.norm(tot_dip_vec), numpy.linalg.norm(tot_dip_vec)*2.541580))
 
     if stdoutprint:
         print("Dipole moment analitical: Tr(D dip_mat)")
@@ -503,15 +620,6 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
         print("dipZ_mat dim: %i,%i\n" % (dipz_mat.shape))
         print("Da dim: %i,%i\n" % (Da.shape))
 
-    dipx_val = numpy.trace(numpy.matmul(Da,dipx_mat)).real
-    dipy_val = numpy.trace(numpy.matmul(Da,dipy_mat)).real
-    dipz_val = numpy.trace(numpy.matmul(Da,dipz_mat)).real
-
-    if stdoutprint:
-        print("Dip x    ",dipx_val)
-        print("Dip y    ",dipy_val)
-        print("Dip z    ",dipz_val)
-        
         print("TEST dipole moment from density on grid numerical integration")
         print("  ")
         #print("Type density", type(density), density.shape)
@@ -562,8 +670,9 @@ if __name__ == "__main__":
         required=False, type=int, default=2)
     parser.add_argument("--gridfname", help="set grid filename (default = grid.dat)",
         required=False, type=str, default="grid.dat")
-
-    parser.add_argument("-l", "--linemb", help="Linearized embedding on: the outer loop is skipped", required=False, 
+    parser.add_argument("-l", "--linemb", help="Linearized embedding on: the outer loop is skipped", required=False,
+            default=False, action="store_true")
+    parser.add_argument("--nofde", help="embedding off: just for test", required=False, 
             default=False, action="store_true")
     parser.add_argument("--static_field", help="Add a static field to the SCF (default : False)", required=False, 
             default=False, action="store_true")
@@ -571,7 +680,6 @@ if __name__ == "__main__":
             type=numpy.float64, default=1.0e-5)
     parser.add_argument("--fdir", help="External field direction (cartesian)  (default: 2)",
             required=False, type=int, default=2)
-
     parser.add_argument("--restart", help="Force restart from a previous initial single-point",
         required=False, action="store_true", default=False)
     parser.add_argument("-c","--fitcoefffile", help="Specify BERTHA fitcoeff output file (default: fitcoeff.txt)",
@@ -656,6 +764,7 @@ if __name__ == "__main__":
     pberthaopt.dumpfiles = args.dumpfiles
     pberthaopt.debug = args.debug
     pberthaopt.linemb = args.linemb
+    pberthaopt.nofde = args.nofde
     pberthaopt.verbosity = args.verbosity
     pberthaopt.thresh = args.thresh
     pberthaopt.static_field = args.static_field
