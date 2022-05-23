@@ -11,10 +11,10 @@ PROFILE=no
 
 #is used only by serial
 #use Intel compiler
-USEINTEL=no
+USEINTEL=yes
 
 #LIBXC
-LIBXC=yes
+LIBXC=no
 
 # use OpenMP with Intel there could be problem related to the stacksize
 # ulimit -s unlimited
@@ -22,7 +22,7 @@ LIBXC=yes
 # export OMP_SCHEDULE=dynamic
 # export OMP_STACKSIZE=200M (KMP_.... for Intel)
 # export OMP_NUM_THREADS=4
-USEOPENMP=no
+USEOPENMP=yes
 
 BERTHAROOT=${BerthaRootPath}/bertha_ng
 
