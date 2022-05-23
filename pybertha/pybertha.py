@@ -543,9 +543,10 @@ if __name__ == "__main__":
 
     runspbertha (pberthaopt)
 
-    for filename in [pberthaopt.inputfile , pberthaopt.fittfile]:
-        if os.path.isfile(filename):
-            try:
-                os.remove(filename)
-            except OSError:
-                pass
+    if args.geometry != "":
+        for filename in [pberthaopt.inputfile , pberthaopt.fittfile]:
+            if os.path.isfile(filename):
+                try:
+                    os.remove(filename)
+                except OSError:
+                    pass
