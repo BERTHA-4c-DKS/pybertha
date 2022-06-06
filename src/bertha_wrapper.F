@@ -136,7 +136,7 @@ c      write(*,*) "Max thread Number: ", omp_get_max_threads()
 c      write(*,*) "Num of Threads: ", omp_get_num_threads()
 
       call get_environment_variable("OMP_NUM_THREADS", evariable)
-      read(evariable,'(i)') nt
+      read(evariable,*) nt
       if (nt .ne. omp_get_num_threads()) CALL OMP_SET_NUM_THREADS(nt)
 
 c      write(*,*) "Num of Threads: ", omp_get_num_threads()
