@@ -32,6 +32,7 @@ class pyberthaembedoption:
     inputfile: str = "input.inp"
     fittfile: str = "fitt2.inp"
     gtype: int = 2
+    nofde: bool = True
     param: float = 4.0
     basis: str = 'AUG/ADZP'
     excfuncenv : str = "BLYP"
