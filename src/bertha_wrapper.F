@@ -129,15 +129,20 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 #ifdef USEOMPAPI 
       character(len=255) :: evariable
-      integer :: nt
+      integer :: nt, io
 
 c      write(*,*) "Proc number: ", omp_get_num_procs()
 c      write(*,*) "Max thread Number: ", omp_get_max_threads()
 c      write(*,*) "Num of Threads: ", omp_get_num_threads()
 
       call get_environment_variable("OMP_NUM_THREADS", evariable)
-      read(evariable,*) nt
-      if (nt .ne. omp_get_num_threads()) CALL OMP_SET_NUM_THREADS(nt)
+c      print *, "'",evariable,"'"
+      read(evariable,*,IOSTAT=io) nt
+      if (io .lt. 0) then 
+         CALL OMP_SET_NUM_THREADS(1) 
+      else
+         if (nt .ne. omp_get_num_threads()) CALL OMP_SET_NUM_THREADS(nt)
+      endif
 
 c      write(*,*) "Num of Threads: ", omp_get_num_threads()
 c      WRITE (*,*) "OMP_NUM_THREADS : ", evariable
