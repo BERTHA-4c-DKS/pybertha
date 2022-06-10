@@ -861,6 +861,8 @@ def main():
            default=1.0, type=numpy.float64)
    parser.add_argument("--pulse", help="Specify the pulse to use [" + listpulses + "] default kick", required=False, 
            type=str, default="kick")
+   parser.add_argument("--nofde", help="embedding off: just for test", required=False, 
+            default=False, action="store_true")
    parser.add_argument("--pulseFmax", help="Specify the pulse Fmax value (default: 0.0001)", 
            default=0.0001, type=numpy.float64)
    parser.add_argument("--pulsew", help="Specify the pulse w value if needed (default: 0.0)", 
@@ -935,6 +937,7 @@ def main():
    pberthaopt.thresh = args.thresh
    pberthaopt.thresh_conv = args.embthresh
    pberthaopt.wrapperso = args.wrapperso
+   pberthaopt.nofde = args.nofde
    #pberthaopt.eda_nocv_info = args.eda_nocv_info
    #pberthaopt.eda_nocv_frag_file = args.eda_nocv_frag_file
    pberthaopt.activefile = args.geom_act
