@@ -79,15 +79,15 @@ def single_point (args, bertha):
     vctfilename = args.vctfile
     ovapfilename = args.ovapfile
     
-    #fnameinput = args.inputfile
-    #if not os.path.isfile(fnameinput):
-    #    print("File ", fnameinput, " does not exist")
-    #    return None, 
+    fnameinput = args.inputfile
+    if not os.path.isfile(fnameinput):
+        print("File ", fnameinput, " does not exist")
+        return None, 
     
-    #fittfname = args.fittfile
-    #if not os.path.isfile(fittfname):
-    #    print("File ", fittfname , " does not exist")
-    #    return None, 
+    fittfname = args.fittfile
+    if not os.path.isfile(fittfname):
+        print("File ", fittfname , " does not exist")
+        return None, 
     
     verbosity = args.verbosity
     dumpfiles = int(args.dumpfiles)
@@ -95,8 +95,8 @@ def single_point (args, bertha):
     bertha.set_fittcoefffname(fittcoefffname)
     bertha.set_ovapfilename(ovapfilename)
     bertha.set_vctfilename(vctfilename)
-    bertha.set_fnameinput("input.inp")
-    bertha.set_fittfname("fitt2.inp")
+    bertha.set_fnameinput(fnameinput)
+    bertha.set_fittfname(fittfname)
     bertha.set_thresh(args.thresh)
     
     bertha.set_verbosity(verbosity)
@@ -354,7 +354,7 @@ def run_iterations_from_to (startiter, niter, bertha, embfactory, args, fock_mid
 
 ##########################################################################################
 
-def restart_run(pberthaopt,args):
+def restart_run(pberthaopt, args):
     
     fp = open(args.restartfile, 'r')
     json_data = json.load(fp)
@@ -441,7 +441,15 @@ def restart_run(pberthaopt,args):
     args.ovapfile = json_data["ovapfile"]
     args.dumpfiles = json_data["dumpfiles"]
     args.direction = json_data["direction"]
-    
+
+    args.geom_act = json_data['geom_act']
+    args.act_fittset = json_data['act_fittset']
+    args.act_func = json_data['act_func']
+    args.act_obs = json_data['act_obs']
+    args.convertlengthunit = json_data['convertlengthunit']
+    args.jsonbasisfile = json_data['jsonbasisfile']
+
+
     totaltime = json_data["totaltime"]
     if args.totaltime < totaltime:
         args.totaltime = json_data["totaltime"]
@@ -477,10 +485,51 @@ def restart_run(pberthaopt,args):
     
     bertha = berthamod.pybertha(args.wrapperso)
 
+    pygenoption = pybgen.berthainputoption
+    pygenoption.inputfile = args.geom_act
+    pygenoption.jsonbasisfile = args.jsonbasisfile
+    pygenoption.fittset = args.act_fittset
+    pygenoption.basisset = args.act_obs
+    pygenoption.functxc = args.act_func
+    pygenoption.convertlengthunit = args.convertlengthunit
+    pygenoption.maxit = MAXIT
+
+    #pberthaopt.inputfile = "input.inp"
+    #pberthaopt.fittfile = "fitt2.inp"
+    
+    args.inputfile = str(uuid.uuid4())
+    args.fittfile = str(uuid.uuid4())  
+
+    pygenoption.berthainfname = pberthaopt.inputfile
+    pygenoption.berthafittfname = pberthaopt.fittfile 
+
+    for filename in [args.inputfile , args.fittfile]:
+
+        if os.path.isfile(filename):
+            print("File ", filename, " will be overwritten")
+            try:
+                os.remove(filename)
+            except OSError:
+                pass
+
+    pybgen.generateinputfiles (pygenoption)
+
+
     # TODO to remove full run 
     ovapm, eigem, fockm, eigen = single_point (args, bertha)
     if ovapm is None:
         return False
+
+
+    for filename in [args.inputfile , args.fittfile]:
+
+        if os.path.isfile(filename):
+            print("File ", filename, " will be overwritten")
+            try:
+                os.remove(filename)
+            except OSError:
+                pass
+
 
     ndim = bertha.get_ndim()
     nshift = bertha.get_nshift()
@@ -838,10 +887,10 @@ def main():
            required=False, type=int, default=2)
    parser.add_argument("--act_obs", \
        help="Specify BERTHA (Active system) basisset \"atomname1:basisset1,atomname2:basisset2,...\"", \
-       required=True, type=str, default="")
+       required=False, type=str, default="")
    parser.add_argument("--act_fittset", \
        help="Specify BERTHA (Active system) fitting set \"atomname1:fittset1,atomname2:fittset2,...\"", \
-       required=True, type=str, default="")
+       required=False, type=str, default="")
    parser.add_argument("--act_func", help="Specify exchange–correlation energy functional for active system available: LDA,B88P86,HCTH93,BLYP (default=BLYP)", \
        type=str, default="BLYP")
    parser.add_argument("--env_obs", help="Specify the orbital basis set for the enviroment (default: AUG/ADZP)", required=False,
@@ -926,54 +975,61 @@ def main():
         print ("  Removing "+ resdir )
         shutil.rmtree(resdir)
 
-   import pybgen
+   if (not args.restart):
+      if (args.act_obs == "" or args.act_fittset == ""):
+         print("Need to specify act_obs and  act_fittset")
+         exit(1)
 
-   pygenoption_fraga = pybgen.berthainputoption
-   pygenoption_fraga.inputfile = args.geom_act
-   pygenoption_fraga.jsonbasisfile = args.jsonbasisfile
-   pygenoption_fraga.fittset = args.act_fittset
-   pygenoption_fraga.basisset = args.act_obs
-   pygenoption_fraga.functxc = args.act_func
-   pygenoption_fraga.convertlengthunit = args.convertlengthunit
-   pygenoption_fraga.maxit = MAXIT
-
-   for filename in ["input.inp", "fitt2.inp"]:
-     try:
-       os.remove(filename)
-     except OSError:
-       pass
-
-   pybgen.generateinputfiles (pygenoption_fraga)
-
-   pberthaopt = pyberthaembed.pyberthaembedoption
-
-   pberthaopt.fitcoefffile = args.fitcoefffile
-   pberthaopt.vctfile = args.vctfile
-   pberthaopt.ovapfile = args.ovapfile
-   pberthaopt.dumpfiles = args.dumpfiles
-   pberthaopt.debug = args.debug
-   pberthaopt.linemb = args.linemb
-   pberthaopt.verbosity = args.verbosity
-   pberthaopt.thresh = args.thresh
-   pberthaopt.thresh_conv = args.embthresh
-   pberthaopt.wrapperso = args.wrapperso
-   pberthaopt.nofde = args.nofde
-   #pberthaopt.eda_nocv_info = args.eda_nocv_info
-   #pberthaopt.eda_nocv_frag_file = args.eda_nocv_frag_file
-   pberthaopt.activefile = args.geom_act
-   pberthaopt.envirofile = args.geom_env
-   pberthaopt.gtype = args.grid_opts
-   pberthaopt.basis = args.env_obs
-   pberthaopt.excfuncenv = args.env_func
+   if (not args.restart):
+       
+      import pybgen
+      
+      pygenoption_fraga = pybgen.berthainputoption
+      pygenoption_fraga.inputfile = args.geom_act
+      pygenoption_fraga.jsonbasisfile = args.jsonbasisfile
+      pygenoption_fraga.fittset = args.act_fittset
+      pygenoption_fraga.basisset = args.act_obs
+      pygenoption_fraga.functxc = args.act_func
+      pygenoption_fraga.convertlengthunit = args.convertlengthunit
+      pygenoption_fraga.maxit = MAXIT
+      
+      for filename in ["input.inp", "fitt2.inp"]:
+        try:
+          os.remove(filename)
+        except OSError:
+          pass
+      
+      pybgen.generateinputfiles (pygenoption_fraga)
+      
+      pberthaopt = pyberthaembed.pyberthaembedoption
+      
+      pberthaopt.fitcoefffile = args.fitcoefffile
+      pberthaopt.vctfile = args.vctfile
+      pberthaopt.ovapfile = args.ovapfile
+      pberthaopt.dumpfiles = args.dumpfiles
+      pberthaopt.debug = args.debug
+      pberthaopt.linemb = args.linemb
+      pberthaopt.verbosity = args.verbosity
+      pberthaopt.thresh = args.thresh
+      pberthaopt.thresh_conv = args.embthresh
+      pberthaopt.wrapperso = args.wrapperso
+      pberthaopt.nofde = args.nofde
+      #pberthaopt.eda_nocv_info = args.eda_nocv_info
+      #pberthaopt.eda_nocv_frag_file = args.eda_nocv_frag_file
+      pberthaopt.activefile = args.geom_act
+      pberthaopt.envirofile = args.geom_env
+      pberthaopt.gtype = args.grid_opts
+      pberthaopt.basis = args.env_obs
+      pberthaopt.excfuncenv = args.env_func
 
    if (not args.restart):
        if args.totaltime < 0.0:
            args.totaltime = 1.0
 
-       if (not normal_run (pberthaopt,args)):
+       if (not normal_run (pberthaopt, args)):
            exit(1)
    else:
-      if (not restart_run (pberthaopt,args)):
+      if (not restart_run (pberthaopt, args)):
            exit(1)
 
 ##########################################################################################
