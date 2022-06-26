@@ -79,15 +79,15 @@ def single_point (args, bertha):
     vctfilename = args.vctfile
     ovapfilename = args.ovapfile
     
-    fnameinput = args.inputfile
-    if not os.path.isfile(fnameinput):
-        print("File ", fnameinput, " does not exist")
-        return None, 
+    #fnameinput = args.inputfile
+    #if not os.path.isfile(fnameinput):
+    #    print("File ", fnameinput, " does not exist")
+    #    return None, 
     
-    fittfname = args.fittfile
-    if not os.path.isfile(fittfname):
-        print("File ", fittfname , " does not exist")
-        return None, 
+    #fittfname = args.fittfile
+    #if not os.path.isfile(fittfname):
+    #    print("File ", fittfname , " does not exist")
+    #    return None, 
     
     verbosity = args.verbosity
     dumpfiles = int(args.dumpfiles)
@@ -95,8 +95,8 @@ def single_point (args, bertha):
     bertha.set_fittcoefffname(fittcoefffname)
     bertha.set_ovapfilename(ovapfilename)
     bertha.set_vctfilename(vctfilename)
-    bertha.set_fnameinput(fnameinput)
-    bertha.set_fittfname(fittfname)
+    bertha.set_fnameinput("input.inp")
+    bertha.set_fittfname("fitt2.inp")
     bertha.set_thresh(args.thresh)
     
     bertha.set_verbosity(verbosity)
@@ -354,7 +354,7 @@ def run_iterations_from_to (startiter, niter, bertha, embfactory, args, fock_mid
 
 ##########################################################################################
 
-def restart_run(args):
+def restart_run(pberthaopt,args):
     
     fp = open(args.restartfile, 'r')
     json_data = json.load(fp)
@@ -434,8 +434,8 @@ def restart_run(args):
     args.pulsew = json_data['pulsew'] 
     args.dt = json_data['dt']
     args.period = json_data['period']
-    args.inputfile = json_data['inputfile']
-    args.fittfile = json_data["fittfile"]
+    #args.inputfile = json_data['inputfile']
+    #args.fittfile = json_data["fittfile"]
     args.fitcoefffile = json_data["fitcoefffile"]
     args.vctfile = json_data["vctfile"]
     args.ovapfile = json_data["ovapfile"]
@@ -504,6 +504,26 @@ def restart_run(args):
     fo = sys.stderr
     if debug:
         fo = open("debug_info.txt", "w")
+    # emfactory -> embedding potential corresponding to Da
+    activefname = pberthaopt.activefile
+    if not os.path.isfile(activefname):
+        raise Exception("File ", activefname , " does not exist")
+    
+    envirofname = pberthaopt.envirofile
+    if not os.path.isfile(envirofname):
+        raise Exception("File ", envirofname , " does not exist")
+    
+    import pyembmod
+    # embfactory was missing here
+    embfactory = pyembmod.pyemb(activefname,envirofname,'adf') #jobtype='adf' is default de facto
+    #grid_param =[50,110] # psi4 grid parameters (see Psi4 grid table)
+    #embfactory.set_options(param=grid_param, \
+    embfactory.set_options(param=pberthaopt.param, \
+       gtype=pberthaopt.gtype, basis=pberthaopt.basis) 
+    embfactory.set_enviro_func(pberthaopt.excfuncenv)
+    # several paramenters to be specified in input- e.g AUG/ADZP for ADF, aug-cc-pvdz for psi4
+
+    embfactory.initialize()
     
     return run_iterations_from_to (jstart+1, niter, bertha, embfactory, args, fock_mid_backwd, \
             dt, dip_mat, C, C_inv, ovapm, ndim, debug, Dp_ti, dip_list, ene_list, \
@@ -953,7 +973,7 @@ def main():
        if (not normal_run (pberthaopt,args)):
            exit(1)
    else:
-      if (not restart_run (args)):
+      if (not restart_run (pberthaopt,args)):
            exit(1)
 
 ##########################################################################################
