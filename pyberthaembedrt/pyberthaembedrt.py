@@ -1044,7 +1044,7 @@ def main():
        for filename in [pberthaopt.inputfile , \
           pberthaopt.fittfile]:
             if os.path.isfile(filename):
-              print("File ", filename, " will be overwritten")
+              print("File ", filename, " will be removed")
               try:
                  os.remove(filename)
               except OSError:
