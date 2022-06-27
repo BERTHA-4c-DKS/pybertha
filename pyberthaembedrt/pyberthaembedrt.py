@@ -984,9 +984,22 @@ def main():
    pberthaopt = pyberthaembed.pyberthaembedoption
 
    if (not args.restart):
-      
+
+      pygenoption_fraga = pybgen.berthainputoption
+
+      pygenoption_fraga.inputfile = args.geom_act
+      pygenoption_fraga.jsonbasisfile = args.jsonbasisfile
+      pygenoption_fraga.fittset = args.act_fittset
+      pygenoption_fraga.basisset = args.act_obs
+      pygenoption_fraga.functxc = args.act_func
+      pygenoption_fraga.convertlengthunit = args.convertlengthunit
+      pygenoption_fraga.maxit = MAXIT
+
       pberthaopt.inputfile = str(uuid.uuid4())
       pberthaopt.fittfile = str(uuid.uuid4()) 
+
+      pygenoption_fraga.berthainputfile = pberthaopt.inputfile 
+      pygenoption_fraga.berthafittfile = pberthaopt.fittfile
 
       for filename in [pberthaopt.inputfile , \
         pberthaopt.fittfile]:
@@ -996,7 +1009,9 @@ def main():
                  os.remove(filename)
              except OSError:
                  pass
-      
+
+      pybgen.generateinputfiles (pygenoption_fraga)
+
       pberthaopt.fitcoefffile = args.fitcoefffile
       pberthaopt.vctfile = args.vctfile
       pberthaopt.ovapfile = args.ovapfile
