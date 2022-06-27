@@ -980,12 +980,13 @@ def main():
          print("Need to specify act_obs and  act_fittset")
          exit(1)
 
-   import pybgen
-      
-   pygenoption_fraga = pybgen.berthainputoption
+   pberthaopt = pyberthaembed.pyberthaembedoption
 
    if (not args.restart):
        
+      import pybgen
+      
+      pygenoption_fraga = pybgen.berthainputoption
       pygenoption_fraga.inputfile = args.geom_act
       pygenoption_fraga.jsonbasisfile = args.jsonbasisfile
       pygenoption_fraga.fittset = args.act_fittset
@@ -1002,7 +1003,6 @@ def main():
       
       pybgen.generateinputfiles (pygenoption_fraga)
       
-      pberthaopt = pyberthaembed.pyberthaembedoption
       
       pberthaopt.fitcoefffile = args.fitcoefffile
       pberthaopt.vctfile = args.vctfile
