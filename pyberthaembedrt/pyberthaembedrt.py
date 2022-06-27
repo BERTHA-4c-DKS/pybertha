@@ -624,6 +624,9 @@ def normal_run(pberthaopt, args):
     grid = embfactory.get_grid() 
 
     bertha = berthamod.pybertha(pberthaopt.wrapperso)
+
+    bertha.set_fittfname(pberthaopt.inputfile)
+    bertha.set_fnameinput(pberthaopt.fittfile)
     
     bertha.init()
 
