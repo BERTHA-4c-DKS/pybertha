@@ -982,31 +982,20 @@ def main():
          exit(1)
 
    pberthaopt = pyberthaembed.pyberthaembedoption
-   pygenoption_fraga = pybgen.berthainputoption
 
    if (not args.restart):
       
-      pygenoption_fraga.inputfile = args.geom_act
-      pygenoption_fraga.jsonbasisfile = args.jsonbasisfile
-      pygenoption_fraga.fittset = args.act_fittset
-      pygenoption_fraga.basisset = args.act_obs
-      pygenoption_fraga.functxc = args.act_func
-      pygenoption_fraga.convertlengthunit = args.convertlengthunit
-      pygenoption_fraga.maxit = MAXIT
+      pberthaopt.inputfile = str(uuid.uuid4())
+      pberthaopt.fittfile = str(uuid.uuid4()) 
 
-      pygenoption_fraga.berthainputfile = str(uuid.uuid4())
-      pygenoption_fraga.berthafittfile = str(uuid.uuid4()) 
-
-      for filename in [pygenoption_fraga.berthainputfile , \
-        pygenoption_fraga.berthafittfile]:
+      for filename in [pberthaopt.inputfile , \
+        pberthaopt.fittfile]:
          if os.path.isfile(filename):
              print("File ", filename, " will be overwritten")
              try:
                  os.remove(filename)
              except OSError:
                  pass
-      
-      pybgen.generateinputfiles (pygenoption_fraga)
       
       pberthaopt.fitcoefffile = args.fitcoefffile
       pberthaopt.vctfile = args.vctfile
@@ -1034,8 +1023,8 @@ def main():
        if (not normal_run (pberthaopt, args)):
           exit(1)
 
-       for filename in [pygenoption_fraga.berthainputfile , \
-          pygenoption_fraga.berthafittfile]:
+       for filename in [pberthaopt.inputfile , \
+          pberthaopt.fittfile]:
             if os.path.isfile(filename):
               print("File ", filename, " will be overwritten")
               try:
