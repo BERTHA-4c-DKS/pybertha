@@ -500,11 +500,10 @@ def restart_run(pberthaopt, args):
     args.inputfile = str(uuid.uuid4())
     args.fittfile = str(uuid.uuid4())  
 
-    pygenoption.berthainfname = pberthaopt.inputfile
-    pygenoption.berthafittfname = pberthaopt.fittfile 
+    pygenoption.berthainfname = args.inputfile
+    pygenoption.berthafittfname = args.fittfile 
 
     for filename in [args.inputfile , args.fittfile]:
-
         if os.path.isfile(filename):
             print("File ", filename, " will be overwritten")
             try:
@@ -514,12 +513,10 @@ def restart_run(pberthaopt, args):
 
     pybgen.generateinputfiles (pygenoption)
 
-
     # TODO to remove full run 
     ovapm, eigem, fockm, eigen = single_point (args, bertha)
     if ovapm is None:
         return False
-
 
     for filename in [args.inputfile , args.fittfile]:
 
