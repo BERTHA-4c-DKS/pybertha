@@ -998,12 +998,6 @@ def main():
       pygenoption_fraga.convertlengthunit = args.convertlengthunit
       pygenoption_fraga.maxit = MAXIT
       
-      for filename in ["input.inp", "fitt2.inp"]:
-        try:
-          os.remove(filename)
-        except OSError:
-          pass
-      
       pybgen.generateinputfiles (pygenoption_fraga)
       
       pberthaopt.fitcoefffile = args.fitcoefffile
