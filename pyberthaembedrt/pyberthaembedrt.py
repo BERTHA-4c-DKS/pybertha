@@ -1034,14 +1034,14 @@ def main():
        if (not normal_run (pberthaopt, args)):
           exit(1)
 
-       for filename in [pygenoption_fraga.inputfile , pygenoption_fraga.fittfile]:
-         if os.path.isfile(filename):
-             print("File ", filename, " will be overwritten")
-             try:
+       for filename in [pygenoption_fraga.berthainputfile , \
+          pygenoption_fraga.berthafittfile]:
+            if os.path.isfile(filename):
+              print("File ", filename, " will be overwritten")
+              try:
                  os.remove(filename)
-             except OSError:
+              except OSError:
                  pass
-
    else:
       if (not restart_run (pberthaopt, args)):
            exit(1)
