@@ -26,6 +26,7 @@ import pyberthaembed
 import berthamod
 import rtutil
 import os.path
+import pybgen
 
 from pathlib import Path
 
@@ -983,8 +984,6 @@ def main():
    pberthaopt = pyberthaembed.pyberthaembedoption
 
    if (not args.restart):
-       
-      import pybgen
       
       pygenoption_fraga = pybgen.berthainputoption
       pygenoption_fraga.inputfile = args.geom_act
@@ -1002,7 +1001,6 @@ def main():
           pass
       
       pybgen.generateinputfiles (pygenoption_fraga)
-      
       
       pberthaopt.fitcoefffile = args.fitcoefffile
       pberthaopt.vctfile = args.vctfile
@@ -1037,4 +1035,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
