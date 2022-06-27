@@ -485,7 +485,6 @@ def restart_run(pberthaopt, args):
     pberthaopt.gtype = json_data["grid_opts"]
     pberthaopt.basis = json_data["env_obs"]
     pberthaopt.excfuncenv = json_data["env_func"]
- 
 
     molist = args.select.split("&")
     occlist = molist[0].split(";")
