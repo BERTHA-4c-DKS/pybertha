@@ -994,16 +994,16 @@ def main():
       pygenoption_fraga.convertlengthunit = args.convertlengthunit
       pygenoption_fraga.maxit = MAXIT
 
-      pygenoption_fraga.inputfile = str(uuid.uuid4())
-      pygenoption_fraga.fittfile = str(uuid.uuid4()) 
+      pygenoption_fraga.berthainputfile = str(uuid.uuid4())
+      pygenoption_fraga.berthafittfile = str(uuid.uuid4()) 
 
       for filename in [pygenoption_fraga.inputfile , pygenoption_fraga.fittfile]:
-            if os.path.isfile(filename):
-                print("File ", filename, " will be overwritten")
-                try:
-                    os.remove(filename)
-                except OSError:
-                    pass
+         if os.path.isfile(filename):
+             print("File ", filename, " will be overwritten")
+             try:
+                 os.remove(filename)
+             except OSError:
+                 pass
       
       pybgen.generateinputfiles (pygenoption_fraga)
       
