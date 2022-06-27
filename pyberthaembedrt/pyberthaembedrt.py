@@ -625,8 +625,8 @@ def normal_run(pberthaopt, args):
 
     bertha = berthamod.pybertha(pberthaopt.wrapperso)
 
-    bertha.set_fittfname(pberthaopt.inputfile)
-    bertha.set_fnameinput(pberthaopt.fittfile)
+    bertha.set_fittfname(pberthaopt.fittfile)
+    bertha.set_fnameinput(pberthaopt.inputfile)
     
     bertha.init()
 
