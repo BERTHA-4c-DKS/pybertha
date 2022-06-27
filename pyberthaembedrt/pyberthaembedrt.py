@@ -585,7 +585,7 @@ def restart_run(pberthaopt, args):
  
 ##########################################################################################
 
-def normal_run(pberthaopt,args):
+def normal_run(pberthaopt, args):
 
     import pyembmod
     print("Options: ")
@@ -596,7 +596,6 @@ def normal_run(pberthaopt,args):
     if not os.path.isfile(pberthaopt.wrapperso):
         print("SO File ", pberthaopt.wrapperso, " does not exist")
         return False
-    
 
     ovapm, eigem, fockm, eigen, pot = pyberthaembed.runspberthaembed (pberthaopt, restart = False, stdoutprint = True)
     print("CHECK")
@@ -645,7 +644,6 @@ def normal_run(pberthaopt,args):
     # the embedding potential from converged density
     pot = embfactory.get_potential(density)
     bertha.set_embpot_on_grid(grid, pot)
-    
     
     bertha.realtime_init()
     
@@ -777,8 +775,6 @@ def normal_run(pberthaopt,args):
         #transform back Dp_int
         Da=numpy.matmul(C,numpy.matmul(Dp_init,numpy.conjugate(C.T)))
         D_0=Dp_init
-    
-
 
     print("Start first mo_fock_mid_forwd_eval ")
     
@@ -986,10 +982,10 @@ def main():
          exit(1)
 
    pberthaopt = pyberthaembed.pyberthaembedoption
+   pygenoption_fraga = pybgen.berthainputoption
 
    if (not args.restart):
       
-      pygenoption_fraga = pybgen.berthainputoption
       pygenoption_fraga.inputfile = args.geom_act
       pygenoption_fraga.jsonbasisfile = args.jsonbasisfile
       pygenoption_fraga.fittset = args.act_fittset
@@ -997,6 +993,17 @@ def main():
       pygenoption_fraga.functxc = args.act_func
       pygenoption_fraga.convertlengthunit = args.convertlengthunit
       pygenoption_fraga.maxit = MAXIT
+
+      pygenoption_fraga.inputfile = str(uuid.uuid4())
+      pygenoption_fraga.fittfile = str(uuid.uuid4()) 
+
+      for filename in [pygenoption_fraga.inputfile , pygenoption_fraga.fittfile]:
+            if os.path.isfile(filename):
+                print("File ", filename, " will be overwritten")
+                try:
+                    os.remove(filename)
+                except OSError:
+                    pass
       
       pybgen.generateinputfiles (pygenoption_fraga)
       
@@ -1024,7 +1031,16 @@ def main():
            args.totaltime = 1.0
 
        if (not normal_run (pberthaopt, args)):
-           exit(1)
+          exit(1)
+
+       for filename in [pygenoption_fraga.inputfile , pygenoption_fraga.fittfile]:
+         if os.path.isfile(filename):
+             print("File ", filename, " will be overwritten")
+             try:
+                 os.remove(filename)
+             except OSError:
+                 pass
+
    else:
       if (not restart_run (pberthaopt, args)):
            exit(1)
