@@ -469,7 +469,7 @@ def restart_run(pberthaopt, args):
 
     pberthaopt.fitcoefffile = json_data["fitcoefffile"]
     pberthaopt.vctfile = json_data["vctfile"]
-    pberthaopt.ovapfile = json_data["vapfile"]
+    pberthaopt.ovapfile = json_data["ovapfile"]
     pberthaopt.dumpfiles = json_data["dumpfiles"]
     pberthaopt.debug = json_data["debug"]
     pberthaopt.linemb = json_data["linemb"]
@@ -480,7 +480,7 @@ def restart_run(pberthaopt, args):
     pberthaopt.nofde = json_data["nofde"]
     #pberthaopt.eda_nocv_info = args.eda_nocv_info
     #pberthaopt.eda_nocv_frag_file = args.eda_nocv_frag_file
-    pberthaopt.activefile = ajson_data["geom_act"]
+    pberthaopt.activefile = json_data["geom_act"]
     pberthaopt.envirofile = json_data["geom_env"]
     pberthaopt.gtype = json_data["grid_opts"]
     pberthaopt.basis = json_data["env_obs"]
