@@ -536,16 +536,6 @@ def restart_run(pberthaopt, args):
     if ovapm is None:
         return False
 
-    for filename in [args.inputfile , args.fittfile]:
-
-        if os.path.isfile(filename):
-            print("File ", filename, " will be overwritten")
-            try:
-                os.remove(filename)
-            except OSError:
-                pass
-
-
     ndim = bertha.get_ndim()
     nshift = bertha.get_nshift()
     nocc = bertha.get_nocc()
@@ -586,6 +576,14 @@ def restart_run(pberthaopt, args):
        gtype=pberthaopt.gtype, basis=pberthaopt.basis) 
     embfactory.set_enviro_func(pberthaopt.excfuncenv)
     # several paramenters to be specified in input- e.g AUG/ADZP for ADF, aug-cc-pvdz for psi4
+
+    for filename in [args.inputfile , args.fittfile]:
+        if os.path.isfile(filename):
+            print("File ", filename, " will be removed")
+            try:
+                os.remove(filename)
+            except OSError:
+                pass
 
     embfactory.initialize()
     
