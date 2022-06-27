@@ -998,8 +998,8 @@ def main():
       pberthaopt.inputfile = str(uuid.uuid4())
       pberthaopt.fittfile = str(uuid.uuid4()) 
 
-      pygenoption_fraga.berthainputfile = pberthaopt.inputfile 
-      pygenoption_fraga.berthafittfile = pberthaopt.fittfile
+      pygenoption_fraga.berthainfname = pberthaopt.inputfile 
+      pygenoption_fraga.berthafittfname = pberthaopt.fittfile
 
       for filename in [pberthaopt.inputfile , \
         pberthaopt.fittfile]:
