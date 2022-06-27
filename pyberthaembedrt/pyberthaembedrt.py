@@ -997,7 +997,8 @@ def main():
       pygenoption_fraga.berthainputfile = str(uuid.uuid4())
       pygenoption_fraga.berthafittfile = str(uuid.uuid4()) 
 
-      for filename in [pygenoption_fraga.inputfile , pygenoption_fraga.fittfile]:
+      for filename in [pygenoption_fraga.berthainputfile , \
+        pygenoption_fraga.berthafittfile]:
          if os.path.isfile(filename):
              print("File ", filename, " will be overwritten")
              try:
