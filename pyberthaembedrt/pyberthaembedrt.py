@@ -24,7 +24,6 @@ if modpaths is not None :
 import pyberthaembed
 import berthamod
 import rtutil
-import os.path
 import pybgen
 
 from pathlib import Path
@@ -467,6 +466,26 @@ def restart_run(pberthaopt, args):
     args.dumprestartnum = json_data["dumprestartnum"]
     args.pulseS = json_data["pulseS"]
     args.t0 = json_data["t0"]
+
+    pberthaopt.fitcoefffile = json_data["fitcoefffile"]
+    pberthaopt.vctfile = json_data["vctfile"]
+    pberthaopt.ovapfile = json_data["vapfile"]
+    pberthaopt.dumpfiles = json_data["dumpfiles"]
+    pberthaopt.debug = json_data["debug"]
+    pberthaopt.linemb = json_data["linemb"]
+    pberthaopt.verbosity = json_data["verbosity"]
+    pberthaopt.thresh = json_data["thresh"]
+    pberthaopt.thresh_conv = json_data["embthresh"]
+    pberthaopt.wrapperso = json_data["wrapperso"]
+    pberthaopt.nofde = json_data["nofde"]
+    #pberthaopt.eda_nocv_info = args.eda_nocv_info
+    #pberthaopt.eda_nocv_frag_file = args.eda_nocv_frag_file
+    pberthaopt.activefile = ajson_data["geom_act"]
+    pberthaopt.envirofile = json_data["geom_env"]
+    pberthaopt.gtype = json_data["grid_opts"]
+    pberthaopt.basis = json_data["env_obs"]
+    pberthaopt.excfuncenv = json_data["env_func"]
+ 
 
     molist = args.select.split("&")
     occlist = molist[0].split(";")
