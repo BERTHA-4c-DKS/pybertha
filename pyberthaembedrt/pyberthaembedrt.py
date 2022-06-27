@@ -578,15 +578,7 @@ def restart_run(pberthaopt, args):
     # several paramenters to be specified in input- e.g AUG/ADZP for ADF, aug-cc-pvdz for psi4
 
     embfactory.initialize()
-
-    for filename in [args.inputfile , args.fittfile]:
-        if os.path.isfile(filename):
-            print("File ", filename, " will be removed")
-            try:
-                os.remove(filename)
-            except OSError:
-                pass
-    
+   
     return run_iterations_from_to (jstart+1, niter, bertha, embfactory, args, fock_mid_backwd, \
             dt, dip_mat, C, C_inv, ovapm, ndim, debug, Dp_ti, dip_list, ene_list, \
             weight_list, fo, D_ti, occlist)
@@ -1042,6 +1034,14 @@ def main():
    else:
       if (not restart_run (pberthaopt, args)):
            exit(1)
+
+      for filename in [args.inputfile , args.fittfile]:
+          if os.path.isfile(filename):
+              print("File ", filename, " will be removed")
+              try:
+                  os.remove(filename)
+              except OSError:
+                  pass
 
 ##########################################################################################
 
