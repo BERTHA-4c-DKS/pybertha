@@ -16,7 +16,7 @@
 #define f_bertha_get_density_ongrid bertha_wrapper_mp_bertha_get_density_ongrid_
 #define f_bertha_set_embpot_on_grid  bertha_wrapper_mp_bertha_set_embpot_on_grid_
 #define f_bertha_set_restart_mem bertha_wrapper_mp_bertha_set_restart_mem_
-#define f_bertha_bertha_checksetthreads bertha_wrapper_mp_bertha_checksetthreads_
+#define f_bertha_checksetthreads bertha_wrapper_mp_bertha_checksetthreads_
 
 #define f_ndim spec_mp_ndim_
 #define f_nshift spec_mp_nshift_
@@ -50,7 +50,7 @@
 #define f_bertha_get_density_ongrid __bertha_wrapper_MOD_bertha_get_density_ongrid
 #define f_bertha_set_embpot_on_grid  __bertha_wrapper_MOD_bertha_set_embpot_on_grid 
 #define f_bertha_set_restart_mem __bertha_wrapper_MOD_bertha_set_restart_mem
-#define f_bertha_bertha_checksetthreads __bertha_wrapper_MOD_bertha_checksetthreads
+#define f_bertha_checksetthreads __bertha_wrapper_MOD_bertha_checksetthreads
 
 #define f_ndim __spec_MOD_ndim
 #define f_nshift __spec_MOD_nshift
