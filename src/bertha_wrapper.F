@@ -510,11 +510,6 @@ c          print *, "Here " , ndim, nocc
           deallocate(pp)
         endif
 
-
-
-
-
-
         deallocate(v)
         deallocate(zz)
 
@@ -945,6 +940,26 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       end subroutine bertha_eps
 
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
+      subroutine bertha_checksetthreads ()
+
+#ifdef USEOMPAPI 
+      character(len=255) :: evariable
+      integer :: nt, io
+
+      call get_environment_variable("OMP_NUM_THREADS", evariable)
+      read(evariable,*,IOSTAT=io) nt
+      if (io .lt. 0) then 
+         CALL OMP_SET_NUM_THREADS(1) 
+      else
+         if (nt .ne. omp_get_num_threads()) CALL OMP_SET_NUM_THREADS(nt)
+      endif
+
+      print *, "threads: ", nt
+#endif
+      end subroutine bertha_checksetthreads
+      
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine bertha_realtime_fock (dens_ptr, fock_ptr)

@@ -275,6 +275,10 @@ class pybertha:
 
         self.set_densitydiff (0)
 
+    def checksetthreads(self):
+        
+        self.__bertha.checksetthreads()
+
     def get_density_on_grid (self, grid):
 
         density = None # vector N double

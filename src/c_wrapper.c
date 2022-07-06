@@ -16,6 +16,7 @@
 #define f_bertha_get_density_ongrid bertha_wrapper_mp_bertha_get_density_ongrid_
 #define f_bertha_set_embpot_on_grid  bertha_wrapper_mp_bertha_set_embpot_on_grid_
 #define f_bertha_set_restart_mem bertha_wrapper_mp_bertha_set_restart_mem_
+#define f_bertha_bertha_checksetthreads bertha_wrapper_mp_bertha_checksetthreads_
 
 #define f_ndim spec_mp_ndim_
 #define f_nshift spec_mp_nshift_
@@ -49,6 +50,7 @@
 #define f_bertha_get_density_ongrid __bertha_wrapper_MOD_bertha_get_density_ongrid
 #define f_bertha_set_embpot_on_grid  __bertha_wrapper_MOD_bertha_set_embpot_on_grid 
 #define f_bertha_set_restart_mem __bertha_wrapper_MOD_bertha_set_restart_mem
+#define f_bertha_bertha_checksetthreads __bertha_wrapper_MOD_bertha_checksetthreads
 
 #define f_ndim __spec_MOD_ndim
 #define f_nshift __spec_MOD_nshift
@@ -87,6 +89,7 @@ void f_bertha_realtime_fock (double *, double *);
 void f_bertha_get_density_ongrid (int *, double *, double *);
 void f_bertha_set_embpot_on_grid (int *, double *, double *);
 void f_bertha_set_restart_mem();
+void f_bertha_checksetthreads();
 
 extern int f_ndim, f_nshift, f_nocc, f_nopen, f_densitydiff;
 extern double f_sfact, f_etotal, f_erep, f_thresh, f_eecoul, f_eexc;
@@ -221,6 +224,11 @@ int realtime_fock (double * dens_ptr, double * fock_ptr)
   f_bertha_realtime_fock (dens_ptr, fock_ptr);
 
   return 0;
+}
+
+void checksetthreads ()
+{
+  f_bertha_checksetthreads()
 }
 
 int realtime_dipolematrix (int direction, int norm, 
