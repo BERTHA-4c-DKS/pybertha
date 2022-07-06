@@ -187,8 +187,6 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
         fo, D_ti, fock_mid_backwd, dt, dip_mat, C, C_inv, ovapm, 
         ndim, debug, Dp_ti, dip_list, ene_list, weight_list=None, 
         select="-2 ; 0 & 0"):
-
-    bertha.checksetthreads()
   
     fock_mid_tmp = rtutil.mo_fock_mid_forwd_eval(bertha, numpy.copy(D_ti), \
             fock_mid_backwd, j, numpy.float_(dt), dip_mat, C, C_inv, ovapm, \
@@ -269,6 +267,8 @@ def run_iterations_from_to (startiter, niter, bertha, embfactory, args, fock_mid
         fo, D_ti, occlist):
 
     dumpcounter = 0
+
+    bertha.checksetthreads()
     
     for j in range(startiter, niter):
 
