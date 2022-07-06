@@ -869,6 +869,19 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       implicit none
 
+#ifdef USEOMPAPI 
+      character(len=255) :: evariable
+      integer :: nt, io
+
+      call get_environment_variable("OMP_NUM_THREADS", evariable)
+      read(evariable,*,IOSTAT=io) nt
+      if (io .lt. 0) then 
+         CALL OMP_SET_NUM_THREADS(1) 
+      else
+         if (nt .ne. omp_get_num_threads()) CALL OMP_SET_NUM_THREADS(nt)
+      endif
+#endif
+
       call allocate_real_time(ndim)
 
       end subroutine bertha_realtime_init
