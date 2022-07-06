@@ -228,7 +228,7 @@ int realtime_fock (double * dens_ptr, double * fock_ptr)
 
 void checksetthreads ()
 {
-  f_bertha_checksetthreads()
+  f_bertha_checksetthreads();
 }
 
 int realtime_dipolematrix (int direction, int norm, 
