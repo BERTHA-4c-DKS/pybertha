@@ -956,10 +956,10 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
          if (nt .ne. omp_get_num_threads()) CALL OMP_SET_NUM_THREADS(nt)
       endif
 
-      print *, "threads: ", nt
+c      print *, "threads: ", nt
 #endif
       end subroutine bertha_checksetthreads
-      
+
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine bertha_realtime_fock (dens_ptr, fock_ptr)
