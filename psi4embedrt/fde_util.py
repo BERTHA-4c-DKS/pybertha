@@ -123,14 +123,12 @@ def get_elpot(xs,ys,zs,Dnew=None,wfn=None,update=False):
     Vvals = wfn.oeprop.Vvals()
   return Vvals, wfn
 
-
-def phi_builder(mol,xs,ys,zs,ws,basis_set):
+# hinweis : puream basis set has to be used
+def phi_builder(xs,ys,zs,ws,basisobj):
   
   delta = 1.0e-2
 
-  #basis = psi4.core.BasisSet.build(mol, 'ORBITAL',psi4.core.get_global_option('basis')) # or set the basis from input
-  basis = psi4.core.BasisSet.build(mol, 'ORBITAL',basis_set)
-  basis_extents = psi4.core.BasisExtents(basis,delta)
+  basis_extents = psi4.core.BasisExtents(basisobj,delta)
 
   blockopoints = psi4.core.BlockOPoints(xs, ys, zs, ws,basis_extents)
   npoints = blockopoints.npoints()
@@ -145,9 +143,9 @@ def phi_builder(mol,xs,ys,zs,ws,basis_set):
   #print some info
   blockopoints.print_out('b_info.txt')
 
-  nbas = basis.nbf() #number of basis functions
+  nbas = basisobj.nbf() #number of basis functions
 
-  funcs = psi4.core.BasisFunctions(basis,npoints,nbas)
+  funcs = psi4.core.BasisFunctions(basisobj,npoints,nbas)
 
   funcs.compute_functions(blockopoints)
 
