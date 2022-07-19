@@ -142,8 +142,19 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
             print("           nopen: ", nopen)
             print("     level shift: ", sfact)
             print("")
+
+        start = time.time()
+        cstart = time.process_time() 
     
         ovapm, eigem, fockm, eigen = bertha.run()
+
+        end = time.time()
+        cend = time.process_time()
+
+        if stdoutprint:
+            print("Totaltime:    ", end - start, " (CPU time: " , cend - cstart, ") s ")
+                print("MainRun Time: ", bertha.get_mainruntime() , \
+                " (CPU time: " , bertha.get_mainrunctime(), ") s ")
 
         if pberthaopt.dumpfiles :
             os.rename(vctfilename,'unpert_vct.txt') 
