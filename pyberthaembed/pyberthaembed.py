@@ -153,8 +153,8 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
 
         if stdoutprint:
             print("Totaltime:    ", end - start, " (CPU time: " , cend - cstart, ") s ")
-                print("MainRun Time: ", bertha.get_mainruntime() , \
-                " (CPU time: " , bertha.get_mainrunctime(), ") s ")
+            print("MainRun Time: ", bertha.get_mainruntime() , \ 
+                  " (CPU time: " , bertha.get_mainrunctime(), ") s ")
 
         if pberthaopt.dumpfiles :
             os.rename(vctfilename,'unpert_vct.txt') 
