@@ -886,10 +886,10 @@ def main():
    parser.add_argument("-g","--geometry", help="Specify system (Angstrom) geometry", required=False, 
         type=str, default="")
    parser.add_argument("--obs", \
-        help="Specify BERTHA (Active system) basisset \"atomname1:basisset1,atomname2:basisset2,...\"", \
+        help="Specify BERTHA basisset \"atomname1:basisset1,atomname2:basisset2,...\"", \
         required=False, type=str, default="")
    parser.add_argument("--fittset", \
-        help="Specify BERTHA (Active system) fitting set \"atomname1:fittset1,atomname2:fittset2,...\"", \
+        help="Specify BERTHA fitting set \"atomname1:fittset1,atomname2:fittset2,...\"", \
         required=False, type=str, default="")
    parser.add_argument("--func", 
 	    help="Specify exchange–correlation energy functional for active system available: LDA,B88P86,HCTH93,BLYP (default=BLYP)", \
@@ -903,6 +903,12 @@ def main():
         required=False, type=int, default=MAXIT)
 
    args = parser.parse_args()
+
+   modpaths = os.environ.get('PYBERTHA_MOD_PATH')
+
+   if modpaths is not None :
+        for path in modpaths.split(";"):
+           sys.path.append(path)
 
    if (not args.restart):
        if args.totaltime < 0.0:
