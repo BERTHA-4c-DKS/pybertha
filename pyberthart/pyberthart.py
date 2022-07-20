@@ -1,9 +1,8 @@
 import argparse
 import os.path
-import ctypes
 import numpy
+import uuid
 import sys
-import re
 import os
 
 import json
