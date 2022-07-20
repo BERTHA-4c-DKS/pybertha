@@ -822,6 +822,8 @@ def normal_run(args):
 
 def main():
 
+   MAXIT = 100
+
    listpulses = ""
    for key in rtutil.funcswitcher:
        listpulses += key
