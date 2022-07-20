@@ -69,15 +69,62 @@ def single_point (args, bertha):
     vctfilename = args.vctfile
     ovapfilename = args.ovapfile
     
-    fnameinput = args.inputfile
-    if not os.path.isfile(fnameinput):
-        print("File ", fnameinput, " does not exist")
-        return None, 
+    fnameinput =""
+    fittfname =""
+
+    generatedinout = False
+
+    if args.geometry != "":
+        
+        if not os.path.isfile (args.geometry):
+            print("File ", args.geometry, " does not exist")
+            exit(1)
+
+        if args.fittset == "" or args.obs == "":
+            print("Need to specify fittset and basis set for each elements")
+            exit(1)
+
+        # generate input 
+        import pybgen
+
+        pygenoption = pybgen.berthainputoption
+
+        pygenoption.inputfile = args.geometry
+        pygenoption.jsonbasisfile = args.jsonbasisfile
+        pygenoption.fittset = args.fittset
+        pygenoption.basisset = args.obs
+        pygenoption.functxc = args.func
+        pygenoption.convertlengthunit = args.convertlengthunit
+        pygenoption.maxit = args.berthamaxit
+
+        fnameinput = str(uuid.uuid4())
+        fittfname = str(uuid.uuid4())  
+
+        pygenoption.berthainfname = fnameinput
+        pygenoption.berthafittfname = fittfname
+
+        for filename in [fnameinput , fittfname]:
+
+            if os.path.isfile(filename):
+                print("File ", filename, " will be overwritten")
+                try:
+                    os.remove(filename)
+                except OSError:
+                    pass
+
+        pybgen.generateinputfiles (pygenoption)  
+
+        generatedinout = True
+    else:
+        fnameinput = args.inputfile
+        if not os.path.isfile(fnameinput):
+            print("File ", fnameinput, " does not exist")
+            return None, 
     
-    fittfname = args.fittfile
-    if not os.path.isfile(fittfname):
-        print("File ", fittfname , " does not exist")
-        return None, 
+        fittfname = args.fittfile
+        if not os.path.isfile(fittfname):
+            print("File ", fittfname , " does not exist")
+            return None, 
     
     verbosity = args.verbosity
     dumpfiles = int(args.dumpfiles)
@@ -132,7 +179,16 @@ def single_point (args, bertha):
                     " (CPU time: %15.5f"%(berthacend - berthacstart), ") s ")
     
     sys.stdout.flush()
-    
+
+    if generatedinout:
+        
+        for filename in [fnameinput , fittfname]:
+            if os.path.isfile(filename):
+                print("File ", filename, " will be removed")
+                try:
+                    os.remove(filename)
+                except OSError:
+                    pass
     print("")
     print("Final results ")
     sum=0.0
@@ -824,7 +880,26 @@ def main():
            required=False, type=int, default=-1)
    parser.add_argument("--restart", help="restart run from file",
            required=False, default=False, action="store_true")
-   
+
+   parser.add_argument("-g","--geometry", help="Specify system (Angstrom) geometry", required=False, 
+        type=str, default="")
+   parser.add_argument("--obs", \
+        help="Specify BERTHA (Active system) basisset \"atomname1:basisset1,atomname2:basisset2,...\"", \
+        required=False, type=str, default="")
+   parser.add_argument("--fittset", \
+        help="Specify BERTHA (Active system) fitting set \"atomname1:fittset1,atomname2:fittset2,...\"", \
+        required=False, type=str, default="")
+   parser.add_argument("--func", 
+	    help="Specify exchange–correlation energy functional for active system available: LDA,B88P86,HCTH93,BLYP (default=BLYP)", \
+        type=str, default="BLYP")
+   parser.add_argument("-j","--jsonbasisfile", \
+        help="Specify BERTHA JSON file for fitting and basis (default: fullsets.json)", \
+       required=False, type=str, default="fullsets.json")
+   parser.add_argument("--convertlengthunit", help="Specify a length converter [default=1.0]", \
+        type=float, default=1.0)
+   parser.add_argument("--berthamaxit", help="set bertha maxiterations (default = %d)"%(MAXIT), 
+        required=False, type=int, default=MAXIT)
+
    args = parser.parse_args()
 
    if (not args.restart):
