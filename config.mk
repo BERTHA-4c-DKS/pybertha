@@ -61,8 +61,8 @@ ifeq ($(FORBGQ),no)
     #	-L${MKLROOT}/lib/intel64 -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread -lm -ldl
 
     #static 
-#    BLASLAPACK =  -Wl,--start-group $(MKLROOT)/lib/intel64/libmkl_intel_lp64.a $(MKLROOT)/lib/intel64/libmkl_sequential.a \
-#    	$(MKLROOT)/lib/intel64/libmkl_core.a -Wl,--end-group -lpthread
+    #BLASLAPACK =  -Wl,--start-group $(MKLROOT)/lib/intel64/libmkl_intel_lp64.a $(MKLROOT)/lib/intel64/libmkl_sequential.a \
+    #	$(MKLROOT)/lib/intel64/libmkl_core.a -Wl,--end-group -lpthread
 
     #BLASLAPACK = -llapack -lblas
     BLASLAPACK =  -mkl
@@ -87,9 +87,9 @@ ifeq ($(FORBGQ),no)
     INCLUDE = 
     
     # gnu standard
-#    BLASLAPACK = -llapack -lblas
-#    SCALAPACK=-L/usr/lib64/openmpi/lib/ -lscalapack 
-#    BLACS=-L/usr/lib64/openmpi/lib/ -lmpiblacs
+    BLASLAPACK = -llapack -lblas
+    #SCALAPACK=-L/usr/lib64/openmpi/lib/ -lscalapack 
+    #BLACS=-L/usr/lib64/openmpi/lib/ -lmpiblacs
 
     # gnu custom
     #BLACSDIR=/home/mat/local/lib
