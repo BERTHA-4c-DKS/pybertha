@@ -350,8 +350,8 @@ c          print *, "Here " , ndim, nocc
 
           allocate(pp(nfitt),stat=rc)
 
-        time1 = walltime ()
-        ctime1 = cputime()
+          time1 = walltime ()
+          ctime1 = cputime()
 
           if (rc.ne.0) call errmsg('error allocating memory')
 
@@ -359,10 +359,10 @@ c          print *, "Here " , ndim, nocc
 
           if (associated(grid))    call onel_pot_from_grid(grid, pot, npoints, nfitt, fitcase, pp)
 
-        time1 = walltime () - time1
-        ctime1 = cputime() - ctime1
+          time1 = walltime () - time1
+          ctime1 = cputime() - ctime1
 
-        if (verbose .eq. 1) write (*, 6662 ) time1, ctime1
+          if (verbose .eq. 1) write (*, 6662 ) time1, ctime1
 
           v = v + pp 
           deallocate(pp)
@@ -486,8 +486,8 @@ c          print *, "Here " , ndim, nocc
 
           allocate(pp(nfitt),stat=rc)
 
-        time1 = walltime ()
-        ctime1 = cputime()
+          time1 = walltime ()
+          ctime1 = cputime()
 
           if (rc.ne.0) call errmsg('error allocating memory')
 
@@ -495,8 +495,8 @@ c          print *, "Here " , ndim, nocc
 
           if (associated(grid))    call onel_pot_from_grid(grid, pot, npoints, nfitt, fitcase, pp)
 
-        time1 = walltime () - time1
-        ctime1 = cputime() - ctime1
+          time1 = walltime () - time1
+          ctime1 = cputime() - ctime1
 
         if (verbose .eq. 1) write (*, 6662 ) time1, ctime1
  6662   format ('Time for onel_pot_from_grid (include int(Vexc|f_t) + FactlU)  walltime                   ', f10.2,
