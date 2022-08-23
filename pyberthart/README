@@ -10,3 +10,6 @@ $ ulimit  -s unlimited
 
 $ python3 pyberthart.py
 
+or:
+
+$ python3 pyberthart.py -g H2O.xyz --fittset "H:aux4,O:aux4" --obs "H:aug-cc-pvdz,O:aug-cc-pvdz" --convertlengthunit=1.88972598 --addgridpot "gridRn.txt;RnEMB_ModelPot_forRn.txt"
