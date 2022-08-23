@@ -62,7 +62,7 @@ def get_json_data(args, j, niter, ndim, ene_list, \
 
 ##########################################################################################
 
-def single_point (args, bertha, generateinput, filenames):
+def single_point (args, bertha, filenames):
 
     fittcoefffname = args.fitcoefffile
     vctfilename = args.vctfile
@@ -230,7 +230,7 @@ def single_point (args, bertha, generateinput, filenames):
     print("total energy             = %20.8f"%(etotal+erep-(sfact*nocc)))
     print(" ")
  
-    return ovapm, eigem, fockm, eigen
+    return ovapm, eigem, fockm, eigen, generatedinout
 
 ##########################################################################################
 
@@ -447,7 +447,7 @@ def run_iterations_from_to (startiter, niter, bertha, args, fock_mid_backwd, dt,
 
 ##########################################################################################
 
-def restart_run(args, generatedinout, filenames):
+def restart_run(args, filenames):
     
     fp = open(args.restartfile, 'r')
     json_data = json.load(fp)
@@ -570,7 +570,7 @@ def restart_run(args, generatedinout, filenames):
     bertha = berthamod.pybertha(args.wrapperso)
 
     # TODO to remove full run 
-    ovapm, eigem, fockm, eigen = single_point (args, bertha, \
+    ovapm, eigem, fockm, eigen, generatedinout = single_point (args, bertha, \
         generatedinout, filenames)
     if ovapm is None:
         return False
@@ -600,11 +600,11 @@ def restart_run(args, generatedinout, filenames):
     
     return run_iterations_from_to (jstart+1, niter, bertha, args, fock_mid_backwd, \
             dt, dip_mat, C, C_inv, ovapm, ndim, debug, Dp_ti, dip_list, ene_list, \
-            weight_list, fo, D_ti, occlist)
+            weight_list, fo, D_ti, occlist), generatedinout
  
 ##########################################################################################
 
-def normal_run(args, generatedinout, filenames):
+def normal_run(args, filenames):
 
     print("Options: ")
     print(args) 
@@ -617,8 +617,8 @@ def normal_run(args, generatedinout, filenames):
     
     bertha = berthamod.pybertha(args.wrapperso)
 
-    ovapm, eigem, fockm, eigen = single_point (args, bertha, \
-        generatedinout, filenames)
+    ovapm, eigem, fockm, eigen, generatedinout = single_point (args, bertha, \
+        filenames)
     if ovapm is None:
         return False
 
@@ -842,7 +842,7 @@ def normal_run(args, generatedinout, filenames):
 
     return run_iterations_from_to (1, niter, bertha, args, fock_mid_backwd, \
             dt, dip_mat, C, C_inv, ovapm, ndim, debug, Dp_ti, dip_list, ene_list, \
-            weight_list, fo, D_ti, occlist)
+            weight_list, fo, D_ti, occlist), generatedinout
     
 ##########################################################################################
 
@@ -945,10 +945,12 @@ def main():
        if args.totaltime < 0.0:
            args.totaltime = 1.0
 
-       if (not normal_run (args, generatedinout, filenames)):
+       error, generatedinout = normal_run (args, filenames)
+       if (not error):
            exit(1)
    else:
-      if (not restart_run (args, generatedinout, filenames)):
+      error, generatedinout = restart_run (args, filenames)
+      if (error):
            exit(1)
 
    if generatedinout:
