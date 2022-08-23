@@ -62,7 +62,7 @@ def get_json_data(args, j, niter, ndim, ene_list, \
 
 ##########################################################################################
 
-def single_point (args, bertha):
+def single_point (args, bertha, generateinput, fnameinout, fittname):
 
     fittcoefffname = args.fitcoefffile
     vctfilename = args.vctfile
@@ -209,15 +209,7 @@ def single_point (args, bertha):
     
     sys.stdout.flush()
 
-    if generatedinout:
-        
-        for filename in [fnameinput , fittfname]:
-            if os.path.isfile(filename):
-                print("File ", filename, " will be removed")
-                try:
-                    os.remove(filename)
-                except OSError:
-                    pass
+
     print("")
     print("Final results ")
     sum=0.0
@@ -452,7 +444,7 @@ def run_iterations_from_to (startiter, niter, bertha, args, fock_mid_backwd, dt,
 
 ##########################################################################################
 
-def restart_run(args):
+def restart_run(args, generatedinout, fnameinput, fittfname):
     
     fp = open(args.restartfile, 'r')
     json_data = json.load(fp)
@@ -575,7 +567,8 @@ def restart_run(args):
     bertha = berthamod.pybertha(args.wrapperso)
 
     # TODO to remove full run 
-    ovapm, eigem, fockm, eigen = single_point (args, bertha)
+    ovapm, eigem, fockm, eigen = single_point (args, bertha, \
+        generatedinout, fnameinput, fittfname)
     if ovapm is None:
         return False
 
@@ -608,7 +601,7 @@ def restart_run(args):
  
 ##########################################################################################
 
-def normal_run(args):
+def normal_run(args, generatedinout, fnameinput, fittfname):
 
     print("Options: ")
     print(args) 
@@ -621,7 +614,8 @@ def normal_run(args):
     
     bertha = berthamod.pybertha(args.wrapperso)
 
-    ovapm, eigem, fockm, eigen = single_point (args, bertha)
+    ovapm, eigem, fockm, eigen = single_point (args, bertha, \
+        generatedinout, fnameinput, fittfname)
     if ovapm is None:
         return False
 
@@ -939,17 +933,31 @@ def main():
 
    if modpaths is not None :
         for path in modpaths.split(";"):
-           sys.path.append(path)
+          sys.path.append(path)
+
+   generatedinout = False
+   fnameinput = ""
+   fittfname = ""
            
    if (not args.restart):
        if args.totaltime < 0.0:
            args.totaltime = 1.0
 
-       if (not normal_run (args)):
+       if (not normal_run (args, generatedinout, fnameinput, fittfname)):
            exit(1)
    else:
-      if (not restart_run (args)):
+      if (not restart_run (args, generatedinout, fnameinput, fittfname)):
            exit(1)
+
+   if generatedinout:
+        
+        for filename in [fnameinput , fittfname]:
+            if os.path.isfile(filename):
+                print("File ", filename, " will be removed")
+                try:
+                    os.remove(filename)
+                except OSError:
+                    pass
 
 ##########################################################################################
 
