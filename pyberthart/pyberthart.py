@@ -62,7 +62,7 @@ def get_json_data(args, j, niter, ndim, ene_list, \
 
 ##########################################################################################
 
-def single_point (args, bertha, generateinput, fnameinout, fittname):
+def single_point (args, bertha, generateinput, filenames):
 
     fittcoefffname = args.fitcoefffile
     vctfilename = args.vctfile
@@ -102,7 +102,10 @@ def single_point (args, bertha, generateinput, fnameinout, fittname):
         pygenoption.berthainfname = fnameinput
         pygenoption.berthafittfname = fittfname
 
-        for filename in [fnameinput , fittfname]:
+        filenames.append(fnameinput)
+        filenames.append(fittfname)
+
+        for filename in filenames:
 
             if os.path.isfile(filename):
                 print("File ", filename, " will be overwritten")
@@ -444,7 +447,7 @@ def run_iterations_from_to (startiter, niter, bertha, args, fock_mid_backwd, dt,
 
 ##########################################################################################
 
-def restart_run(args, generatedinout, fnameinput, fittfname):
+def restart_run(args, generatedinout, filenames):
     
     fp = open(args.restartfile, 'r')
     json_data = json.load(fp)
@@ -568,7 +571,7 @@ def restart_run(args, generatedinout, fnameinput, fittfname):
 
     # TODO to remove full run 
     ovapm, eigem, fockm, eigen = single_point (args, bertha, \
-        generatedinout, fnameinput, fittfname)
+        generatedinout, filenames)
     if ovapm is None:
         return False
 
@@ -601,7 +604,7 @@ def restart_run(args, generatedinout, fnameinput, fittfname):
  
 ##########################################################################################
 
-def normal_run(args, generatedinout, fnameinput, fittfname):
+def normal_run(args, generatedinout, filenames):
 
     print("Options: ")
     print(args) 
@@ -615,7 +618,7 @@ def normal_run(args, generatedinout, fnameinput, fittfname):
     bertha = berthamod.pybertha(args.wrapperso)
 
     ovapm, eigem, fockm, eigen = single_point (args, bertha, \
-        generatedinout, fnameinput, fittfname)
+        generatedinout, filenames)
     if ovapm is None:
         return False
 
@@ -936,8 +939,7 @@ def main():
           sys.path.append(path)
 
    generatedinout = False
-   fnameinput = ""
-   fittfname = ""
+   filenames = []
            
    if (not args.restart):
        if args.totaltime < 0.0:
@@ -951,7 +953,7 @@ def main():
 
    if generatedinout:
         
-        for filename in [fnameinput , fittfname]:
+        for filename in filenames:
             if os.path.isfile(filename):
                 print("File ", filename, " will be removed")
                 try:
