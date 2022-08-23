@@ -945,10 +945,10 @@ def main():
        if args.totaltime < 0.0:
            args.totaltime = 1.0
 
-       if (not normal_run (args, generatedinout, fnameinput, fittfname)):
+       if (not normal_run (args, generatedinout, filenames)):
            exit(1)
    else:
-      if (not restart_run (args, generatedinout, fnameinput, fittfname)):
+      if (not restart_run (args, generatedinout, filenames)):
            exit(1)
 
    if generatedinout:
