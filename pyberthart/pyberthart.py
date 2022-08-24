@@ -637,25 +637,25 @@ def normal_run(args, filenames):
         print("ERROR in --addgridpot, you need to specify two filenames ; separated")
         exit(1)
     
-    if gridfilename != "" and \
-        potfilename != "":
-
-        if os.path.isfile(gridfilename) and \
-            os.path.isfile(potfilename):
-            grid = berthamod.read_sgrid_file (gridfilename)
-            pot = berthamod.read_pot_file (potfilename)
-
-            if (pot is not None) and (grid is not None):
-                if grid.shape[0] == pot.shape[0]:
-                    bertha.set_embpot_on_grid(grid, pot)
-                    print("Add external potetial ")
-                else:
-                    print("ERROR: grid and pot files are not compatible")
-                    exit(1)
-        else:
-            print("ERROR: "+ gridfilename + " and/or " + 
-               potfilename + " do not exist")
-            exit(1)
+     if gridfilename != "" and \
+         potfilename != "":
+     
+         if os.path.isfile(gridfilename) and \
+             os.path.isfile(potfilename):
+             grid = berthamod.read_sgrid_file (gridfilename)
+             pot = berthamod.read_pot_file (potfilename)
+     
+             if (pot is not None) and (grid is not None):
+                 if grid.shape[0] == pot.shape[0]:
+                     bertha.set_embpot_on_grid(grid, pot)
+                     print("Add external potetial ")
+                 else:
+                     print("ERROR: grid and pot files are not compatible")
+                     exit(1)
+         else:
+             print("ERROR: "+ gridfilename + " and/or " + 
+                potfilename + " do not exist")
+             exit(1)
     
     print("Start RT")
     
