@@ -343,9 +343,6 @@ c          print *, "Here " , ndim, nocc
 
         v=v+zz
 
-          
-
-
         if (addpot) then
 
           allocate(pp(nfitt),stat=rc)
@@ -480,7 +477,6 @@ c          print *, "Here " , ndim, nocc
         end do
 ! #### end  Calculation of Tr(D(V_xc+J))    
 !  For Embedding
-
 
         if (addpot) then
 
