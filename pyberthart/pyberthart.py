@@ -523,6 +523,7 @@ def restart_run(args, filenames):
 
         weight_list.append(row)
 
+    args.addgridpot = json_data['addgridpot']
     args.pulse = json_data['pulse']
     args.pulseFmax = json_data['pulseFmax']
     args.pulsew = json_data['pulsew'] 
@@ -581,6 +582,34 @@ def restart_run(args, filenames):
     nocc = bertha.get_nocc()
  
     bertha.realtime_init()
+
+    if args.addgridpot != "":
+     if len(args.addgridpot.split(";")) == 2:
+        gridfilename = args.addgridpot.split(";")[0]
+        potfilename = args.addgridpot.split(";")[1]
+     else:
+        print("ERROR in --addgridpot, you need to specify two filenames ; separated")
+        exit(1)
+    
+     if gridfilename != "" and \
+         potfilename != "":
+     
+         if os.path.isfile(gridfilename) and \
+             os.path.isfile(potfilename):
+             grid = berthamod.read_sgrid_file (gridfilename)
+             pot = berthamod.read_pot_file (potfilename)
+     
+             if (pot is not None) and (grid is not None):
+                 if grid.shape[0] == pot.shape[0]:
+                     bertha.set_embpot_on_grid(grid, pot)
+                     print("Add external potetial ")
+                 else:
+                     print("ERROR: grid and pot files are not compatible")
+                     exit(1)
+         else:
+             print("ERROR: "+ gridfilename + " and/or " + 
+                potfilename + " do not exist")
+             exit(1)
     
     print("Start RT")
     
