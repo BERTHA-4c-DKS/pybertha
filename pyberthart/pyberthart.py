@@ -573,7 +573,7 @@ def restart_run(args, filenames):
 
     # TODO to remove full run 
     ovapm, eigem, fockm, eigen, generatedinout = single_point (args, bertha, \
-        generatedinout, filenames)
+        filenames)
     if ovapm is None:
         return False
 
