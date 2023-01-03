@@ -28,8 +28,6 @@ import pybgen
 
 from pathlib import Path
 
-MAXIT = 100 
-
 ##########################################################################################
 
 def get_json_data(args, j, niter, ndim, ene_list, \
@@ -511,7 +509,7 @@ def restart_run(pberthaopt, args):
     pygenoption.basisset = args.act_obs
     pygenoption.functxc = args.act_func
     pygenoption.convertlengthunit = args.convertlengthunit
-    pygenoption.maxit = MAXIT
+    pygenoption.maxit = args.berthamaxit
 
     #pberthaopt.inputfile = "input.inp"
     #pberthaopt.fittfile = "fitt2.inp"
@@ -877,6 +875,8 @@ def normal_run(pberthaopt, args):
 
 def main():
 
+   MAXIT = 100 
+
    listpulses = ""
    for key in rtutil.funcswitcher:
        listpulses += key
@@ -970,6 +970,9 @@ def main():
            required=False, type=int, default=-1)
    parser.add_argument("--restart", help="restart run from file",
            required=False, default=False, action="store_true")
+
+   parser.add_argument("--berthamaxit", help="set bertha maxiterations (default = %d)"%(MAXIT),
+         required=False, type=int, default=MAXIT)
    
    args = parser.parse_args()
    for path in args.modpaths.split(";"):
@@ -997,7 +1000,7 @@ def main():
       pygenoption_fraga.basisset = args.act_obs
       pygenoption_fraga.functxc = args.act_func
       pygenoption_fraga.convertlengthunit = args.convertlengthunit
-      pygenoption_fraga.maxit = MAXIT
+      pygenoption_fraga.maxit = args.berthamaxit
 
       pberthaopt.inputfile = str(uuid.uuid4())
       pberthaopt.fittfile = str(uuid.uuid4()) 
