@@ -261,7 +261,7 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
         select="-2 ; 0 & 0"):
 
   
-    fock_mid_tmp = rtutil.mo_fock_mid_forwd_eval(bertha, numpy.copy(D_ti), \
+    fock_mid_tmp,D_ti_dt = rtutil.mo_fock_mid_forwd_eval(bertha, numpy.copy(D_ti), \
             fock_mid_backwd, j, numpy.float_(dt), dip_mat, C, C_inv, ovapm, \
             ndim, debug, fo, pulse, pulseFmax, pulsew, t0, pulseS, propthresh)
     
@@ -274,23 +274,23 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
       Ah = numpy.conjugate(fock_mid_tmp.T)
       fo.write('Fock_mid hermitian: %s\n' % numpy.allclose(fock_mid_tmp,Ah,atol=1.e-14))
 
-    # transform fock_mid_tmp in MO basis
-    fockp_mid_tmp = numpy.matmul(numpy.conjugate(C.T),numpy.matmul(fock_mid_tmp, C))
-    u = rtutil.exp_opmat(numpy.copy(fockp_mid_tmp),numpy.float_(dt),debug,fo)
-    # u=scila.expm(-1.0j*fockp_mid_tmp*dt)
-    # check u is unitary
-    test_u = numpy.matmul(u,numpy.conjugate(u.T))
-    if (not numpy.allclose(numpy.eye(u.shape[0]),test_u,atol=1.e-14)):
-        print("WARNING: U is not unitary\n")
+    ## transform fock_mid_tmp in MO basis
+    #fockp_mid_tmp = numpy.matmul(numpy.conjugate(C.T),numpy.matmul(fock_mid_tmp, C))
+    #u = rtutil.exp_opmat(numpy.copy(fockp_mid_tmp),numpy.float_(dt),debug,fo)
+    ## u=scila.expm(-1.0j*fockp_mid_tmp*dt)
+    ## check u is unitary
+    #test_u = numpy.matmul(u,numpy.conjugate(u.T))
+    #if (not numpy.allclose(numpy.eye(u.shape[0]),test_u,atol=1.e-14)):
+    #    print("WARNING: U is not unitary\n")
    
-    #evolve the density in orthonormal basis
-    #check the trace of density to evolve
-    if debug:
-      fo.write('trace of density to evolve: %.8f\n' % numpy.trace(Dp_ti).real)
-    temp=numpy.matmul(Dp_ti,numpy.conjugate(u.T))
-    Dp_ti_dt = numpy.matmul(u,temp)
-    #backtransform Dp_ti_dt
-    D_ti_dt=numpy.matmul(C,numpy.matmul(Dp_ti_dt,numpy.conjugate(C.T)))
+    ##evolve the density in orthonormal basis
+    ##check the trace of density to evolve
+    #if debug:
+    #  fo.write('trace of density to evolve: %.8f\n' % numpy.trace(Dp_ti).real)
+    #temp=numpy.matmul(Dp_ti,numpy.conjugate(u.T))
+    #Dp_ti_dt = numpy.matmul(u,temp)
+    ##backtransform Dp_ti_dt
+    #D_ti_dt=numpy.matmul(C,numpy.matmul(Dp_ti_dt,numpy.conjugate(C.T)))
     if debug:
       fo.write('  Trace of D_ti_dt %.8f\n' % numpy.trace(Dp_ti_dt).real)
     #dipole expectation for D_ti_dt
@@ -355,7 +355,7 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
     # message for debug
     # fo.write('here I update the matrices Dp_ti and D_ti\n')
     D_ti = numpy.copy(D_ti_dt)
-    Dp_ti = numpy.copy(Dp_ti_dt)
+    Dp_ti = None # just for compatibility
 
     if debug:
       fo.write('  Trace of Dp_ti %.8f\n' % numpy.trace(Dp_ti).real)
@@ -719,9 +719,9 @@ def normal_run(args, filenames):
     #C_inv used to backtransform D(AO)
     
     try: 
-        C_inv = numpy.linalg.inv(eigem)
+        C_inv = numpy.linalg.pinv(eigem) # inv->pinv
     except LinAlgError:
-        print("Error in numpy.linalg.inv of eigem") 
+        print("Error in numpy.linalg.pinv of eigem") 
         return False
     
     if debug:
@@ -815,7 +815,7 @@ def normal_run(args, filenames):
 
     print("Start first mo_fock_mid_forwd_eval ")
     
-    fock_mid_init = rtutil.mo_fock_mid_forwd_eval(bertha,Da,fockm,0,numpy.float_(dt),\
+    fock_mid_init,D_t1 = rtutil.mo_fock_mid_forwd_eval(bertha,Da,fockm,0,numpy.float_(dt),\
             dip_mat,C,C_inv,ovapm,ndim, debug, fo, args.pulse, args.pulseFmax, args.pulsew, args.t0, args.pulseS, 
             args.propthresh)
     
@@ -829,22 +829,22 @@ def normal_run(args, filenames):
       fo.write("Max diff fock_mid_init-fock_mid_h"%(numpy.max(diff_fock_mid_h)))
       fo.write('Fockm (t=1/2) is hermitian: %s\n'% 
             numpy.allclose(fock_mid_init,fock_mid_h,atol=1.e-14))
-    
-    fockp_mid_init=numpy.matmul(numpy.conjugate(C.T),numpy.matmul(fock_mid_init,C))
-    u=rtutil.exp_opmat(fockp_mid_init,numpy.float_(dt),debug,fo)
+    #REMOVE
+    #fockp_mid_init=numpy.matmul(numpy.conjugate(C.T),numpy.matmul(fock_mid_init,C))
     #u=rtutil.exp_opmat(fockp_mid_init,numpy.float_(dt),debug,fo)
-    #u=scila.expm(-1.j*fockp_mid_init*dt)
-    temp=numpy.matmul(D_0,numpy.conjugate(u.T))
-    Dp_t1=numpy.matmul(u,temp)
+    ##u=rtutil.exp_opmat(fockp_mid_init,numpy.float_(dt),debug,fo)
+    ##u=scila.expm(-1.j*fockp_mid_init*dt)
+    #temp=numpy.matmul(D_0,numpy.conjugate(u.T))
+    #Dp_t1=numpy.matmul(u,temp)
     
-    #check u if unitary
-    if debug:
-      test_u=numpy.matmul(u,numpy.conjugate(u.T))
-      fo.write('U is unitary : %s' % 
-            numpy.allclose(test_u,numpy.eye(u.shape[0]),atol=1.e-14))
+    ##check u if unitary
+    #if debug:
+    #  test_u=numpy.matmul(u,numpy.conjugate(u.T))
+    #  fo.write('U is unitary : %s' % 
+    #        numpy.allclose(test_u,numpy.eye(u.shape[0]),atol=1.e-14))
     
-    #backtrasform Dp_t1
-    D_t1=numpy.matmul(C,numpy.matmul(Dp_t1,numpy.conjugate(C.T)))
+    ##backtrasform Dp_t1
+    #D_t1=numpy.matmul(C,numpy.matmul(Dp_t1,numpy.conjugate(C.T)))
     
     if debug:
       diff = D_t1 - Da 
@@ -874,7 +874,7 @@ def normal_run(args, filenames):
     #estrarre le 3 componenti del dipolo nucleare
     
     D_ti=D_t1
-    Dp_ti=Dp_t1
+    Dp_ti= None # just for compatibility
     #aggiungere repulsione nucleare
     #Enuc_list.append(-func_t0*Ndip_z+Nuc_rep) #just in case of non-zero nuclear dipole
     

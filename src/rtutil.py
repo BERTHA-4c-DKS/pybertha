@@ -335,4 +335,4 @@ def mo_fock_mid_forwd_eval(bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
         dens_test = numpy.copy(D_ti_dt)
         k += 1
 
-   return fock_inter
+   return fock_inter,D_ti_dt
