@@ -260,8 +260,8 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
         ndim, debug, Dp_ti, dip_list, ene_list, weight_list=None, 
         select="-2 ; 0 & 0"):
 
-  
-    fock_mid_tmp,D_ti_dt = rtutil.mo_fock_mid_forwd_eval(bertha, numpy.copy(D_ti), \
+    # TODO : clean and check argslist in main_loop()
+    fock_mid_tmp,D_ti_dt = rtutil.mo_fock_mid_forwd_eval(bertha, numpy.copy(Dp_ti), \
             fock_mid_backwd, j, numpy.float_(dt), dip_mat, C, C_inv, ovapm, \
             ndim, debug, fo, pulse, pulseFmax, pulsew, t0, pulseS, propthresh)
     
@@ -292,9 +292,9 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
     ##backtransform Dp_ti_dt
     #D_ti_dt=numpy.matmul(C,numpy.matmul(Dp_ti_dt,numpy.conjugate(C.T)))
     if debug:
-      fo.write('  Trace of D_ti_dt %.8f\n' % numpy.trace(Dp_ti_dt).real)
+      fo.write('  Trace of D_ti_dt %.8f\n' % numpy.trace(D_ti_dt[0]).real)
     #dipole expectation for D_ti_dt
-    dip_list.append(numpy.trace(numpy.matmul(dip_mat,D_ti_dt)))
+    dip_list.append(numpy.trace(numpy.matmul(dip_mat,D_ti_dt[0])))
 
     if (pulse == "analytic"):
         molist = select.split("&")
@@ -306,14 +306,14 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
             #dipole analysis
             nshift = ndim/2
             dipz_mo = numpy.matmul(numpy.conjugate(C.T),numpy.matmul(dip_mat,C))
-            res=rtutil.dipoleanalysis(dipz_mo,Dp_ti_dt,occlist,virtlist,int(nshift),fo,debug)
+            res=rtutil.dipoleanalysis(dipz_mo,D_ti_dt[1],occlist,virtlist,int(nshift),fo,debug)
             if (weight_list != None):
                 weight_list.append(res)
     if debug:
-      fo.write("Dipole: %.12e\n"%(numpy.trace(numpy.matmul(dip_mat,D_ti_dt)).real))
+      fo.write("Dipole: %.12e\n"%(numpy.trace(numpy.matmul(dip_mat,D_ti_dt[0])).real))
    
     #Energy expectation value at t = t_i_dt 
-    fockm_ti_dt = bertha.get_realtime_fock(D_ti_dt.T)
+    fockm_ti_dt = bertha.get_realtime_fock(D_ti_dt[0].T)
     
     """
     # to dump density og a grid 
@@ -349,13 +349,13 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
     numpy.savetxt("step_%d.txt"%(j), tosave)
     """
     
-    ene_list.append(numpy.trace(numpy.matmul(D_ti_dt,fockm_ti_dt)))
+    ene_list.append(numpy.trace(numpy.matmul(D_ti_dt[0],fockm_ti_dt)))
     
     # update D_ti and Dp_ti for the next step
     # message for debug
     # fo.write('here I update the matrices Dp_ti and D_ti\n')
-    D_ti = numpy.copy(D_ti_dt)
-    Dp_ti = None # just for compatibility
+    D_ti = numpy.copy(D_ti_dt[0])
+    Dp_ti = numpy.copy(D_ti_dt[1]) 
 
     if debug:
       fo.write('  Trace of Dp_ti %.8f\n' % numpy.trace(Dp_ti).real)
@@ -718,22 +718,22 @@ def normal_run(args, filenames):
     #print type(eigem)
     #C_inv used to backtransform D(AO)
     
-    try: 
-        C_inv = numpy.linalg.pinv(eigem) # inv->pinv
-    except LinAlgError:
-        print("Error in numpy.linalg.pinv of eigem") 
-        return False
+    #try: 
+    #    C_inv = numpy.linalg.pinv(eigem) # inv->pinv
+    #except LinAlgError:
+    #    print("Error in numpy.linalg.pinv of eigem") 
+    #    return False
+    C_inv = numpy.zeros_like(eigem)  # for compatibility to the restart process
+    #if debug:
+    #  test = numpy.matmul(C_inv, eigem)
+    #  fo.write("Check if atol is 1.e-14 for inversion of C: %s\n"% \
+    #        numpy.allclose(numpy.eye((ndim),dtype=numpy.complex128), \
+    #        test,atol=1.e-14))
     
-    if debug:
-      test = numpy.matmul(C_inv, eigem)
-      fo.write("Check if atol is 1.e-14 for inversion of C: %s\n"% \
-            numpy.allclose(numpy.eye((ndim),dtype=numpy.complex128), \
-            test,atol=1.e-14))
-    
-    if debug:
-      diff = test - numpy.eye((ndim),dtype=numpy.complex128)
-      mdiff = numpy.max(diff)
-      fo.write("  maxdiff is: %.12e %.12e\n"%(mdiff.real, mdiff.imag))
+    #if debug:
+    #  diff = test - numpy.eye((ndim),dtype=numpy.complex128)
+    #  mdiff = numpy.max(diff)
+    #  fo.write("  maxdiff is: %.12e %.12e\n"%(mdiff.real, mdiff.imag))
     
     if debug:
       test = numpy.matmul(numpy.conjugate(C.T),numpy.matmul(ovapm,C))
@@ -815,7 +815,7 @@ def normal_run(args, filenames):
 
     print("Start first mo_fock_mid_forwd_eval ")
     
-    fock_mid_init,D_t1 = rtutil.mo_fock_mid_forwd_eval(bertha,Da,fockm,0,numpy.float_(dt),\
+    fock_mid_init,D_t1 = rtutil.mo_fock_mid_forwd_eval(bertha,D_0,fockm,0,numpy.float_(dt),\
             dip_mat,C,C_inv,ovapm,ndim, debug, fo, args.pulse, args.pulseFmax, args.pulsew, args.t0, args.pulseS, 
             args.propthresh)
     
@@ -847,34 +847,34 @@ def normal_run(args, filenames):
     #D_t1=numpy.matmul(C,numpy.matmul(Dp_t1,numpy.conjugate(C.T)))
     
     if debug:
-      diff = D_t1 - Da 
+      diff = D_t1[0] - Da 
       mdiff = numpy.max(diff)
       fo.write("Max diff density: %.12e %.12e \n"%(mdiff.real, mdiff.imag))
     
     dip_list.append(numpy.trace(numpy.matmul(Da,dip_mat)))
-    dip_list.append(numpy.trace(numpy.matmul(D_t1,dip_mat)))
+    dip_list.append(numpy.trace(numpy.matmul(D_t1[0],dip_mat)))
     if (args.pulse == "analytic"):
       if (occlist[0] != -2):
           #dipoleanalysis
           res=rtutil.dipoleanalysis(dipz_mo,D_0,occlist,virtlist,nshift,fo,debug)
           weight_list.append(res)            
-          res=rtutil.dipoleanalysis(dipz_mo,Dp_t1,occlist,virtlist,nshift,fo,debug)
+          res=rtutil.dipoleanalysis(dipz_mo,D_t1[0],occlist,virtlist,nshift,fo,debug)
           weight_list.append(res)            
     if debug:                              
       fo.write("Dipole: %.12e\n"%(numpy.trace(numpy.matmul(Da,dip_mat))).real)
-      fo.write("Dipole: %.12e\n"%(numpy.trace(numpy.matmul(D_t1,dip_mat))).real)
+      fo.write("Dipole: %.12e\n"%(numpy.trace(numpy.matmul(D_t1[0],dip_mat))).real)
     
     if debug:
-      tfock = numpy.trace(numpy.matmul(D_t1,fockm))
+      tfock = numpy.trace(numpy.matmul(D_t1[0],fockm))
       fo.write("Trace fock*density t1: %.12e, %.12e\n"%(tfock.real, tfock.imag))
-      trace_ds=numpy.trace(numpy.matmul(D_t1,ovapm))
+      trace_ds=numpy.trace(numpy.matmul(D_t1[0],ovapm))
       fo.write(" Traceds: %.12e %.12ei\n" % (trace_ds.real,trace_ds.imag))
     
     Ndip_z=0.0
     #estrarre le 3 componenti del dipolo nucleare
     
-    D_ti=D_t1
-    Dp_ti= None # just for compatibility
+    D_ti=D_t1[0]
+    Dp_ti= D_t1[1] # just for compatibility
     #aggiungere repulsione nucleare
     #Enuc_list.append(-func_t0*Ndip_z+Nuc_rep) #just in case of non-zero nuclear dipole
     

@@ -252,18 +252,18 @@ funcswitcher = {
    
 #######################################################################
 
-def mo_fock_mid_forwd_eval(bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
+def mo_fock_mid_forwd_eval(bertha, Dp_ti, fock_mid_ti_backwd, i, delta_t,
     dipole_z, C, C_inv, S, ndim, debug=False, odbg=sys.stderr, 
     impulsefunc="kick", fmax=0.0001, w=0.0, t0=0.0, sigma=0.0, propthresh=1.0e-6): 
-
+   #TODO clean the arg list
    func = funcswitcher.get(impulsefunc, lambda: kick)
 
    fock_inter = numpy.zeros((ndim,ndim),dtype=numpy.complex128)   
    
-   # D_ti is in AO basis 
-   # transform in the MO ref basis
+   # input: Dp_ti is in MO basis 
+   # transform in the AO  basis to get Fock
    
-   Dp_ti = numpy.matmul(C_inv,numpy.matmul(D_ti,numpy.conjugate(C_inv.T)))
+   D_ti = numpy.matmul(C,numpy.matmul(Dp_ti,numpy.conjugate(C.T)))
    k = 1
    t_arg = numpy.float_(i) * numpy.float_ (delta_t)
    fockmtx = bertha.get_realtime_fock(D_ti.T)
@@ -335,4 +335,4 @@ def mo_fock_mid_forwd_eval(bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
         dens_test = numpy.copy(D_ti_dt)
         k += 1
 
-   return fock_inter,D_ti_dt
+   return fock_inter,(D_ti_dt,Dp_ti_dt)
