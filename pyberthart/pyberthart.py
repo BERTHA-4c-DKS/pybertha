@@ -24,7 +24,7 @@ import rtutil
 
 def get_json_data(args, j, niter, ndim, ene_list, \
         dip_list, D_ti, fock_mid_backwd, dip_mat, C, \
-        C_inv, ovapm, Dp_ti, weight_list):
+        C_inv, Vmat, ovapm, Dp_ti, weight_list):
 
     json_data = {}
     for arg in vars(args):
@@ -48,6 +48,8 @@ def get_json_data(args, j, niter, ndim, ene_list, \
             'C_IMAG': numpy.imag(C).tolist(),
             'C_inv_REAL': numpy.real(C_inv).tolist(),
             'C_inv_IMAG': numpy.imag(C_inv).tolist(),
+            'Vmat_REAL': numpy.real(Vmat).tolist(),
+            'Vmat_IMAG': numpy.imag(Vmat).tolist(),
             'ovapm_REAL': numpy.real(ovapm).tolist(),
             'ovapm_IMAG': numpy.imag(ovapm).tolist(),
             'Dp_ti_REAL': numpy.real(Dp_ti).tolist(),
@@ -256,14 +258,14 @@ def check_and_covert (mat_REAL, mat_IMAG, ndim):
 ##########################################################################################
 
 def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t0,
-        fo, D_ti, fock_mid_backwd, dt, dip_mat, C, C_inv, ovapm, 
+        fo, D_ti, fock_mid_backwd, dt, dip_mat, C, C_inv, Vmat, ovapm, 
         ndim, debug, Dp_ti, dip_list, ene_list, weight_list=None, 
-        select="-2 ; 0 & 0"):
+        select="-2 ; 0 & 0",loewdin=False):
 
     # TODO : clean and check argslist in main_loop()
     fock_mid_tmp,D_ti_dt = rtutil.mo_fock_mid_forwd_eval(bertha, numpy.copy(Dp_ti), \
             fock_mid_backwd, j, numpy.float_(dt), dip_mat, C, C_inv, ovapm, \
-            ndim, debug, fo, pulse, pulseFmax, pulsew, t0, pulseS, propthresh)
+            ndim, debug, fo, pulse, pulseFmax, pulsew, t0, pulseS, propthresh,loewdin)
     
     if (fock_mid_tmp is None):
         print("Error accurs in mo_fock_mid_forwd_eval")
@@ -292,7 +294,7 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
     ##backtransform Dp_ti_dt
     #D_ti_dt=numpy.matmul(C,numpy.matmul(Dp_ti_dt,numpy.conjugate(C.T)))
     if debug:
-      fo.write('  Trace of D_ti_dt %.8f\n' % numpy.trace(D_ti_dt[0]).real)
+      fo.write('  Trace of D_ti_dt %.8f\n' % numpy.trace(numpy.matmul(ovapm,D_ti_dt[0])).real)
     #dipole expectation for D_ti_dt
     dip_list.append(numpy.trace(numpy.matmul(dip_mat,D_ti_dt[0])))
 
@@ -305,8 +307,14 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
         if (occlist[0] != -2):
             #dipole analysis
             nshift = ndim/2
-            dipz_mo = numpy.matmul(numpy.conjugate(C.T),numpy.matmul(dip_mat,C))
-            res=rtutil.dipoleanalysis(dipz_mo,D_ti_dt[1],occlist,virtlist,int(nshift),fo,debug)
+            if loewdin:
+                # AO -> (genuine) MO basis
+                D_ti_dt_tmp = numpy.matmul(Vmat,numpy.matmul(D_ti_dt[0],numpy.conjugate(Vmat.T)) )              
+            else:
+                D_ti_dt_tmp = D_ti_dt[1]
+            #dipoleanalysis is carried on the (genuine) MO basis
+            dipz_analysis=numpy.matmul(numpy.conjugate(C.T),numpy.matmul(dip_mat,C))
+            res=rtutil.dipoleanalysis(dipz_analysis,D_ti_dt_tmp,occlist,virtlist,int(nshift),fo,debug)
             if (weight_list != None):
                 weight_list.append(res)
     if debug:
@@ -370,8 +378,8 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
 ##########################################################################################
 
 def run_iterations_from_to (startiter, niter, bertha, args, fock_mid_backwd, dt, \
-        dip_mat, C, C_inv, ovapm, ndim, debug, Dp_ti, dip_list, ene_list, weight_list, \
-        fo, D_ti, occlist):
+        dip_mat, C, C_inv, Vmat, ovapm, ndim, debug, Dp_ti, dip_list, ene_list, weight_list, \
+        fo, D_ti, occlist,loewdin):
 
     dumpcounter = 0
     
@@ -385,8 +393,8 @@ def run_iterations_from_to (startiter, niter, bertha, args, fock_mid_backwd, dt,
         fock_mid_backwd, D_ti, Dp_ti = main_loop(j, niter, bertha, 
                 args.pulse, args.pulseFmax, args.pulsew, args.propthresh,
                 args.pulseS, args.t0, fo, D_ti, 
-                fock_mid_backwd, dt, dip_mat, C, C_inv, ovapm, 
-                ndim, debug, Dp_ti, dip_list, ene_list, weight_list, args.select)
+                fock_mid_backwd, dt, dip_mat, C, C_inv, Vmat, ovapm, 
+                ndim, debug, Dp_ti, dip_list, ene_list, weight_list, args.select,loewdin)
 
         if fock_mid_backwd is None:
             return False
@@ -401,7 +409,7 @@ def run_iterations_from_to (startiter, niter, bertha, args, fock_mid_backwd, dt,
 
                 json_data = get_json_data(args, j, niter, ndim, ene_list, 
                         dip_list, D_ti, fock_mid_backwd, dip_mat, C, 
-                        C_inv, ovapm, Dp_ti, weight_list)
+                        C_inv, Vmat, ovapm, Dp_ti, weight_list)
 
                 with open(args.restartfile, 'w') as fp:
                     json.dump(json_data, fp, sort_keys=True, indent=4)
@@ -466,6 +474,8 @@ def restart_run(args, filenames):
     C_IMAG = numpy.float_(json_data["C_IMAG"])
     C_inv_REAL = numpy.float_(json_data["C_inv_REAL"])
     C_inv_IMAG = numpy.float_(json_data["C_inv_IMAG"])
+    Vmat_REAL = numpy.float_(json_data["Vmat_REAL"])
+    Vmat_IMAG = numpy.float_(json_data["Vmat_IMAG"])
     ovapm_REAL = numpy.float_(json_data["ovapm_REAL"])
     ovapm_IMAG = numpy.float_(json_data["ovapm_IMAG"])
     Dp_ti_REAL = numpy.float_(json_data["Dp_ti_REAL"])
@@ -478,6 +488,7 @@ def restart_run(args, filenames):
     dip_mat = check_and_covert (dip_mat_REAL, dip_mat_IMAG, ndim)
     C = check_and_covert (C_REAL, C_IMAG, ndim)
     C_inv = check_and_covert (C_inv_REAL, C_inv_IMAG, ndim)
+    Vmat = check_and_covert (Vmat_REAL, Vmat_IMAG, ndim)
     ovapm = check_and_covert (ovapm_REAL, ovapm_IMAG, ndim)
     Dp_ti = check_and_covert (Dp_ti_REAL, Dp_ti_IMAG, ndim)
     D_ti = check_and_covert (D_ti_REAL, D_ti_IMAG, ndim)
@@ -534,6 +545,7 @@ def restart_run(args, filenames):
     args.vctfile = json_data["vctfile"]
     args.ovapfile = json_data["ovapfile"]
     args.dumpfiles = json_data["dumpfiles"]
+    args.loewdin = json_data["loewdin"]
     args.direction = json_data["direction"]
     
     totaltime = json_data["totaltime"]
@@ -616,11 +628,13 @@ def restart_run(args, filenames):
     debug = args.debug
     dt = args.dt
     t_int = args.totaltime
+    loewdin = args.loewdin
     
     print("Debug: ", debug)
     print("dt : ", dt)
     print("Total time  : ", t_int)
     print("Number of iterations: ", niter)
+    print("Loewdin basis: ", loewdin)
     
     sys.stdout.flush()
     
@@ -629,8 +643,8 @@ def restart_run(args, filenames):
         fo = open("debug_info.txt", "w")
     
     return run_iterations_from_to (jstart+1, niter, bertha, args, fock_mid_backwd, \
-            dt, dip_mat, C, C_inv, ovapm, ndim, debug, Dp_ti, dip_list, ene_list, \
-            weight_list, fo, D_ti, occlist), generatedinout
+            dt, dip_mat, C, C_inv, Vmat, ovapm, ndim, debug, Dp_ti, dip_list, ene_list, \
+            weight_list, fo, D_ti, occlist,loewdin), generatedinout
  
 ##########################################################################################
 
@@ -692,11 +706,13 @@ def normal_run(args, filenames):
     dt = args.dt
     t_int = args.totaltime
     niter = int(t_int/dt)
+    loewdin = args.loewdin
     
     print("Debug: ", debug)
     print("dt : ", dt)
     print("Total time  : ", t_int)
     print("Number of iterations: ", niter)
+    print("Loewdin basis: ", loewdin)
     
     sys.stdout.flush()
     
@@ -710,6 +726,7 @@ def normal_run(args, filenames):
     D_0 = numpy.zeros((ndim,ndim), dtype=numpy.complex128)
     for num in range(nocc):
         D_0[num+nshift,num+nshift]=1.0+0.0j
+    D_0_tmp = numpy.copy(D_0) # for later use
     
     fo = sys.stderr
     if debug:
@@ -723,7 +740,10 @@ def normal_run(args, filenames):
     #except LinAlgError:
     #    print("Error in numpy.linalg.pinv of eigem") 
     #    return False
-    C_inv = numpy.zeros_like(eigem)  # for compatibility to the restart process
+    if args.loewdin:
+       C_inv = rtutil.make_loewdin(ovapm) #correspond to S^{-1/2}
+    else:
+       C_inv = numpy.zeros_like(C)  # for compatibility to the restart process
     #if debug:
     #  test = numpy.matmul(C_inv, eigem)
     #  fo.write("Check if atol is 1.e-14 for inversion of C: %s\n"% \
@@ -756,6 +776,20 @@ def normal_run(args, filenames):
             iocc = iocc + 1
     
     Da = numpy.matmul(occeigv,numpy.conjugate(occeigv.transpose()))
+    #replace previous D_0
+    if loewdin:
+        Splus = rtutil.make_loewdin2(ovapm) # Splus -> S^{1/2} needed just right here
+        print("Get D_0 density matrix on Loewdin AOs and check trace")
+        D_0=numpy.matmul(Splus,numpy.matmul(Da,numpy.conjugate(Splus.T)))
+        tmp_trace = numpy.trace(D_0)
+        print("trace D_0(loewdin) ; %.8f %.8fi" %(tmp_trace.real,tmp_trace.imag))
+        #also get C_inv as Vmat for analysis task
+        try:
+            Vmat = numpy.linalg.inv(C)
+        except LinAlgError:
+            print("Error in numpy.linalg.pinv of eigem") 
+    else:
+        Vmat =np.zeros_like(C)
     
     print("")
     print("Dump ground state density density0.cube")
@@ -801,23 +835,40 @@ def normal_run(args, filenames):
         Amp=args.pulseFmax
 
         # to check 
-        dipz_mo=numpy.matmul(numpy.conjugate(C.T),numpy.matmul(dip_mat,C))
+        if args.loewdin:
+            # HERE _mo subscript may denote either a quantity on a MO basis or a orthogonalized basis
+            # ie the propagation basis
+            dipz_mo=numpy.matmul(numpy.conjugate(C_inv.T),numpy.matmul(dip_mat,C_inv))
+        else:
+            dipz_mo=numpy.matmul(numpy.conjugate(C.T),numpy.matmul(dip_mat,C))
 
         if args.select_pert:
-            dipz_mo=rtutil.dipole_selection(dipz_mo,nshift,nocc,occlist,virtlist,fo,debug)
+            # on the MO basis -> do the MO selection in dipz_mo
+            dipz_tmp=numpy.matmul(numpy.conjugate(C.T),numpy.matmul(dip_mat,C))
+            dipz_tmp=rtutil.dipole_selection(dipz_tmp,nshift,nocc,occlist,virtlist,fo,debug)
+            if loewdin:
+                # two trasformations here : MO->AO->Loewdin basis
+                dipz_ao =numpy.matmul(numpy.conjugate(Vmat.T),numpy.matmul(dipz_tmp,Vmat))
+                # on the Loewdin basis (orthogonalized AO)
+                dipz_mo =numpy.matmul(numpy.conjugate(C_inv.T),numpy.matmul(dipz_ao,C_inv))
+            else:
+                dipz_mo = dipz_tmp
 
         print(" Perturb with analytic kick ")
         u0=rtutil.exp_opmat(dipz_mo,numpy.float_(-Amp),debug,fo)
         Dp_init=numpy.matmul(u0,numpy.matmul(D_0,numpy.conjugate(u0.T)))
         #transform back Dp_int
-        Da=numpy.matmul(C,numpy.matmul(Dp_init,numpy.conjugate(C.T)))
+        if args.loewdin:
+           Da=numpy.matmul(C_inv,numpy.matmul(Dp_init,numpy.conjugate(C_inv.T)))
+        else:
+           Da=numpy.matmul(C,numpy.matmul(Dp_init,numpy.conjugate(C.T)))
         D_0=Dp_init
 
     print("Start first mo_fock_mid_forwd_eval ")
     
     fock_mid_init,D_t1 = rtutil.mo_fock_mid_forwd_eval(bertha,D_0,fockm,0,numpy.float_(dt),\
             dip_mat,C,C_inv,ovapm,ndim, debug, fo, args.pulse, args.pulseFmax, args.pulsew, args.t0, args.pulseS, 
-            args.propthresh)
+            args.propthresh,args.loewdin)
     
     if (fock_mid_init is None):
         print("Error accurs in mo_fock_mid_forwd_eval")
@@ -855,10 +906,16 @@ def normal_run(args, filenames):
     dip_list.append(numpy.trace(numpy.matmul(D_t1[0],dip_mat)))
     if (args.pulse == "analytic"):
       if (occlist[0] != -2):
-          #dipoleanalysis
-          res=rtutil.dipoleanalysis(dipz_mo,D_0,occlist,virtlist,nshift,fo,debug)
+          if loewdin:
+              # AO -> MO basis
+              D_t1_tmp = numpy.matmul(Vmat,numpy.matmul(D_t1[0],numpy.conjugate(Vmat.T)) )              
+          else:
+              D_t1_tmp = D_t1[1]
+          #dipoleanalysis is carried on the (genuine) MO basis
+          dipz_analysis=numpy.matmul(numpy.conjugate(C.T),numpy.matmul(dip_mat,C))
+          res=rtutil.dipoleanalysis(dipz_analysis,D_0_tmp,occlist,virtlist,nshift,fo,debug)
           weight_list.append(res)            
-          res=rtutil.dipoleanalysis(dipz_mo,D_t1[0],occlist,virtlist,nshift,fo,debug)
+          res=rtutil.dipoleanalysis(dipz_analysis,D_t1_tmp,occlist,virtlist,nshift,fo,debug)
           weight_list.append(res)            
     if debug:                              
       fo.write("Dipole: %.12e\n"%(numpy.trace(numpy.matmul(Da,dip_mat))).real)
@@ -899,8 +956,8 @@ def normal_run(args, filenames):
     fock_mid_backwd = numpy.copy(fock_mid_init)
 
     return run_iterations_from_to (1, niter, bertha, args, fock_mid_backwd, \
-            dt, dip_mat, C, C_inv, ovapm, ndim, debug, Dp_ti, dip_list, ene_list, \
-            weight_list, fo, D_ti, occlist), generatedinout
+            dt, dip_mat, C, C_inv, Vmat, ovapm, ndim, debug, Dp_ti, dip_list, ene_list, \
+            weight_list, fo, D_ti, occlist,loewdin), generatedinout
     
 ##########################################################################################
 
@@ -926,6 +983,8 @@ def main():
    parser.add_argument("-p","--ovapfile", help="Specify BERTHA ovap output file (default: ovap.txt)", required=False, 
            type=str, default="ovap.txt")
    parser.add_argument("-s", "--dumpfiles", help="Dumpfile on, default is off", required=False,
+           default=False, action="store_true")
+   parser.add_argument("-l", "--loewdin", help="Loewdin on, default is off", required=False,
            default=False, action="store_true")
    parser.add_argument("-m", "--dt", help="Specify dt to be used (default: 0.1)", required=False,
            default=0.1, type=numpy.float64)

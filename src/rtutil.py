@@ -254,7 +254,7 @@ funcswitcher = {
 
 def mo_fock_mid_forwd_eval(bertha, Dp_ti, fock_mid_ti_backwd, i, delta_t,
     dipole_z, C, C_inv, S, ndim, debug=False, odbg=sys.stderr, 
-    impulsefunc="kick", fmax=0.0001, w=0.0, t0=0.0, sigma=0.0, propthresh=1.0e-6): 
+    impulsefunc="kick", fmax=0.0001, w=0.0, t0=0.0, sigma=0.0, propthresh=1.0e-6,loewdin=False): 
    #TODO clean the arg list
    func = funcswitcher.get(impulsefunc, lambda: kick)
 
@@ -262,8 +262,10 @@ def mo_fock_mid_forwd_eval(bertha, Dp_ti, fock_mid_ti_backwd, i, delta_t,
    
    # input: Dp_ti is in MO basis 
    # transform in the AO  basis to get Fock
-   
-   D_ti = numpy.matmul(C,numpy.matmul(Dp_ti,numpy.conjugate(C.T)))
+   if loewdin:
+       D_ti = numpy.matmul(C_inv,numpy.matmul(Dp_ti,numpy.conjugate(C_inv.T)))
+   else:
+       D_ti = numpy.matmul(C,numpy.matmul(Dp_ti,numpy.conjugate(C.T)))
    k = 1
    t_arg = numpy.float_(i) * numpy.float_ (delta_t)
    fockmtx = bertha.get_realtime_fock(D_ti.T)
@@ -280,8 +282,12 @@ def mo_fock_mid_forwd_eval(bertha, Dp_ti, fock_mid_ti_backwd, i, delta_t,
    dens_test = numpy.zeros((ndim,ndim),dtype=numpy.complex128)
    fock_guess = 2.00*fock_ti_ao - fock_mid_ti_backwd
    while True:
-        fockp_guess = numpy.matmul(numpy.conjugate(C.T), \
-                numpy.matmul(fock_guess,C))
+        if loewdin:
+           fockp_guess = numpy.matmul(numpy.conjugate(C_inv.T), \
+                   numpy.matmul(fock_guess,C_inv))
+        else:  
+           fockp_guess = numpy.matmul(numpy.conjugate(C.T), \
+                   numpy.matmul(fock_guess,C))
 
         u = exp_opmat(fockp_guess,delta_t,debug,odbg)
 
@@ -302,7 +308,10 @@ def mo_fock_mid_forwd_eval(bertha, Dp_ti, fock_mid_ti_backwd, i, delta_t,
         tmpd = numpy.matmul(Dp_ti,numpy.conjugate(u.T))
         Dp_ti_dt = numpy.matmul(u,tmpd)
         #backtrasform Dp_ti_dt
-        D_ti_dt = numpy.matmul(C,numpy.matmul(Dp_ti_dt,numpy.conjugate(C.T)))
+        if loewdin:
+           D_ti_dt = numpy.matmul(C_inv,numpy.matmul(Dp_ti_dt,numpy.conjugate(C_inv.T)))
+        else:
+           D_ti_dt = numpy.matmul(C,numpy.matmul(Dp_ti_dt,numpy.conjugate(C.T)))
         #build the correspondig Fock , fock_ti+dt
         
         pulse = func (fmax, w, t_arg + delta_t, t0, sigma)
@@ -336,3 +345,65 @@ def mo_fock_mid_forwd_eval(bertha, Dp_ti, fock_mid_ti_backwd, i, delta_t,
         k += 1
 
    return fock_inter,(D_ti_dt,Dp_ti_dt)
+
+##################################################################
+def make_loewdin2(O):
+
+  print("Compute trace of O\n")
+  print(("Trace of O : %.14f, %.14f i\n" % (numpy.trace(O).real, numpy.trace(O).imag)))
+  try:
+       w,z = numpy.linalg.eigh(O)
+  except numpy.linalg.LinAlgError:
+       print("Error in scipy.linalg.eig of O")
+
+
+  #test eigenvector
+  print("Compute Z^H x O x Z to check eigenvector\n")
+  temp = numpy.matmul(numpy.conjugate(z.T),numpy.matmul(O,z))
+  print(("trace of Z^H x O x Z : %.14f, %.14f i\n" % (numpy.trace(temp).real,numpy.trace(temp).imag)))
+
+  val = 0.0 + 0.0j
+
+  for i in w:
+    val += i
+  print(("sum of eigs of O: %.14f %.14f\n" % (val.real,val.imag)))
+  da = numpy.diagflat(numpy.sqrt(w))
+
+  LoewdinMat = numpy.matmul(z,numpy.matmul(da,numpy.conjugate(z.T)) )
+  return LoewdinMat
+from numpy.linalg import eigvalsh
+from scipy.linalg import eigh
+
+from scipy.linalg import eig  
+def make_loewdin(O):
+  print("Compute inverse of O : O^-1")
+  oinv = numpy.linalg.inv(O)
+
+  print("Compute trace of O^-1\n")
+  print(("Trace of O^-1 : %.14f, %.14f i\n" % (numpy.trace(oinv).real, numpy.trace(oinv).imag)))
+  #print("Check O inversion")
+  #test = numpy.matmul(O,oinv)
+  #print("O*oinv =  1 : %s\n" % numpy.allclose(test,numpy.eye(test.shape[0]),atol=1.0e-14))
+  #compute left eigenvectors of O-1
+  try:
+       w,z = eig(oinv,left=True,right=False)
+  except numpy.linalg.LinAlgError:
+       print("Error in scipy.linalg.eig of O^-1")
+
+  #compute zinv
+  zinv = numpy.linalg.inv(z)
+
+  #test eigenvector
+  print("Compute Z x O^-1 x Z^-1 to check eigenvector\n")
+  temp = numpy.matmul(z,numpy.matmul(oinv,zinv))
+  print(("trace of Z x O^-1 x Z^-1 : %.14f, %.14f i\n" % (numpy.trace(temp).real,numpy.trace(temp).imag)))
+
+  val = 0.0 + 0.0j
+
+  for i in w:
+    val += i
+  print(("sum of eigs of O^-1: %.14f %.14f\n" % (val.real,val.imag)))
+  da = numpy.diagflat(numpy.sqrt(w))
+
+  LoewdinMat = numpy.matmul(z,numpy.matmul(da,zinv))
+  return LoewdinMat

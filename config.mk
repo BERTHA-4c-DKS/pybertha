@@ -11,7 +11,7 @@ PROFILE=no
 
 #is used only by serial
 #use Intel compiler
-USEINTEL=yes
+USEINTEL=no
 
 #LIBXC
 LIBXC=no
