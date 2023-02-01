@@ -919,10 +919,7 @@ def normal_run(args, filenames):
     print("")
     
     fock_mid_backwd = numpy.copy(fock_mid_init)
-    print("In normal_run(), check weight_list\n")
-    print("weight_list len: %i\n" % len(weight_list))
-    print("weight_list[0] len: %i\n" % len(weight_list[0]))
-    print("weight_list[0] type: %s\n" % type(weight_list[0]) )
+
     return run_iterations_from_to (1, niter, bertha, args, fock_mid_backwd, \
             dt, dip_mat, Vminus,C, dipoleobj, ovapm, ndim, debug, Dp_ti, dip_list, ene_list, \
             weight_list, fo, D_ti, occlist), generatedinout
