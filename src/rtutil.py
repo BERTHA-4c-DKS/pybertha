@@ -189,19 +189,15 @@ def analytic(Fmax, w, t, t0=0.0, s=0.0):
 
 #######################################################################
 
-def dipole_selection(dipole,nshift,nocc,occlist,virtlist,odbg=sys.stderr,debug=False):
+def dipole_selection(dipole,nshift,nocc,header,occlist,virtlist,odbg=sys.stderr,debug=False):
     
-    a= occlist.pop(0)
-    if debug:
-       odbg.write("Selected occ. Mo: %s \n"% str(occlist))
-       odbg.write("Selected virt. Mo: %s \n"% str(virtlist))
     tmp = dipole[nshift:,nshift:]
     offdiag = numpy.zeros((nshift,nshift),dtype=numpy.complex128)
     #diag = numpy.diagonal(tmp)
     #diagonal = numpy.diagflat(diag)
     nvirt = tmp.shape[0]-nocc
     odbg.write("n. virtual orbitals : %i" % nvirt)
-    if (a == -1):
+    if (header == -1):
       for b in range(nvirt):
         for j in occlist:
           offdiag[nocc+b,j-1] = tmp[nocc+b,j-1]
@@ -220,11 +216,7 @@ def dipole_selection(dipole,nshift,nocc,occlist,virtlist,odbg=sys.stderr,debug=F
 def dipoleanalysis(dipole,dmat,occlist,virtlist,nshift,odbg=sys.stderr,debug=False):
 #def dipoleanalysis(dipole,dmat,nocc,occlist,virtlist,nshift,odbg=sys.stderr,debug=False):
     
-    shortl=occlist[1:]
-    tot = len(shortl)*len(virtlist)
-    if debug:
-       odbg.write("Selected occ. Mo: %s \n"% str(shortl))
-       odbg.write("Selected virt. Mo: %s \n"% str(virtlist))
+    tot = len(occlist)*len(virtlist)
     #if (a == -1): #HOMO-LUMO 
     #  i = nshift+nocc
     #  a = nshift+nocc+1
@@ -232,12 +224,72 @@ def dipoleanalysis(dipole,dmat,occlist,virtlist,nshift,odbg=sys.stderr,debug=Fal
     #else:
     res = numpy.zeros(tot,dtype=numpy.complex128)
     count = 0
-    for i in shortl:
+    for i in occlist:
       for j in virtlist:    
          res[count] = dipole[i+nshift-1,j+nshift-1]*dmat[j+nshift-1,i+nshift-1] + dipole[j+nshift-1,i+nshift-1]*dmat[i+nshift-1,j+nshift-1]
          count +=1
     return res
+#######################################################################
+class dipole_base():
+    def __init__(self,Vminus,Cmat,dipole_ao,occlist,virtlist,nshift,nocc,mobasis=True,odbg=sys.stderr,debug=False):
+        self.__Cmat = Cmat
+        self.__Cinv = None
+        self.__Vminus = Vminus
+        self.__Vplus  = None
+        self.__occlist = occlist[1:]
+        self.__header = occlist[0]
+        self.__virtlist = virtlist
+        self.__nshift =nshift
+        self.__mobas = mobasis
+        self.__nocc = nocc
+        self.__dipole = None
+        self.__dipole_mo = None
+        if not mobasis:
+        #     if not numpy.isinstance(Vsplus,numpy.ndarray):
+        #        raise Exception("check back-transformation mtx AO->orth")
+             try: 
+                res=numpy.linalg.inv(Cmat)
+             except numpy.linalg.LinAlgError:
+                 print("Error in numpy.linalg.inv of inputted matrix")
+             self.__Cinv = res
 
+        # on the orthonormal basis (either MOs or orth[AOs])
+        self.__dipole = numpy.matmul(numpy.conjugate(Vminus.T),numpy.matmul(dipole_ao,Vminus))
+        self.__dipole_mo = numpy.matmul(numpy.conjugate(Cmat.T),numpy.matmul(dipole_ao,Cmat))
+        #print("initialization\n")
+        if debug:
+          odbg.write("Selected occ. Mo: %s \n"% str(self.__occlist))
+          odbg.write("Selected virt. Mo: %s \n"% str(self.__virtlist))
+
+    def dipole(self):
+        return self.__dipole
+
+    def select_dipole(self,odbg=sys.stderr,debug=False):
+        nocc = self.__nocc
+        nshift = self.__nshift
+        header = self.__header
+        occl = self.__occlist
+        virtl = self.__virtlist
+        # the selection involve MOs so it's carried on the MO basis
+        res = dipole_selection(self.__dipole_mo,nshift,nocc,header,occl,virtl,odbg,debug)
+        if not self.__mobas: 
+           # two step transformation MO -> AO -> orth[AO]
+           res = numpy.matmul(numpy.conjugate(self.__Cinv.T),numpy.matmul(res,self.__Cinv))
+           
+           res = numpy.matmul(numpy.conjugate(self.__Vminus.T),numpy.matmul(res,self.__Vminus))
+        return res
+    def weighted_dipole(self,dmat,odbg=sys.stderr,debug=False):
+        nshift = self.__nshift
+        occl = self.__occlist
+        virtl = self.__virtlist
+        # from input on the propagation basis
+        if not self.__mobas:
+           # two step transformation PROP_bas -> AO -> MO
+           dmat = numpy.matmul(self.__Vminus,numpy.matmul(dmat,numpy.conjugate(self.__Vminus.T)))
+           dmat = numpy.matmul(self.__Cinv,numpy.matmul(dmat,numpy.conjugate(self.__Cinv.T)))
+        val = dipoleanalysis(self.__dipole_mo,dmat,occl,virtl,nshift,odbg,debug)
+        return val 
+          
 #######################################################################
 
 funcswitcher = {
@@ -253,19 +305,17 @@ funcswitcher = {
 #######################################################################
 
 def mo_fock_mid_forwd_eval(bertha, Dp_ti, fock_mid_ti_backwd, i, delta_t,
-    dipole_z, C, C_inv, S, ndim, debug=False, odbg=sys.stderr, 
-    impulsefunc="kick", fmax=0.0001, w=0.0, t0=0.0, sigma=0.0, propthresh=1.0e-6,loewdin=False): 
+    dipole_z, Vminus, ovapm, ndim, debug=False, odbg=sys.stderr, 
+    impulsefunc="kick", fmax=0.0001, w=0.0, t0=0.0, sigma=0.0, propthresh=1.0e-6): 
    #TODO clean the arg list
    func = funcswitcher.get(impulsefunc, lambda: kick)
 
    fock_inter = numpy.zeros((ndim,ndim),dtype=numpy.complex128)   
    
-   # input: Dp_ti is in MO basis 
+   # input: Dp_ti is in propagation basis
    # transform in the AO  basis to get Fock
-   if loewdin:
-       D_ti = numpy.matmul(C_inv,numpy.matmul(Dp_ti,numpy.conjugate(C_inv.T)))
-   else:
-       D_ti = numpy.matmul(C,numpy.matmul(Dp_ti,numpy.conjugate(C.T)))
+   D_ti = numpy.matmul(Vminus,numpy.matmul(Dp_ti,numpy.conjugate(Vminus.T)))
+
    k = 1
    t_arg = numpy.float_(i) * numpy.float_ (delta_t)
    fockmtx = bertha.get_realtime_fock(D_ti.T)
@@ -282,12 +332,8 @@ def mo_fock_mid_forwd_eval(bertha, Dp_ti, fock_mid_ti_backwd, i, delta_t,
    dens_test = numpy.zeros((ndim,ndim),dtype=numpy.complex128)
    fock_guess = 2.00*fock_ti_ao - fock_mid_ti_backwd
    while True:
-        if loewdin:
-           fockp_guess = numpy.matmul(numpy.conjugate(C_inv.T), \
-                   numpy.matmul(fock_guess,C_inv))
-        else:  
-           fockp_guess = numpy.matmul(numpy.conjugate(C.T), \
-                   numpy.matmul(fock_guess,C))
+        fockp_guess = numpy.matmul(numpy.conjugate(Vminus.T), \
+                numpy.matmul(fock_guess,Vminus))
 
         u = exp_opmat(fockp_guess,delta_t,debug,odbg)
 
@@ -308,10 +354,8 @@ def mo_fock_mid_forwd_eval(bertha, Dp_ti, fock_mid_ti_backwd, i, delta_t,
         tmpd = numpy.matmul(Dp_ti,numpy.conjugate(u.T))
         Dp_ti_dt = numpy.matmul(u,tmpd)
         #backtrasform Dp_ti_dt
-        if loewdin:
-           D_ti_dt = numpy.matmul(C_inv,numpy.matmul(Dp_ti_dt,numpy.conjugate(C_inv.T)))
-        else:
-           D_ti_dt = numpy.matmul(C,numpy.matmul(Dp_ti_dt,numpy.conjugate(C.T)))
+        D_ti_dt = numpy.matmul(Vminus,numpy.matmul(Dp_ti_dt,numpy.conjugate(Vminus.T)))
+        
         #build the correspondig Fock , fock_ti+dt
         
         pulse = func (fmax, w, t_arg + delta_t, t0, sigma)
@@ -338,7 +382,7 @@ def mo_fock_mid_forwd_eval(bertha, Dp_ti, fock_mid_ti_backwd, i, delta_t,
                   odbg.write(" Converged after %i interpolations\n" % (k))
                   odbg.write("   i = %i" % i)
                   odbg.write("   norm of D_ti_dt_(%i)-D_ti_dt(%i) : %.8f\n" % (k,k-1,norm_f))
-                tr_dt = numpy.trace(numpy.matmul(S,D_ti_dt))
+                tr_dt = numpy.trace(numpy.matmul(ovapm,D_ti_dt))
                 break
 
         dens_test = numpy.copy(D_ti_dt)
