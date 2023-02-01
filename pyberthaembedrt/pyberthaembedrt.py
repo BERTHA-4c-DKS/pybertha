@@ -186,7 +186,7 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
         ndim, debug, Dp_ti, dip_list, ene_list, weight_list=None, 
         select="-2 ; 0 & 0"):
   
-    fock_mid_tmp = rtutil.mo_fock_mid_forwd_eval(bertha, numpy.copy(D_ti), \
+    fock_mid_tmp,D_ti_dt = rtutil.mo_fock_mid_forwd_eval(bertha, numpy.copy(D_ti), \
             fock_mid_backwd, j, numpy.float_(dt), dip_mat, Vminus, ovapm, \
             ndim, debug, fo, pulse, pulseFmax, pulsew, t0, pulseS, propthresh)
     
@@ -217,9 +217,9 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
     ##backtransform Dp_ti_dt
     #D_ti_dt=numpy.matmul(C,numpy.matmul(Dp_ti_dt,numpy.conjugate(C.T)))
     if debug:
-      fo.write('  Trace of D_ti_dt %.8f\n' % numpy.trace(Dp_ti_dt).real)
+      fo.write('  Trace of D_ti_dt %.8f\n' % numpy.trace(Dp_ti_dt[0]).real)
     #dipole expectation for D_ti_dt
-    dip_list.append(numpy.trace(numpy.matmul(dip_mat,D_ti_dt)))
+    dip_list.append(numpy.trace(numpy.matmul(dip_mat,D_ti_dt[0])))
 
     if (pulse == "analytic"):
         molist = select.split("&")
@@ -245,8 +245,8 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
     # update D_ti and Dp_ti for the next step
     # message for debug
     # fo.write('here I update the matrices Dp_ti and D_ti\n')
-    D_ti = numpy.copy(D_ti_dt)
-    Dp_ti = numpy.copy(Dp_ti_dt)
+    D_ti = numpy.copy(D_ti_dt[0])
+    Dp_ti = numpy.copy(Dp_ti_dt[1])
 
     if debug:
       fo.write('  Trace of Dp_ti %.8f\n' % numpy.trace(Dp_ti).real)
@@ -806,7 +806,7 @@ def normal_run(pberthaopt, args):
     print("CHECK")
     print("C dim : %i,%i\n" % (C.shape[0],C.shape[1]))
     
-    fock_mid_init = rtutil.mo_fock_mid_forwd_eval(bertha,Da,fockm,0,numpy.float_(dt),\
+    fock_mid_init,D_t1 = rtutil.mo_fock_mid_forwd_eval(bertha,Da,fockm,0,numpy.float_(dt),\
             dip_mat,Vminus,ovapm,ndim, debug, fo, args.pulse, args.pulseFmax, args.pulsew, args.t0, args.pulseS, 
             args.propthresh)
     
@@ -823,7 +823,7 @@ def normal_run(pberthaopt, args):
     
     
     if debug:
-      diff = D_t1 - Da 
+      diff = D_t1[0] - Da 
       mdiff = numpy.max(diff)
       fo.write("Max diff density: %.12e %.12e \n"%(mdiff.real, mdiff.imag))
     
@@ -840,12 +840,12 @@ def normal_run(pberthaopt, args):
           weight_list.append(res)            
     if debug:                              
       fo.write("Dipole: %.12e\n"%(numpy.trace(numpy.matmul(Da,dip_mat))).real)
-      fo.write("Dipole: %.12e\n"%(numpy.trace(numpy.matmul(D_t1,dip_mat))).real)
+      fo.write("Dipole: %.12e\n"%(numpy.trace(numpy.matmul(D_t1[0],dip_mat))).real)
     
     if debug:
-      tfock = numpy.trace(numpy.matmul(D_t1,fockm))
+      tfock = numpy.trace(numpy.matmul(D_t1[0],fockm))
       fo.write("Trace fock*density t1: %.12e, %.12e\n"%(tfock.real, tfock.imag))
-      trace_ds=numpy.trace(numpy.matmul(D_t1,ovapm))
+      trace_ds=numpy.trace(numpy.matmul(D_t1[0],ovapm))
       fo.write(" Traceds: %.12e %.12ei\n" % (trace_ds.real,trace_ds.imag))
     
     Ndip_z=0.0
