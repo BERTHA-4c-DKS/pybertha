@@ -96,6 +96,13 @@ def scfiterations (args, maxiter, jk, H, Cocc, func, wfn, D, vemb, E, Eold, \
             jk.C_left_add(Cocc)
             jk.compute()
             jk.C_clear()
+            # add a potential from a static field
+            if args.static_field:
+                fmax = args.fmax 
+                fdir = args.fdir
+                H.axpy(-fmax,dipole[fdir])
+                print("fdir = %4.16f "%(fdir))
+                print("fmax = %4.16f "%(fmax))
        
             # Build Fock matrix
             F = H.clone()
@@ -124,12 +131,6 @@ def scfiterations (args, maxiter, jk, H, Cocc, func, wfn, D, vemb, E, Eold, \
             ####### 
             F.axpy(1.0, V)
             F.axpy(1.0, vemb)
-            if args.static_field:
-                fmax = args.fmax 
-                fdir = args.fdir
-                F.axpy(fmax,dipole[fdir])
-                print("fdir = %4.16f "%(fdir))
-                print("fmax = %4.16f "%(fmax))
 
             twoel = 2.00*np.trace(np.matmul(np.array(D),np.array(jk.J()[0])))
             # DIIS error build and update
@@ -139,10 +140,10 @@ def scfiterations (args, maxiter, jk, H, Cocc, func, wfn, D, vemb, E, Eold, \
        
             diis.add(F, diis_e)
        
-            # SCF energy and update
+            # SCF energy and update, if args.static_field=True 
+            # 2.0*H.vector_dot(D) include the contribution from the one-el operator -mu*Field_static
             SCF_E = 2.0*H.vector_dot(D) + Enuc + Exc + twoel
-            if args.static_field:
-                     SCF_E = SCF_E + 2.0*np.trace(np.matmul(np.array(dipole[fdir]),np.array(D)))*fmax 
+         
        
             dRMS = diis_e.rms()
        
