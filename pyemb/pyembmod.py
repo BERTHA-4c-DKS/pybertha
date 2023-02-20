@@ -63,9 +63,9 @@ def finalize_stdout_redirect (fname, writef=1):
     if writef != 0:
         fp = None
         if writef == 1:
-          fp = open(psioufname, "w")
+          fp = open(fname, "w")
         elif writef == 2:
-          fp = open(psioufname, "a")
+          fp = open(fname, "a")
        
         for line in captured_stdout:
           fp.write(line)
