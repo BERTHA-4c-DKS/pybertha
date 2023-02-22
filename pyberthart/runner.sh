@@ -14,3 +14,5 @@ export PYBERTHA_MOD_PATH=$BerthaRootPath"pybertha/pyemb;"$BerthaRootPathxcfun"xc
 export LD_LIBRARY_PATH=${PWD%/*}"/lib":$LD_LIBRARY_PATH
 
 python ./pyberthart.py  --select "-99; 109; 110; 111; 112; 113; 114; 115; 116 & 117;118; 119;120; 121;122" --berthamaxit 500 -d -m 0.08 -g geom.xyz  --restartfile restart_rt.json  --dumprestartnum 3000 --direction 2 --wrapperso $BerthaRootPath/pybertha/lib/bertha_wrapper.so --iterations -T 500.0  --thresh 1.0e-16 --pulseFmax 0.00005 --pulse analytic --obs "Pb:dyall_2zp,Cl:dyall_2zp" --fittset "Pb:dyall_2zp_autoGENA3spdfg+,Cl:dyall_2zp_autoGENA3spdfg+" --convertlengthunit=1.88972598 -j $BerthaRootPath/berthainputbasis/fullsets.json  1> Pb_res.out 2> Pb_res.err 
+
+python /home/redo/BERHTHA/Exanalysis/misc/pade/pade_transform.py --limit 20000 --gamma 1.0e-3 -f dipole.txt --dw 0.002 --fmin 1.5 --frequency 7.5 -o zz_w.txt > pade.txt
