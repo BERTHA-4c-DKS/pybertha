@@ -63,9 +63,9 @@ def finalize_stdout_redirect (fname, writef=1):
     if writef != 0:
         fp = None
         if writef == 1:
-          fp = open(psioufname, "w")
+          fp = open(fname, "w")
         elif writef == 2:
-          fp = open(psioufname, "a")
+          fp = open(fname, "a")
        
         for line in captured_stdout:
           fp.write(line)
@@ -334,15 +334,16 @@ class pyemb:
         f_nad={'xc' : 'lda', 'kin' : 'tfk'}, thresh=1.0e-8):
 
         if isinstance (param, float) or \
-            isinstance (param, list):
+            isinstance(param, tuple):
 
-            if isinstance (param, list):
+            if isinstance(param,tuple) and len(param) > 1:
+                print(param)
                 if not all(isinstance(x, int) for x in param):
-                    raise TypeError("param (parameter 1) must be a float or a list of integer")
+                    raise TypeError("param (parameter 1) must be a tuple of integers") #psi4 case
 
-            self.__acc_int = param      # can be a list of integers or a float
+            self.__acc_int = param      # a tuple or a float
         else:
-            raise TypeError("param (parameter 1) must be a float or a list of integer")
+            raise TypeError("param (parameter 1) must be a  float/tuple of integers")
 
         self.set_grid_type(gtype)
         self.set_enviro_func(func)
@@ -464,12 +465,12 @@ class pyemb:
             if self.__grid_type == 1 or self.__grid_type > 3:
               raise TypeError("gridtype must be 2 or 3 if jobtype is " + self.__jobtype)
 
-            if not isinstance (self.__acc_int, list):
-              raise TypeError("param (parameter 1) must be a list of integer if jobtype " +
+            if not isinstance (self.__acc_int, tuple):
+              raise TypeError("param (parameter 1) must be a tuple of integer if jobtype " +
                self.__jobtype )
 
             if not all(isinstance(x, int) for x in self.__acc_int):
-              raise TypeError("param (parameter 1) must be a list of integer when jobtype " + 
+              raise TypeError("param (parameter 1) must be a tuple of integer when jobtype " + 
                        self.__jobtype )
 
             init_stdout_redirect ()

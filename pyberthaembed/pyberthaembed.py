@@ -32,8 +32,9 @@ class pyberthaembedoption:
     inputfile: str = "input.inp"
     fittfile: str = "fitt2.inp"
     gtype: int = 2
+    jobtype : str = 'adf'
     nofde: bool = True
-    param: float = 4.0
+    param: tuple = (4.0,)   # these are grid parameters, i.e grid accuracy in adf / radial and angular point number in psi4
     basis: str = 'AUG/ADZP'
     excfuncenv : str = "BLYP"
     static_field : bool = False
@@ -211,9 +212,9 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
     if not os.path.isfile(envirofname):
         raise Exception("File ", envirofname , " does not exist")
 
-    embfactory = pyembmod.pyemb(activefname,envirofname,'adf') #jobtype='adf' is default de facto
-    #grid_param =[50,110] # psi4 grid parameters (see Psi4 grid table)
-    #embfactory.set_options(param=grid_param, \
+    embfactory = pyembmod.pyemb(activefname,envirofname,pberthaopt.jobtype) #jobtype='adf' is default
+    #grid_param =[50,110] # psi4 grid parameters (see Psi4 grid table), can be set using args.grid_param
+    
     embfactory.set_options(param=pberthaopt.param, \
        gtype=pberthaopt.gtype, basis=pberthaopt.basis) 
     embfactory.set_enviro_func(pberthaopt.excfuncenv) 
@@ -680,6 +681,10 @@ if __name__ == "__main__":
             type=str, default="BLYP")
     parser.add_argument("--grid_opts", help="set gridtype (default: 2)",
         required=False, type=int, default=2)
+    parser.add_argument("--grid_param", help="set grid parameter i.e grid accuracy in adf (default: [4.0,None])",
+        required=False, type=str, default='4.0,')
+    parser.add_argument("--jobtype", help="set the adf/psi4 embedding job (default = adf)",
+        required=False, type=str, default="adf")
     parser.add_argument("--gridfname", help="set grid filename (default = grid.dat)",
         required=False, type=str, default="grid.dat")
     parser.add_argument("-l", "--linemb", help="Linearized embedding on: the outer loop is skipped", required=False,
@@ -788,9 +793,24 @@ if __name__ == "__main__":
     pberthaopt.activefile = args.geom_act
     pberthaopt.envirofile = args.geom_env
     pberthaopt.gtype = args.grid_opts
+    pberthaopt.jobtype = args.jobtype
     pberthaopt.thresh_conv = args.embthresh
     pberthaopt.basis = args.env_obs
     pberthaopt.excfuncenv = args.env_func
+
+    gparam = args.grid_param.split(",")
+    if args.jobtype == 'adf':
+      gparam = [float(m) for m in gparam]
+      if not isinstance(args.gparam[0],float):
+         raise TypeError("adf grid(param) accuracy must be float")
+      pberthaopt.param = gparam[0]
+    else:
+      gparam = [int(m) for m in gparam]
+      pberthaopt.param = tuple(gparam)
+    
+    print("print grid param")
+    print(gparam)
+
 
     if args.cube:
         pberthaopt.densityzero = "density0.cube"

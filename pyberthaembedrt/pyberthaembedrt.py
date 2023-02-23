@@ -32,7 +32,7 @@ from pathlib import Path
 
 def get_json_data(args, j, niter, ndim, ene_list, \
         dip_list, D_ti, fock_mid_backwd, dip_mat, C, \
-        C_inv, ovapm, Dp_ti, weight_list):
+        Vminus, ovapm, Dp_ti, weight_list):
 
     json_data = {}
     for arg in vars(args):
@@ -186,7 +186,7 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
         ndim, debug, Dp_ti, dip_list, ene_list, weight_list=None, 
         select="-2 ; 0 & 0"):
   
-    fock_mid_tmp,D_ti_dt = rtutil.mo_fock_mid_forwd_eval(bertha, numpy.copy(D_ti), \
+    fock_mid_tmp,D_ti_dt = rtutil.mo_fock_mid_forwd_eval(bertha, numpy.copy(Dp_ti), \
             fock_mid_backwd, j, numpy.float_(dt), dip_mat, Vminus, ovapm, \
             ndim, debug, fo, pulse, pulseFmax, pulsew, t0, pulseS, propthresh)
     
@@ -217,7 +217,7 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
     ##backtransform Dp_ti_dt
     #D_ti_dt=numpy.matmul(C,numpy.matmul(Dp_ti_dt,numpy.conjugate(C.T)))
     if debug:
-      fo.write('  Trace of D_ti_dt %.8f\n' % numpy.trace(Dp_ti_dt[0]).real)
+      fo.write('  Trace of D_ti_dt %.8f\n' % numpy.trace(D_ti_dt[1]).real)
     #dipole expectation for D_ti_dt
     dip_list.append(numpy.trace(numpy.matmul(dip_mat,D_ti_dt[0])))
 
@@ -235,18 +235,18 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
             if (weight_list != None):
                 weight_list.append(res)
     if debug:
-      fo.write("Dipole: %.12e\n"%(numpy.trace(numpy.matmul(dip_mat,D_ti_dt)).real))
+      fo.write("Dipole: %.12e\n"%(numpy.trace(numpy.matmul(dip_mat,D_ti_dt[0])).real))
    
     #Energy expectation value at t = t_i_dt 
-    fockm_ti_dt = bertha.get_realtime_fock(D_ti_dt.T)
+    fockm_ti_dt = bertha.get_realtime_fock(D_ti_dt[0].T)
    
-    ene_list.append(numpy.trace(numpy.matmul(D_ti_dt,fockm_ti_dt)))
+    ene_list.append(numpy.trace(numpy.matmul(D_ti_dt[0],fockm_ti_dt)))
     
     # update D_ti and Dp_ti for the next step
     # message for debug
     # fo.write('here I update the matrices Dp_ti and D_ti\n')
     D_ti = numpy.copy(D_ti_dt[0])
-    Dp_ti = numpy.copy(Dp_ti_dt[1])
+    Dp_ti = numpy.copy(D_ti_dt[1])
 
     if debug:
       fo.write('  Trace of Dp_ti %.8f\n' % numpy.trace(Dp_ti).real)
@@ -483,8 +483,15 @@ def restart_run(pberthaopt, args):
     pberthaopt.activefile = json_data["geom_act"]
     pberthaopt.envirofile = json_data["geom_env"]
     pberthaopt.gtype = json_data["grid_opts"]
+    pberthaopt.jobtype = json_data["job_type"]
     pberthaopt.basis = json_data["env_obs"]
     pberthaopt.excfuncenv = json_data["env_func"]
+    if pberthaopt.jobtype == 'adf':
+      if not isinstance(json_data["grid_param"][0],float):
+         raise TypeError("adf grid(param) accuracy must be float")
+      pberthaopt.param = json_data["grid_param"][0]
+    else:
+      pberthaopt.param = json_data["grid_param"]
 
     molist = args.select.split("&")
     occlist = molist[0].split(";")
@@ -571,9 +578,8 @@ def restart_run(pberthaopt, args):
     
     import pyembmod
     # embfactory was missing here
-    embfactory = pyembmod.pyemb(activefname,envirofname,'adf') #jobtype='adf' is default de facto
+    embfactory = pyembmod.pyemb(activefname,envirofname,pberthaopt.jobtype) #jobtype='adf' is default de facto
     #grid_param =[50,110] # psi4 grid parameters (see Psi4 grid table)
-    #embfactory.set_options(param=grid_param, \
     embfactory.set_options(param=pberthaopt.param, \
        gtype=pberthaopt.gtype, basis=pberthaopt.basis) 
     embfactory.set_enviro_func(pberthaopt.excfuncenv)
@@ -618,9 +624,8 @@ def normal_run(pberthaopt, args):
     if not os.path.isfile(envirofname):
         raise Exception("File ", envirofname , " does not exist")
 
-    embfactory = pyembmod.pyemb(activefname,envirofname,'adf') #jobtype='adf' is default de facto
+    embfactory = pyembmod.pyemb(activefname,envirofname,pberthaopt.jobtype) #jobtype='adf' is default de facto
     #grid_param =[50,110] # psi4 grid parameters (see Psi4 grid table)
-    #embfactory.set_options(param=grid_param, \
     embfactory.set_options(param=pberthaopt.param, \
        gtype=pberthaopt.gtype, basis=pberthaopt.basis) 
     embfactory.set_enviro_func(pberthaopt.excfuncenv)
@@ -704,11 +709,11 @@ def normal_run(pberthaopt, args):
        Vminus = rtutil.make_loewdin(ovapm) #correspond to S^{-1/2}
     else:
        Vminus = C
-    
-    if debug:
-      diff = test - numpy.eye((ndim),dtype=numpy.complex128)
-      mdiff = numpy.max(diff)
-      fo.write("  maxdiff is: %.12e %.12e\n"%(mdiff.real, mdiff.imag))
+
+    #if debug:
+    #  diff = test - numpy.eye((ndim),dtype=numpy.complex128)
+    #  mdiff = numpy.max(diff)
+    #  fo.write("  maxdiff is: %.12e %.12e\n"%(mdiff.real, mdiff.imag))
     
     if debug:
       test = numpy.matmul(numpy.conjugate(C.T),numpy.matmul(ovapm,C))
@@ -795,10 +800,10 @@ def normal_run(pberthaopt, args):
            dip_tilde =  dipoleobj.select_dipole()
 
         print(" Perturb with analytic kick ")
-        u0=rtutil.exp_opmat(dipz_mo,numpy.float_(-Amp),debug,fo)
+        u0=rtutil.exp_opmat(dip_tilde,numpy.float_(-Amp),debug,fo)
         Dp_init=numpy.matmul(u0,numpy.matmul(D_0,numpy.conjugate(u0.T)))
         #transform back Dp_int
-        Da=numpy.matmul(C,numpy.matmul(Dp_init,numpy.conjugate(C.T)))
+        Da=numpy.matmul(Vminus,numpy.matmul(Dp_init,numpy.conjugate(Vminus.T)))
         D_0=Dp_init
 
     print("Start first mo_fock_mid_forwd_eval ")
@@ -806,7 +811,7 @@ def normal_run(pberthaopt, args):
     print("CHECK")
     print("C dim : %i,%i\n" % (C.shape[0],C.shape[1]))
     
-    fock_mid_init,D_t1 = rtutil.mo_fock_mid_forwd_eval(bertha,Da,fockm,0,numpy.float_(dt),\
+    fock_mid_init,D_t1 = rtutil.mo_fock_mid_forwd_eval(bertha,D_0,fockm,0,numpy.float_(dt),\
             dip_mat,Vminus,ovapm,ndim, debug, fo, args.pulse, args.pulseFmax, args.pulsew, args.t0, args.pulseS, 
             args.propthresh)
     
@@ -828,7 +833,7 @@ def normal_run(pberthaopt, args):
       fo.write("Max diff density: %.12e %.12e \n"%(mdiff.real, mdiff.imag))
     
     dip_list.append(numpy.trace(numpy.matmul(Da,dip_mat)))
-    dip_list.append(numpy.trace(numpy.matmul(D_t1,dip_mat)))
+    dip_list.append(numpy.trace(numpy.matmul(D_t1[0],dip_mat)))
     if (args.pulse == "analytic"):
       if (occlist[0] != -2):
           # on the propagation basis
@@ -878,7 +883,7 @@ def normal_run(pberthaopt, args):
     
 
     return run_iterations_from_to (1, niter, bertha, embfactory, args, fock_mid_backwd, \
-            dt, dip_mat, Vminus,C, dipoleobj, ndim, debug, Dp_ti, dip_list, ene_list, \
+            dt, dip_mat, Vminus,C, dipoleobj, ovapm, ndim, debug, Dp_ti, dip_list, ene_list, \
             weight_list, fo, D_ti, occlist)
     
 ##########################################################################################
@@ -900,6 +905,10 @@ def main():
            type=str, default="geomB.xyz")
    parser.add_argument("--grid_opts", help="set gridtype (default: 2)",
            required=False, type=int, default=2)
+   parser.add_argument("--grid_param", help="set grid parameter i.e grid accuracy in adf (default: [4.0,])",
+       required=False, type=str, default='4.0,')
+   parser.add_argument("--jobtype", help="set the adf/psi4 embedding job (default = adf)",
+        required=False, type=str, default="adf")
    parser.add_argument("--act_obs", \
        help="Specify BERTHA (Active system) basisset \"atomname1:basisset1,atomname2:basisset2,...\"", \
        required=False, type=str, default="")
@@ -935,7 +944,7 @@ def main():
            type=str, default="ovap.txt")
    parser.add_argument("-s", "--dumpfiles", help="Dumpfile on, default is off", required=False,
            default=False, action="store_true")
-   parser.add_argument("-l", "--loewdin", help="Loewdin on, default is off", required=False,
+   parser.add_argument("--loewdin", help="Loewdin on, default is off", required=False,
            default=False, action="store_true")
    parser.add_argument("-m", "--dt", help="Specify dt to be used (default: 0.1)", required=False,
            default=0.1, type=numpy.float64)
@@ -1047,9 +1056,21 @@ def main():
       pberthaopt.activefile = args.geom_act
       pberthaopt.envirofile = args.geom_env
       pberthaopt.gtype = args.grid_opts
+      pberthaopt.jobtype = args.jobtype
       pberthaopt.basis = args.env_obs
       pberthaopt.excfuncenv = args.env_func
-
+      gparam = args.grid_param.split(",")
+      if args.jobtype == 'adf':
+        gparam = [float(m) for m in gparam]
+        if not isinstance(gparam[0],float):
+           raise TypeError("adf grid(param) accuracy must be float")
+        pberthaopt.param = gparam[0]
+      else:
+        gparam = [int(m) for m in gparam]
+        pberthaopt.param = tuple(gparam)
+      
+      print("print grid param")
+      print(gparam)
    if (not args.restart):
        if args.totaltime < 0.0:
            args.totaltime = 1.0

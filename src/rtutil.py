@@ -389,7 +389,58 @@ def mo_fock_mid_forwd_eval(bertha, Dp_ti, fock_mid_ti_backwd, i, delta_t,
         k += 1
 
    return fock_inter,(D_ti_dt,Dp_ti_dt)
+##################################################################
+class Fock_helper():
+    def __init__(self,bertha,dipole_mtx, Vminus,pulse_opts=None): 
+        self.__bbase  = bertha
+        self.__Vminus = Vminus
+        self.__dipmat = dipole_mtx
+        self.__field  = None
+        self.__fmax   = None
+        self.__wfreq  = None
+        self.__t0     = None
+        self.__sigma  = None
 
+        # field int
+        if pulse_opts is not None:
+          self.__fmax   = pulse_opts['fmax']
+          self.__wfreq  = pulse_opts['freq']
+          self.__t0     = pulse_opts['t0']
+          self.__sigma  = pulse_opts['sigma']
+          self.__field  = funcswitcher.get(pulse_opts['pulsefunc'], lambda: kick)
+        if self.__field is None:
+           raise Exception("Check excitation field")
+
+    def Fock(self,Dmat,t_arg,basis='AO'):
+         # to avoid windowing effect the pulse should be zero at t=0
+         pulse = self.__field(self.__fmax, self.__wfreq, t_arg,\
+                        self.__t0, self.__sigma)
+        
+         fock_mtx = bertha.get_realtime_fock(Dmat.T)
+         #dipole approximation
+         fock_mtx -= self.__dipmat*pulse
+         if basis == 'MO':
+             C = self.__Vminus
+             fock_mtx = np.matmul(np.conjugate(C.T),np.matmul(fock_mtx,C))
+         return fock_mtx
+
+
+class realtime_base():
+   def __init__(self,bertha,dipole_mtx, Vminus, ovapm, ndim, debug=False, odbg=sys.stderr,  
+            impulsefunc="kick", fmax=0.0001, w=0.0, t0=0.0, sigma=0.0, propthresh=1.0e-6,pc_thresh=None): 
+       self.__bbase   = bertha # bertha base object
+       self.__dip_mat = dipole_mtx
+       self.__Vminus  = Vminus
+       self.__ovapm   = ovapm
+       self.__ndim    = ndim
+       self.__debug   = debug
+       self.__odbg    = odbg
+       self.__propthresh = proptrash
+       self.__pc_thresh = pc_thresh
+       self.__rt_iter = 0
+       # pack field paramenters into a dict
+       self.__pulse_dict = {'pulsefunc' : pulsefunc, 'fmax' : fmax, 'freq' :w , 't0' : t0, 'sigma' : sigma}
+       
 ##################################################################
 def make_loewdin2(O):
 
