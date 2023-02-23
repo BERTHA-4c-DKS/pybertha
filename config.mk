@@ -11,7 +11,7 @@ PROFILE=no
 
 #is used only by serial
 #use Intel compiler
-USEINTEL=no
+USEINTEL=yes
 
 #LIBXC
 LIBXC=no
@@ -63,18 +63,26 @@ ifeq ($(FORBGQ),no)
     #static 
     #BLASLAPACK =  -Wl,--start-group $(MKLROOT)/lib/intel64/libmkl_intel_lp64.a $(MKLROOT)/lib/intel64/libmkl_sequential.a \
     #	$(MKLROOT)/lib/intel64/libmkl_core.a -Wl,--end-group -lpthread
+    
+    # sequential
+    #BLASLAPACK =  ${MKLROOT}/lib/intel64/libmkl_blas95_lp64.a ${MKLROOT}/lib/intel64/libmkl_lapack95_lp64.a -L${MKLROOT}/lib/intel64 \
+    # 		  -lmkl_intel_lp64 -lmkl_sequential -lmkl_core -lpthread -lm -ldl
+
+    # parallel
+    BLASLAPACK =  ${MKLROOT}/lib/intel64/libmkl_blas95_lp64.a ${MKLROOT}/lib/intel64/libmkl_lapack95_lp64.a -L${MKLROOT}/lib/intel64 \
+    		  -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread -lm -ldl
+		  
+    INCLUDE += -I${MKLROOT}/include/intel64/lp64 -I"${MKLROOT}/include"
 
     #BLASLAPACK = -llapack -lblas
-    BLASLAPACK =  -mkl
+    #BLASLAPACK =  -mkl
     
-    INCLUDE = 
-
     ifeq ($(DEBUG),yes)
       FFLAGS += -r8 -check all -check noarg_temp_created -traceback -warn all -O0 -g -132
       CFLAGS += -D_FILE_OFFSET_BITS=64 -O0 -g
     else
       #FFLAGS += -r8 -check all -check noarg_temp_created -traceback -warn all -O2 -132 
-      FFLAGS += -r8 -warn all -O3 -132 -mkl
+      FFLAGS += -r8 -warn all -O3 -132 $(INCLUDE)
       #FFLAGS += -C -O0 -r8 -warn all -132 -I./$(MODIR)
       CFLAGS += -D_FILE_OFFSET_BITS=64 -O3
     endif
