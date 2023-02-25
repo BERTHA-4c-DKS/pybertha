@@ -801,7 +801,7 @@ if __name__ == "__main__":
     gparam = args.grid_param.split(",")
     if args.jobtype == 'adf':
       gparam = [float(m) for m in gparam]
-      if not isinstance(args.gparam[0],float):
+      if not isinstance(gparam[0],float):
          raise TypeError("adf grid(param) accuracy must be float")
       pberthaopt.param = gparam[0]
     else:
