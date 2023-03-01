@@ -45,3 +45,7 @@ python psi4embedrt.py -gA H2O.xyz  -gB environment_cut2.xyz  -d --grid_opts 2 -a
 
 $ conda activate p4env_oldversion
 
+fnt_adfjob branch:
+
+- perform a freeze-thaw optmization in order to relax the environment density. So that the environment density is polarized and
+  then inputted in the rt-embedding 
