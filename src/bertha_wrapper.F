@@ -340,7 +340,7 @@ c          print *, "Here " , ndim, nocc
         excfit=0.0
 
 c        call dftinit_fit(excfit,igrid,expo,v,nfitt,fitcase,zz,a)
-        calldftinit_fit_quadpregrid(excfit,igrid,expo,v,nfitt,fitcase,zz)
+        call dftinit_fit_quadpregrid(excfit,igrid,expo,v,nfitt,fitcase,zz)
 
         v=v+zz
 
@@ -448,7 +448,7 @@ c        call dftinit_fit(excfit,igrid,expo,v,nfitt,fitcase,zz,a)
         timetomt2 = walltime ()
         ctimetomt2 = cputime ()
 c        call dftinit_fit(excfit,igrid,expo,v,nfitt,fitcase,zz,a)
-        calldftinit_fit_quadpregrid(excfit,igrid,expo,v,nfitt,fitcase,zz)
+        call dftinit_fit_quadpregrid(excfit,igrid,expo,v,nfitt,fitcase,zz)
         timetomt2 = walltime () - timetomt2
         ctimetomt2 = cputime () - ctimetomt2
 
@@ -1003,7 +1003,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       a = 0
       excfit = 0.0
 c      call dftinit_fit(excfit,igrid,expo,v,nfitt,fitcase,zz,a)
-      calldftinit_fit_quadpregrid(excfit,igrid,expo,v,nfitt,fitcase,zz)
+      call dftinit_fit_quadpregrid(excfit,igrid,expo,v,nfitt,fitcase,zz)
       v = zz + v
 ! Note that this is necessary to evaluate the TOTAL energy
 
