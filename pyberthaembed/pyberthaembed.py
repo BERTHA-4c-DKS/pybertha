@@ -682,7 +682,7 @@ if __name__ == "__main__":
     parser.add_argument("--grid_opts", help="set gridtype (default: 2)",
         required=False, type=int, default=2)
     parser.add_argument("--grid_param", help="set grid parameter i.e grid accuracy in adf (default: [4.0,None])",
-        required=False, type=str, default='4.0,')
+        required=False, type=str, default='4.0')
     parser.add_argument("--jobtype", help="set the adf/psi4 embedding job (default = adf)",
         required=False, type=str, default="adf")
     parser.add_argument("--gridfname", help="set grid filename (default = grid.dat)",

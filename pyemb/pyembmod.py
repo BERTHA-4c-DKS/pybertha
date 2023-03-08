@@ -585,7 +585,7 @@ class pyemb:
             densgrad = GridFunctionFactory.newGridFunction(self.__agrid, numpy.ascontiguousarray(density[:, 1:4],dtype=numpy.float_))
             denshess = GridFunctionFactory.newGridFunction(self.__agrid, numpy.ascontiguousarray(density[:, 4:10],dtype=numpy.float_))  
             self.__isolated_dens_enviro =  GridFunctionContainer([dens_gf_enviro, densgrad, denshess])
-
+            print("env num el. %i\n" % self.__isolated_dens_enviro[0].integral())
             self.__isolated_elpot_enviro = GridFunctionFactory.newGridFunction(self.__agrid,numpy.ascontiguousarray(elpot_enviro,dtype=numpy.float_), gf_type="potential") 
 
             os.close(stdout_fileno)
