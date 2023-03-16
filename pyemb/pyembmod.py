@@ -131,6 +131,15 @@ class GridDensityFactory():
       self.__lpos = None # back-compatibility
       self.__nbas = None #
       self.phi_builder()
+
+  def lpos(self):
+      return self.__lpos
+  def nbf(self):
+      return self.__nbas
+  def phi(self):
+      return self.__phi
+  def points(self):
+      return self.__points
       
   def phi_builder(self):
       
