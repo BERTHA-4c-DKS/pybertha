@@ -149,9 +149,11 @@ class GridDensityFactory():
       ws=psi4.core.Vector.from_array(self.__points[:,3])
 
       delta = 1.0e-2 #private parameter 
- 
-      basis = psi4.core.BasisSet.build(self.__mol, 'ORBITAL',self.__basisset,puream=-1)
-      basis_extents = psi4.core.BasisExtents(basis,delta)
+      if isinstance(self.__basisset,str): 
+          basisobj = psi4.core.BasisSet.build(self.__mol, 'ORBITAL',self.__basisset,puream=-1)
+      else:
+          basisobj = self.__basisset
+      basis_extents = psi4.core.BasisExtents(basisobj,delta)
  
       blockopoints = psi4.core.BlockOPoints(xs, ys, zs, ws,basis_extents)
       npoints = blockopoints.npoints()
@@ -162,9 +164,9 @@ class GridDensityFactory():
       #print("Local basis function mapping")
       #print(lpos) 
  
-      self.__nbas = basis.nbf() #number of basis functions
+      self.__nbas = basisobj.nbf() #number of basis functions
  
-      funcs = psi4.core.BasisFunctions(basis,npoints,self.__nbas)
+      funcs = psi4.core.BasisFunctions(basisobj,npoints,self.__nbas)
  
       funcs.compute_functions(blockopoints)
  
@@ -436,7 +438,7 @@ class pyemb:
                              points[idx,:]=raw
                              idx += 1
                     except IOError:
-                       raise IOError("File grid.dat does not exist")
+                       raise IOError("File gridname does not exist")
                 
                     self.__agrid=pyadf.customgrid(mol=m_tot,coords=numpy.ascontiguousarray(points[:,:3], \
                          dtype=numpy.float_),weights=numpy.ascontiguousarray(points[:,3],dtype=numpy.float_))
@@ -524,7 +526,7 @@ class pyemb:
 
             if self.__grid_type == -99:
                idx = 0
-               with open("grid.dat","r") as fgrid:
+               with open(self.__gridfilename,"r") as fgrid:
                 nlines = int(next(fgrid))
                 gridbin = numpy.zeros((nlines,4),dtype=numpy.float_)
                 for line in fgrid:
@@ -594,7 +596,7 @@ class pyemb:
             densgrad = GridFunctionFactory.newGridFunction(self.__agrid, numpy.ascontiguousarray(density[:, 1:4],dtype=numpy.float_))
             denshess = GridFunctionFactory.newGridFunction(self.__agrid, numpy.ascontiguousarray(density[:, 4:10],dtype=numpy.float_))  
             self.__isolated_dens_enviro =  GridFunctionContainer([dens_gf_enviro, densgrad, denshess])
-            print("env num el. %i\n" % self.__isolated_dens_enviro[0].integral())
+            print("env num el. %.5f\n" % self.__isolated_dens_enviro[0].integral())
             self.__isolated_elpot_enviro = GridFunctionFactory.newGridFunction(self.__agrid,numpy.ascontiguousarray(elpot_enviro,dtype=numpy.float_), gf_type="potential") 
 
             os.close(stdout_fileno)
