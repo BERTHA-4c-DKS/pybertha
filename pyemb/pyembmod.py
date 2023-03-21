@@ -181,6 +181,8 @@ class GridDensityFactory():
       return rho
 
   def from_D(self,D,ovap): # to be tested
+      D_dot_ovap = numpy.matmul(D,ovap)
+      ndocc = int(numpy.trace(D_dot_ovap)) 
       temp=numpy.matmul(ovap,numpy.matmul(D.real,ovap))
       try:
         eigvals,eigvecs=scipy.linalg.eigh(temp,ovap,eigvals_only=False)
@@ -190,7 +192,7 @@ class GridDensityFactory():
       idx = eigvals.argsort()[::-1]
       eigvals = eigvals[idx]
       eigvecs = eigvecs[:,idx]
-      MO = numpy.matmul(self.__phi,eigvecs[:,:self.__ndocc])
+      MO = numpy.matmul(self.__phi,eigvecs[:,:ndocc])
       MO_dens = numpy.square(MO)
       rho = numpy.einsum('pm->p',MO_dens)
       return rho
