@@ -88,7 +88,7 @@ def scfiterations (args, maxiter, jk, H, Cocc, func, wfn, D, vemb, E, Eold, \
 
     #outer loop
     for OUT_ITER in range(0,maxiter):
-        
+        D_ext = D # density -> Vcx[D] 
         #inner loop
         for SCF_ITER in range(1, maxiter + 1):
     
@@ -154,9 +154,9 @@ def scfiterations (args, maxiter, jk, H, Cocc, func, wfn, D, vemb, E, Eold, \
             print("   Pz = %1.5E"%(diptmp))
             
             if (abs(SCF_E - Eold) < E_conv) and (dRMS < D_conv):
-                diffD= D.np-Dold
-                norm_D=np.linalg.norm(diffD,'fro')
-                print("norm_D at OUT_ITER(%i): %.12f\n" % (OUT_ITER,norm_D))
+                #diffD= D.np-Dold
+                #norm_D=np.linalg.norm(diffD,'fro')
+                #print("norm_D at OUT_ITER(%i): %.12f\n" % (OUT_ITER,norm_D))
                 break
        
             Eold = SCF_E
@@ -171,7 +171,7 @@ def scfiterations (args, maxiter, jk, H, Cocc, func, wfn, D, vemb, E, Eold, \
                 psi4.core.clean()
                 raise Exception("Maximum number of SCF cycles exceeded.\n")
             #end inner loop
-        
+        """
         if ( ((not args.nosscf) and (OUT_ITER > 1)) and (not args.nofde) ) :
              
              diffv= vemb_in - vemb.np
@@ -183,7 +183,7 @@ def scfiterations (args, maxiter, jk, H, Cocc, func, wfn, D, vemb, E, Eold, \
              else:
                 print("norm_D : %.12f\n" % norm_D)
                 print("norm_v : %.12f\n" % norm_v)
-
+        """
         if ( (not args.nosscf) and (not args.nofde) ):
             # calc new emb potential
      
@@ -230,6 +230,17 @@ def scfiterations (args, maxiter, jk, H, Cocc, func, wfn, D, vemb, E, Eold, \
             #transform EMBPOT_PYEMB_ADFGRID_H2O in basis set representation
             vemb_new = fde_util.embpot2mat(phi,nbas,pot,ws,lpos)
             vemb = psi4.core.Matrix.from_array(vemb_new) 
+            
+            diffv= vemb_in - vemb.np
+            diffD= D_in -D_ext
+            norm_D=np.linalg.norm(diffD,'fro')
+            norm_v=np.linalg.norm(diffv,'fro')
+            if (norm_D<(1.0e-8) and norm_v<(1.0e-8)):
+                break
+            else:
+               print("norm_D : %.12f\n" % norm_D)
+               print("norm_v : %.12f\n" % norm_v)
+
             if OUT_ITER == maxiter:
                 raise Exception("Maximum number of SCF cycles exceeded.\n")
             print("Outer iteration %i : DONE\n" % OUT_ITER)
@@ -608,6 +619,9 @@ if __name__ == "__main__":
       #embpot_A_1 = embed_eval.get_emb_pot(density_A, density_B, ve_B)
       #embpot_B_1 = embed_eval.get_emb_pot(density_B, density_A, ve_A)
       #transform EMBPOT_PYEMB_ADFGRID_H2O in basis set representation
+      
+      #dump the initial potential
+      np.savetxt("initialpot.txt",pot)
       res = fde_util.embpot2mat(phi,nbas,pot,ws,lpos)
     else:
       res = np.zeros_like(D)
