@@ -217,6 +217,8 @@ class pyemb:
     def __init__ (self, activefname = "", envirofname = "", jobtype= ""):
         self.__activefname = activefname
         self.__envirofname = envirofname
+        self.__tot_charge = 0
+        self.__active_charge = 0
         self.__jobtype = jobtype  #'adf' or 'psi4' as provider of grid and isolated environment density
         self.__agrid = None
         self.__isolated_dens_enviro = None
@@ -235,6 +237,12 @@ class pyemb:
         self.__psioufname = ""
 
         self.__gridfilename = "grid.dat"
+
+    def set_charge(self,ch,frag='act'):
+        if frag=='act':
+           self.__active_charge=ch
+        elif frag == 'total':
+           self.__total_charge=ch
 
     def set_grid_filename (self, name):
         self.__gridfilename = name
@@ -403,8 +411,12 @@ class pyemb:
                
                 m_active = pyadf.molecule(self.__activefname)
                 m_active.set_symmetry('NOSYM')
+                m_active.set_charge(self.__active_charge)
+                m_active.set_spin(0) # assuming singles S = 0
                 m_enviro = pyadf.molecule(self.__envirofname)
                 m_enviro.set_symmetry('NOSYM')
+                m_enviro.set_charge(self.__tot_charge - self.__active_charge)
+                m_active.set_spin(0)
                
                 m_tot = m_active + m_enviro
                 m_tot.set_symmetry('NOSYM')
@@ -501,6 +513,8 @@ class pyemb:
             
             #strings for psi4 molecule obj
             m_active=Molecule(self.__activefname)
+            #append charge and multuplicity
+            m_active.append(str(self.__active_charge) + '1' + '\n')
             m_active.append('symmetry c1' +'\n' + 'no_com' + '\n' + 'no_reorient' + '\n')
             
             m_enviro=Molecule(self.__envirofname)
@@ -575,7 +589,10 @@ class pyemb:
                               'DF_SCF_GUESS': 'False',
                               'd_convergence' : self.__thresh_conv,
                               'e_convergence' : self.__thresh_conv})
+            charge_env = int(self.__tot_charge - self.__active_charge)
+            m_enviro.append(str(charge_env) + ' 1' + '\n')
             m_enviro.append('symmetry c1' +'\n' + 'no_com' + '\n' + 'no_reorient' + '\n')
+            m_enviro.display_xyz()
             enviro_obj=psi4.geometry(m_enviro.geom_str())
             ene, enviro_wfn = psi4.energy(self.__enviro_func,return_wfn=True)
             
