@@ -65,12 +65,12 @@ ifeq ($(FORBGQ),no)
     #	$(MKLROOT)/lib/intel64/libmkl_core.a -Wl,--end-group -lpthread
     
     # sequential
-    BLASLAPACK =  ${MKLROOT}/lib/intel64/libmkl_blas95_lp64.a ${MKLROOT}/lib/intel64/libmkl_lapack95_lp64.a -L${MKLROOT}/lib/intel64 \
-     		  -lmkl_intel_lp64 -lmkl_sequential -lmkl_core -lpthread -lm -ldl
+    #BLASLAPACK =  ${MKLROOT}/lib/intel64/libmkl_blas95_lp64.a ${MKLROOT}/lib/intel64/libmkl_lapack95_lp64.a -L${MKLROOT}/lib/intel64 \
+    # 		  -lmkl_intel_lp64 -lmkl_sequential -lmkl_core -lpthread -lm -ldl
 
     # parallel
-    #BLASLAPACK =  ${MKLROOT}/lib/intel64/libmkl_blas95_lp64.a ${MKLROOT}/lib/intel64/libmkl_lapack95_lp64.a -L${MKLROOT}/lib/intel64 \
-    #		  -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread -lm -ldl
+    BLASLAPACK =  ${MKLROOT}/lib/intel64/libmkl_blas95_lp64.a ${MKLROOT}/lib/intel64/libmkl_lapack95_lp64.a -L${MKLROOT}/lib/intel64 \
+    		  -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread -lm -ldl
 		  
     INCLUDE += -I${MKLROOT}/include/intel64/lp64 -I"${MKLROOT}/include"
 
