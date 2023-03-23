@@ -30,18 +30,18 @@ do
       sed "s/dump/$dump/" tmp > tmp1
       sed "s/gamma/$gamma/" tmp1 > plot.p$n
       gnuplot < plot.p$n
-      mv 1.pdf  omp_mklserial_quad_2_"$n".pdf
+      mv 1.pdf  omp_mklserial_quad_2_"$n"_"$dump".pdf
       python /home/redo/BERTHA/Exanalysis/misc/pade/pade_transform.py --damping $dump --limit 25000 --gamma $gamma \
 	      -f ./omp.mklparallel.quad.2/dipole.txt --dw $dw --fmin 2.5 --frequency 6.5 -o zz_w.txt > pade.txt
       gnuplot < plot.p$n
-      mv 1.pdf  omp_mklparallel_quad_2_"$n".pdf
+      mv 1.pdf  omp_mklparallel_quad_2_"$n"_"$dump".pdf
       rm -f  plot.p$n tmp tmp1
       n=$((n+1))
     done
   done
 done
 
-for dump in exp hann
+for dump in exp 
 do
   for gamma in  1.0e-3 1.5e-3 2.0e-3 1.0e-2 2.0e-2 
   do
@@ -54,11 +54,11 @@ do
       sed "s/dump/$dump/" tmp > tmp1
       sed "s/gamma/$gamma/" tmp1 > plot.p$n
       gnuplot < plot.p$n
-      mv 1.pdf  omp_mklserial_quad_2_"$n".pdf
+      mv 1.pdf  omp_mklserial_quad_2_"$n"_"$dump".pdf
       python /home/redo/BERTHA/Exanalysis/misc/pade/pade_transform.py --damping $dump --limit 25000 --gamma $gamma \
 	      -f ./omp.mklparallel.quad.2/dipole.txt --dw $dw --fmin 2.5 --frequency 6.5 -o zz_w.txt > pade.txt
       gnuplot < plot.p$n
-      mv 1.pdf  omp_mklparallel_quad_2_"$n".pdf
+      mv 1.pdf  omp_mklparallel_quad_2_"$n"_"$dump".pdf
       rm -f  plot.p$n tmp tmp1
       n=$((n+1))
     done
