@@ -25,17 +25,18 @@ do
     do
       echo $gamma $dw $dump
       python /home/redo/BERTHA/Exanalysis/misc/pade/pade_transform.py --damping $dump --limit 25000 --gamma $gamma \
-	      -f ./omp.mklserial.quad.2/dipole.txt --dw $dw --fmin 2.5 --frequency 6.5 -o zz_w.txt > pade.txt
+	      -f ./omp.mklparallel.quad.x/dipole.txt --dw $dw --fmin 2.5 --frequency 6.5 -o xx_w.txt > padex.txt
+      python /home/redo/BERTHA/Exanalysis/misc/pade/pade_transform.py --damping $dump --limit 25000 --gamma $gamma \
+	      -f ./omp.mklparallel.quad.y/dipole.txt --dw $dw --fmin 2.5 --frequency 6.5 -o yy_w.txt > padey.txt
+      python /home/redo/BERTHA/Exanalysis/misc/pade/pade_transform.py --damping $dump --limit 25000 --gamma $gamma \
+	      -f ./omp.mklparallel.quad.z/dipole.txt --dw $dw --fmin 2.5 --frequency 6.5 -o zz_w.txt > padez.txt
+      paste xx_w yy_w zz_w > paste.txt
       sed "s/dw/$dw/" plot.p > tmp
       sed "s/dump/$dump/" tmp > tmp1
       sed "s/gamma/$gamma/" tmp1 > plot.p$n
       gnuplot < plot.p$n
       mv 1.pdf  omp_mklserial_quad_2_"$n"_"$dump".pdf
-      python /home/redo/BERTHA/Exanalysis/misc/pade/pade_transform.py --damping $dump --limit 25000 --gamma $gamma \
-	      -f ./omp.mklparallel.quad.2/dipole.txt --dw $dw --fmin 2.5 --frequency 6.5 -o zz_w.txt > pade.txt
-      gnuplot < plot.p$n
-      mv 1.pdf  omp_mklparallel_quad_2_"$n"_"$dump".pdf
-      rm -f  plot.p$n tmp tmp1
+      rm tmp tmp1 plot.p$n paste.txt
       n=$((n+1))
     done
   done
@@ -49,17 +50,18 @@ do
     do
       echo $gamma $dw $dump
       python /home/redo/BERTHA/Exanalysis/misc/pade/pade_transform.py --damping $dump --limit 25000 --gamma $gamma \
-	      -f ./omp.mklserial.quad.2/dipole.txt --dw $dw --fmin 2.5 --frequency 6.5 -o zz_w.txt > pade.txt
+	      -f ./omp.mklparallel.quad.x/dipole.txt --dw $dw --fmin 2.5 --frequency 6.5 -o xx_w.txt > padex.txt
+      python /home/redo/BERTHA/Exanalysis/misc/pade/pade_transform.py --damping $dump --limit 25000 --gamma $gamma \
+	      -f ./omp.mklparallel.quad.y/dipole.txt --dw $dw --fmin 2.5 --frequency 6.5 -o yy_w.txt > padey.txt
+      python /home/redo/BERTHA/Exanalysis/misc/pade/pade_transform.py --damping $dump --limit 25000 --gamma $gamma \
+	      -f ./omp.mklparallel.quad.z/dipole.txt --dw $dw --fmin 2.5 --frequency 6.5 -o zz_w.txt > padez.txt
+      paste xx_w yy_w zz_w > paste.txt
       sed "s/dw/$dw/" plot.p > tmp
       sed "s/dump/$dump/" tmp > tmp1
       sed "s/gamma/$gamma/" tmp1 > plot.p$n
       gnuplot < plot.p$n
       mv 1.pdf  omp_mklserial_quad_2_"$n"_"$dump".pdf
-      python /home/redo/BERTHA/Exanalysis/misc/pade/pade_transform.py --damping $dump --limit 25000 --gamma $gamma \
-	      -f ./omp.mklparallel.quad.2/dipole.txt --dw $dw --fmin 2.5 --frequency 6.5 -o zz_w.txt > pade.txt
-      gnuplot < plot.p$n
-      mv 1.pdf  omp_mklparallel_quad_2_"$n"_"$dump".pdf
-      rm -f  plot.p$n tmp tmp1
+      rm tmp tmp1 plot.p$n paste.txt
       n=$((n+1))
     done
   done
