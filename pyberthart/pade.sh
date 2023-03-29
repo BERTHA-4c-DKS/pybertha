@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 export OMP_SCHEDULE=dynamic
 export OMP_STACKSIZE=500M
@@ -15,8 +15,17 @@ export LD_LIBRARY_PATH=${PWD%/*}"/lib":$LD_LIBRARY_PATH
 
 # limit must be < number of point in the dipole file
 
-export n=1
+plotting_func () {
+  paste xx_w.txt yy_w.txt zz_w.txt > paste.txt
+  sed "s/dw/$dw/" plot.p > tmp
+  sed "s/dump/$dump/" tmp > tmp1
+  sed "s/gamma/$gamma/" tmp1 > plot.p$n
+  gnuplot < plot.p$n
+  mv 1.pdf  omp_mklserial_quad_2_"$n"_"$dump".pdf
+  rm tmp tmp1 plot.p$n paste.txt
+}
 
+export n=1
 for dump in gauss 
 do
   for gamma in  1.0e-6 1.5e-5 2.0e-6 2.0e-5 1.0e-7 
@@ -30,13 +39,7 @@ do
 	      -f ./omp.mklparallel.quad.y/dipole.txt --dw $dw --fmin 2.5 --frequency 6.5 -o yy_w.txt > padey.txt
       python /home/redo/BERTHA/Exanalysis/misc/pade/pade_transform.py --damping $dump --limit 25000 --gamma $gamma \
 	      -f ./omp.mklparallel.quad.z/dipole.txt --dw $dw --fmin 2.5 --frequency 6.5 -o zz_w.txt > padez.txt
-      paste xx_w yy_w zz_w > paste.txt
-      sed "s/dw/$dw/" plot.p > tmp
-      sed "s/dump/$dump/" tmp > tmp1
-      sed "s/gamma/$gamma/" tmp1 > plot.p$n
-      gnuplot < plot.p$n
-      mv 1.pdf  omp_mklserial_quad_2_"$n"_"$dump".pdf
-      rm tmp tmp1 plot.p$n paste.txt
+      plotting_func
       n=$((n+1))
     done
   done
@@ -55,16 +58,8 @@ do
 	      -f ./omp.mklparallel.quad.y/dipole.txt --dw $dw --fmin 2.5 --frequency 6.5 -o yy_w.txt > padey.txt
       python /home/redo/BERTHA/Exanalysis/misc/pade/pade_transform.py --damping $dump --limit 25000 --gamma $gamma \
 	      -f ./omp.mklparallel.quad.z/dipole.txt --dw $dw --fmin 2.5 --frequency 6.5 -o zz_w.txt > padez.txt
-      paste xx_w yy_w zz_w > paste.txt
-      sed "s/dw/$dw/" plot.p > tmp
-      sed "s/dump/$dump/" tmp > tmp1
-      sed "s/gamma/$gamma/" tmp1 > plot.p$n
-      gnuplot < plot.p$n
-      mv 1.pdf  omp_mklserial_quad_2_"$n"_"$dump".pdf
-      rm tmp tmp1 plot.p$n paste.txt
+      plotting_func
       n=$((n+1))
     done
   done
 done
-
-
