@@ -242,7 +242,7 @@ class pyemb:
         if frag=='act':
            self.__active_charge=ch
         elif frag == 'total':
-           self.__total_charge=ch
+           self.__tot_charge=ch #from RelMBdev
 
     def set_grid_filename (self, name):
         self.__gridfilename = name
@@ -416,7 +416,7 @@ class pyemb:
                 m_enviro = pyadf.molecule(self.__envirofname)
                 m_enviro.set_symmetry('NOSYM')
                 m_enviro.set_charge(self.__tot_charge - self.__active_charge)
-                m_active.set_spin(0)
+                m_active.set_spin(0)   # closed shell assumed
                
                 m_tot = m_active + m_enviro
                 m_tot.set_symmetry('NOSYM')
