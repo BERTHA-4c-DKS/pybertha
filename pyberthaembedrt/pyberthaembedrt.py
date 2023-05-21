@@ -483,15 +483,18 @@ def restart_run(pberthaopt, args):
     pberthaopt.activefile = json_data["geom_act"]
     pberthaopt.envirofile = json_data["geom_env"]
     pberthaopt.gtype = json_data["grid_opts"]
-    pberthaopt.jobtype = json_data["job_type"]
+    pberthaopt.jobtype = json_data["jobtype"]
     pberthaopt.basis = json_data["env_obs"]
     pberthaopt.excfuncenv = json_data["env_func"]
+    gparam = json_data["grid_param"].split(",")
     if pberthaopt.jobtype == 'adf':
-      if not isinstance(json_data["grid_param"][0],float):
+      gparam = [float(m) for m in gparam] #accuracy in Py/ADF is usually given as float
+      if not isinstance(gparam[0],float):
          raise TypeError("adf grid(param) accuracy must be float")
-      pberthaopt.param = json_data["grid_param"][0]
+      pberthaopt.param = gparam[0]
     else:
-      pberthaopt.param = json_data["grid_param"]
+      gparam = [int(m) for m in gparam] 
+      pberthaopt.param = tuple(gparam)
 
     molist = args.select.split("&")
     occlist = molist[0].split(";")
@@ -1061,7 +1064,7 @@ def main():
       pberthaopt.excfuncenv = args.env_func
       gparam = args.grid_param.split(",")
       if args.jobtype == 'adf':
-        gparam = [float(m) for m in gparam]
+        gparam = [float(m) for m in gparam] #accuracy in Py/ADF is usually given as float
         if not isinstance(gparam[0],float):
            raise TypeError("adf grid(param) accuracy must be float")
         pberthaopt.param = gparam[0]
