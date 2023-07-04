@@ -1,0 +1,469 @@
+ Initialze the atomic densities on each center
+ Done
+ Iteration            1
+  total electronic energy   =     -23702.0395301105
+  nuclear repulsion energy  =        485.1710725607
+  total energy              =     -23216.8684575498
+  maxdiff in density matrix =      0.2650095940E+00 (  66.210%) 
+ Iteration            2
+  total electronic energy   =     -23925.8375411022
+  nuclear repulsion energy  =        485.1710725607
+  total energy              =     -23440.6664685416
+  maxdiff in density matrix =      0.1275730677E+00 (   7.659%) 
+ Iteration            3
+  total electronic energy   =     -23925.7877489344
+  nuclear repulsion energy  =        485.1710725607
+  total energy              =     -23440.6166763737
+  maxdiff in density matrix =      0.9595576455E-01 (   5.816%) 
+ Iteration            4
+  total electronic energy   =     -23925.7528892230
+  nuclear repulsion energy  =        485.1710725607
+  total energy              =     -23440.5818166623
+  maxdiff in density matrix =      0.6940745230E-01 (   4.173%) 
+ Iteration            5
+  total electronic energy   =     -23925.7342169913
+  nuclear repulsion energy  =        485.1710725607
+  total energy              =     -23440.5631444306
+  maxdiff in density matrix =      0.5045678064E-01 (   3.051%) 
+ Iteration            6
+  total electronic energy   =     -23925.7240856192
+  nuclear repulsion energy  =        485.1710725607
+  total energy              =     -23440.5530130586
+  maxdiff in density matrix =      0.3620818677E-01 (   2.180%) 
+ Iteration            7
+  total electronic energy   =     -23925.7188445431
+  nuclear repulsion energy  =        485.1710725607
+  total energy              =     -23440.5477719824
+  maxdiff in density matrix =      0.2640849918E-01 (   1.595%) 
+ Iteration            8
+  total electronic energy   =     -23925.7161010040
+  nuclear repulsion energy  =        485.1710725607
+  total energy              =     -23440.5450284433
+  maxdiff in density matrix =      0.1922770792E-01 (   1.159%) 
+ Iteration            9
+  total electronic energy   =     -23925.7147131066
+  nuclear repulsion energy  =        485.1710725607
+  total energy              =     -23440.5436405459
+  maxdiff in density matrix =      0.1387370786E-01 (   0.837%) 
+ Iteration           10
+  total electronic energy   =     -23925.7140151415
+  nuclear repulsion energy  =        485.1710725607
+  total energy              =     -23440.5429425808
+  maxdiff in density matrix =      0.1011844826E-01 (   0.610%) 
+ Iteration           11
+  total electronic energy   =     -23925.7136758531
+  nuclear repulsion energy  =        485.1710725607
+  total energy              =     -23440.5426032924
+  maxdiff in density matrix =      0.7474755085E-02 (   0.451%) 
+ Iteration           12
+  total electronic energy   =     -23925.7135188199
+  nuclear repulsion energy  =        485.1710725607
+  total energy              =     -23440.5424462592
+  maxdiff in density matrix =      0.5342280215E-02 (   0.322%) 
+ Iteration           13
+  total electronic energy   =     -23925.7134544196
+  nuclear repulsion energy  =        485.1710725607
+  total energy              =     -23440.5423818589
+  maxdiff in density matrix =      0.3959005932E-02 (   0.239%) 
+ Iteration           14
+  total electronic energy   =     -23925.7134336475
+  nuclear repulsion energy  =        485.1710725607
+  total energy              =     -23440.5423610868
+  maxdiff in density matrix =      0.2860037081E-02 (   0.172%) 
+ Iteration           15
+  total electronic energy   =     -23925.7134330532
+  nuclear repulsion energy  =        485.1710725607
+  total energy              =     -23440.5423604925
+  maxdiff in density matrix =      0.2084319670E-02 (   0.126%) 
+ Iteration           16
+  total electronic energy   =     -23925.7134402369
+  nuclear repulsion energy  =        485.1710725607
+  total energy              =     -23440.5423676762
+  maxdiff in density matrix =      0.1484200433E-02 (   0.090%) 
+ Iteration           17
+  total electronic energy   =     -23925.7134511100
+  nuclear repulsion energy  =        485.1710725607
+  total energy              =     -23440.5423785493
+  maxdiff in density matrix =      0.1765629985E-02 ( 190.452%) 
+ Iteration           18
+  total electronic energy   =     -23925.7134616508
+  nuclear repulsion energy  =        485.1710725607
+  total energy              =     -23440.5423890901
+  maxdiff in density matrix =      0.8086371733E-03 (   0.049%) 
+ Iteration           19
+  total electronic energy   =     -23925.7134717786
+  nuclear repulsion energy  =        485.1710725607
+  total energy              =     -23440.5423992179
+  maxdiff in density matrix =      0.6527266969E-03 (   0.194%) 
+ Iteration           20
+  total electronic energy   =     -23925.7134799622
+  nuclear repulsion energy  =        485.1710725607
+  total energy              =     -23440.5424074015
+  maxdiff in density matrix =      0.5079349515E-03 (   0.151%) 
+ Iteration           21
+  total electronic energy   =     -23925.7134872111
+  nuclear repulsion energy  =        485.1710725607
+  total energy              =     -23440.5424146504
+  maxdiff in density matrix =      0.5162240797E-03 (   3.876%) 
+ Iteration           22
+  total electronic energy   =     -23925.7134926430
+  nuclear repulsion energy  =        485.1710725607
+  total energy              =     -23440.5424200823
+  maxdiff in density matrix =      0.3789156012E-03 (   0.113%) 
+ Iteration           23
+  total electronic energy   =     -23925.7134968475
+  nuclear repulsion energy  =        485.1710725607
+  total energy              =     -23440.5424242868
+  maxdiff in density matrix =      0.3074679706E-03 (   0.092%) 
+ Iteration           24
+  total electronic energy   =     -23925.7135000612
+  nuclear repulsion energy  =        485.1710725607
+  total energy              =     -23440.5424275005
+  maxdiff in density matrix =      0.3126294261E-03 (   2.275%) 
+ Iteration           25
+  total electronic energy   =     -23925.7135027344
+  nuclear repulsion energy  =        485.1710725607
+  total energy              =     -23440.5424301738
+  maxdiff in density matrix =      0.2140214632E-03 (   0.064%) 
+ Iteration           26
+  total electronic energy   =     -23925.7135051102
+  nuclear repulsion energy  =        485.1710725607
+  total energy              =     -23440.5424325495
+  maxdiff in density matrix =      0.2114220034E-03 (   1.495%) 
+ Iteration           27
+  total electronic energy   =     -23925.7135070829
+  nuclear repulsion energy  =        485.1710725607
+  total energy              =     -23440.5424345222
+  maxdiff in density matrix =      0.1750086976E-03 (   0.198%) 
+ Iteration           28
+  total electronic energy   =     -23925.7135084930
+  nuclear repulsion energy  =        485.1710725607
+  total energy              =     -23440.5424359324
+  maxdiff in density matrix =      0.1497180456E-03 (   1.028%) 
+ Iteration           29
+  total electronic energy   =     -23925.7135096903
+  nuclear repulsion energy  =        485.1710725607
+  total energy              =     -23440.5424371296
+  maxdiff in density matrix =      0.1876491551E-03 (   1.300%) 
+ Iteration           30
+  total electronic energy   =     -23925.7135111838
+  nuclear repulsion energy  =        485.1710725607
+  total energy              =     -23440.5424386231
+  maxdiff in density matrix =      0.1151767634E-02 (   7.686%) 
+ Iteration           31
+  total electronic energy   =     -23925.7135113332
+  nuclear repulsion energy  =        485.1710725607
+  total energy              =     -23440.5424387726
+Options: 
+berthamodpath  =  /home/belp/BERTHAEDA/pybertha_private/src
+cube  =  False
+debug  =  False
+deltax  =  0.2
+deltay  =  0.2
+deltaz  =  0.2
+dumpfiles  =  False
+energyconverter  =  1.0
+fitcoefffile  =  fitcoeff.txt
+fittfile  =  fitt2.inp
+info_fragA  =  info_eda_nocv_fragA.json
+info_fragB  =  info_eda_nocv_fragB.json
+inputfile  =  input.inp
+lmargin  =  10.0
+npairs  =  12
+ovapfile  =  ovap.txt
+thresh  =  1e-11
+vctfile  =  vct.txt
+verbosity  =  -1
+wrapperso  =  /home/belp/BERTHAEDA/pybertha_private/lib/bertha_wrapper.so
+
+
+Verbosity       :  -1
+Dumpfiles       :  0
+
+Matrix dimension:  2456
+            nocc:  112
+          nshift:  1228
+           nopen:  0
+     level shift:  -2.0
+
+Totaltime:     553.2315812110901  (CPU time:  2630.526442524 ) s 
+MainRun Time:  552.9603865146637  (CPU time:  2629.857488315 ) s 
+
+Final results 
+eigenvalue     1       -3516.26608837
+eigenvalue     2       -3516.26608837
+eigenvalue     3        -636.88491408
+eigenvalue     4        -636.88491408
+eigenvalue     5        -612.82931173
+eigenvalue     6        -612.82931173
+eigenvalue     7        -517.25936446
+eigenvalue     8        -517.25936446
+eigenvalue     9        -517.25825721
+eigenvalue    10        -517.25825721
+eigenvalue    11        -155.36148161
+eigenvalue    12        -155.36148161
+eigenvalue    13        -144.38111402
+eigenvalue    14        -144.38111402
+eigenvalue    15        -122.83983344
+eigenvalue    16        -122.83983344
+eigenvalue    17        -122.83735937
+eigenvalue    18        -122.83735937
+eigenvalue    19        -104.82869498
+eigenvalue    20        -104.82869498
+eigenvalue    21        -104.82645742
+eigenvalue    22        -104.82645742
+eigenvalue    23        -101.05046713
+eigenvalue    24        -101.05046713
+eigenvalue    25        -100.29892435
+eigenvalue    26        -100.29892435
+eigenvalue    27        -100.29796712
+eigenvalue    28        -100.29796712
+eigenvalue    29        -100.29597663
+eigenvalue    30        -100.29597663
+eigenvalue    31         -36.57250629
+eigenvalue    32         -36.57250629
+eigenvalue    33         -31.73906795
+eigenvalue    34         -31.73906795
+eigenvalue    35         -26.36184879
+eigenvalue    36         -26.36184879
+eigenvalue    37         -26.35733125
+eigenvalue    38         -26.35733125
+eigenvalue    39         -18.49491245
+eigenvalue    40         -18.49491245
+eigenvalue    41         -18.49035986
+eigenvalue    42         -18.49035986
+eigenvalue    43         -17.49201818
+eigenvalue    44         -17.49201818
+eigenvalue    45         -17.49037015
+eigenvalue    46         -17.49037015
+eigenvalue    47         -17.48611265
+eigenvalue    48         -17.48611265
+eigenvalue    49         -14.07011095
+eigenvalue    50         -14.07011095
+eigenvalue    51          -9.19406910
+eigenvalue    52          -9.19406910
+eigenvalue    53          -7.24396769
+eigenvalue    54          -7.24396769
+eigenvalue    55          -7.24226499
+eigenvalue    56          -7.24226499
+eigenvalue    57          -7.23798689
+eigenvalue    58          -7.23798689
+eigenvalue    59          -7.00540959
+eigenvalue    60          -7.00540959
+eigenvalue    61          -7.00447957
+eigenvalue    62          -7.00447957
+eigenvalue    63          -7.00238410
+eigenvalue    64          -7.00238410
+eigenvalue    65          -6.99865018
+eigenvalue    66          -6.99865018
+eigenvalue    67          -6.99079030
+eigenvalue    68          -6.99079030
+eigenvalue    69          -6.93067710
+eigenvalue    70          -6.93067710
+eigenvalue    71          -6.92545814
+eigenvalue    72          -6.92545814
+eigenvalue    73          -6.81119703
+eigenvalue    74          -6.81119703
+eigenvalue    75          -5.08214616
+eigenvalue    76          -5.08214616
+eigenvalue    77          -3.99039569
+eigenvalue    78          -3.99039569
+eigenvalue    79          -3.98129973
+eigenvalue    80          -3.98129973
+eigenvalue    81          -1.52950453
+eigenvalue    82          -1.52950453
+eigenvalue    83          -1.51877933
+eigenvalue    84          -1.51877933
+eigenvalue    85          -1.38676895
+eigenvalue    86          -1.38676895
+eigenvalue    87          -1.38174169
+eigenvalue    88          -1.38174169
+eigenvalue    89          -1.37235430
+eigenvalue    90          -1.37235430
+eigenvalue    91          -0.85352663
+eigenvalue    92          -0.85352663
+eigenvalue    93          -0.72882139
+eigenvalue    94          -0.72882139
+eigenvalue    95          -0.66432214
+eigenvalue    96          -0.66432214
+eigenvalue    97          -0.49097023
+eigenvalue    98          -0.49097023
+eigenvalue    99          -0.49061101
+eigenvalue   100          -0.49061101
+eigenvalue   101          -0.37035406
+eigenvalue   102          -0.37035406
+eigenvalue   103          -0.29863157
+eigenvalue   104          -0.29863157
+eigenvalue   105          -0.27519136
+eigenvalue   106          -0.27519136
+eigenvalue   107          -0.25434523
+eigenvalue   108          -0.25434523
+eigenvalue   109          -0.23156956
+eigenvalue   110          -0.23156956
+eigenvalue   111          -0.19175947
+eigenvalue   112          -0.19175947
+      lumo                -0.11317590
+      SUMEIGEN        -14587.50255634
+
+Total electronic energy  =      -23925.71351133
+Nuclear repulsion energy =         485.17107256
+Total energy             =      -23440.54243877
+
+Compute density matrix 
+Trace (      112.0000000000,        -0.0000000000i)
+
+MOLECULAR PROPERTIES:...
+  
+Dipole Moment: 
+Axis   electronic dipole (a.u.)    nuclear dipole (a.u.)      Total dipole (a.u.)      Total dipole (Debye) 
+ x             0.0000379590            0.0000000000             0.0000379590              0.0000964757 
+ y             0.0000005017            0.0000000000             0.0000005017              0.0000012751 
+ z            32.8111160467          -29.7025241000             3.1085919467              7.9007351199 
+  
+Molecular dipole module:          3.1085919469 (a.u.)          7.9007351204 (Debye) 
+Etotal fragA: -23383.89598743
+Exc    fragA: -446.53653665
+Etotal fragB: -56.62377281
+Exc    fragB: -8.02099338
+NOCV orthonormal: True
+
+trace of nocv_-1 : 1.00000000
+
+trace of nocv_+1 : 1.00000000
+
+trace of nocv_-2 : 1.00000000
+
+trace of nocv_+2 : 1.00000000
+
+trace of nocv_-3 : 1.00000000
+
+trace of nocv_+3 : 1.00000000
+
+trace of nocv_-4 : 1.00000000
+
+trace of nocv_+4 : 1.00000000
+
+trace of nocv_-5 : 1.00000000
+
+trace of nocv_+5 : 1.00000000
+
+trace of nocv_-6 : 1.00000000
+
+trace of nocv_+6 : 1.00000000
+
+trace of nocv_-7 : 1.00000000
+
+trace of nocv_+7 : 1.00000000
+
+trace of nocv_-8 : 1.00000000
+
+trace of nocv_+8 : 1.00000000
+
+trace of nocv_-9 : 1.00000000
+
+trace of nocv_+9 : 1.00000000
+
+trace of nocv_-10 : 1.00000000
+
+trace of nocv_+10 : 1.00000000
+
+trace of nocv_-11 : 1.00000000
+
+trace of nocv_+11 : 1.00000000
+
+trace of nocv_-12 : 1.00000000
+
+trace of nocv_+12 : 1.00000000
+
+Density_0 --> Fock --> energy
+ total electronic energy  =         -23925.683183485794871
+ nuclear repulsion energy =            485.171072560693005
+ total energy             =         -23440.512110925101297
+ coulomb energy           =          18954.154991130719282
+ Exc     energy           =           -454.627811122344326
+Density_A+B --> Fock --> energy
+ total electronic energy  =         -23925.769435959096882
+ nuclear repulsion energy =            485.171072560693005
+ total energy             =         -23440.598363398403308
+ coulomb energy           =          18953.417120091362449
+ Exc     energy           =           -454.584681671778753
+Density --> Fock --> energy
+ total electronic energy  =         -23925.713511854573881
+ nuclear repulsion energy =            485.171072560693005
+ total energy             =         -23440.542439293880307
+ coulomb energy           =          18954.383278446934128
+ Exc     energy           =           -454.585596001998340
+
+Total interaction  energy                                    [DE_int]: -0.02267905
+
+tilde Pauli exact                                     [DE_tildePauli]: 0.08625247                                 
+tilde Pauli from ETS (corrected up to third order): 0.08625410
+Delta_Exc = exc - exc_fragA - exc_fragB                         [DEexc]: -0.02715165
+
+Pauli defined as in ADF. (tilde Pauli (exact) + Delta_Exc   [DEpauli]: 0.05910083
+
+Electrostatic int E_A+B - Delta_Exc                         [DEelect]:  -0.05145151         
+
+Orbital energy (exact)                                        [DEorb]: -0.03032837
+Orbital energy from ETS  (corrected up to third order): -0.03032547
+Orbital energy from ETS using Ziegler formula (corrected up to fifth order): -0.03032133
+
+nocv_1 pair eigenvalue: -0.21716624  energy (a.u.): -0.01350728 energy (kcal/mol): -8.47594916  
+nocv_-1     eigenvalue: -0.21716624  energy (a.u.): 0.03250699 energy (kcal/mol): 20.39844815  
+nocv_+1      eigenvalue: 0.21716624  energy (a.u.): -0.04601427  energy (kcal/mol): -28.87439731 
+ 
+
+nocv_2 pair eigenvalue: -0.21716624  energy (a.u.): -0.01350728 energy (kcal/mol): -8.47594915  
+nocv_-2     eigenvalue: -0.21716624  energy (a.u.): 0.03250699 energy (kcal/mol): 20.39844814  
+nocv_+2      eigenvalue: 0.21716624  energy (a.u.): -0.04601427  energy (kcal/mol): -28.87439730 
+ 
+
+nocv_3 pair eigenvalue: -0.03541273  energy (a.u.): -0.00043461 energy (kcal/mol): -0.27271998  
+nocv_-3     eigenvalue: -0.03541273  energy (a.u.): 0.00106789 energy (kcal/mol): 0.67010878  
+nocv_+3      eigenvalue: 0.03541273  energy (a.u.): -0.00150249  energy (kcal/mol): -0.94282876 
+ 
+
+nocv_4 pair eigenvalue: -0.03541273  energy (a.u.): -0.00043461 energy (kcal/mol): -0.27271998  
+nocv_-4     eigenvalue: -0.03541273  energy (a.u.): 0.00106789 energy (kcal/mol): 0.67010878  
+nocv_+4      eigenvalue: 0.03541273  energy (a.u.): -0.00150249  energy (kcal/mol): -0.94282876 
+ 
+
+nocv_5 pair eigenvalue: -0.03107518  energy (a.u.): -0.00046950 energy (kcal/mol): -0.29461574  
+nocv_-5     eigenvalue: -0.03107518  energy (a.u.): 0.00254729 energy (kcal/mol): 1.59844918  
+nocv_+5      eigenvalue: 0.03107518  energy (a.u.): -0.00301679  energy (kcal/mol): -1.89306491 
+ 
+
+nocv_6 pair eigenvalue: -0.03107518  energy (a.u.): -0.00046950 energy (kcal/mol): -0.29461574  
+nocv_-6     eigenvalue: -0.03107518  energy (a.u.): 0.00254729 energy (kcal/mol): 1.59844918  
+nocv_+6      eigenvalue: 0.03107518  energy (a.u.): -0.00301679  energy (kcal/mol): -1.89306491 
+ 
+
+nocv_7 pair eigenvalue: -0.02464259  energy (a.u.): -0.00033532 energy (kcal/mol): -0.21041475  
+nocv_-7     eigenvalue: -0.02464259  energy (a.u.): 0.00225134 energy (kcal/mol): 1.41273930  
+nocv_+7      eigenvalue: 0.02464259  energy (a.u.): -0.00258666  energy (kcal/mol): -1.62315405 
+ 
+
+nocv_8 pair eigenvalue: -0.02464259  energy (a.u.): -0.00033532 energy (kcal/mol): -0.21041475  
+nocv_-8     eigenvalue: -0.02464259  energy (a.u.): 0.00225134 energy (kcal/mol): 1.41273931  
+nocv_+8      eigenvalue: 0.02464259  energy (a.u.): -0.00258666  energy (kcal/mol): -1.62315406 
+ 
+
+nocv_9 pair eigenvalue: -0.02101232  energy (a.u.): -0.00017023 energy (kcal/mol): -0.10682172  
+nocv_-9     eigenvalue: -0.02101232  energy (a.u.): 0.00246238 energy (kcal/mol): 1.54516584  
+nocv_+9      eigenvalue: 0.02101232  energy (a.u.): -0.00263261  energy (kcal/mol): -1.65198756 
+ 
+
+nocv_10 pair eigenvalue: -0.02101232  energy (a.u.): -0.00017023 energy (kcal/mol): -0.10682172  
+nocv_-10     eigenvalue: -0.02101232  energy (a.u.): 0.00246238 energy (kcal/mol): 1.54516584  
+nocv_+10      eigenvalue: 0.02101232  energy (a.u.): -0.00263261  energy (kcal/mol): -1.65198756 
+ 
+
+nocv_11 pair eigenvalue: -0.01785394  energy (a.u.): -0.00010411 energy (kcal/mol): -0.06533168  
+nocv_-11     eigenvalue: -0.01785394  energy (a.u.): 0.00103916 energy (kcal/mol): 0.65208250  
+nocv_+11      eigenvalue: 0.01785394  energy (a.u.): -0.00114327  energy (kcal/mol): -0.71741418 
+ 
+
+nocv_12 pair eigenvalue: -0.01785394  energy (a.u.): -0.00010411 energy (kcal/mol): -0.06533168  
+nocv_-12     eigenvalue: -0.01785394  energy (a.u.): 0.00103916 energy (kcal/mol): 0.65208250  
+nocv_+12      eigenvalue: 0.01785394  energy (a.u.): -0.00114327  energy (kcal/mol): -0.71741417 
+ 

@@ -1,0 +1,120 @@
+#!/bin/ksh
+
+PBS_O_WORKDIR=$PWD
+echo $PWD
+
+
+
+. /home/belp/INSTALL/adf2017.109/adfrc.sh
+
+export SCM_TMPDIR=/tmp
+export P4_GLOBMEMSIZE=8388608
+export MPI_REMSH=rsh
+
+WRK=/tmp
+
+cd $WRK
+
+$ADFBIN/adf -n 4 <<eor
+Title  fragment1 
+NoPrint sfo,frag,functions
+Units
+  length Angstrom 
+End
+
+Atoms
+O        -0.008650    0.178874    0.090112
+H         0.279063    0.026877    1.009864
+H         0.824570    0.171103   -0.417672
+End
+
+CHARGE  0
+
+symmetry nosym
+Basis
+Type QZ4P
+core none 
+End
+XC
+  GGA BP86
+End
+End Input
+eor
+
+mv TAPE21 frag1.t21
+cp frag1.t21 $PBS_O_WORKDIR
+rm logfile
+
+
+$ADFBIN/adf -n 4  <<eor
+title  Fragment2 
+noprint sfo,frag,functions
+units
+  length   Angstrom
+end
+
+Atoms
+O        -1.263709   -2.321444   -0.648595
+H        -0.902354   -1.435104   -0.414516
+H        -2.145956   -2.118384   -1.007632
+end
+
+CHARGE 0
+symmetry nosym 
+
+Basis
+Type QZ4P
+core none 
+End
+xc
+  GGA  BP86
+end
+end input
+eor
+
+mv TAPE21 frag2.t21
+cp frag2.t21 $PBS_O_WORKDIR
+rm logfile
+
+$ADFBIN/adf -n 4  <<eor > $PBS_O_WORKDIR/frag_nocv.out
+title  Complex 
+units
+  length Angstrom
+end
+EPRINT
+  SFO eig ovl
+END
+xc
+  GGA BP86 
+end
+
+ATOMS
+    1.O        -0.008650    0.178874    0.090112    f=frag1
+    2.H         0.279063    0.026877    1.009864    f=frag1
+    3.H         0.824570    0.171103   -0.417672    f=frag1
+    4.O        -1.263709   -2.321444   -0.648595    f=frag2
+    5.H        -0.902354   -1.435104   -0.414516    f=frag2
+    6.H        -2.145956   -2.118384   -1.007632    f=frag2
+end
+
+
+symmetry nosym 
+CHARGE 0 
+
+fragments
+  frag1 frag1.t21
+  frag2 frag2.t21
+end
+
+ETSNOCV ENOCV 0.001
+PRINT ETSLOWDIN
+
+
+end input
+eor
+
+cp TAPE21   tot.t21
+cp tot.t21  $PBS_O_WORKDIR
+
+
+
