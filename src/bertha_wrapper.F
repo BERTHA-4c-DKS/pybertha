@@ -19,7 +19,7 @@ c      USE mkl_service
       use energy, only: etotal
       use shiftr, only: sfact
       use opensh, only: nopen
-c      use indsys
+      use indsys
 
 #ifdef USECUDANV
       use cublas
@@ -414,9 +414,36 @@ c        call dftinit_fit(excfit,igrid,expo,v,nfitt,fitcase,zz,a)
 
         call oneel(monoelectronenergy)
 
+#ifdef USECUDANV    
+        istat = cusolverDnCreate(cudanvh)
+        if (istat /= CUSOLVER_STATUS_SUCCESS) 
+     +        write(*,*) 'handle creation failed'
+
+        itype = 1
+        jobz = CUSOLVER_EIG_MODE_VECTOR
+        uplo = CUBLAS_FILL_MODE_LOWER
+
+!$acc data copy(eigen) copyin(ovap) copy(fock) 
+!$acc host_data use_device(ovap, fock, eigen)
+        istat = cusolverDnZhegvd_buffersize(cudanvh, 
+     +         itype, jobz, uplo, ndim, fock, 
+     +         ndim, ovap, ndim, eigen,  
+     +         lwork)
+
+        allocate(work(lwork), stat=istat)
+        allocate(tdd_d(1:ndim,1:ndim))
+!$acc end host_data
+!$acc end data
+
+        iter = 0
+
+        call diagonalizer (eigen, work, tdd_d, lwork, cudanvh)
+#else
+
         call diagonalizer (eigen)
 
-        call dens()
+#endif
+
         if (densitydiff .eq. 1) then 
           if (allocated(olddensity)) olddensity = c
         endif
@@ -653,7 +680,8 @@ c        ovap_ptr = c_loc(ovap(1,1))
         ctime1 = cputime ()
 
 
-c        if (((iter.gt.1).and.(sfact.ne.(0.0))).or.(irun.eq.0).
+#ifndef USECUDANV
+c       if (((iter.gt.1).and.(sfact.ne.(0.0))).or.(irun.eq.0).
         if (((iter.gt.1).and.(abs(sfact).gt.(1.0d-17))).or.(irun.eq.0).
      >      or.(irun.eq.2))
      >     call shftlv()
@@ -686,8 +714,39 @@ c        if (((iter.gt.1).and.(sfact.ne.(0.0))).or.(irun.eq.0).
         end do
         close(44)
 #endif
+#endif
+
+#ifdef USECUDANV
+        if ((iter .eq.1).and.(irun.ne.2)) then 
+
+          istat = cusolverDnCreate(cudanvh)
+          if (istat /= CUSOLVER_STATUS_SUCCESS) 
+     +        write(*,*) 'handle creation failed'
+
+          itype = 1
+          jobz = CUSOLVER_EIG_MODE_VECTOR
+          uplo = CUBLAS_FILL_MODE_LOWER
+
+!$acc data copy(eigen) copyin(ovap) copy(fock) 
+!$acc host_data use_device(ovap, fock, eigen)
+          istat = cusolverDnZhegvd_buffersize(cudanvh, 
+     &         itype, jobz, uplo, ndim, fock, 
+     &         ndim, ovap, ndim, eigen,  
+     &         lwork)
+
+          allocate(work(lwork), stat=istat)
+          allocate(tdd_d(1:ndim,1:ndim))
+!$acc end host_data
+!$acc end data
+
+        endif    
+
+        call diagonalizer (eigen, work, tdd_d, lwork, cudanvh)
+
+#else
 
         call diagonalizer (eigen)
+#endif
 
         wtimeio = walltime ()
         ctimeio = cputime ()
@@ -819,6 +878,17 @@ c        end do
  6666   format ("Total time for iteration ", I4, " walltime   ",
      +          F10.2, "  cputime ", F10.2, /)
       end do
+
+
+#ifdef USECUDANV    
+      deallocate(work)
+      deallocate(tdd_d)
+
+      istat = cusolverDnDestroy(cudanvh)
+      if (istat /= CUSOLVER_STATUS_SUCCESS) 
+     &    write(*,*) 'handle destruction failed' 
+
+#endif
 
       if (verbose .eq. 1) write(6,*) 'convergence not obtained in the maximum number'
       if (verbose .eq. 1) write(6,*) 'of iterations'
