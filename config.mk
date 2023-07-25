@@ -11,7 +11,10 @@ PROFILE=no
 
 #is used only by serial
 #use Intel compiler
-USEINTEL=yes
+USEINTEL=no
+
+#use cuda portland compiler
+USECUDA=yes
 
 #LIBXC
 LIBXC=no
@@ -89,45 +92,88 @@ ifeq ($(FORBGQ),no)
 
     LIBS += $(BLASLAPACK)
   else
-    FC = gfortran
-    CC = gcc
-    FOPT = 
-    INCLUDE = 
-    
-    # gnu standard
-    BLASLAPACK = -llapack -lblas
-    #SCALAPACK=-L/usr/lib64/openmpi/lib/ -lscalapack 
-    #BLACS=-L/usr/lib64/openmpi/lib/ -lmpiblacs
+    ifeq ($(USECUDA),yes)
+      FC = nvfortran
+      CC = nvcc
 
-    # gnu custom
-    #BLACSDIR=/home/mat/local/lib
-    #BLASLAPACK = -L/home/mat/local/lib -ltmg -lreflapack -lrefblas 
-    #SCALAPACK=-L/home/mat/local/lib -lscalapack 
-    #BLACS=$(BLACSDIR)/libscalapack.a
-    #SCALAPACK=-L/opt/share/scalapack_gnu -lscalapack
+      LINKFLAGS = 
+ 
+      ifeq ($(PROFILE),yes)
+        FFLAGS = -Minfo=accel
+        CFLAGS = 
+        LINKFLAGS = -Minfo=accel
+      else
+        # for Quadro P2000 -gpu=cc61,cuda12.1 
+	# for marconi -gpu=cc70,cuda11.8 
+        FFLAGS = -acc=gpu -gpu=cc61,cuda12.1 -Minfo=accel -cuda -cudalib=cublas,cusolver  
+        CFLAGS =
+      endif
 
-    ifeq ($(PROFILE),yes)
-      FFLAGS = -pg
-      CFLAGS = -pg
-      LINKFLAGS = -pg
+      # for Quadro P2000 -gpu=cc61,cuda12.1 
+      # for marconi -gpu=cc70,cuda11.8 
+      LINKFLAGS += -acc=gpu -gpu=cc61,cuda12.1 -Minfo=accel -cuda -cudalib=cublas,cusolver  
+ 
+      ifeq ($(DEBUG),yes)
+        FFLAGS += -r8 -Minform=warn -Mextend -O0 -g -cudalib=cublas -DUSECUDANV
+        CFLAGS += -D_FILE_OFFSET_BITS=64 -O0 -g -DUSECUDANV
+      else
+	ifeq ($(EXCLUDEOPENACC),yes)
+          FFLAGS += -r8 -Minform=warn -Mextend -O3 -cudalib=cublas $(INCLUDE)
+          CFLAGS += -D_FILE_OFFSET_BITS=64 -O3 
+	else
+          FFLAGS += -r8 -Minform=warn -Mextend -O3 -cudalib=cublas $(INCLUDE) -DUSECUDANV
+          CFLAGS += -D_FILE_OFFSET_BITS=64 -O3  -DUSECUDANV
+	endif
+      endif
+
+      BLASLAPACK = -llapack -lblas
+
+      #openblas
+      #BLASLAPACK =-L${OPENBLAS_LIB} -llapack -L${OPENBLAS_LIB} -lblas
+ 
+      LIBS += $(BLASLAPACK)
     else
-      FFLAGS =
-      CFLAGS =
+      FC = gfortran
+      CC = gcc
+      FOPT = 
+      INCLUDE = 
+      
+      # gnu standard
+      BLASLAPACK = -llapack -lblas
+      #SCALAPACK=-L/usr/lib64/openmpi/lib/ -lscalapack 
+      #BLACS=-L/usr/lib64/openmpi/lib/ -lmpiblacs
+     
+      # gnu custom
+      #BLACSDIR=/home/mat/local/lib
+      #BLASLAPACK = -L/home/mat/local/lib -ltmg -lreflapack -lrefblas 
+      #SCALAPACK=-L/home/mat/local/lib -lscalapack 
+      #BLACS=$(BLACSDIR)/libscalapack.a
+      #SCALAPACK=-L/opt/share/scalapack_gnu -lscalapack
+     
+      ifeq ($(PROFILE),yes)
+        FFLAGS = -pg
+        CFLAGS = -pg
+        LINKFLAGS = -pg
+      else
+        FFLAGS =
+        CFLAGS =
+      endif
+     
+      ifeq ($(DEBUG),yes)
+        FFLAGS += -finit-local-zero -fdefault-double-8 -fdefault-real-8 -O0 -ffixed-line-length-132 -fbacktrace -ffpe-trap=zero,overflow,underflow -g -W -Wall -I./$(MODIR)
+        CFLAGS += -D_FILE_OFFSET_BITS=64 -O0 -g -W -Wall
+      else
+        #FFLAGS += -finit-local-zero -fdefault-double-8 -fdefault-real-8 -O2 -I./$(MODIR) -W -Wall -ffixed-line-length-132
+        FFLAGS +=  -fdefault-double-8 -fdefault-real-8 -O3 -I./$(MODIR) -ffixed-line-length-132
+        CFLAGS += -D_FILE_OFFSET_BITS=64 -O3 -W -Wall
+      endif
+     
+      LIBS += $(BLASLAPACK)
+      CFLAGS += -W -Wall
     endif
-
-    ifeq ($(DEBUG),yes)
-      FFLAGS += -finit-local-zero -fdefault-double-8 -fdefault-real-8 -O0 -ffixed-line-length-132 -fbacktrace -ffpe-trap=zero,overflow,underflow -g -W -Wall -I./$(MODIR)
-      CFLAGS += -D_FILE_OFFSET_BITS=64 -O0 -g -W -Wall
-    else
-      #FFLAGS += -finit-local-zero -fdefault-double-8 -fdefault-real-8 -O2 -I./$(MODIR) -W -Wall -ffixed-line-length-132
-      FFLAGS +=  -fdefault-double-8 -fdefault-real-8 -O3 -I./$(MODIR) -ffixed-line-length-132
-      CFLAGS += -D_FILE_OFFSET_BITS=64 -O3 -W -Wall
-    endif
-
-    LIBS += $(BLASLAPACK)
   endif
   
-  CFLAGS += -W -Wall -DUSE_UNDER
+  CFLAGS += -DUSE_UNDER
 else
   ## for the node
   #FC = bgxlf_r
@@ -154,9 +200,6 @@ endif
 
 #FFLAGS += -I../common 
 
-CFLAGS += -fPIC
-FFLAGS += -fPIC
-
 ifeq ($(LIBXC),yes)
   # Use libxc of a distribution DIRLIBXC to be set version 4.3.X is needed 
   #
@@ -166,8 +209,7 @@ ifeq ($(LIBXC),yes)
   FFLAGS += -DLIBXC
   INCLUDE += -I$(DIRLIBXC)/include
   LIBS += -L$(DIRLIBXC)/lib -lxcf90 -lxc
-#  LIBS += -L$(DIRLIBXC) -lxc
-
+  #LIBS += -L$(DIRLIBXC) -lxc
 endif
 
 ifeq ($(USEINTEL),yes)
@@ -179,15 +221,31 @@ LINKFLAGS =
 
 ifeq ($(USEOPENMP),yes)
   ifeq ($(USEINTEL),yes)
-      FFLAGS    += -qopenmp -DUSEOMPAPI
-      CFLAGS    += -qopenmp -DUSEOMPAPI
-      LINKFLAGS += -qopenmp
+    FFLAGS    += -qopenmp -DUSEOMPAPI
+    CFLAGS    += -qopenmp -DUSEOMPAPI
+    LINKFLAGS += -qopenmp
   else 
-    FFLAGS    += -fopenmp -DUSEOMPAPI
-    CFLAGS    += -fopenmp -DUSEOMPAPI
-    LINKFLAGS += -fopenmp
+    ifeq ($(USECUDA),yes)
+      FFLAGS    += -fopenmp -DUSEOMPAPI
+      CFLAGS    += --compiler-options '-fopenmp' -DUSEOMPAPI
+      LINKFLAGS += -fopenmp
+    else
+      FFLAGS    += -fopenmp -DUSEOMPAPI
+      CFLAGS    += -fopenmp -DUSEOMPAPI
+      LINKFLAGS += -fopenmp
+    endif
   endif
 endif
+
+ifeq ($(USECUDA),yes)
+  CFLAGS += --compiler-options '-fPIC'
+  FFLAGS += -fpic
+else
+  CFLAGS += -fPIC
+  FFLAGS += -fPIC
+endif
+
+#$(info $$CFLAGS is [${CFLAGS}])
 
 #FFLAGS += -DDUMPFOCKMTX
 
