@@ -19,7 +19,13 @@ c      USE mkl_service
       use energy, only: etotal
       use shiftr, only: sfact
       use opensh, only: nopen
-      use indsys
+c      use indsys
+
+#ifdef USECUDANV
+      use cublas
+      use cusolverDn
+      use cudafor
+#endif
 
       implicit none
 
@@ -88,6 +94,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
      +                       fittfname, eigen, ovap_ptr, eige_ptr, 
      +                       fock_ptr, restart_eige) 
 
+
       implicit none
 
       real (c_double) :: eigen(*)
@@ -126,6 +133,34 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       real, external :: walltime, cputime
 
       logical :: filefound, debug
+
+#ifdef USECUDANV
+      integer :: istat, lwork
+      integer(4) :: itype, jobz, uplo
+      type(cusolverDnHandle) :: cudanvh
+      complex, device, allocatable :: work(:)
+      complex, device, allocatable :: tdd_d(:,:)
+
+      interface
+        subroutine diagonalizer (eigen, work, tdd_d, lwork, cudanvh)
+             import cusolverDnHandle
+
+             real (c_double), intent(inout) :: eigen(*)
+             complex, device, allocatable, intent(inout) :: work(:)
+             complex, device, allocatable, intent(inout) :: tdd_d(:,:)
+             integer , intent(in) :: lwork
+             type(cusolverDnHandle) :: cudanvh
+        end subroutine diagonalizer
+      end interface
+ 
+#else
+      interface
+        subroutine diagonalizer (eigen)
+          real (c_double), intent(inout) :: eigen(*)
+        end subroutine diagonalizer
+      end interface
+#endif
+
 
 #ifdef USEOMPAPI 
       character(len=255) :: evariable

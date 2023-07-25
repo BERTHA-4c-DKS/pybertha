@@ -15,6 +15,8 @@ USEINTEL=no
 
 #use cuda portland compiler
 USECUDA=yes
+#use the compile but exclude GPU for test
+EXCLUDEOPENACC=no
 
 #LIBXC
 LIBXC=no
