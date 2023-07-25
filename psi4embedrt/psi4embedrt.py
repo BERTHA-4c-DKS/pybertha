@@ -96,6 +96,13 @@ def scfiterations (args, maxiter, jk, H, Cocc, func, wfn, D, vemb, E, Eold, \
             jk.C_left_add(Cocc)
             jk.compute()
             jk.C_clear()
+            # add a potential from a static field
+            if args.static_field:
+                fmax = args.fmax 
+                fdir = args.fdir
+                H.axpy(-fmax,dipole[fdir])
+                print("fdir = %4.16f "%(fdir))
+                print("fmax = %4.16f "%(fmax))
        
             # Build Fock matrix
             F = H.clone()
