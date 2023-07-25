@@ -225,6 +225,11 @@ class pyemb:
         self.__isolated_elpot_enviro = None
         self.__init = False
         self.__acc_int = None
+        self.__fde_relax = False
+        self.__tnad = 'THOMASFERMI'
+        self.__relax_cyc = 5
+        self.__fde_frz_opts = None
+        self.__fde_act_opts = None
 
         self.__grid_type = 1
         self.__enviro_func = "BLYP"
@@ -235,6 +240,17 @@ class pyemb:
         self.__f_nad_kin = 'tkf'
         self.__adfoufname = ""
         self.__psioufname = ""
+        self.__gridfilename = "grid.dat"
+
+#    def set_fde_relax(self,bool_):
+#        self.__fde_relax = bool_
+
+#    def set_cycles(self,int_):
+#        self.__relax_cyc = int_
+
+#    def set_tnad(self,str_):
+#        self.__tnad = str_
+
 
         self.__gridfilename = "grid.dat"
 
@@ -377,7 +393,16 @@ class pyemb:
 
         self.set_f_nad_xc(f_nad['xc'])
         self.set_f_nad_kin(f_nad['kin'])
-        
+
+    def set_fde_options(self,bool_,int_,str_):
+        self.__fde_relax = bool_
+        self.__relax_cyc = int_
+        self.__tnad = str_
+
+        if self.__fde_relax:
+             self.__fde_frz_opts = {"RELAX": ""}
+             self.__fde_act_opts = {'FULLGRID': '', 'RELAXCYCLES': self.__relax_cyc, 'TNAD': self.__tnad, 'ENERGY': ''}
+
     def get_options(self):
 
         outstr = "pyemb job type : %s, grid type : %s, functional (enviro) : %s, e/d thresh : %.2e\n" \
@@ -466,14 +491,30 @@ class pyemb:
                 #          fde=fde_act_opts, options=['NOSYMFIT\n EXCITATIONS\n  ONLYSING\n  LOWEST 2\nEND'])
                 #    fde_res=fde_res.run()
                 #    __agrid = pyadf.adfgrid(fde_res) 
-                
-                self.__isolated_dens_enviro  = r_isolated_enviro.get_density(grid=self.__agrid,\
-                   fit=False, order=2) #grid=grid_active=agrid
-                isolated_vnuc_enviro  = r_isolated_enviro.get_potential(grid=self.__agrid,\
-                  pot='nuc')
-                isolated_coul_enviro  = r_isolated_enviro.get_potential(grid=self.__agrid,\
-                  pot='coul')
-                self.__isolated_elpot_enviro = isolated_vnuc_enviro + isolated_coul_enviro
+
+                if self.__fde_relax:
+                    if self.__grid_type != 2:
+                       raise Exception("Relax density only allowed for grid option 2")
+
+                    r_isolated_active = pyadf.adfsinglepointjob(m_active, self.__basis_frzn, \
+                       settings=adf_settings, options=['NOSYMFIT']).run()
+                    frags = [pyadf.fragment(None, [m_enviro]), \
+                       pyadf.fragment(r_isolated_active, [m_active], isfrozen=True, fdeoptions=self.__fde_frz_opts)]
+                    fde_res = pyadf.adffragmentsjob(frags, self.__basis_frzn, settings=adf_settings, \
+                              fde=self.__fde_act_opts,options=['NOSYMFIT']).run()
+                    self.__isolated_dens_enviro = fde_res.get_nonfrozen_density(grid=self.__agrid, \
+                    fit=False, order=2) #density,Hessian
+                    isolated_vnuc_enviro = fde_res.get_nonfrozen_potential(grid=self.__agrid, pot='nuc')
+                    isolated_coul_enviro = fde_res.get_nonfrozen_potential(grid=self.__agrid, pot='coul')
+                    self.__isolated_elpot_enviro = isolated_vnuc_enviro + isolated_coul_enviro
+                else:
+                    self.__isolated_dens_enviro  = r_isolated_enviro.get_density(grid=self.__agrid,\
+                    fit=False, order=2) #grid=grid_active=agrid
+                    isolated_vnuc_enviro  = r_isolated_enviro.get_potential(grid=self.__agrid,\
+                    pot='nuc')
+                    isolated_coul_enviro  = r_isolated_enviro.get_potential(grid=self.__agrid,\
+                    pot='coul')
+                    self.__isolated_elpot_enviro = isolated_vnuc_enviro + isolated_coul_enviro
             
             if self.__adfoufname != "":
                 fp = open(self.__adfoufname, "w")
