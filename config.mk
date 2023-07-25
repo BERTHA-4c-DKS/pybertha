@@ -14,7 +14,7 @@ PROFILE=no
 USEINTEL=no
 
 #use cuda portland compiler
-USECUDA=yes
+USECUDA=no
 
 #LIBXC
 LIBXC=no
