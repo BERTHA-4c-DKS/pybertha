@@ -217,8 +217,6 @@ ifeq ($(USEINTEL),yes)
   FFLAGS += -DUSEINTELCMP
 endif
 
-LINKFLAGS = 
-
 ifeq ($(USEOPENMP),yes)
   ifeq ($(USEINTEL),yes)
     FFLAGS    += -qopenmp -DUSEOMPAPI
