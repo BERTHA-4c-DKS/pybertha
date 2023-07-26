@@ -39,6 +39,10 @@
 
 #ifdef USECUDANV
 
+#define f_nopen opensh_get_nopen_
+
+void opensh_get_nopen_ (int *);
+
 #else
 
 #define f_bertha_init __bertha_wrapper_MOD_bertha_init
@@ -97,10 +101,14 @@ void f_bertha_set_embpot_on_grid (int *, double *, double *);
 void f_bertha_set_restart_mem();
 void f_bertha_checksetthreads();
 
+#ifndef USECUDANV
+
 extern int f_ndim, f_nshift, f_nocc, f_nopen, f_densitydiff;
 extern double f_sfact, f_etotal, f_erep, f_thresh, f_eecoul, f_eexc;
-
 extern int f_ncent;
+
+#endif
+
 void f_bertha_get_coord (int *, double *, double *, double *, double *);
 
 extern int f_outerr;
@@ -161,7 +169,13 @@ int get_init_outerr ()
 
 int get_nopen ()
 {
+
+#ifdef USECUDANV
+  int val;
+  f_nopen (*val);
+#else
   int val = f_nopen;
+#endif
 
   return val;
 }
