@@ -19,7 +19,6 @@ c      USE mkl_service
       use energy, only: etotal
       use shiftr, only: sfact
       use opensh, only: nopen
-      use indsys
 
 #ifdef USECUDANV
       use cublas
@@ -94,6 +93,8 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
      +                       fittfname, eigen_ptr, ovap_ptr, eige_ptr, 
      +                       fock_ptr, restart_eige) 
 
+
+      use indsys, only: initijkvec
 
       implicit none
 
