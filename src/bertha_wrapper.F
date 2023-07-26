@@ -94,7 +94,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
      +                       fock_ptr, restart_eige) 
 
 
-      use indsys, only: initijkvec
+      use indsys
 
       implicit none
 

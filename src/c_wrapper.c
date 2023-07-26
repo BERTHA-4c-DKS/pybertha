@@ -37,6 +37,10 @@
 
 #else
 
+#ifdef USECUDANV
+
+#else
+
 #define f_bertha_init __bertha_wrapper_MOD_bertha_init
 #define f_bertha_realtime_init __bertha_wrapper_MOD_bertha_realtime_init
 #define f_bertha_main __bertha_wrapper_MOD_bertha_main
@@ -68,6 +72,8 @@
 #define f_bertha_get_coord __bertha_wrapper_MOD_bertha_get_coord
 
 #define f_outerr __spec_MOD_outerr
+
+#endif
 
 #endif
 
