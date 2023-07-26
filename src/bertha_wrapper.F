@@ -91,13 +91,13 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine bertha_main(fittcoefffname, vctfilename, ovapfilename,
-     +                       fittfname, eigen, ovap_ptr, eige_ptr, 
+     +                       fittfname, eigen_ptr, ovap_ptr, eige_ptr, 
      +                       fock_ptr, restart_eige) 
 
 
       implicit none
 
-      real (c_double) :: eigen(*)
+      real (c_double) :: eigen_ptr(*)
 
       character*(*), intent(in) :: fittcoefffname, vctfilename,
      >   ovapfilename, fittfname
@@ -134,6 +134,8 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       logical :: filefound, debug
 
+      real, allocatable :: eigen(:)
+
 #ifdef USECUDANV
       integer :: istat, lwork
       integer(4) :: itype, jobz, uplo
@@ -145,7 +147,8 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         subroutine diagonalizer (eigen, work, tdd_d, lwork, cudanvh)
              import cusolverDnHandle
 
-             real (c_double), intent(inout) :: eigen(*)
+             real, allocatable, intent(inout) :: eigen(:)
+c             real (c_double), intent(inout) :: eigen(:)
              complex, device, allocatable, intent(inout) :: work(:)
              complex, device, allocatable, intent(inout) :: tdd_d(:,:)
              integer , intent(in) :: lwork
@@ -192,8 +195,6 @@ c      call mkl_set_num_threads(nt)
 
       if (restartmem) irun = 0
 
-c      print *, "Here " , irun, restartmem
- 
       if (dumpfiles .eq. 1) then 
         open (unit=11, file=fittcoefffname, err=9999,
      +        status ="unknown")
@@ -206,6 +207,8 @@ c      print *, "Here " , irun, restartmem
         if (rc.ne.0) call errmsg('error allocating memory')
         olddensity = (0.0, 0.0)
       endif
+
+      allocate(eigen(ndim))
 
       call initijkvec()
 
@@ -404,7 +407,6 @@ c        call dftinit_fit(excfit,igrid,expo,v,nfitt,fitcase,zz,a)
           deallocate(pp)
         endif
 
-
         fock=(0.0,0.0) 
 
         call jmatfitt(fock, ndim, v, nfitt, fitcase)
@@ -523,7 +525,7 @@ c        call dftinit_fit(excfit,igrid,expo,v,nfitt,fitcase,zz,a)
 
         v = zz + v
 
-! Note that this is necessary to evaluate the TOTAL energy
+!       Note that this is necessary to evaluate the TOTAL energy
 
         call jmatfitt(fock,ndim,v,nfitt,fitcase)
 
@@ -534,7 +536,7 @@ c        call dftinit_fit(excfit,igrid,expo,v,nfitt,fitcase,zz,a)
           end do
         end do
 
-! #### Calculation of Tr(D(V_xc+J))    
+!       #### Calculation of Tr(D(V_xc+J))    
         efittcoulplusexc = 0.0
         do i = 1,ndim
           do j = 1,ndim
@@ -542,8 +544,8 @@ c        call dftinit_fit(excfit,igrid,expo,v,nfitt,fitcase,zz,a)
      +        real(c(i,j)*fock(i,j))
           end do
         end do
-! #### end  Calculation of Tr(D(V_xc+J))    
-!  For Embedding
+!       #### end  Calculation of Tr(D(V_xc+J))    
+!       For Embedding
 
         if (addpot) then
 
@@ -562,9 +564,8 @@ c        call dftinit_fit(excfit,igrid,expo,v,nfitt,fitcase,zz,a)
           ctime1 = cputime() - ctime1
 
         if (verbose .eq. 1) write (*, 6662 ) time1, ctime1
- 6662   format ('Time for onel_pot_from_grid (include int(Vexc|f_t) + FactlU)  walltime                   ', f10.2,
-     +  '  cputime ', f10.2,/)
-
+ 6662     format ('Time for onel_pot_from_grid (include int(Vexc|f_t) + FactlU)  walltime                   ', f10.2,
+     +    '  cputime ', f10.2,/)
 
           v = v + pp
 
@@ -615,25 +616,25 @@ c        call dftinit_fit(excfit,igrid,expo,v,nfitt,fitcase,zz,a)
      >      write(6,*) '******** ATTENTION rjmat is on. This should be used only for benchmark********* '
           call rjmat(ndim,c,coulenergy) 
           if (verbose .eq. 1) then
-           write(6,*) 'coulomb  energy              : ',coulenergy/2.0d0
-           write(6,*) ' '
-           write(6,*) '******** energies fitted values ********* '
-           write(6,*) ' '
-           write(6,*) 'coulomb  energy(fitting)     : ',efittcoul/2.0d0
-           write(6,*) 'Exc(rhofit)                  : ',excfit
-           write(6,*) ' '
-           write(6,*) 'Error in Coulomb energy due to fitting: ',efittcoul/2.0d0-coulenergy/2.0
-           write(6,*) ' '
-           write(6,*) '******************************************************************************* '
-           write(6,*) ' '
+            write(6,*) 'coulomb  energy              : ',coulenergy/2.0d0
+            write(6,*) ' '
+            write(6,*) '******** energies fitted values ********* '
+            write(6,*) ' '
+            write(6,*) 'coulomb  energy(fitting)     : ',efittcoul/2.0d0
+            write(6,*) 'Exc(rhofit)                  : ',excfit
+            write(6,*) ' '
+            write(6,*) 'Error in Coulomb energy due to fitting: ',efittcoul/2.0d0-coulenergy/2.0
+            write(6,*) ' '
+            write(6,*) '******************************************************************************* '
+            write(6,*) ' '
           endif
         else
           if (verbose .eq. 1) then
-           write(6,*) '******** energies fitted values ********* '
-           write(6,*) ' '
-           write(6,*) 'coulomb  energy(fitting)     : ',efittcoul/2.0d0
-           write(6,*) 'Exc(rhofit)                  : ',excfit
-           write(6,*) ' '
+            write(6,*) '******** energies fitted values ********* '
+            write(6,*) ' '
+            write(6,*) 'coulomb  energy(fitting)     : ',efittcoul/2.0d0
+            write(6,*) 'Exc(rhofit)                  : ',excfit
+            write(6,*) ' '
           endif
         endif
 
@@ -649,29 +650,26 @@ c        call dftinit_fit(excfit,igrid,expo,v,nfitt,fitcase,zz,a)
         ctime1 = cputime () - ctime1
 
         if (dumpfiles .eq. 1) then
-         open (unit=99, file=ovapfilename, err=9999, status='unknown')
-         write (99, '(I5)') ndim
-         do i=1,ndim
-           do j=1,ndim
-             write(99,'(E22.10E4,1X,E22.10E4)') ovap(i, j)
-           end do
-         end do
-         close(unit=99)
+          open (unit=99, file=ovapfilename, err=9999, status='unknown')
+          write (99, '(I5)') ndim
+          do i=1,ndim
+            do j=1,ndim
+              write(99,'(E22.10E4,1X,E22.10E4)') ovap(i, j)
+            end do
+          end do
+          close(unit=99)
         endif
 
         counter = 1
         do i = 1, ndim
           do j = 1, ndim
-c            write (6, '("(",F10.5," ",F10.5,"i)")', advance="no") ovap(i, j)
-c            write (6, '("(",F10.5," ",F10.5,"i)")') ovap(i, j)
              ovap_ptr(counter) = real(ovap(i,j))
              ovap_ptr(counter+1) = imag(ovap(i,j))
              counter = counter + 2
           enddo
-c          write (6, *) " "
         enddo
         
-c        ovap_ptr = c_loc(ovap(1,1))
+c       ovap_ptr = c_loc(ovap(1,1))
 
         if (verbose .eq. 1) write (0, 6664 ) time1, ctime1
  6664   format ('Time for oneel walltime                  ', f10.2,
@@ -679,12 +677,11 @@ c        ovap_ptr = c_loc(ovap(1,1))
         time1 = walltime ()
         ctime1 = cputime ()
 
-
 #ifndef USECUDANV
 c       if (((iter.gt.1).and.(sfact.ne.(0.0))).or.(irun.eq.0).
         if (((iter.gt.1).and.(abs(sfact).gt.(1.0d-17))).or.(irun.eq.0).
      >      or.(irun.eq.2))
-     >     call shftlv()
+     >      call shftlv()
         time1 = walltime () - time1
         ctime1 = cputime () - ctime1
         if (verbose .eq. 1) write (0, 5564 ) time1, ctime1
@@ -717,6 +714,16 @@ c       if (((iter.gt.1).and.(sfact.ne.(0.0))).or.(irun.eq.0).
 #endif
 
 #ifdef USECUDANV
+
+        counter = 1
+        do i = 1, ndim
+          do j = 1, ndim
+             fock_ptr(counter) = real(fock(i,j))
+             fock_ptr(counter+1) = imag(fock(i,j))
+             counter = counter + 2
+          enddo
+        enddo
+
         if ((iter .eq.1).and.(irun.ne.2)) then 
 
           istat = cusolverDnCreate(cudanvh)
@@ -763,14 +770,6 @@ c       if (((iter.gt.1).and.(sfact.ne.(0.0))).or.(irun.eq.0).
            end do
          end do
 
-c        write (10, '(I5,I5)') ndim, ndim
-c        do iocc = 1,ndim
-c          write(10,'(E18.10)') eigen(iocc)
-c          do i=1,ndim
-c            write(10,'(E17.10,1X,E17.10)') c(i,iocc)
-c          end do
-c        end do
- 
          close(unit=10)
         endif
 
@@ -906,17 +905,17 @@ c        end do
       wtime11   = walltime () - wtime11 
 
       if (verbose .eq. 1) then
-       write(6,*) ' '
-       write(6,*) '**********************************************'
-       write(6,*) 'final output:'
-       write(6,*) 'convergence obtained in',iter,'     iterations'
-       write(6,*) ' '
-       write(6,*) 'bond length = ',coord(3,2)
-       write(6,*) 'total energy = ',etotal+erep-(nocc*sfact)
-       write(6,*) ' '
-       write(6,*) 'total  cpu-time used (sec):', cputime11
-       write(6,*) 'total wall-time used (sec):', wtime11
-       write(6,*) '**********************************************'
+        write(6,*) ' '
+        write(6,*) '**********************************************'
+        write(6,*) 'final output:'
+        write(6,*) 'convergence obtained in',iter,'     iterations'
+        write(6,*) ' '
+        write(6,*) 'bond length = ',coord(3,2)
+        write(6,*) 'total energy = ',etotal+erep-(nocc*sfact)
+        write(6,*) ' '
+        write(6,*) 'total  cpu-time used (sec):', cputime11
+        write(6,*) 'total wall-time used (sec):', wtime11
+        write(6,*) '**********************************************'
       endif
 
       iall = 2
@@ -927,6 +926,8 @@ c     call getresourcesusage ()
       if (densitydiff .eq. 1) then 
         deallocate(olddensity)
       endif
+
+      deallocate (eigen)
 
       wtimeiter = walltime ()
       !call gencubefile(ncent,coord,iznuc,nfitt,fitcase)
