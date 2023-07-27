@@ -41,7 +41,42 @@
 
 #define f_nopen opensh_get_nopen_
 
+#define f_ncent spec_get_necent_
+#define f_outerr spec_get_outerr_
+#define f_ndim spec_get_ndim_
+#define f_nshift spec_get_nshift_
+#define f_nocc spec_get_nocc_
+
+#define f_sfact shiftr_get_sfact_
+
+#define f_etotal energy_get_etotal_
+
+#define f_eecoul bertha_wrapper_get_eecoul_
+#define f_eexc bertha_wrapper_get_eexc_
+#define f_erep bertha_wrapper_get_erep_
+#define f_thresh bertha_wrapper_get_thresh_
+#define f_densitydiff bertha_wrapper_get_densitydiff_
+
 void opensh_get_nopen_ (int *);
+
+void spec_get_necent_ (int *);
+void spec_get_outerr_ (int *);
+void spec_get_ndim_ (int *);
+void spec_get_nshift_ (int *);
+void spec_get_nocc_ (int *);
+
+void shiftr_get_sfact_ (double *);
+
+void energy_get_etotal_ (double *);
+
+void bertha_wrapper_get_eecoul_ (double *);
+void bertha_wrapper_get_eexc_ (double *);
+void bertha_wrapper_get_erep_ (double *);
+void bertha_wrapper_get_thresh_ (double *);
+void bertha_wrapper_get_densitydiff_ (int *);
+
+void bertha_wrapper_set_thresh_ (double *);
+void bertha_wrapper_set_densitydiff_ (int *);
 
 #else
 
@@ -60,22 +95,24 @@ void opensh_get_nopen_ (int *);
 #define f_bertha_set_restart_mem __bertha_wrapper_MOD_bertha_set_restart_mem
 #define f_bertha_checksetthreads __bertha_wrapper_MOD_bertha_checksetthreads
 
+#define f_ncent __spec_MOD_ncent
+#define f_outerr __spec_MOD_outerr
 #define f_ndim __spec_MOD_ndim
 #define f_nshift __spec_MOD_nshift
 #define f_nocc __spec_MOD_nocc
+
 #define f_nopen __opensh_MOD_nopen
+
 #define f_sfact __shiftr_MOD_sfact
+
 #define f_etotal __energy_MOD_etotal
+
 #define f_eecoul __bertha_wrapper_MOD_eecoul
 #define f_eexc __bertha_wrapper_MOD_eexc
 #define f_erep __bertha_wrapper_MOD_erep
 #define f_thresh __bertha_wrapper_MOD_thresh
 #define f_densitydiff __bertha_wrapper_MOD_densitydiff
-
-#define f_ncent __spec_MOD_ncent
 #define f_bertha_get_coord __bertha_wrapper_MOD_bertha_get_coord
-
-#define f_outerr __spec_MOD_outerr
 
 #endif
 
@@ -106,73 +143,111 @@ void f_bertha_checksetthreads();
 extern int f_ndim, f_nshift, f_nocc, f_nopen, f_densitydiff;
 extern double f_sfact, f_etotal, f_erep, f_thresh, f_eecoul, f_eexc;
 extern int f_ncent;
+extern int f_outerr;
 
 #endif
 
 void f_bertha_get_coord (int *, double *, double *, double *, double *);
 
-extern int f_outerr;
-
 // DATA METHODS
 
 int get_ncent ()
 {
+#ifdef USECUDANV
+  int val;
+  f_ncent (&val);
+#else
   int val = f_ncent;
+#endif
 
   return val;
 }
 
 int get_densitydiff ()
 {
+#ifdef USECUDANV
+  int val;
+  f_densitydiff (&val);
+#else
   int val = f_densitydiff;
+#endif
 
   return val;
 }
 
 void set_densitydiff (int val)
 {
+#ifdef USECUDANV
+  bertha_wrapper_set_densitydiff_ (&val);
+#else
   f_densitydiff = val;
+#endif
+
 }
 
 double get_thresh ()
 {
+#ifdef USECUDANV
+  double val;
+  f_thresh (&val);
+#else
   double val = f_thresh;
+#endif
 
   return val;
 }
 
 void set_thresh (double val)
 {
+#ifdef USECUDANV
+  bertha_wrapper_set_thresh_ (&val);
+#else
   f_thresh = val;
+#endif
+
 }
 
 int get_ndim ()
 {
+#ifdef USECUDANV
+  int val;
+  f_ndim (&val);
+#else
   int val = f_ndim;
+#endif
 
   return val;
 }
 
 int get_nshift ()
 {
+#ifdef USECUDANV
+  int val;
+  f_nshift (&val);
+#else
   int val = f_nshift;
+#endif
 
   return val;
 }
 
 int get_init_outerr ()
 {
+#ifdef USECUDANV
+  int val;
+  f_outerr (&val);
+#else
   int val = f_outerr;
+#endif
 
   return val;
 }
 
 int get_nopen ()
 {
-
 #ifdef USECUDANV
   int val;
-  f_nopen (*val);
+  f_nopen (&val);
 #else
   int val = f_nopen;
 #endif
@@ -182,42 +257,73 @@ int get_nopen ()
 
 int get_nocc ()
 {
+#ifdef USECUDANV
+  int val;
+  f_nocc (&val);
+#else
   int val = f_nocc;
+#endif
 
   return val;
 }
 
 double get_sfact ()
 {
+#ifdef USECUDANV
+  double val;
+  f_sfact (&val);
+#else
   double val = f_sfact;
+#endif
 
   return val;
 }
 
 double get_erep ()
 {
+#ifdef USECUDANV
+  double val;
+  f_erep (&val);
+#else
   double val = f_erep;
+#endif
 
   return val;
 }
 
 double get_etotal ()
 {
+#ifdef USECUDANV
+  double val;
+  f_etotal (&val);
+#else
   double val = f_etotal;
+#endif
 
   return val;
 }
 
 double get_eecoul ()
 {
+#ifdef USECUDANV
+  double val;
+  f_eecoul (&val);
+#else
   double val = f_eecoul;
+#endif
 
   return val;
 }
 
 double get_eexc ()
 {
+#ifdef USECUDANV
+  double val;
+  f_eexc (&val);
+#else
   double val = f_eexc;
+#endif
+
 
   return val;
 }

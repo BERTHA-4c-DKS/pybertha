@@ -42,7 +42,76 @@ c     potential to add
 c     restart from memory data 
       logical :: restartmem 
 
+#ifdef USECUDANV
+      public :: get_eecoul, get_eexc, get_erep, get_thresh,
+     &          get_densitydiff,  set_thresh
+#endif
+
       contains
+
+#ifdef USECUDANV
+
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
+      subroutine get_eecoul (in)
+      implicit none
+      real, intent(out) :: in
+      in = eecoul
+      end subroutine get_eecoul
+
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
+      subroutine get_eexc (in)
+      implicit none
+      real, intent(out) :: in
+      in = eexc
+      end subroutine get_eexc
+
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
+      subroutine get_erep (in)
+      implicit none
+      real, intent(out) :: in
+      in = erep
+      end subroutine get_erep
+
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
+      subroutine get_thresh (in)
+      implicit none
+      real, intent(out) :: in
+      in = thresh
+      end subroutine get_thresh
+
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
+      subroutine set_thresh (in)
+      implicit none
+      real, intent(in) :: in
+      thresh = in
+      end subroutine set_thresh
+
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
+      subroutine get_densitydiff (in)
+      implicit none
+      integer, intent(out) :: in
+      in = densitydiff
+      end subroutine get_densitydiff
+
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
+      subroutine set_densitydiff (in)
+      implicit none
+      integer, intent(in) :: in
+      densitydiff = in
+      end subroutine set_densitydiff
+
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
+
+
+#endif
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
