@@ -14,7 +14,7 @@ FFLAGS+= -I${BERTHAROOT}/common -I${BERTHAROOT}/serial
 $(BERTHAWLIB): $(OBJ)
 	cp ${BERTHAROOT}/lib/* ../lib
 	$(FC) -shared $(LINKFLAGS) $(OBJ) -o $(BERTHAWLIB) -L../lib -lbertha -lberthaserial $(LIBS)
-	strip $(BERTHAWLIB)
+	#strip $(BERTHAWLIB)
 	cp $(BERTHAWLIB) ../lib
 
 clean:
