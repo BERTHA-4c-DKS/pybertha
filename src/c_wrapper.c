@@ -39,9 +39,25 @@
 
 #ifdef USECUDANV
 
+#define f_bertha_init bertha_wrapper_bertha_init_
+#define f_bertha_realtime_init bertha_wrapper_bertha_realtime_init_
+#define f_bertha_main bertha_wrapper_bertha_main_
+#define f_bertha_finalize bertha_wrapper_bertha_finalize_
+#define f_bertha_realtime_finalize bertha_wrapper_bertha_realtime_finalize_
+#define f_bertha_realtime_dipolematrix bertha_wrapper_bertha_realtime_dipolematrix_
+#define f_bertha_eps bertha_wrapper_bertha_eps_
+#define f_bertha_realtime_fock bertha_wrapper_bertha_realtime_fock_
+#define f_bertha_density_to_cube  bertha_wrapper_bertha_density_to_cube_
+#define f_bertha_density_to_cube_limit bertha_wrapper_bertha_density_to_cube_limit_
+#define f_bertha_get_density_ongrid bertha_wrapper_bertha_get_density_ongrid_
+#define f_bertha_set_embpot_on_grid bertha_wrapper_bertha_set_embpot_on_grid_ 
+#define f_bertha_set_restart_mem bertha_wrapper_bertha_set_restart_mem_
+#define f_bertha_checksetthreads bertha_wrapper_bertha_checksetthreads_
+#define f_bertha_get_coord bertha_wrapper_bertha_get_coord_
+
 #define f_nopen opensh_get_nopen_
 
-#define f_ncent spec_get_necent_
+#define f_ncent spec_get_ncent_
 #define f_outerr spec_get_outerr_
 #define f_ndim spec_get_ndim_
 #define f_nshift spec_get_nshift_
@@ -59,7 +75,7 @@
 
 void opensh_get_nopen_ (int *);
 
-void spec_get_necent_ (int *);
+void spec_get_ncent_ (int *);
 void spec_get_outerr_ (int *);
 void spec_get_ndim_ (int *);
 void spec_get_nshift_ (int *);

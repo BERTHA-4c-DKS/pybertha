@@ -163,7 +163,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
      +                       fock_ptr, restart_eige) 
 
 
-      use indsys
+      use indsys, only : initijkvec
 
       implicit none
 
@@ -1277,6 +1277,8 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       subroutine bertha_density_to_cube (dens_ptr, margin, drx, dry, 
      >    drz, fname, fittfname)
 
+      use indsys, only : initijkvec
+
       implicit none
 
       character*(*), intent(in) :: fname, fittfname
@@ -1385,6 +1387,8 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine bertha_density_to_cube_limit (dens_ptr, ri1, ri2, ri3, 
      >    rf1, rf2, rf3, drx, dry, drz, fname, fittfname)
+
+      use indsys, only : initijkvec
 
       implicit none
 
