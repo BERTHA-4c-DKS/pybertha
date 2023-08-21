@@ -37,7 +37,7 @@
 
 #else
 
-#ifdef USECUDANV
+#ifdef USENVCOMPILER
 
 #define f_bertha_init bertha_wrapper_bertha_init_
 #define f_bertha_realtime_init bertha_wrapper_bertha_realtime_init_
@@ -154,7 +154,7 @@ void f_bertha_set_embpot_on_grid (int *, double *, double *);
 void f_bertha_set_restart_mem();
 void f_bertha_checksetthreads();
 
-#ifndef USECUDANV
+#ifndef USENVCOMPILER
 
 extern int f_ndim, f_nshift, f_nocc, f_nopen, f_densitydiff;
 extern double f_sfact, f_etotal, f_erep, f_thresh, f_eecoul, f_eexc;
@@ -169,7 +169,7 @@ void f_bertha_get_coord (int *, double *, double *, double *, double *);
 
 int get_ncent ()
 {
-#ifdef USECUDANV
+#ifdef USENVCOMPILER
   int val;
   f_ncent (&val);
 #else
@@ -181,7 +181,7 @@ int get_ncent ()
 
 int get_densitydiff ()
 {
-#ifdef USECUDANV
+#ifdef USENVCOMPILER
   int val;
   f_densitydiff (&val);
 #else
@@ -193,7 +193,7 @@ int get_densitydiff ()
 
 void set_densitydiff (int val)
 {
-#ifdef USECUDANV
+#ifdef USENVCOMPILER
   bertha_wrapper_set_densitydiff_ (&val);
 #else
   f_densitydiff = val;
@@ -203,7 +203,7 @@ void set_densitydiff (int val)
 
 double get_thresh ()
 {
-#ifdef USECUDANV
+#ifdef USENVCOMPILER
   double val;
   f_thresh (&val);
 #else
@@ -215,7 +215,7 @@ double get_thresh ()
 
 void set_thresh (double val)
 {
-#ifdef USECUDANV
+#ifdef USENVCOMPILER
   bertha_wrapper_set_thresh_ (&val);
 #else
   f_thresh = val;
@@ -225,7 +225,7 @@ void set_thresh (double val)
 
 int get_ndim ()
 {
-#ifdef USECUDANV
+#ifdef USENVCOMPILER
   int val;
   f_ndim (&val);
 #else
@@ -237,7 +237,7 @@ int get_ndim ()
 
 int get_nshift ()
 {
-#ifdef USECUDANV
+#ifdef USENVCOMPILER
   int val;
   f_nshift (&val);
 #else
@@ -249,7 +249,7 @@ int get_nshift ()
 
 int get_init_outerr ()
 {
-#ifdef USECUDANV
+#ifdef USENVCOMPILER
   int val;
   f_outerr (&val);
 #else
@@ -261,7 +261,7 @@ int get_init_outerr ()
 
 int get_nopen ()
 {
-#ifdef USECUDANV
+#ifdef USENVCOMPILER
   int val;
   f_nopen (&val);
 #else
@@ -273,7 +273,7 @@ int get_nopen ()
 
 int get_nocc ()
 {
-#ifdef USECUDANV
+#ifdef USENVCOMPILER
   int val;
   f_nocc (&val);
 #else
@@ -285,7 +285,7 @@ int get_nocc ()
 
 double get_sfact ()
 {
-#ifdef USECUDANV
+#ifdef USENVCOMPILER
   double val;
   f_sfact (&val);
 #else
@@ -297,7 +297,7 @@ double get_sfact ()
 
 double get_erep ()
 {
-#ifdef USECUDANV
+#ifdef USENVCOMPILER
   double val;
   f_erep (&val);
 #else
@@ -309,7 +309,7 @@ double get_erep ()
 
 double get_etotal ()
 {
-#ifdef USECUDANV
+#ifdef USENVCOMPILER
   double val;
   f_etotal (&val);
 #else
@@ -321,7 +321,7 @@ double get_etotal ()
 
 double get_eecoul ()
 {
-#ifdef USECUDANV
+#ifdef USENVCOMPILER
   double val;
   f_eecoul (&val);
 #else
@@ -333,7 +333,7 @@ double get_eecoul ()
 
 double get_eexc ()
 {
-#ifdef USECUDANV
+#ifdef USENVCOMPILER
   double val;
   f_eexc (&val);
 #else
