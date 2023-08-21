@@ -229,7 +229,8 @@ c             real (c_double), intent(inout) :: eigen(:)
 #else
       interface
         subroutine diagonalizer (eigen)
-          real (c_double), intent(inout) :: eigen(*)
+c          real (c_double), intent(inout) :: eigen(*)
+          real, allocatable, intent(inout) :: eigen(:)
         end subroutine diagonalizer
       end interface
 #endif
