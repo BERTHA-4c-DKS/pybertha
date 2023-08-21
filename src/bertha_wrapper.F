@@ -158,16 +158,27 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
+#ifdef USENVCOMPILER
       subroutine bertha_main(fittcoefffname, vctfilename, ovapfilename,
      +                       fittfname, eigen_ptr, ovap_ptr, eige_ptr, 
      +                       fock_ptr, restart_eige) 
+#else
+      subroutine bertha_main(fittcoefffname, vctfilename, ovapfilename,
+     +                       fittfname, eigen, ovap_ptr, eige_ptr, 
+     +                       fock_ptr, restart_eige) 
+#endif
 
 
       use indsys, only : initijkvec
 
       implicit none
 
+#ifdef USENVCOMPILER
       real (c_double) :: eigen_ptr(*)
+      real, allocatable :: eigen(:)
+#else
+      real (c_double) ::eigen(*)
+#endif
 
       character*(*), intent(in) :: fittcoefffname, vctfilename,
      >   ovapfilename, fittfname
@@ -204,8 +215,6 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       logical :: filefound, debug
 
-      real, allocatable :: eigen(:)
-
 #ifdef USECUDANV
       integer :: istat, lwork
       integer(4) :: itype, jobz, uplo
@@ -229,8 +238,11 @@ c             real (c_double), intent(inout) :: eigen(:)
 #else
       interface
         subroutine diagonalizer (eigen)
-c          real (c_double), intent(inout) :: eigen(*)
+#ifdef USENVCOMPILER
           real, allocatable, intent(inout) :: eigen(:)
+#else
+          real (c_double), intent(inout) :: eigen(*)
+#endif
         end subroutine diagonalizer
       end interface
 #endif
@@ -279,7 +291,9 @@ c      call mkl_set_num_threads(nt)
         olddensity = (0.0, 0.0)
       endif
 
+#ifdef USENVCOMPILER
       allocate(eigen(ndim))
+#endif
 
       call initijkvec()
 
@@ -998,7 +1012,14 @@ c     call getresourcesusage ()
         deallocate(olddensity)
       endif
 
+#ifdef USENVCOMPILER
+c      for NVCC interface with c_double not possible
+      do i = 1, ndim
+         eigen_ptr(i) = eigen(i)
+      enddo
+
       deallocate (eigen)
+#endif
 
       wtimeiter = walltime ()
       !call gencubefile(ncent,coord,iznuc,nfitt,fitcase)
