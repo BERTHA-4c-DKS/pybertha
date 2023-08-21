@@ -16,7 +16,7 @@ USEINTEL=no
 #use cuda portland compiler
 USECUDA=yes
 #use the compile but exclude GPU for test
-EXCLUDEOPENACC=no
+EXCLUDEOPENACC=yes
 
 #LIBXC
 LIBXC=no
@@ -239,7 +239,7 @@ endif
 
 ifeq ($(USECUDA),yes)
   CFLAGS += --compiler-options '-fPIC'
-  FFLAGS += -fpic
+  FFLAGS += -fpic -gpu=nordc
 else
   CFLAGS += -fPIC
   FFLAGS += -fPIC
@@ -254,7 +254,7 @@ MAKE = make
 .SUFFIXES:
 
 %.o:	%.c
-	$(CC) $(CFLAGS) $(COPT) $(INCLUDE) -c $< 
+	$(CC) $(CFLAGS) $(COPT) $(INCLUDE) -o $@ -c $< 
 
 %.o:	%.F
 	$(FC) $(FFLAGS) $(FOPT) $(INCLUDE) -o $@ -c $< 
