@@ -42,14 +42,14 @@ c     potential to add
 c     restart from memory data 
       logical :: restartmem 
 
-#ifdef USECUDANV
+#ifdef USENVCOMPILER
       public :: get_eecoul, get_eexc, get_erep, get_thresh,
      &          get_densitydiff,  set_thresh
 #endif
 
       contains
 
-#ifdef USECUDANV
+#ifdef USENVCOMPILER
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
