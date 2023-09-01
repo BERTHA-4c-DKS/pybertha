@@ -158,7 +158,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
-#ifdef USENVCOMPILER
+#ifdef USECUDANV
       subroutine bertha_main(fittcoefffname, vctfilename, ovapfilename,
      +                       fittfname, eigen_ptr, ovap_ptr, eige_ptr, 
      +                       fock_ptr, restart_eige) 
@@ -173,7 +173,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       implicit none
 
-#ifdef USENVCOMPILER
+#ifdef USECUDANV
       real (c_double) :: eigen_ptr(*)
       real, allocatable :: eigen(:)
 #else
@@ -239,11 +239,7 @@ c             real (c_double), intent(inout) :: eigen(:)
       interface
         subroutine diagonalizer (eigen)
           use, intrinsic :: iso_c_binding, only : c_double
-#ifdef USENVCOMPILER
-          real, allocatable, intent(inout) :: eigen(:)
-#else
           real (c_double), intent(inout) :: eigen(*)
-#endif
         end subroutine diagonalizer
       end interface
 #endif
@@ -292,7 +288,7 @@ c      call mkl_set_num_threads(nt)
         olddensity = (0.0, 0.0)
       endif
 
-#ifdef USENVCOMPILER
+#ifdef USECUDANV
       allocate(eigen(ndim))
 #endif
 
@@ -866,8 +862,8 @@ c       if (((iter.gt.1).and.(sfact.ne.(0.0))).or.(irun.eq.0).
           enddo
         enddo
 
-#ifdef USENVCOMPILER
-c      for NVCC interface with c_double not possible
+#ifdef USECUDANV
+c      for NVCC interface with c_double not possible maybe
        do i = 1, ndim
          eigen_ptr(i) = eigen(i)
        enddo
@@ -1016,7 +1012,7 @@ c     call getresourcesusage ()
         deallocate(olddensity)
       endif
 
-#ifdef USENVCOMPILER
+#ifdef USECUDANV
       deallocate (eigen)
 #endif
 
