@@ -14,7 +14,7 @@ PROFILE=no
 USEINTEL=no
 
 #use cuda portland compiler
-USECUDA=no
+USECUDA=yes
 #use the compile but exclude GPU for test
 EXCLUDEOPENACC=no
 
