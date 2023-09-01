@@ -114,8 +114,13 @@ OBJ = \
 	$(SERIALMODIR)/coeff.o \
 	$(SERIALMODIR)/fmat.o \
 	$(SERIALMODIR)/denhgf.o \
-	$(SERIALMODIR)/realtime.o \
-	$(SERIALMODIR)/openaccinterfaces.o \
+	$(SERIALMODIR)/realtime.o
+
+ifeq ($(USECUDA),yes)
+	OBJ += $(SERIALMODIR)/openaccinterfaces.o 
+endif
+
+OBJ +=  \
         $(SERIALDIR)/diagonalizer.o \
         $(SERIALDIR)/initfitting.o \
         $(SERIALDIR)/flabel.o \

@@ -238,6 +238,7 @@ c             real (c_double), intent(inout) :: eigen(:)
 #else
       interface
         subroutine diagonalizer (eigen)
+          use, intrinsic :: iso_c_binding, only : c_double
 #ifdef USENVCOMPILER
           real, allocatable, intent(inout) :: eigen(:)
 #else
@@ -810,7 +811,6 @@ c       if (((iter.gt.1).and.(sfact.ne.(0.0))).or.(irun.eq.0).
         enddo
 
         if ((iter .eq.1).and.(irun.ne.2)) then 
-
           istat = cusolverDnCreate(cudanvh)
           if (istat /= CUSOLVER_STATUS_SUCCESS) 
      +        write(*,*) 'handle creation failed'
@@ -836,7 +836,6 @@ c       if (((iter.gt.1).and.(sfact.ne.(0.0))).or.(irun.eq.0).
         call diagonalizer (eigen, work, tdd_d, lwork, cudanvh)
 
 #else
-
         call diagonalizer (eigen)
 #endif
 
@@ -866,7 +865,14 @@ c       if (((iter.gt.1).and.(sfact.ne.(0.0))).or.(irun.eq.0).
              counter = counter + 2
           enddo
         enddo
-        
+
+#ifdef USENVCOMPILER
+c      for NVCC interface with c_double not possible
+       do i = 1, ndim
+         eigen_ptr(i) = eigen(i)
+       enddo
+#endif
+
         energy1 = 0.0
         do istate = 1,nocc
           energy1 = energy1 + eigen(istate+nshift)
@@ -913,8 +919,6 @@ c       if (((iter.gt.1).and.(sfact.ne.(0.0))).or.(irun.eq.0).
 
         denswalltime = walltime ()
         denscputime = cputime ()
-        
-        call dens()
         
         if (densitydiff .eq. 1) then 
           maxdiff = 0.0 
@@ -1013,11 +1017,6 @@ c     call getresourcesusage ()
       endif
 
 #ifdef USENVCOMPILER
-c      for NVCC interface with c_double not possible
-      do i = 1, ndim
-         eigen_ptr(i) = eigen(i)
-      enddo
-
       deallocate (eigen)
 #endif
 
