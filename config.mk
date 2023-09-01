@@ -19,7 +19,7 @@ USECUDA=yes
 # i.e., when using pybertha should be noo
 USEDEVICEUPDATE=no
 #use the compile but exclude GPU for test
-EXCLUDEOPENACC=no
+EXCLUDEOPENACC=yes
 
 #LIBXC
 LIBXC=no
