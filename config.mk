@@ -15,6 +15,9 @@ USEINTEL=no
 
 #use cuda portland compiler
 USECUDA=yes
+# avoid device update, does not work using SO, 
+# i.e., when using pybertha should be noo
+USEDEVICEUPDATE=no
 #use the compile but exclude GPU for test
 EXCLUDEOPENACC=no
 
@@ -244,6 +247,11 @@ ifeq ($(USECUDA),yes)
 else
   CFLAGS += -fPIC
   FFLAGS += -fPIC
+endif
+
+ifeq ($(USEDEVICEUPDATE),yes)
+  FFLAGS    += -DUSEDEVICEUPDATE
+  CFLAGS    += -DUSEDEVICEUPDATE
 endif
 
 #$(info $$CFLAGS is [${CFLAGS}])
