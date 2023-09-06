@@ -189,7 +189,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       complex, parameter :: czero = (0.0,0.0)
 
       integer :: counter, icent, j, i, iter, 
-     + nuca, nucb, nucc, nuccnt, rc, istate, a, iocc
+     + nuca, nucb, nucc, nuccnt, rc, istate, iocc
 
       real, allocatable :: v(:), zz(:)
       real, allocatable :: pp(:)
@@ -453,16 +453,12 @@ c          print *, "Here " , ndim, nocc
         allocate(zz(nfitt),stat=rc)
         if (rc.ne.0) call errmsg('error allocating memory')
 
-
         open(unit=11, file=fittcoefffname, status='unknown')
         rewind(11)
         read(11,*) v
         cfit(:) = v(:)
-
-        a=0
         excfit=0.0
 
-c        call dftinit_fit(excfit,igrid,expo,v,nfitt,fitcase,zz,a)
         call dftinit_fit_quadpregrid(excfit,igrid,expo,v,nfitt,fitcase,zz, debug)
 
         v=v+zz
@@ -591,12 +587,10 @@ c        call dftinit_fit(excfit,igrid,expo,v,nfitt,fitcase,zz,a)
         if (dumpfiles .eq. 1) rewind (11)
 
         call jfitenergy(v,nfitt,efittcoul)
-        a=0
         excfit=0.0
 
         timetomt2 = walltime ()
         ctimetomt2 = cputime ()
-c        call dftinit_fit(excfit,igrid,expo,v,nfitt,fitcase,zz,a)
         call dftinit_fit_quadpregrid(excfit,igrid,expo,v,nfitt,fitcase,zz, debug)
         timetomt2 = walltime () - timetomt2
         ctimetomt2 = cputime () - ctimetomt2
@@ -759,7 +753,6 @@ c       ovap_ptr = c_loc(ovap(1,1))
         time1 = walltime ()
         ctime1 = cputime ()
 
-#ifndef USECUDANV
 c       if (((iter.gt.1).and.(sfact.ne.(0.0))).or.(irun.eq.0).
         if (((iter.gt.1).and.(abs(sfact).gt.(1.0d-17))).or.(irun.eq.0).
      >      or.(irun.eq.2))
@@ -793,18 +786,8 @@ c       if (((iter.gt.1).and.(sfact.ne.(0.0))).or.(irun.eq.0).
         end do
         close(44)
 #endif
-#endif
 
 #ifdef USECUDANV
-
-        counter = 1
-        do i = 1, ndim
-          do j = 1, ndim
-             fock_ptr(counter) = real(fock(i,j))
-             fock_ptr(counter+1) = imag(fock(i,j))
-             counter = counter + 2
-          enddo
-        enddo
 
         if ((iter .eq.1).and.(irun.ne.2)) then 
           istat = cusolverDnCreate(cudanvh)
