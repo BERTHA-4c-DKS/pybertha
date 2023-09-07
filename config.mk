@@ -14,12 +14,12 @@ PROFILE=no
 USEINTEL=no
 
 #use cuda portland compiler
-USECUDA=no
+USECUDA=yes
 # avoid device update, does not work using SO, 
 # i.e., when using pybertha should be noo
 USEDEVICEUPDATE=no
 #use the compile but exclude GPU for test
-EXCLUDEOPENACC=no
+EXCLUDEOPENACC=yes
 
 #LIBXC
 LIBXC=no

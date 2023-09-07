@@ -223,11 +223,12 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       complex, device, allocatable :: tdd_d(:,:)
 
       interface
-        subroutine diagonalizer (eigen, work, tdd_d, lwork, cudanvh)
+        subroutine diagonalizer (eige_ptr, eigen, work, tdd_d, lwork, cudanvh)
+             use, intrinsic :: iso_c_binding, only : c_double
              import cusolverDnHandle
 
              real, allocatable, intent(inout) :: eigen(:)
-c             real (c_double), intent(inout) :: eigen(:)
+             real (c_double), intent(out) :: eige_ptr(*)
              complex, device, allocatable, intent(inout) :: work(:)
              complex, device, allocatable, intent(inout) :: tdd_d(:,:)
              integer , intent(in) :: lwork
@@ -237,9 +238,10 @@ c             real (c_double), intent(inout) :: eigen(:)
  
 #else
       interface
-        subroutine diagonalizer (eigen)
+        subroutine diagonalizer (eige_ptr, eigen)
           use, intrinsic :: iso_c_binding, only : c_double
           real (c_double), intent(inout) :: eigen(*)
+          real (c_double), intent(out) :: eige_ptr(*)
         end subroutine diagonalizer
       end interface
 #endif
@@ -402,9 +404,6 @@ c      call mkl_set_num_threads(nt)
         ioccm0 = nocc
       else
         if (restartmem) then
-
-c          print *, "Here " , ndim, nocc
-          
           counter = 1
           do j = 1, ndim
             do i = 1, ndim
@@ -517,10 +516,10 @@ c          print *, "Here " , ndim, nocc
 
         iter = 0
 
-        call diagonalizer (eigen, work, tdd_d, lwork, cudanvh)
+        call diagonalizer (eige_ptr, eigen, work, tdd_d, lwork, cudanvh)
 #else
 
-        call diagonalizer (eigen)
+        call diagonalizer (eige_ptr, eigen)
 
 #endif
 
@@ -812,38 +811,28 @@ c       if (((iter.gt.1).and.(sfact.ne.(0.0))).or.(irun.eq.0).
 
         endif    
 
-        call diagonalizer (eigen, work, tdd_d, lwork, cudanvh)
-
+        call diagonalizer (eige_ptr, eigen, work, tdd_d, lwork, cudanvh)
 #else
-        call diagonalizer (eigen)
+        call diagonalizer (eige_ptr, eigen)
 #endif
 
         wtimeio = walltime ()
         ctimeio = cputime ()
 
         if (dumpfiles .eq. 1) then
-         open (unit=10, file=vctfilename, err=9999, status='unknown')
-         rewind(unit=10)
-
-         write (10, '(I5,I5)') nocc, ndim
-         do iocc = nshift+1,nshift+nocc
-           write(10,'(E23.15)') eigen(iocc)
-           do i=1,ndim
-             write(10,'(E17.10,1X,E17.10)') c(i,iocc)
-           end do
-         end do
-
-         close(unit=10)
+          open (unit=10, file=vctfilename, err=9999, status='unknown')
+          rewind(unit=10)
+          
+          write (10, '(I5,I5)') nocc, ndim
+          do iocc = nshift+1,nshift+nocc
+            write(10,'(E23.15)') eigen(iocc)
+            do i=1,ndim
+              write(10,'(E17.10,1X,E17.10)') c(i,iocc)
+            end do
+          end do
+          
+          close(unit=10)
         endif
-
-        counter = 1
-        do j = 1, ndim
-          do i = 1, ndim
-             eige_ptr(counter) = real(c(j,i))
-             eige_ptr(counter+1) = imag(c(j,i))
-             counter = counter + 2
-          enddo
-        enddo
 
 #ifdef USECUDANV
 c       for NVCC interface with c_double not possible maybe
