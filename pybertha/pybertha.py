@@ -171,10 +171,10 @@ def runspbertha (pberthaopt):
 
     ovapm, eigem, fockm, eigen = bertha.run()
 
-    np.savetxt('ovap.out', ovapm[np.newaxis], fmt='%10.9e')
-    np.savetxt('eigem.out', eigem[np.newaxis], fmt='%10.9e')
-    np.savetxt('fockm.out', fockm[np.newaxis], fmt='%10.9e')
-    np.savetxt('eigen.out', eigen[np.newaxis], fmt='%10.9e')
+    np.savetxt('eigen.out', eigen.flatten(), fmt='%10.8e')
+    np.savetxt('ovap.out', ovapm.flatten(), fmt='%10.8e')
+    np.savetxt('eigem.out', eigem.flatten(), fmt='%10.8e')
+    np.savetxt('fockm.out', fockm.flatten(), fmt='%10.8e')
     
     end = time.time()
     cend = time.process_time()
