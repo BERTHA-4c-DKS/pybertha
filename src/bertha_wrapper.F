@@ -8,8 +8,8 @@ c      USE mkl_service
       use, intrinsic :: iso_c_binding
 
       use spec, only: coord, znuc, cnuc, expset, iznuc, icrge, kvals,
-     > nkappa, lmaxx, nfunct, ncent, ndim, nshift, nocc,
-     > iter, iall, irun, readinput, verbose, dumpfiles
+     & nkappa, lmaxx, nfunct, ncent, ndim, nshift, nocc,
+     & iter, iall, irun, readinput, verbose, dumpfiles
       use fmat, only: fock, ovap
       use coeff, only: c
       use dcoeff, only: d
@@ -29,7 +29,7 @@ c      USE mkl_service
       implicit none
 
       integer :: intype, fitcase, testfit, igrid, iprint, mactve,
-     +           maxit, nactve, ncore, nfitt, densitydiff
+     &           maxit, nactve, ncore, nfitt, densitydiff
       real :: amass(ncentm), sfact1, sfact2, erep, thresh
       real :: eecoul, eexc 
       character(len=7) :: expo
@@ -160,12 +160,12 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 #ifdef USECUDANV
       subroutine bertha_main(fittcoefffname, vctfilename, ovapfilename,
-     +                       fittfname, eigen_ptr, ovap_ptr, eige_ptr, 
-     +                       fock_ptr, restart_eige) 
+     &                       fittfname, eigen_ptr, ovap_ptr, eige_ptr, 
+     &                       fock_ptr, restart_eige) 
 #else
       subroutine bertha_main(fittcoefffname, vctfilename, ovapfilename,
-     +                       fittfname, eigen, ovap_ptr, eige_ptr, 
-     +                       fock_ptr, restart_eige) 
+     &                       fittfname, eigen, ovap_ptr, eige_ptr, 
+     &                       fock_ptr, restart_eige) 
 #endif
 
 
@@ -181,15 +181,15 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 #endif
 
       character*(*), intent(in) :: fittcoefffname, vctfilename,
-     >   ovapfilename, fittfname
+     &   ovapfilename, fittfname
       real (c_double), intent(out) :: ovap_ptr(*), fock_ptr(*),
-     >                                eige_ptr(*)
+     &                                eige_ptr(*)
       real (c_double), intent(in) :: restart_eige(*)
 
       complex, parameter :: czero = (0.0,0.0)
 
       integer :: counter, icent, j, i, iter, 
-     + nuca, nucb, nucc, nuccnt, rc, istate, iocc
+     & nuca, nucb, nucc, nuccnt, rc, istate, iocc
 
       real, allocatable :: v(:), zz(:)
       real, allocatable :: pp(:)
@@ -197,12 +197,12 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 
       real :: monoelectronenergy, centfun(ncentm), 
-     + dist, r1x, r1y, r1z, d1, r2x, 
-     + r2y, r2z, d2, scprod, ang, diff, eold, oldecoul, rthresh1, 
-     + rthresh2, efittcoulplusexc, efittcoul, etemp, excfit, 
-     + exc, cputime11, wtime11, timetomt1, ffre,
-     + ctimetomt1, timetomt2, ctimetomt2, wtimeiter, 
-     + ctimeiter, ctime1, time1, ffim, ecoul
+     & dist, r1x, r1y, r1z, d1, r2x, 
+     & r2y, r2z, d2, scprod, ang, diff, eold, oldecoul, rthresh1, 
+     & rthresh2, efittcoulplusexc, efittcoul, etemp, excfit, 
+     & exc, cputime11, wtime11, timetomt1, ffre,
+     & ctimetomt1, timetomt2, ctimetomt2, wtimeiter, 
+     & ctimeiter, ctime1, time1, ffim, ecoul
 
       real :: denswalltime, denscputime
       real :: energy1, wtimeio, ctimeio, energy2
@@ -277,7 +277,7 @@ c      call mkl_set_num_threads(nt)
 
       if (dumpfiles .eq. 1) then 
         open (unit=11, file=fittcoefffname, err=9999,
-     +        status ="unknown")
+     &        status ="unknown")
       endif
 
       call getmem ()
@@ -305,8 +305,8 @@ c      call mkl_set_num_threads(nt)
       do nuca = 1,ncent
         do nucb = 1,nuca-1
           dist = sqrt((coord(1,nuca)-coord(1,nucb))**2 +
-     +      (coord(2,nuca)-coord(2,nucb))**2 +
-     +      (coord(3,nuca)-coord(3,nucb))**2)
+     &      (coord(2,nuca)-coord(2,nucb))**2 +
+     &      (coord(3,nuca)-coord(3,nucb))**2)
           erep = erep + znuc(nuca) * znuc(nucb) / dist
         end do
       end do
@@ -355,8 +355,8 @@ c      call mkl_set_num_threads(nt)
           scprod = (r1x*r2x+r1y*r2y+r1z*r2z)
           ang = acos(scprod/(d1*d2))*(180.0/pi)
           if (verbose .eq. 1) write(6,1120) elmnt(iznuc(nucb)),
-     >                  elmnt(iznuc(nuccnt)),
-     >                  elmnt(iznuc(nucc)),ang
+     &                  elmnt(iznuc(nuccnt)),
+     &                  elmnt(iznuc(nucc)),ang
         end do
         if (verbose .eq. 1) write(6,*)
      &  '------------------------------------------------------------'
@@ -497,7 +497,7 @@ c          print *, "Here " , ndim, nocc
 #ifdef USECUDANV    
         istat = cusolverDnCreate(cudanvh)
         if (istat /= CUSOLVER_STATUS_SUCCESS) 
-     +        write(*,*) 'handle creation failed'
+     &        write(*,*) 'handle creation failed'
 
         itype = 1
         jobz = CUSOLVER_EIG_MODE_VECTOR
@@ -506,9 +506,9 @@ c          print *, "Here " , ndim, nocc
 !$acc data copy(eigen) copyin(ovap) copy(fock) 
 !$acc host_data use_device(ovap, fock, eigen)
         istat = cusolverDnZhegvd_buffersize(cudanvh, 
-     +         itype, jobz, uplo, ndim, fock, 
-     +         ndim, ovap, ndim, eigen,  
-     +         lwork)
+     &         itype, jobz, uplo, ndim, fock, 
+     &         ndim, ovap, ndim, eigen,  
+     &         lwork)
 
         allocate(work(lwork), stat=istat)
         allocate(tdd_d(1:ndim,1:ndim))
@@ -537,7 +537,7 @@ c          print *, "Here " , ndim, nocc
       rthresh2 = 0.0000001
 
   777 format
-     > ("=============================================================")
+     & ("=============================================================")
       do iter = 1,maxit
         if (verbose .eq. -1) then 
           write(6,*) "Iteration ", iter
@@ -557,7 +557,7 @@ c          print *, "Here " , ndim, nocc
 
         if (verbose .eq. 1) write (0, 6661 ) time1, ctime1
  6661   format ('Time for hden walltime                   ', f10.2,
-     +  '  cputime ', f10.2,/)
+     &  '  cputime ', f10.2,/)
 
         etotal = 0.0
         timetomt1 = walltime ()
@@ -581,7 +581,7 @@ c          print *, "Here " , ndim, nocc
 
         if (verbose .eq. 1) write (0, 5678) timetomt2, ctimetomt2
  5678   format ('Time for the factlu walltime             ', 
-     +          f10.2, '  cputime ', f10.2)
+     &          f10.2, '  cputime ', f10.2)
 
         if (dumpfiles .eq. 1) write (11, *) v
         if (dumpfiles .eq. 1) rewind (11)
@@ -597,7 +597,7 @@ c          print *, "Here " , ndim, nocc
 
         if (verbose .eq. 1) write (0, 5680) timetomt2, ctimetomt2
  5680   format ('Time for the zz walltime                 ', f10.2, 
-     +          '  cputime ', f10.2)
+     &          '  cputime ', f10.2)
 
         v = zz + v
 
@@ -617,7 +617,7 @@ c          print *, "Here " , ndim, nocc
         do i = 1,ndim
           do j = 1,ndim
               efittcoulplusexc = efittcoulplusexc +
-     +        real(c(i,j)*fock(i,j))
+     &        real(c(i,j)*fock(i,j))
           end do
         end do
 !       #### end  Calculation of Tr(D(V_xc+J))    
@@ -641,7 +641,7 @@ c          print *, "Here " , ndim, nocc
 
         if (verbose .eq. 1) write (*, 6662 ) time1, ctime1
  6662     format ('Time for onel_pot_from_grid (include int(Vexc|f_t) + FactlU)  walltime                   ', f10.2,
-     +    '  cputime ', f10.2,/)
+     &    '  cputime ', f10.2,/)
 
           v = v + pp
 
@@ -659,7 +659,7 @@ c          print *, "Here " , ndim, nocc
 
         if (verbose .eq. 1) write (0, 5679) timetomt1, ctimetomt1
  5679   format ('Total time for the fitting walltime      ', f10.2, 
-     +          '  cputime ', f10.2, / )
+     &          '  cputime ', f10.2, / )
 
         do i = 1,nshift
           do j = 1,i
@@ -689,7 +689,7 @@ c          print *, "Here " , ndim, nocc
 
         if(testfit /= 0) then
           if (verbose .eq. 1) 
-     >      write(6,*) '******** ATTENTION rjmat is on. This should be used only for benchmark********* '
+     &      write(6,*) '******** ATTENTION rjmat is on. This should be used only for benchmark********* '
           call rjmat(ndim,c,coulenergy) 
           if (verbose .eq. 1) then
             write(6,*) 'coulomb  energy              : ',coulenergy/2.0d0
@@ -749,19 +749,19 @@ c       ovap_ptr = c_loc(ovap(1,1))
 
         if (verbose .eq. 1) write (0, 6664 ) time1, ctime1
  6664   format ('Time for oneel walltime                  ', f10.2,
-     +          '  cputime ', f10.2, /)
+     &          '  cputime ', f10.2, /)
         time1 = walltime ()
         ctime1 = cputime ()
 
 c       if (((iter.gt.1).and.(sfact.ne.(0.0))).or.(irun.eq.0).
         if (((iter.gt.1).and.(abs(sfact).gt.(1.0d-17))).or.(irun.eq.0).
-     >      or.(irun.eq.2))
-     >      call shftlv()
+     &      or.(irun.eq.2))
+     &      call shftlv()
         time1 = walltime () - time1
         ctime1 = cputime () - ctime1
         if (verbose .eq. 1) write (0, 5564 ) time1, ctime1
  5564   format ('Time for shftlv                          ', f10.2,
-     +          '  cputime ', f10.2, /)
+     &          '  cputime ', f10.2, /)
 
         do i = 1,ndim
           ffre = real(fock(i,i))
@@ -792,7 +792,7 @@ c       if (((iter.gt.1).and.(sfact.ne.(0.0))).or.(irun.eq.0).
         if ((iter .eq.1).and.(irun.ne.2)) then 
           istat = cusolverDnCreate(cudanvh)
           if (istat /= CUSOLVER_STATUS_SUCCESS) 
-     +        write(*,*) 'handle creation failed'
+     &        write(*,*) 'handle creation failed'
 
           itype = 1
           jobz = CUSOLVER_EIG_MODE_VECTOR
@@ -846,10 +846,10 @@ c       if (((iter.gt.1).and.(sfact.ne.(0.0))).or.(irun.eq.0).
         enddo
 
 #ifdef USECUDANV
-c      for NVCC interface with c_double not possible maybe
-       do i = 1, ndim
-         eigen_ptr(i) = eigen(i)
-       enddo
+c       for NVCC interface with c_double not possible maybe
+        do i = 1, ndim
+          eigen_ptr(i) = eigen(i)
+        enddo
 #endif
 
         energy1 = 0.0
@@ -863,7 +863,7 @@ c      for NVCC interface with c_double not possible maybe
         
         if (verbose .eq. 1) write (0, 3567) wtimeio, ctimeio
  3567   format ("Time for the io walltime                 ", 
-     +        f10.2, "  cputime ", f10.2, /)
+     &        f10.2, "  cputime ", f10.2, /)
 
         if (iprint.eq.2) then
           if (verbose .eq. 1) then 
@@ -908,14 +908,14 @@ c      for NVCC interface with c_double not possible maybe
               if (abs(olddensity(i, j) - c(i, j)) .gt. maxdiff) then 
                 maxdiff = abs(olddensity(i, j) - c(i, j))
                 percmaxdiff = 100.0 * (maxdiff/(abs(olddensity(i, j) + 
-     +              c(i,j))/2.0))
+     &              c(i,j))/2.0))
               endif
             enddo
           enddo 
 
           if (verbose .eq. -1) then
              write(6,'(A, " ", E20.10, " (", F8.3, "%) ")') 
-     +       '  maxdiff in density matrix = ',maxdiff, percmaxdiff
+     &       '  maxdiff in density matrix = ',maxdiff, percmaxdiff
           endif
 
           if (allocated(olddensity)) olddensity = c
@@ -926,7 +926,7 @@ c      for NVCC interface with c_double not possible maybe
 
         if (verbose .eq. 1) write (0, 3457) denswalltime, denscputime
  3457   format ('Time for dens walltime                   ', f10.2,
-     +          '  cputime ', f10.2, /)
+     &          '  cputime ', f10.2, /)
 
         if (diff.lt.rthresh1.and.iall.eq.0) then
           iall = 1
@@ -943,7 +943,7 @@ c      for NVCC interface with c_double not possible maybe
         if (verbose .eq. 1) write (0, 777)
         if (verbose .eq. 1) write (0, 6666) iter, wtimeiter, ctimeiter
  6666   format ("Total time for iteration ", I4, " walltime   ",
-     +          F10.2, "  cputime ", F10.2, /)
+     &          F10.2, "  cputime ", F10.2, /)
       end do
 
 
@@ -1204,7 +1204,7 @@ c      call dftinit_fit(excfit,igrid,expo,v,nfitt,fitcase,zz,a)
       do i = 1,ndim
           do j = 1,ndim
               efittcoulplusexc = efittcoulplusexc +
-     +        real(c(i,j)*fock(i,j))
+     &          real(c(i,j)*fock(i,j))
           end do
       end do
 ! #### end  Calculation of Tr(D(V_xc+J))    

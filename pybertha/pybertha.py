@@ -6,6 +6,7 @@ import sys
 import os.path
 
 from scipy.linalg import eigh
+import numpy as np
 
 import json
 from json import encoder
@@ -169,6 +170,11 @@ def runspbertha (pberthaopt):
 
 
     ovapm, eigem, fockm, eigen = bertha.run()
+
+    np.savetxt('ovap.out', ovapm[np.newaxis], fmt='%10.9e')
+    np.savetxt('eigem.out', eigem[np.newaxis], fmt='%10.9e')
+    np.savetxt('fockm.out', fockm[np.newaxis], fmt='%10.9e')
+    np.savetxt('eigen.out', eigen[np.newaxis], fmt='%10.9e')
     
     end = time.time()
     cend = time.process_time()

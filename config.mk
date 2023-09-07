@@ -14,7 +14,7 @@ PROFILE=no
 USEINTEL=no
 
 #use cuda portland compiler
-USECUDA=yes
+USECUDA=no
 # avoid device update, does not work using SO, 
 # i.e., when using pybertha should be noo
 USEDEVICEUPDATE=no
