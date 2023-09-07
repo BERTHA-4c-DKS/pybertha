@@ -266,6 +266,8 @@ def mo_fock_mid_forwd_eval(bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
    Dp_ti = numpy.matmul(C_inv,numpy.matmul(D_ti,numpy.conjugate(C_inv.T)))
    k = 1
    t_arg = numpy.float_(i) * numpy.float_ (delta_t)
+   print(D_ti)
+   exit(1)
    fockmtx = bertha.get_realtime_fock(D_ti.T)
    
    pulse = func(fmax, w, t_arg, t0, sigma)
