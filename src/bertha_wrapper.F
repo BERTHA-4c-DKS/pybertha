@@ -1173,13 +1173,15 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       call jfitenergy(v,nfitt,efittcoul)
       a = 0
       excfit = 0.0
-c      call dftinit_fit(excfit,igrid,expo,v,nfitt,fitcase,zz,a)
+c     call dftinit_fit(excfit,igrid,expo,v,nfitt,fitcase,zz,a)
       call dftinit_fit_quadpregrid(excfit,igrid,expo,v,nfitt,fitcase,zz,debug)
 
       v = zz + v
 ! Note that this is necessary to evaluate the TOTAL energy
 
+c      print *, "Before the call to jmatfitt"
       call jmatfitt(fock,ndim,v,nfitt,fitcase)
+c      print *, "After the call to jmatfitt"
 
       do i = 1,nshift
         do j = 1,i
@@ -1237,7 +1239,7 @@ c      call dftinit_fit(excfit,igrid,expo,v,nfitt,fitcase,zz,a)
       do i = 1,ndim
           do j = 1,ndim
               traceDFock =  traceDFock +
-     +        real(c(i,j)*fock(i,j))
+     &        real(c(i,j)*fock(i,j))
           end do
       end do
 ! #### end Calculation of Tr(D Fock)
