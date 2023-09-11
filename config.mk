@@ -19,7 +19,7 @@ USECUDA=yes
 # i.e., when using pybertha should be noo
 USEDEVICEUPDATE=no
 #use the compile but exclude GPU for test
-EXCLUDEOPENACC=no
+EXCLUDEOPENACC=yes
 
 #LIBXC
 LIBXC=no
@@ -109,26 +109,28 @@ ifeq ($(FORBGQ),no)
         LINKFLAGS = -Minfo=accel
       else
         # for Quadro P2000 -gpu=cc61,cuda12.1 
-	      # for marconi -gpu=cc70,cuda11.8 
-        FFLAGS = -acc=gpu -gpu=cc61,cuda12.1 -Minfo=accel -cuda -cudalib=cublas,cusolver  
+        # for marconi -gpu=cc70,cuda11.8 
+        # for Loenardo  cc80 e cuda11.8
+        FFLAGS = -acc=gpu -gpu=cc80,cuda11.8 -Minfo=accel -cuda -cudalib=cublas,cusolver  
         CFLAGS =
       endif
 
       # for Quadro P2000 -gpu=cc61,cuda12.1 
       # for marconi -gpu=cc70,cuda11.8 
-      LINKFLAGS += -acc=gpu -gpu=cc61,cuda12.1 -Minfo=accel -cuda -cudalib=cublas,cusolver  
+      # for leonardo -gpu=cc680,cuda11.8 
+      LINKFLAGS += -acc=gpu -gpu=cc80,cuda11.8 -Minfo=accel -cuda -cudalib=cublas,cusolver  
  
       ifeq ($(DEBUG),yes)
         FFLAGS += -r8 -Minform=warn -Mextend -O0 -g -cudalib=cublas -DUSECUDANV -DUSENVCOMPILER
         CFLAGS += -D_FILE_OFFSET_BITS=64 -O0 -g -DUSECUDANV -DUSENVCOMPILER
       else
-	      ifeq ($(EXCLUDEOPENACC),yes)
-          FFLAGS += -r8 -Minform=warn -Mextend -O3 -cudalib=cublas $(INCLUDE) -DUSENVCOMPILER
-          CFLAGS += -D_FILE_OFFSET_BITS=64 -O3 -DUSENVCOMPILER
-	      else
-          FFLAGS += -r8 -Minform=warn -Mextend -O3 -cudalib=cublas $(INCLUDE) -DUSECUDANV -DUSENVCOMPILER
-          CFLAGS += -D_FILE_OFFSET_BITS=64 -O3  -DUSECUDANV -DUSENVCOMPILER
-	      endif
+          ifeq ($(EXCLUDEOPENACC),yes)
+            FFLAGS += -r8 -Minform=warn -Mextend -O3 -cudalib=cublas $(INCLUDE) -DUSENVCOMPILER
+            CFLAGS += -D_FILE_OFFSET_BITS=64 -O3 -DUSENVCOMPILER
+          else
+            FFLAGS += -r8 -Minform=warn -Mextend -O3 -cudalib=cublas $(INCLUDE) -DUSECUDANV -DUSENVCOMPILER
+            CFLAGS += -D_FILE_OFFSET_BITS=64 -O3  -DUSECUDANV -DUSENVCOMPILER
+          endif
       endif
 
       BLASLAPACK = -llapack -lblas
