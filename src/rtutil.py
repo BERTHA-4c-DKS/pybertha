@@ -1,5 +1,6 @@
 import scipy.linalg as scila
 import numpy 
+import cupy
 import sys
 
 #######################################################################
@@ -55,20 +56,30 @@ def exp_opmat(mat,dt,debug=False,odbg=sys.stderr):
                  else: 
                     odbg.write("opposit sign for element (%i,%i).imag\n" % (i,j))
 
+
+    import timeit
+    start = timeit.timeit()
+
+    cymat = cupy.asarray(mat)
+ 
     try: 
-       w,v=numpy.linalg.eigh(mat)
+       #w,v=numpy.linalg.eigh(mat)
+       cw,cv = cupy.linalg.eigh(cymat)
     except numpy.linalg.LinAlgError:
         print("Error in numpy.linalg.eigh of inputted matrix")
         return None
 
-    diag=numpy.exp(-1.j*w*dt)
+    cdiag = cupy.exp(-1.j*cw*dt)
+    #diag=numpy.exp(-1.j*w*dt)
+
     # build the diagonal matrix
     # use numpy.diagflat(w)
     #   dmat=numpy.zeros(mat.shape,dtype=float)
     #   for num in range(diag.shape[0]):
     #       dmat[num,num]=diag[num]
-    
-    dmat=numpy.diagflat(diag)
+
+    cdmat = cupy.diagflat(cdiag) 
+    #dmat=numpy.diagflat(diag)
     
     # for a general matrix Diag = M^(-1) A M
     # M is v 
@@ -81,12 +92,18 @@ def exp_opmat(mat,dt,debug=False,odbg=sys.stderr):
     # matmul introduced in numpy 1.10 is preferred with respect 
     # numpy.dot 
     #tmp = numpy.matmul(dmat,v_i)
-    tmp = numpy.matmul(dmat,numpy.conjugate(v.T))
+    ctmp = cupy.matmul(cdmat,cupy.conjugate(cv.T))
+    #tmp = numpy.matmul(dmat,numpy.conjugate(v.T))
     
     #in an orthonrmal basis v_inv = v.H
-    
-    mat_exp = numpy.matmul(v,tmp)
-    
+    #mat_exp = numpy.matmul(v,tmp)
+    cmat_exp = cupy.matmul(cv,ctmp)
+   
+    mat_exp = cupy.asnumpy(cmat_exp)
+
+    end = timeit.timeit()
+    print("Time for eigh: %10.6E"%(end - start))
+
     return mat_exp
 
 #######################################################################
