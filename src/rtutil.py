@@ -3,6 +3,8 @@ import numpy
 import cupy
 import sys
 
+import timeit
+
 #######################################################################
 
 def progress_bar (count, total, status=''):
@@ -18,6 +20,8 @@ def progress_bar (count, total, status=''):
 #######################################################################
 
 def exp_opmat(mat,dt,debug=False,odbg=sys.stderr):
+    usegpu = True
+
     # first find eigenvectors and eigvals of F (hermitian)
     # and take the exponential of the -i*w*dt, w being eigvals of F
     #for debug
@@ -56,53 +60,59 @@ def exp_opmat(mat,dt,debug=False,odbg=sys.stderr):
                  else: 
                     odbg.write("opposit sign for element (%i,%i).imag\n" % (i,j))
 
+    start = timeit.default_timer()
 
-    import timeit
-    start = timeit.timeit()
+    mat_exp = None
 
-    cymat = cupy.asarray(mat)
+    if usegpu:
+      cymat = cupy.asarray(mat)
  
-    try: 
-       #w,v=numpy.linalg.eigh(mat)
-       cw,cv = cupy.linalg.eigh(cymat)
-    except numpy.linalg.LinAlgError:
-        print("Error in numpy.linalg.eigh of inputted matrix")
-        return None
+      try: 
+         cw,cv = cupy.linalg.eigh(cymat)
+      except numpy.linalg.LinAlgError:
+         print("Error in numpy.linalg.eigh of inputted matrix")
+         return None
 
-    cdiag = cupy.exp(-1.j*cw*dt)
-    #diag=numpy.exp(-1.j*w*dt)
+      cdiag = cupy.exp(-1.j*cw*dt)
+      cdmat = cupy.diagflat(cdiag) 
+      ctmp = cupy.matmul(cdmat,cupy.conjugate(cv.T))
+      cmat_exp = cupy.matmul(cv,ctmp)
+      mat_exp = cupy.asnumpy(cmat_exp)
+    else:
+      try: 
+         w,v=numpy.linalg.eigh(mat)
+      except numpy.linalg.LinAlgError:
+         print("Error in numpy.linalg.eigh of inputted matrix")
+         return None
 
-    # build the diagonal matrix
-    # use numpy.diagflat(w)
-    #   dmat=numpy.zeros(mat.shape,dtype=float)
-    #   for num in range(diag.shape[0]):
-    #       dmat[num,num]=diag[num]
+      diag=numpy.exp(-1.j*w*dt)
 
-    cdmat = cupy.diagflat(cdiag) 
-    #dmat=numpy.diagflat(diag)
+      # build the diagonal matrix
+      # use numpy.diagflat(w)
+      #   dmat=numpy.zeros(mat.shape,dtype=float)
+      #   for num in range(diag.shape[0]):
+      #       dmat[num,num]=diag[num]
+
+      dmat=numpy.diagflat(diag)
     
-    # for a general matrix Diag = M^(-1) A M
-    # M is v 
-    #try:
-    #   v_i=numpy.linalg.inv(v)
-    #except numpy.linalg.LinAlgError:
-    #   return None 
+      # for a general matrix Diag = M^(-1) A M
+      # M is v 
+      #try:
+      #   v_i=numpy.linalg.inv(v)
+      #except numpy.linalg.LinAlgError:
+      #   return None 
        
-    # transform back
-    # matmul introduced in numpy 1.10 is preferred with respect 
-    # numpy.dot 
-    #tmp = numpy.matmul(dmat,v_i)
-    ctmp = cupy.matmul(cdmat,cupy.conjugate(cv.T))
-    #tmp = numpy.matmul(dmat,numpy.conjugate(v.T))
+      # transform back
+      # matmul introduced in numpy 1.10 is preferred with respect 
+      # numpy.dot 
+      #tmp = numpy.matmul(dmat,v_i)
+      tmp = numpy.matmul(dmat,numpy.conjugate(v.T))
     
-    #in an orthonrmal basis v_inv = v.H
-    #mat_exp = numpy.matmul(v,tmp)
-    cmat_exp = cupy.matmul(cv,ctmp)
+      #in an orthonrmal basis v_inv = v.H
+      mat_exp = numpy.matmul(v,tmp)
    
-    mat_exp = cupy.asnumpy(cmat_exp)
-
-    end = timeit.timeit()
-    print("Time for eigh: %10.6E"%(end - start))
+    end = timeit.default_timer()
+    print("Time for Exp: %8.6f s."%(end - start))
 
     return mat_exp
 
