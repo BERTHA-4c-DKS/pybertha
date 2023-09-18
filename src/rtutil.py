@@ -5,6 +5,8 @@ import sys
 
 import timeit
 
+USEGPU = True
+
 #######################################################################
 
 def progress_bar (count, total, status=''):
@@ -20,52 +22,57 @@ def progress_bar (count, total, status=''):
 #######################################################################
 
 def exp_opmat(mat,dt,debug=False,odbg=sys.stderr):
-    usegpu = True
 
     # first find eigenvectors and eigvals of F (hermitian)
     # and take the exponential of the -i*w*dt, w being eigvals of F
     #for debug
-    if False :
-       mat_h = numpy.conjugate(mat.T)
-       diff_mat_h=mat-mat_h
-       odbg.write("Max diff mat-mat_h: (%.15f, %.15fi)\n"%(numpy.max(diff_mat_h.real),numpy.max(diff_mat_h.imag)))
-       odbg.write('Inputted  matrix is hermitian: %s\n'% 
-        numpy.allclose(mat,mat_h,atol=1.e-14))
-       if ( not numpy.allclose(mat,mat_h,atol=1.e-14)):
-          rdiff = diff_mat_h.real
-          maxrdiff = numpy.max(rdiff)
-          idiff = diff_mat_h.imag
-          maxidiff = numpy.max(idiff)
-          #absvalue
-          absmaxrdiff = numpy.abs(numpy.max(rdiff))
-          absmaxidiff = numpy.abs(numpy.max(idiff))
-          odbg.write('Abs values of max(rdiff), max(idiff): %.15f  %.15f \n' % (absmaxrdiff,absmaxidiff))
-          odbg.write('Values of max(rdiff), max(idiff): %.15f  %.15fi \n' % (maxrdiff,maxidiff))
-          matdim = mat.shape[0]
-          for i in range(matdim):
-            for j in range(matdim):
-               if (numpy.abs(rdiff[i,j]) == numpy.abs(maxrdiff)):
-                 if (mat[i,j].real*mat_h[i,j].real>0.0):
-                    odbg.write("same sign for element (%i,%i).real\n" % (i,j))
-                    diffrel= (mat[i,j].real - mat_h[i,j].real)/mat[i,j].real
-                    odbg.write("For element (%i,%i).real relative diff: %.15f\n" % (i,j,diffrel))
-                 else: 
-                    odbg.write("opposit sign for element (%i,%i).real\n" % (i,j))
-               if (numpy.abs(idiff[i,j]) == numpy.abs(maxidiff)):
-                 if (mat[i,j].imag*mat_h[i,j].imag>0.0):
-                    odbg.write("same sign for element (%i,%i).imag\n" % (i,j))
-                    idiffrel= (mat[i,j].imag - mat_h[i,j].imag)/mat[i,j].imag
-                    odbg.write("For element (%i,%i).imag  relative diff: %.15f\n" % (i,j,idiffrel))
-                    
-                 else: 
-                    odbg.write("opposit sign for element (%i,%i).imag\n" % (i,j))
+    if not USEGPU:
+        if False :
+           mat_h = numpy.conjugate(mat.T)
+           diff_mat_h=mat-mat_h
+           odbg.write("Max diff mat-mat_h: (%.15f, %.15fi)\n"%(numpy.max(diff_mat_h.real),numpy.max(diff_mat_h.imag)))
+           odbg.write('Inputted  matrix is hermitian: %s\n'% 
+            numpy.allclose(mat,mat_h,atol=1.e-14))
+           if ( not numpy.allclose(mat,mat_h,atol=1.e-14)):
+              rdiff = diff_mat_h.real
+              maxrdiff = numpy.max(rdiff)
+              idiff = diff_mat_h.imag
+              maxidiff = numpy.max(idiff)
+              #absvalue
+              absmaxrdiff = numpy.abs(numpy.max(rdiff))
+              absmaxidiff = numpy.abs(numpy.max(idiff))
+              odbg.write('Abs values of max(rdiff), max(idiff): %.15f  %.15f \n' % (absmaxrdiff,absmaxidiff))
+              odbg.write('Values of max(rdiff), max(idiff): %.15f  %.15fi \n' % (maxrdiff,maxidiff))
+              matdim = mat.shape[0]
+              for i in range(matdim):
+                for j in range(matdim):
+                   if (numpy.abs(rdiff[i,j]) == numpy.abs(maxrdiff)):
+                     if (mat[i,j].real*mat_h[i,j].real>0.0):
+                        odbg.write("same sign for element (%i,%i).real\n" % (i,j))
+                        diffrel= (mat[i,j].real - mat_h[i,j].real)/mat[i,j].real
+                        odbg.write("For element (%i,%i).real relative diff: %.15f\n" % (i,j,diffrel))
+                     else: 
+                        odbg.write("opposit sign for element (%i,%i).real\n" % (i,j))
+                   if (numpy.abs(idiff[i,j]) == numpy.abs(maxidiff)):
+                     if (mat[i,j].imag*mat_h[i,j].imag>0.0):
+                        odbg.write("same sign for element (%i,%i).imag\n" % (i,j))
+                        idiffrel= (mat[i,j].imag - mat_h[i,j].imag)/mat[i,j].imag
+                        odbg.write("For element (%i,%i).imag  relative diff: %.15f\n" % (i,j,idiffrel))
+                        
+                     else: 
+                        odbg.write("opposit sign for element (%i,%i).imag\n" % (i,j))
 
     start = timeit.default_timer()
 
     mat_exp = None
 
-    if usegpu:
-      cymat = cupy.asarray(mat)
+    if USEGPU:
+      cymat = None
+
+      if type(mat) is numpy.ndarray:
+         cymat = cupy.asarray(mat)
+      else:
+         cymat = mat
  
       try: 
          cw,cv = cupy.linalg.eigh(cymat)
@@ -77,7 +84,8 @@ def exp_opmat(mat,dt,debug=False,odbg=sys.stderr):
       cdmat = cupy.diagflat(cdiag) 
       ctmp = cupy.matmul(cdmat,cupy.conjugate(cv.T))
       cmat_exp = cupy.matmul(cv,ctmp)
-      mat_exp = cupy.asnumpy(cmat_exp)
+      #mat_exp = cupy.asnumpy(cmat_exp)
+      mat_exp = cmat_exp
     else:
       try: 
          w,v=numpy.linalg.eigh(mat)
@@ -285,81 +293,160 @@ def mo_fock_mid_forwd_eval(bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
 
    func = funcswitcher.get(impulsefunc, lambda: kick)
 
-   fock_inter = numpy.zeros((ndim,ndim),dtype=numpy.complex128)   
+   fock_inter = None
+   gfock_inter = None
+
+   if USEGPU:
+
+      gfock_inter = cupy.zeros((ndim,ndim),dtype=cupy.complex128)
+      gC_inv = cupy.asarray(C_inv)
+      gD_ti = cupy.asarray(D_ti)
+      gC = cupy.asarray(C)
+      gdipole_z = cupy.asarray(dipole_z)
+      gfock_mid_ti_backwd = cupy.asarray(fock_mid_ti_backwd)
+      gS = cupy.asarray(S)
+
+      gDp_ti = cupy.matmul(gC_inv,cupy.matmul(gD_ti,cupy.conjugate(gC_inv.T)))
+
+      Dp_ti = cupy.asnumpy(gDp_ti)
+      k = 1
+      t_arg = numpy.float_(i) * numpy.float_ (delta_t)
+      start = timeit.default_timer()
+      fockmtx = bertha.get_realtime_fock(D_ti.T)
+      end = timeit.default_timer()
+      print("Time for Fock: %8.6f s."%(end - start))
+
+      gfockmtx = cupy.asarray(fockmtx)
+      
+      pulse = func(fmax, w, t_arg, t0, sigma)
+      if pulse is None:
+        return None 
    
-   # D_ti is in AO basis 
-   # transform in the MO ref basis
+      gfock_ti_ao = gfockmtx - (gdipole_z * pulse)
+      gdens_test = cupy.zeros((ndim,ndim),dtype=cupy.complex128)
+      gfock_guess = 2.00*gfock_ti_ao - gfock_mid_ti_backwd
+      while True:
+           gfockp_guess = cupy.matmul(cupy.conjugate(gC.T), \
+                   cupy.matmul(gfock_guess,gC))
+           gu = exp_opmat(gfockp_guess,delta_t,debug,odbg)
+
+           if gu is None:
+             return None 
    
-   Dp_ti = numpy.matmul(C_inv,numpy.matmul(D_ti,numpy.conjugate(C_inv.T)))
-   k = 1
-   t_arg = numpy.float_(i) * numpy.float_ (delta_t)
-   fockmtx = bertha.get_realtime_fock(D_ti.T)
+           gtmpd = cupy.matmul(gDp_ti,cupy.conjugate(gu.T))
+           gDp_ti_dt = cupy.matmul(gu,gtmpd)
+           gD_ti_dt = cupy.matmul(gC,numpy.matmul(gDp_ti_dt,cupy.conjugate(gC.T)))
+           
+           pulse = func (fmax, w, t_arg + delta_t, t0, sigma)
+           if pulse is None:
+             return None 
    
-   pulse = func(fmax, w, t_arg, t0, sigma)
-   if debug: 
-       odbg.write("Pulse: %.8f\n"%(pulse))
+           D_ti_dt = cupy.asnumpy(gD_ti_dt)
+           start = timeit.default_timer()
+           fock_ti_dt_ao=bertha.get_realtime_fock(D_ti_dt.T)-(dipole_z*pulse)
+           end = timeit.default_timer()
+           print("Time for Fock: %8.6f s."%(end - start))
+           
+           gfock_ti_dt_ao = cupy.asarray(fock_ti_dt_ao)
 
-   if pulse is None:
-     return None 
+           gfock_inter = 0.5*gfock_ti_ao + 0.5*gfock_ti_dt_ao
+           gfock_guess = cupy.copy(gfock_inter)
+           if k > 1:
+               gdiff = gD_ti_dt-gdens_test
+               gnorm_f = cupy.linalg.norm(gdiff,'fro')
+               if gnorm_f < (propthresh):
+                   gtr_dt = cupy.trace(cupy.matmul(gS,gD_ti_dt))
+                   break
+   
+           gdens_test = cupy.copy(gD_ti_dt)
+           k += 1
+   else:
+      fock_inter = numpy.zeros((ndim,ndim),dtype=numpy.complex128)   
 
-   fock_ti_ao = fockmtx - (dipole_z * pulse)
-   # dipole matrix null for test
-   dens_test = numpy.zeros((ndim,ndim),dtype=numpy.complex128)
-   fock_guess = 2.00*fock_ti_ao - fock_mid_ti_backwd
-   while True:
-        fockp_guess = numpy.matmul(numpy.conjugate(C.T), \
-                numpy.matmul(fock_guess,C))
+      # D_ti is in AO basis 
+      # transform in the MO ref basis
+      
+      Dp_ti = numpy.matmul(C_inv,numpy.matmul(D_ti,numpy.conjugate(C_inv.T)))
+      k = 1
+      t_arg = numpy.float_(i) * numpy.float_ (delta_t)
+   
+      start = timeit.default_timer()
+      fockmtx = bertha.get_realtime_fock(D_ti.T)
+      end = timeit.default_timer()
+      print("Time for Fock: %8.6f s."%(end - start))
+      
+      pulse = func(fmax, w, t_arg, t0, sigma)
+      if debug: 
+          odbg.write("Pulse: %.8f\n"%(pulse))
+   
+      if pulse is None:
+        return None 
+   
+      fock_ti_ao = fockmtx - (dipole_z * pulse)
+      # dipole matrix null for test
+      dens_test = numpy.zeros((ndim,ndim),dtype=numpy.complex128)
+      fock_guess = 2.00*fock_ti_ao - fock_mid_ti_backwd
+      while True:
+           fockp_guess = numpy.matmul(numpy.conjugate(C.T), \
+                   numpy.matmul(fock_guess,C))
+   
+           u = exp_opmat(fockp_guess,delta_t,debug,odbg)
+   
+           if u is None:
+             return None 
+   
+           #u=scila.expm(-1.j*fockp_guess*delta_t)
+   
+           if debug:
+             test_u = numpy.matmul(u,numpy.conjugate(u.T))
+             diff = test_u - numpy.eye(u.shape[0])
+             maxdiff = numpy.max(diff)
+             odbg.write("U is unitary(fock_mid) : %s"% 
+                   numpy.allclose(test_u,numpy.eye(u.shape[0]),atol=1.e-14))
+             odbg.write("  max diff: %.12e %.12e \n"%
+                   (maxdiff.real, maxdiff.imag))
+   
+           tmpd = numpy.matmul(Dp_ti,numpy.conjugate(u.T))
+           Dp_ti_dt = numpy.matmul(u,tmpd)
+           #backtrasform Dp_ti_dt
+           D_ti_dt = numpy.matmul(C,numpy.matmul(Dp_ti_dt,numpy.conjugate(C.T)))
+           #build the correspondig Fock , fock_ti+dt
+           
+           pulse = func (fmax, w, t_arg + delta_t, t0, sigma)
+           if debug: 
+               odbg.write("Pulse: %.8f\n"%(pulse))
+   
+           if pulse is None:
+             return None 
+   
+           start = timeit.default_timer()
+           fock_ti_dt_ao=bertha.get_realtime_fock(D_ti_dt.T)-(dipole_z*pulse)
+           end = timeit.default_timer()
+           print("Time for Fock: %8.6f s."%(end - start))
 
-        u = exp_opmat(fockp_guess,delta_t,debug,odbg)
+           fock_inter = 0.5*fock_ti_ao + 0.5*fock_ti_dt_ao
+           #update fock_guess
+           fock_guess = numpy.copy(fock_inter)
+           if k > 1:
+               # test on the norm: compare the density at current step and previous step
+               # calc frobenius of the difference D_ti_dt_mo_new-D_ti_dt_mo
+               diff = D_ti_dt-dens_test
+               norm_f = numpy.linalg.norm(diff,'fro')
+               if debug:
+                   odbg.write("Norm: %.10e Should be <= %.10e \n" %(norm_f, propthresh))
+                   odbg.flush()
+               if norm_f < (propthresh):
+                   if debug:
+                     odbg.write(" Converged after %i interpolations\n" % (k))
+                     odbg.write("   i = %i" % i)
+                     odbg.write("   norm of D_ti_dt_(%i)-D_ti_dt(%i) : %.8f\n" % (k,k-1,norm_f))
+                   tr_dt = numpy.trace(numpy.matmul(S,D_ti_dt))
+                   break
+   
+           dens_test = numpy.copy(D_ti_dt)
+           k += 1
 
-        if u is None:
-          return None 
-
-        #u=scila.expm(-1.j*fockp_guess*delta_t)
-
-        if debug:
-          test_u = numpy.matmul(u,numpy.conjugate(u.T))
-          diff = test_u - numpy.eye(u.shape[0])
-          maxdiff = numpy.max(diff)
-          odbg.write("U is unitary(fock_mid) : %s"% 
-                numpy.allclose(test_u,numpy.eye(u.shape[0]),atol=1.e-14))
-          odbg.write("  max diff: %.12e %.12e \n"%
-                (maxdiff.real, maxdiff.imag))
-
-        tmpd = numpy.matmul(Dp_ti,numpy.conjugate(u.T))
-        Dp_ti_dt = numpy.matmul(u,tmpd)
-        #backtrasform Dp_ti_dt
-        D_ti_dt = numpy.matmul(C,numpy.matmul(Dp_ti_dt,numpy.conjugate(C.T)))
-        #build the correspondig Fock , fock_ti+dt
-        
-        pulse = func (fmax, w, t_arg + delta_t, t0, sigma)
-        if debug: 
-            odbg.write("Pulse: %.8f\n"%(pulse))
-
-        if pulse is None:
-          return None 
-
-        fock_ti_dt_ao=bertha.get_realtime_fock(D_ti_dt.T)-(dipole_z*pulse)
-        fock_inter = 0.5*fock_ti_ao + 0.5*fock_ti_dt_ao
-        #update fock_guess
-        fock_guess = numpy.copy(fock_inter)
-        if k > 1:
-            # test on the norm: compare the density at current step and previous step
-            # calc frobenius of the difference D_ti_dt_mo_new-D_ti_dt_mo
-            diff = D_ti_dt-dens_test
-            norm_f = numpy.linalg.norm(diff,'fro')
-            if debug:
-                odbg.write("Norm: %.10e Should be <= %.10e \n" %(norm_f, propthresh))
-                odbg.flush()
-            if norm_f < (propthresh):
-                if debug:
-                  odbg.write(" Converged after %i interpolations\n" % (k))
-                  odbg.write("   i = %i" % i)
-                  odbg.write("   norm of D_ti_dt_(%i)-D_ti_dt(%i) : %.8f\n" % (k,k-1,norm_f))
-                tr_dt = numpy.trace(numpy.matmul(S,D_ti_dt))
-                break
-
-        dens_test = numpy.copy(D_ti_dt)
-        k += 1
+   if USEGPU:
+      fock_inter = cupy.asnumpy(gfock_inter)
 
    return fock_inter
