@@ -117,7 +117,7 @@ ifeq ($(FORBGQ),no)
 
       # for Quadro P2000 -gpu=cc61,cuda12.1 
       # for marconi -gpu=cc70,cuda11.8 
-      # for leonardo -gpu=cc680,cuda11.8 
+      # for leonardo -gpu=cc80,cuda11.8 
       LINKFLAGS += -acc=gpu -gpu=cc80,cuda11.8 -Minfo=accel -cuda -cudalib=cublas,cusolver  
  
       ifeq ($(DEBUG),yes)

@@ -1,6 +1,8 @@
 import argparse
 import os.path
+import timeit
 import numpy
+import cupy
 import uuid
 import sys
 import os
@@ -260,10 +262,15 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
         ndim, debug, Dp_ti, dip_list, ene_list, weight_list=None, 
         select="-2 ; 0 & 0"):
 
-  
+
+    mainstart = timeit.default_timer()
+
+    mofostart = timeit.default_timer()
     fock_mid_tmp = rtutil.mo_fock_mid_forwd_eval(bertha, numpy.copy(D_ti), \
             fock_mid_backwd, j, numpy.float_(dt), dip_mat, C, C_inv, ovapm, \
             ndim, debug, fo, pulse, pulseFmax, pulsew, t0, pulseS, propthresh)
+    mofostop = timeit.default_timer()
+    print("Time for MO Fock: %8.6f s."%(mofostop - mofostart))
     
     if (fock_mid_tmp is None):
         print("Error accurs in mo_fock_mid_forwd_eval")
@@ -277,6 +284,9 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
     # transform fock_mid_tmp in MO basis
     fockp_mid_tmp = numpy.matmul(numpy.conjugate(C.T),numpy.matmul(fock_mid_tmp, C))
     u = rtutil.exp_opmat(numpy.copy(fockp_mid_tmp),numpy.float_(dt),debug,fo)
+    if type(u) == cupy.ndarray:
+        u = cupy.asnumpy(u)
+
     # u=scila.expm(-1.0j*fockp_mid_tmp*dt)
     # check u is unitary
     test_u = numpy.matmul(u,numpy.conjugate(u.T))
@@ -313,8 +323,11 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
       fo.write("Dipole: %.12e\n"%(numpy.trace(numpy.matmul(dip_mat,D_ti_dt)).real))
    
     #Energy expectation value at t = t_i_dt 
+    #start = timeit.default_timer()
     fockm_ti_dt = bertha.get_realtime_fock(D_ti_dt.T)
-    
+    #end = timeit.default_timer()
+    #print("Time for Fock: %8.6f s."%(end - start))
+
     """
     # to dump density og a grid 
     npoints = 50
@@ -364,6 +377,9 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
    
     #update fock_mid_backwd for the next step
     fock_mid_backwd = numpy.copy(fock_mid_tmp)
+
+    mainend = timeit.default_timer()
+    print("Time for mainloop: %8.6f s."%(mainend - mainstart))
    
     return fock_mid_backwd, D_ti, Dp_ti
 
@@ -832,6 +848,9 @@ def normal_run(args, filenames):
     
     fockp_mid_init=numpy.matmul(numpy.conjugate(C.T),numpy.matmul(fock_mid_init,C))
     u=rtutil.exp_opmat(fockp_mid_init,numpy.float_(dt),debug,fo)
+    if type(u) is cupy.ndarray:
+        u=cupy.asnumpy(u)
+
     #u=rtutil.exp_opmat(fockp_mid_init,numpy.float_(dt),debug,fo)
     #u=scila.expm(-1.j*fockp_mid_init*dt)
     temp=numpy.matmul(D_0,numpy.conjugate(u.T))
