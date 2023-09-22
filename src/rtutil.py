@@ -5,7 +5,7 @@ import sys
 
 import timeit
 
-USEGPU = True
+USING_GPU = False
 
 #######################################################################
 
@@ -26,7 +26,7 @@ def exp_opmat(mat,dt,debug=False,odbg=sys.stderr):
     # first find eigenvectors and eigvals of F (hermitian)
     # and take the exponential of the -i*w*dt, w being eigvals of F
     #for debug
-    if not USEGPU:
+    if not USING_GPU:
         if False :
            mat_h = numpy.conjugate(mat.T)
            diff_mat_h=mat-mat_h
@@ -66,7 +66,7 @@ def exp_opmat(mat,dt,debug=False,odbg=sys.stderr):
 
     mat_exp = None
 
-    if USEGPU:
+    if USING_GPU:
       cymat = None
 
       if type(mat) is numpy.ndarray:
@@ -296,69 +296,68 @@ def mo_fock_mid_forwd_eval(bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
    fock_inter = None
    gfock_inter = None
 
-   if USEGPU:
+   if USING_GPU:
 
-      gfock_inter = cupy.zeros((ndim,ndim),dtype=cupy.complex128)
-      gC_inv = cupy.asarray(C_inv)
-      gD_ti = cupy.asarray(D_ti)
-      gC = cupy.asarray(C)
-      gdipole_z = cupy.asarray(dipole_z)
-      gfock_mid_ti_backwd = cupy.asarray(fock_mid_ti_backwd)
-      gS = cupy.asarray(S)
+      print(type(C_inv))
+      print(type(D_ti))
 
-      gDp_ti = cupy.matmul(gC_inv,cupy.matmul(gD_ti,cupy.conjugate(gC_inv.T)))
+      Dp_ti = cupy.matmul(C_inv,cupy.matmul(D_ti,cupy.conjugate(C_inv.T)))
 
-      Dp_ti = cupy.asnumpy(gDp_ti)
+      cDp_ti = cupy.asnumpy(Dp_ti)
       k = 1
       t_arg = numpy.float_(i) * numpy.float_ (delta_t)
       start = timeit.default_timer()
-      fockmtx = bertha.get_realtime_fock(D_ti.T)
+      fockmtx = bertha.get_realtime_fock(cD_ti.T)
       end = timeit.default_timer()
       print("Time for Fock: %8.6f s."%(end - start))
-
       gfockmtx = cupy.asarray(fockmtx)
       
       pulse = func(fmax, w, t_arg, t0, sigma)
       if pulse is None:
         return None 
    
-      gfock_ti_ao = gfockmtx - (gdipole_z * pulse)
-      gdens_test = cupy.zeros((ndim,ndim),dtype=cupy.complex128)
-      gfock_guess = 2.00*gfock_ti_ao - gfock_mid_ti_backwd
+      fock_ti_ao = gfockmtx - (dipole_z * pulse)
+      dens_test = cupy.zeros((ndim,ndim),dtype=cupy.complex128)
+      fock_guess = 2.00*fock_ti_ao - fock_mid_ti_backwd
       while True:
-           gfockp_guess = cupy.matmul(cupy.conjugate(gC.T), \
-                   cupy.matmul(gfock_guess,gC))
-           gu = exp_opmat(gfockp_guess,delta_t,debug,odbg)
+           fockp_guess = cupy.matmul(cupy.conjugate(C.T), \
+                   cupy.matmul(fock_guess,C))
+           u = exp_opmat(fockp_guess,delta_t,debug,odbg)
 
-           if gu is None:
+           if u is None:
              return None 
    
-           gtmpd = cupy.matmul(gDp_ti,cupy.conjugate(gu.T))
-           gDp_ti_dt = cupy.matmul(gu,gtmpd)
-           gD_ti_dt = cupy.matmul(gC,numpy.matmul(gDp_ti_dt,cupy.conjugate(gC.T)))
+           tmpd = cupy.matmul(Dp_ti,cupy.conjugate(u.T))
+           Dp_ti_dt = cupy.matmul(u,gtmpd)
+           D_ti_dt = cupy.matmul(C,numpy.matmul(Dp_ti_dt,cupy.conjugate(C.T)))
            
            pulse = func (fmax, w, t_arg + delta_t, t0, sigma)
            if pulse is None:
              return None 
    
-           D_ti_dt = cupy.asnumpy(gD_ti_dt)
+           cD_ti_dt = cupy.asnumpy(D_ti_dt)
            start = timeit.default_timer()
-           fock_ti_dt_ao=bertha.get_realtime_fock(D_ti_dt.T)-(dipole_z*pulse)
+           cfock_ti_dt_ao=bertha.get_realtime_fock(cD_ti_dt.T)-(dipole_z*pulse)
            end = timeit.default_timer()
            print("Time for Fock: %8.6f s."%(end - start))
            
-           gfock_ti_dt_ao = cupy.asarray(fock_ti_dt_ao)
+           fock_ti_dt_ao = cupy.asarray(cfock_ti_dt_ao)
 
-           gfock_inter = 0.5*gfock_ti_ao + 0.5*gfock_ti_dt_ao
-           gfock_guess = cupy.copy(gfock_inter)
+           fock_inter = 0.5*fock_ti_ao + 0.5*fock_ti_dt_ao
+           fock_guess = cupy.copy(fock_inter)
            if k > 1:
-               gdiff = gD_ti_dt-gdens_test
-               gnorm_f = cupy.linalg.norm(gdiff,'fro')
-               if gnorm_f < (propthresh):
+               diff = D_ti_dt-dens_test
+               norm_f = cupy.linalg.norm(diff,'fro')
+               if norm_f < (propthresh):
+                   tr_dt = cupy.trace(cupy.matmul(S,D_ti_dt))
+                   break
+
+               # for debug
+               if k >= 5:
                    gtr_dt = cupy.trace(cupy.matmul(gS,gD_ti_dt))
                    break
    
-           gdens_test = cupy.copy(gD_ti_dt)
+           dens_test = cupy.copy(D_ti_dt)
            k += 1
    else:
       fock_inter = numpy.zeros((ndim,ndim),dtype=numpy.complex128)   
@@ -446,7 +445,7 @@ def mo_fock_mid_forwd_eval(bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
            dens_test = numpy.copy(D_ti_dt)
            k += 1
 
-   if USEGPU:
+   if USING_GPU:
       fock_inter = cupy.asnumpy(gfock_inter)
 
    return fock_inter

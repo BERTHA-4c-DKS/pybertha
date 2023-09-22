@@ -262,124 +262,171 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
         ndim, debug, Dp_ti, dip_list, ene_list, weight_list=None, 
         select="-2 ; 0 & 0"):
 
-
-    mainstart = timeit.default_timer()
-
-    mofostart = timeit.default_timer()
-    fock_mid_tmp = rtutil.mo_fock_mid_forwd_eval(bertha, numpy.copy(D_ti), \
-            fock_mid_backwd, j, numpy.float_(dt), dip_mat, C, C_inv, ovapm, \
-            ndim, debug, fo, pulse, pulseFmax, pulsew, t0, pulseS, propthresh)
-    mofostop = timeit.default_timer()
-    print("Time for MO Fock: %8.6f s."%(mofostop - mofostart))
+    if rtutil.USING_CUPY:
+        mainstart = timeit.default_timer()
     
-    if (fock_mid_tmp is None):
-        print("Error accurs in mo_fock_mid_forwd_eval")
-        return None, None, None
-   
-    if debug:
-      fo.write('%.8f\n' % numpy.trace(numpy.matmul(ovapm,D_ti)).real)
-      Ah = numpy.conjugate(fock_mid_tmp.T)
-      fo.write('Fock_mid hermitian: %s\n' % numpy.allclose(fock_mid_tmp,Ah,atol=1.e-14))
-
-    # transform fock_mid_tmp in MO basis
-    fockp_mid_tmp = numpy.matmul(numpy.conjugate(C.T),numpy.matmul(fock_mid_tmp, C))
-    u = rtutil.exp_opmat(numpy.copy(fockp_mid_tmp),numpy.float_(dt),debug,fo)
-    if type(u) == cupy.ndarray:
-        u = cupy.asnumpy(u)
-
-    # u=scila.expm(-1.0j*fockp_mid_tmp*dt)
-    # check u is unitary
-    test_u = numpy.matmul(u,numpy.conjugate(u.T))
-    if (not numpy.allclose(numpy.eye(u.shape[0]),test_u,atol=1.e-14)):
-        print("WARNING: U is not unitary\n")
-   
-    #evolve the density in orthonormal basis
-    #check the trace of density to evolve
-    if debug:
-      fo.write('trace of density to evolve: %.8f\n' % numpy.trace(Dp_ti).real)
-    temp=numpy.matmul(Dp_ti,numpy.conjugate(u.T))
-    Dp_ti_dt = numpy.matmul(u,temp)
-    #backtransform Dp_ti_dt
-    D_ti_dt=numpy.matmul(C,numpy.matmul(Dp_ti_dt,numpy.conjugate(C.T)))
-    if debug:
-      fo.write('  Trace of D_ti_dt %.8f\n' % numpy.trace(Dp_ti_dt).real)
-    #dipole expectation for D_ti_dt
-    dip_list.append(numpy.trace(numpy.matmul(dip_mat,D_ti_dt)))
-
-    if (pulse == "analytic"):
-        molist = select.split("&")
-        occlist = molist[0].split(";")
-        occlist = [int(m) for m in occlist]
-        virtlist = molist[1].split(";")
-        virtlist = [int(m) for m in virtlist]
-        if (occlist[0] != -2):
-            #dipole analysis
-            nshift = ndim/2
-            dipz_mo = numpy.matmul(numpy.conjugate(C.T),numpy.matmul(dip_mat,C))
-            res=rtutil.dipoleanalysis(dipz_mo,Dp_ti_dt,occlist,virtlist,int(nshift),fo,debug)
-            if (weight_list != None):
-                weight_list.append(res)
-    if debug:
-      fo.write("Dipole: %.12e\n"%(numpy.trace(numpy.matmul(dip_mat,D_ti_dt)).real))
-   
-    #Energy expectation value at t = t_i_dt 
-    #start = timeit.default_timer()
-    fockm_ti_dt = bertha.get_realtime_fock(D_ti_dt.T)
-    #end = timeit.default_timer()
-    #print("Time for Fock: %8.6f s."%(end - start))
-
-    """
-    # to dump density og a grid 
-    npoints = 50
-    grid = numpy.zeros((npoints*npoints*npoints, 4))
-    grid = numpy.ascontiguousarray(grid, dtype=numpy.double)
+        mofostart = timeit.default_timer()
+        fock_mid_tmp = rtutil.mo_fock_mid_forwd_eval(bertha, numpy.copy(D_ti), \
+                fock_mid_backwd, j, numpy.float_(dt), dip_mat, C, C_inv, ovapm, \
+                ndim, debug, fo, pulse, pulseFmax, pulsew, t0, pulseS, propthresh)
+        mofostop = timeit.default_timer()
+        print("Time_for_MO_Fock: %8.6f s."%(mofostop - mofostart))
+        
+        if (fock_mid_tmp is None):
+            print("Error accurs in mo_fock_mid_forwd_eval")
+            return None, None, None
+       
+        # transform fock_mid_tmp in MO basis
+        fockp_mid_tmp = cupy.matmul(cupy.conjugate(C.T),cupy.matmul(fock_mid_tmp, C))
+        u = rtutil.exp_opmat(cupy.copy(fockp_mid_tmp),cupy.float_(dt),debug,fo)
     
-    dstep = 0.2
-    w = 1.0
-    idx = 0
-
-    x = 8.0
-    for ix in range(npoints):
-        y = 4.0
-        for iy in range(npoints):
-            z = -4.0
-            for iz in range(npoints):
-                grid[idx,0] = x
-                grid[idx,1] = y
-                grid[idx,2] = z
-                grid[idx,3] = w
-
-                idx += 1
-
-                z += dstep
-            y += dstep
-        x += dstep
-
-    density = bertha.get_density_on_grid(grid)
-
-    tosave = numpy.column_stack((grid, density))
-
-    numpy.savetxt("step_%d.txt"%(j), tosave)
-    """
+        test_u = cupy.matmul(u,cupy.conjugate(u.T))
+        if (not cupy.allclose(cupy.eye(u.shape[0]),test_u,atol=1.e-14)):
+            print("WARNING: U is not unitary\n")
+       
+        temp=cupy.matmul(Dp_ti,cupy.conjugate(u.T))
+        Dp_ti_dt = cupy.matmul(u,temp)
+        D_ti_dt=cupy.matmul(C,cupy.matmul(Dp_ti_dt,cupy.conjugate(C.T)))
+        dip_list.append(cupy.trace(cupy.matmul(dip_mat,D_ti_dt)))
     
-    ene_list.append(numpy.trace(numpy.matmul(D_ti_dt,fockm_ti_dt)))
+        if (pulse == "analytic"):
+            molist = select.split("&")
+            occlist = molist[0].split(";")
+            occlist = [int(m) for m in occlist]
+            virtlist = molist[1].split(";")
+            virtlist = [int(m) for m in virtlist]
+            if (occlist[0] != -2):
+                print("Not yet implemented in cupy")
+
+        nD_ti_dt = cupy.asnumpy(D_ti_dt)
+        nfockm_ti_dt = bertha.get_realtime_fock(nD_ti_dt.T)
+        fockm_ti_dt = cupy.asnumpy(nfockm_ti_dt)
+
+        ene_list.append(cupy.trace(cupy.matmul(D_ti_dt,fockm_ti_dt)))
+        D_ti = cupy.copy(D_ti_dt)
+        Dp_ti = cupy.copy(Dp_ti_dt)
+        fock_mid_backwd = cupy.copy(fock_mid_tmp)
+        mainend = timeit.default_timer()
+        print("Time_for_mainloop: %8.6f s."%(mainend - mainstart))
+ 
+    else:
+        mainstart = timeit.default_timer()
     
-    # update D_ti and Dp_ti for the next step
-    # message for debug
-    # fo.write('here I update the matrices Dp_ti and D_ti\n')
-    D_ti = numpy.copy(D_ti_dt)
-    Dp_ti = numpy.copy(Dp_ti_dt)
-
-    if debug:
-      fo.write('  Trace of Dp_ti %.8f\n' % numpy.trace(Dp_ti).real)
-      fo.write('  Trace of ovapm * D_ti  %.8f\n' % numpy.trace(numpy.matmul(ovapm,D_ti)).real)
-      fo.flush()
-   
-    #update fock_mid_backwd for the next step
-    fock_mid_backwd = numpy.copy(fock_mid_tmp)
-
-    mainend = timeit.default_timer()
-    print("Time for mainloop: %8.6f s."%(mainend - mainstart))
+        mofostart = timeit.default_timer()
+        fock_mid_tmp = rtutil.mo_fock_mid_forwd_eval(bertha, numpy.copy(D_ti), \
+                fock_mid_backwd, j, numpy.float_(dt), dip_mat, C, C_inv, ovapm, \
+                ndim, debug, fo, pulse, pulseFmax, pulsew, t0, pulseS, propthresh)
+        mofostop = timeit.default_timer()
+        print("Time_for_MO_Fock: %8.6f s."%(mofostop - mofostart))
+        
+        if (fock_mid_tmp is None):
+            print("Error accurs in mo_fock_mid_forwd_eval")
+            return None, None, None
+       
+        if debug:
+          fo.write('%.8f\n' % numpy.trace(numpy.matmul(ovapm,D_ti)).real)
+          Ah = numpy.conjugate(fock_mid_tmp.T)
+          fo.write('Fock_mid hermitian: %s\n' % numpy.allclose(fock_mid_tmp,Ah,atol=1.e-14))
+    
+        # transform fock_mid_tmp in MO basis
+        fockp_mid_tmp = numpy.matmul(numpy.conjugate(C.T),numpy.matmul(fock_mid_tmp, C))
+        u = rtutil.exp_opmat(numpy.copy(fockp_mid_tmp),numpy.float_(dt),debug,fo)
+        if type(u) == cupy.ndarray:
+            u = cupy.asnumpy(u)
+    
+        # u=scila.expm(-1.0j*fockp_mid_tmp*dt)
+        # check u is unitary
+        test_u = numpy.matmul(u,numpy.conjugate(u.T))
+        if (not numpy.allclose(numpy.eye(u.shape[0]),test_u,atol=1.e-14)):
+            print("WARNING: U is not unitary\n")
+       
+        #evolve the density in orthonormal basis
+        #check the trace of density to evolve
+        if debug:
+          fo.write('trace of density to evolve: %.8f\n' % numpy.trace(Dp_ti).real)
+        temp=numpy.matmul(Dp_ti,numpy.conjugate(u.T))
+        Dp_ti_dt = numpy.matmul(u,temp)
+        #backtransform Dp_ti_dt
+        D_ti_dt=numpy.matmul(C,numpy.matmul(Dp_ti_dt,numpy.conjugate(C.T)))
+        if debug:
+          fo.write('  Trace of D_ti_dt %.8f\n' % numpy.trace(Dp_ti_dt).real)
+        #dipole expectation for D_ti_dt
+        dip_list.append(numpy.trace(numpy.matmul(dip_mat,D_ti_dt)))
+    
+        if (pulse == "analytic"):
+            molist = select.split("&")
+            occlist = molist[0].split(";")
+            occlist = [int(m) for m in occlist]
+            virtlist = molist[1].split(";")
+            virtlist = [int(m) for m in virtlist]
+            if (occlist[0] != -2):
+                #dipole analysis
+                nshift = ndim/2
+                dipz_mo = numpy.matmul(numpy.conjugate(C.T),numpy.matmul(dip_mat,C))
+                res=rtutil.dipoleanalysis(dipz_mo,Dp_ti_dt,occlist,virtlist,int(nshift),fo,debug)
+                if (weight_list != None):
+                    weight_list.append(res)
+        if debug:
+          fo.write("Dipole: %.12e\n"%(numpy.trace(numpy.matmul(dip_mat,D_ti_dt)).real))
+       
+        #Energy expectation value at t = t_i_dt 
+        #start = timeit.default_timer()
+        fockm_ti_dt = bertha.get_realtime_fock(D_ti_dt.T)
+        #end = timeit.default_timer()
+        #print("Time for Fock: %8.6f s."%(end - start))
+    
+        """
+        # to dump density og a grid 
+        npoints = 50
+        grid = numpy.zeros((npoints*npoints*npoints, 4))
+        grid = numpy.ascontiguousarray(grid, dtype=numpy.double)
+        
+        dstep = 0.2
+        w = 1.0
+        idx = 0
+    
+        x = 8.0
+        for ix in range(npoints):
+            y = 4.0
+            for iy in range(npoints):
+                z = -4.0
+                for iz in range(npoints):
+                    grid[idx,0] = x
+                    grid[idx,1] = y
+                    grid[idx,2] = z
+                    grid[idx,3] = w
+    
+                    idx += 1
+    
+                    z += dstep
+                y += dstep
+            x += dstep
+    
+        density = bertha.get_density_on_grid(grid)
+    
+        tosave = numpy.column_stack((grid, density))
+    
+        numpy.savetxt("step_%d.txt"%(j), tosave)
+        """
+        
+        ene_list.append(numpy.trace(numpy.matmul(D_ti_dt,fockm_ti_dt)))
+        
+        # update D_ti and Dp_ti for the next step
+        # message for debug
+        # fo.write('here I update the matrices Dp_ti and D_ti\n')
+        D_ti = numpy.copy(D_ti_dt)
+        Dp_ti = numpy.copy(Dp_ti_dt)
+    
+        if debug:
+          fo.write('  Trace of Dp_ti %.8f\n' % numpy.trace(Dp_ti).real)
+          fo.write('  Trace of ovapm * D_ti  %.8f\n' % numpy.trace(numpy.matmul(ovapm,D_ti)).real)
+          fo.flush()
+       
+        #update fock_mid_backwd for the next step
+        fock_mid_backwd = numpy.copy(fock_mid_tmp)
+    
+        mainend = timeit.default_timer()
+        print("Time_for_mainloop: %8.6f s."%(mainend - mainstart))
    
     return fock_mid_backwd, D_ti, Dp_ti
 
@@ -390,50 +437,94 @@ def run_iterations_from_to (startiter, niter, bertha, args, fock_mid_backwd, dt,
         fo, D_ti, occlist):
 
     dumpcounter = 0
+
+    if rtutil.USING_CUPY:
+      gfock_inter = cupy.zeros((ndim,ndim),dtype=cupy.complex128)
+      gC_inv = cupy.asarray(C_inv)
+      gD_ti = cupy.asarray(D_ti)
+      gC = cupy.asarray(C)
+      gdipole_z = cupy.asarray(dip_mat)
+      gfock_mid_ti_backwd = cupy.asarray(fock_mid_backwd)
+      gS = cupy.asarray(ovapm)
+      gDp_ti = cupy.asarray(Dp_ti)
+      gdip_mat = cupy.asarray(dip_mat)
+      gfock_mid_backwd = cupy.asarray(fock_mid_backwd)
+
+      for j in range(startiter, niter):
     
-    for j in range(startiter, niter):
-
-        sys.stdout.flush()
-
-        start = time.time()
-        cstart = time.process_time() 
+          sys.stdout.flush()
     
-        fock_mid_backwd, D_ti, Dp_ti = main_loop(j, niter, bertha, 
-                args.pulse, args.pulseFmax, args.pulsew, args.propthresh,
-                args.pulseS, args.t0, fo, D_ti, 
-                fock_mid_backwd, dt, dip_mat, C, C_inv, ovapm, 
-                ndim, debug, Dp_ti, dip_list, ene_list, weight_list, args.select)
-
-        if fock_mid_backwd is None:
-            return False
-
-        dumpcounter += 1
-
-        if args.dumprestartnum > 0:
-            if (dumpcounter == args.dumprestartnum) or \
-                    (j == niter-1):
-                
-                encoder.FLOAT_REPR = lambda o: format(o, '.25E')
-
-                json_data = get_json_data(args, j, niter, ndim, ene_list, 
-                        dip_list, D_ti, fock_mid_backwd, dip_mat, C, 
-                        C_inv, ovapm, Dp_ti, weight_list)
-
-                with open(args.restartfile, 'w') as fp:
-                    json.dump(json_data, fp, sort_keys=True, indent=4)
-
-                dumpcounter = 0
-
-        end = time.time()
-        cend = time.process_time() 
-   
-        if (args.iterations):
-            print("Iteration %10d"%j, " of %10d"%(niter-1), " ( %15.5f"%(end - start), \
-                    " (CPU time: %15.5f"%(cend - cstart), ") s )")
-        else:
-            rtutil.progress_bar(j, niter-1)
-
-        sys.stdout.flush()
+          start = time.time()
+          cstart = time.process_time() 
+      
+          gfock_mid_backwd, gD_ti, gDp_ti = main_loop(j, niter, bertha, 
+                  args.pulse, args.pulseFmax, args.pulsew, args.propthresh,
+                  args.pulseS, args.t0, fo, gD_ti, 
+                  gfock_mid_backwd, dt, gdip_mat, gC, gC_inv, gS, 
+                  ndim, debug, gDp_ti, dip_list, ene_list, weight_list, args.select)
+    
+          if gfock_mid_backwd is None:
+              return False
+    
+          dumpcounter += 1
+    
+          if args.dumprestartnum > 0:
+              print("Not yet implemented in cupy")
+    
+          end = time.time()
+          cend = time.process_time() 
+      
+          if (args.iterations):
+              print("Iteration %10d"%j, " of %10d"%(niter-1), " ( %15.5f"%(end - start), \
+                      " (CPU time: %15.5f"%(cend - cstart), ") s )")
+          else:
+              rtutil.progress_bar(j, niter-1)
+    
+          sys.stdout.flush()
+    else:    
+        for j in range(startiter, niter):
+    
+            sys.stdout.flush()
+    
+            start = time.time()
+            cstart = time.process_time() 
+        
+            fock_mid_backwd, D_ti, Dp_ti = main_loop(j, niter, bertha, 
+                    args.pulse, args.pulseFmax, args.pulsew, args.propthresh,
+                    args.pulseS, args.t0, fo, D_ti, 
+                    fock_mid_backwd, dt, dip_mat, C, C_inv, ovapm, 
+                    ndim, debug, Dp_ti, dip_list, ene_list, weight_list, args.select)
+    
+            if fock_mid_backwd is None:
+                return False
+    
+            dumpcounter += 1
+    
+            if args.dumprestartnum > 0:
+                if (dumpcounter == args.dumprestartnum) or \
+                        (j == niter-1):
+                    
+                    encoder.FLOAT_REPR = lambda o: format(o, '.25E')
+    
+                    json_data = get_json_data(args, j, niter, ndim, ene_list, 
+                            dip_list, D_ti, fock_mid_backwd, dip_mat, C, 
+                            C_inv, ovapm, Dp_ti, weight_list)
+    
+                    with open(args.restartfile, 'w') as fp:
+                        json.dump(json_data, fp, sort_keys=True, indent=4)
+    
+                    dumpcounter = 0
+    
+            end = time.time()
+            cend = time.process_time() 
+       
+            if (args.iterations):
+                print("Iteration %10d"%j, " of %10d"%(niter-1), " ( %15.5f"%(end - start), \
+                        " (CPU time: %15.5f"%(cend - cstart), ") s )")
+            else:
+                rtutil.progress_bar(j, niter-1)
+    
+            sys.stdout.flush()
 
     sys.stdout.flush()
 
@@ -916,6 +1007,8 @@ def normal_run(args, filenames):
     print("")
     
     fock_mid_backwd = numpy.copy(fock_mid_init)
+
+    rtutil.USING_CUPY = True
 
     return run_iterations_from_to (1, niter, bertha, args, fock_mid_backwd, \
             dt, dip_mat, C, C_inv, ovapm, ndim, debug, Dp_ti, dip_list, ene_list, \
