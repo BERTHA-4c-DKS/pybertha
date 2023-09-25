@@ -262,7 +262,7 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
         ndim, debug, Dp_ti, dip_list, ene_list, weight_list=None, 
         select="-2 ; 0 & 0"):
 
-    if rtutil.USING_CUPY:
+    if rtutil.USING_GPU:
         mainstart = timeit.default_timer()
     
         mofostart = timeit.default_timer()
@@ -287,7 +287,8 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
         temp=cupy.matmul(Dp_ti,cupy.conjugate(u.T))
         Dp_ti_dt = cupy.matmul(u,temp)
         D_ti_dt=cupy.matmul(C,cupy.matmul(Dp_ti_dt,cupy.conjugate(C.T)))
-        dip_list.append(cupy.trace(cupy.matmul(dip_mat,D_ti_dt)))
+        gtrace = cupy.trace(cupy.matmul(dip_mat,D_ti_dt))
+        dip_list.append(cupy.asnumpy(gtrace))
     
         if (pulse == "analytic"):
             molist = select.split("&")
@@ -300,9 +301,11 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
 
         nD_ti_dt = cupy.asnumpy(D_ti_dt)
         nfockm_ti_dt = bertha.get_realtime_fock(nD_ti_dt.T)
-        fockm_ti_dt = cupy.asnumpy(nfockm_ti_dt)
+        fockm_ti_dt = cupy.array(nfockm_ti_dt)
 
-        ene_list.append(cupy.trace(cupy.matmul(D_ti_dt,fockm_ti_dt)))
+        gtrace = cupy.trace(cupy.matmul(D_ti_dt,fockm_ti_dt))
+
+        ene_list.append(cupy.asnumpy(gtrace))
         D_ti = cupy.copy(D_ti_dt)
         Dp_ti = cupy.copy(Dp_ti_dt)
         fock_mid_backwd = cupy.copy(fock_mid_tmp)
@@ -438,13 +441,10 @@ def run_iterations_from_to (startiter, niter, bertha, args, fock_mid_backwd, dt,
 
     dumpcounter = 0
 
-    if rtutil.USING_CUPY:
-      gfock_inter = cupy.zeros((ndim,ndim),dtype=cupy.complex128)
+    if rtutil.USING_GPU:
       gC_inv = cupy.asarray(C_inv)
       gD_ti = cupy.asarray(D_ti)
       gC = cupy.asarray(C)
-      gdipole_z = cupy.asarray(dip_mat)
-      gfock_mid_ti_backwd = cupy.asarray(fock_mid_backwd)
       gS = cupy.asarray(ovapm)
       gDp_ti = cupy.asarray(Dp_ti)
       gdip_mat = cupy.asarray(dip_mat)
@@ -1008,7 +1008,7 @@ def normal_run(args, filenames):
     
     fock_mid_backwd = numpy.copy(fock_mid_init)
 
-    rtutil.USING_CUPY = True
+    rtutil.USING_GPU = True
 
     return run_iterations_from_to (1, niter, bertha, args, fock_mid_backwd, \
             dt, dip_mat, C, C_inv, ovapm, ndim, debug, Dp_ti, dip_list, ene_list, \
