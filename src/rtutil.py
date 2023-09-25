@@ -303,7 +303,7 @@ def mo_fock_mid_forwd_eval(bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
 
       Dp_ti = cupy.matmul(C_inv,cupy.matmul(D_ti,cupy.conjugate(C_inv.T)))
 
-      cDp_ti = cupy.asnumpy(Dp_ti)
+      cD_ti = cupy.asnumpy(D_ti)
       k = 1
       t_arg = numpy.float_(i) * numpy.float_ (delta_t)
       start = timeit.default_timer()
@@ -328,7 +328,7 @@ def mo_fock_mid_forwd_eval(bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
              return None 
    
            tmpd = cupy.matmul(Dp_ti,cupy.conjugate(u.T))
-           Dp_ti_dt = cupy.matmul(u,gtmpd)
+           Dp_ti_dt = cupy.matmul(u,tmpd)
            D_ti_dt = cupy.matmul(C,numpy.matmul(Dp_ti_dt,cupy.conjugate(C.T)))
            
            pulse = func (fmax, w, t_arg + delta_t, t0, sigma)
@@ -337,11 +337,11 @@ def mo_fock_mid_forwd_eval(bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
    
            cD_ti_dt = cupy.asnumpy(D_ti_dt)
            start = timeit.default_timer()
-           cfock_ti_dt_ao=bertha.get_realtime_fock(cD_ti_dt.T)-(dipole_z*pulse)
+           cfock_ti_dt_ao=bertha.get_realtime_fock(cD_ti_dt.T)
            end = timeit.default_timer()
            print("Time for Fock: %8.6f s."%(end - start))
            
-           fock_ti_dt_ao = cupy.asarray(cfock_ti_dt_ao)
+           fock_ti_dt_ao = cupy.asarray(cfock_ti_dt_ao)-(dipole_z*pulse)
 
            fock_inter = 0.5*fock_ti_ao + 0.5*fock_ti_dt_ao
            fock_guess = cupy.copy(fock_inter)
@@ -445,7 +445,7 @@ def mo_fock_mid_forwd_eval(bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
            dens_test = numpy.copy(D_ti_dt)
            k += 1
 
-   if USING_GPU:
-      fock_inter = cupy.asnumpy(gfock_inter)
+   #if USING_GPU:
+   #   fock_inter = cupy.asnumpy(gfock_inter)
 
    return fock_inter
