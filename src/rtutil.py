@@ -298,9 +298,6 @@ def mo_fock_mid_forwd_eval(bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
 
    if USING_GPU:
 
-      print(type(C_inv))
-      print(type(D_ti))
-
       Dp_ti = cupy.matmul(C_inv,cupy.matmul(D_ti,cupy.conjugate(C_inv.T)))
 
       cD_ti = cupy.asnumpy(D_ti)
