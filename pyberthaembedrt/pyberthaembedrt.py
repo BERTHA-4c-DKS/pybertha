@@ -276,6 +276,8 @@ def run_iterations_from_to (startiter, niter, bertha, embfactory, args, fock_mid
         #bertha.get_realtime_fock has previously assigned  D_ti 
         if args.iterative: 
           if ( ( j % int(args.period/dt) ) == 0.0 ):
+             if debug:
+                fo.write("step %i, updating potential\n" % j)
              rho = bertha.get_density_on_grid(grid)
              density=numpy.zeros((rho.shape[0],10))
              density[:,0] = rho
@@ -589,6 +591,32 @@ def restart_run(pberthaopt, args):
     # several paramenters to be specified in input- e.g AUG/ADZP for ADF, aug-cc-pvdz for psi4
 
     embfactory.initialize()
+
+    grid = embfactory.get_grid()
+    # we need to enforce that upon restart
+    # the "last-evaluated"  embedding potential is restored (rho - > vemb)
+    if args.iterative:
+       dummy = bertha.get_realtime_fock(D_ti.T)                     # the density is implicitly targeted for projection on the grid
+                                                                    # Vemb(D_ti) will be re-evaluated  as 'if j_iter % int(args.period/dt)' evaluates True
+    else:                                                           # if iterative=False the embedding is kept fixed and is equal to the "converged" potential from SCF
+
+       occeigv = numpy.zeros((ndim,nocc), dtype=numpy.complex128)   ##
+       iocc = 0                                                     # The 'else' block remove the need of re-doing a complete SCF cycle upon restart
+       for i in range(ndim):                                        # since the ground state C orbital coefficient 'occeigv' matrix is retrived from 'C'
+           if i >= nshift and iocc < nocc:                          # C is the coefficient matrix of the GS orbitals
+               for j in range(ndim):
+                   occeigv[j, iocc] = C[j, i]
+               iocc = iocc + 1
+       D_GS = numpy.matmul(occeigv,numpy.conjugate(occeigv.T))
+       dummy = bertha.get_realtime_fock(D_GS.T) 
+    # rho is either D_ti or D_GS
+    rho = bertha.get_density_on_grid(grid)
+    density=numpy.zeros((rho.shape[0],10))
+    density[:,0] = rho
+       
+    # the embedding potential from converged density
+    pot = embfactory.get_potential(density)
+    bertha.set_embpot_on_grid(grid, pot)     # this potential should match the "newly converged" potential  in normal_run()
     
     # reinit object class from know data
     from rtutil import dipole_base
