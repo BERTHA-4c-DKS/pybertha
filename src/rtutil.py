@@ -6,6 +6,7 @@ import sys
 import timeit
 
 USING_GPU = False
+GPUTOCPUCOMTIME = 0.0
 
 #######################################################################
 
@@ -300,14 +301,22 @@ def mo_fock_mid_forwd_eval(bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
 
       Dp_ti = cupy.matmul(C_inv,cupy.matmul(D_ti,cupy.conjugate(C_inv.T)))
 
+      commstart = timeit.default_timer()
       cD_ti = cupy.asnumpy(D_ti)
+      commstop = timeit.default_timer()
+      GPUTOCPUCOMTIME += (commstop - commstart)
+
       k = 1
       t_arg = numpy.float_(i) * numpy.float_ (delta_t)
       start = timeit.default_timer()
       fockmtx = bertha.get_realtime_fock(cD_ti.T)
       end = timeit.default_timer()
       print("Time for Fock: %8.6f s."%(end - start))
+
+      commstart = timeit.default_timer()
       gfockmtx = cupy.asarray(fockmtx)
+      commstop = timeit.default_timer()
+      GPUTOCPUCOMTIME += (commstop - commstart)
       
       pulse = func(fmax, w, t_arg, t0, sigma)
       if pulse is None:
@@ -332,13 +341,20 @@ def mo_fock_mid_forwd_eval(bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
            if pulse is None:
              return None 
    
+           commstart = timeit.default_timer()
            cD_ti_dt = cupy.asnumpy(D_ti_dt)
+           commstop = timeit.default_timer()
+           GPUTOCPUCOMTIME += (commstop - commstart)
+
            start = timeit.default_timer()
            cfock_ti_dt_ao=bertha.get_realtime_fock(cD_ti_dt.T)
            end = timeit.default_timer()
            print("Time for Fock: %8.6f s."%(end - start))
            
+           commstart = timeit.default_timer()
            fock_ti_dt_ao = cupy.asarray(cfock_ti_dt_ao)-(dipole_z*pulse)
+           commstop = timeit.default_timer()
+           GPUTOCPUCOMTIME += (commstop - commstart)
 
            fock_inter = 0.5*fock_ti_ao + 0.5*fock_ti_dt_ao
            fock_guess = cupy.copy(fock_inter)

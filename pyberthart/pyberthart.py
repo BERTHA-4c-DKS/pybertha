@@ -299,13 +299,25 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
             if (occlist[0] != -2):
                 print("Not yet implemented in cupy")
 
+        commstart = timeit.default_timer()
         nD_ti_dt = cupy.asnumpy(D_ti_dt)
+        commstop = timeit.default_timer()
+        rtutil.GPUTOCPUCOMTIME += commstop - commstart
+
         nfockm_ti_dt = bertha.get_realtime_fock(nD_ti_dt.T)
+
+        commstart = timeit.default_timer()
         fockm_ti_dt = cupy.array(nfockm_ti_dt)
+        commstop = timeit.default_timer()
+        rtutil.GPUTOCPUCOMTIME += commstop - commstart
 
         gtrace = cupy.trace(cupy.matmul(D_ti_dt,fockm_ti_dt))
 
+        commstart = timeit.default_timer()
         ene_list.append(cupy.asnumpy(gtrace))
+        commstop = timeit.default_timer()
+        rtutil.GPUTOCPUCOMTIME += commstop - commstart
+        
         D_ti = cupy.copy(D_ti_dt)
         Dp_ti = cupy.copy(Dp_ti_dt)
         fock_mid_backwd = cupy.copy(fock_mid_tmp)
@@ -442,6 +454,8 @@ def run_iterations_from_to (startiter, niter, bertha, args, fock_mid_backwd, dt,
     dumpcounter = 0
 
     if rtutil.USING_GPU:
+      commstart = timeit.default_timer()
+
       gC_inv = cupy.asarray(C_inv)
       gD_ti = cupy.asarray(D_ti)
       gC = cupy.asarray(C)
@@ -450,18 +464,27 @@ def run_iterations_from_to (startiter, niter, bertha, args, fock_mid_backwd, dt,
       gdip_mat = cupy.asarray(dip_mat)
       gfock_mid_backwd = cupy.asarray(fock_mid_backwd)
 
+      commstop = timeit.default_timer()
+      rtutil.GPUTOCPUCOMTIME += commstop - commstart
+
+      print("Time_main_communication: %8.6f s."%(rtutil.GPUTOCPUCOMTIME))
+
       for j in range(startiter, niter):
     
           sys.stdout.flush()
     
           start = time.time()
           cstart = time.process_time() 
+
+          rtutil.GPUTOCPUCOMTIME = 0.0
       
           gfock_mid_backwd, gD_ti, gDp_ti = main_loop(j, niter, bertha, 
                   args.pulse, args.pulseFmax, args.pulsew, args.propthresh,
                   args.pulseS, args.t0, fo, gD_ti, 
                   gfock_mid_backwd, dt, gdip_mat, gC, gC_inv, gS, 
                   ndim, debug, gDp_ti, dip_list, ene_list, weight_list, args.select)
+          
+          print("Time_step_communication: %8.6f s."%(rtutil.GPUTOCPUCOMTIME))
     
           if gfock_mid_backwd is None:
               return False
