@@ -257,20 +257,24 @@ def check_and_covert (mat_REAL, mat_IMAG, ndim):
 
 ##########################################################################################
 
-def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t0,
+def main_loop (USING_GPU, GPUTOCPUCOMTIME, \
+        j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t0,
         fo, D_ti, fock_mid_backwd, dt, dip_mat, C, C_inv, ovapm, 
         ndim, debug, Dp_ti, dip_list, ene_list, weight_list=None, 
         select="-2 ; 0 & 0"):
-
-    if rtutil.USING_GPU:
+    
+    if USING_GPU:
         mainstart = timeit.default_timer()
     
         mofostart = timeit.default_timer()
-        fock_mid_tmp = rtutil.mo_fock_mid_forwd_eval(bertha, numpy.copy(D_ti), \
+        commtime, fock_mid_tmp = rtutil.mo_fock_mid_forwd_eval(USING_GPU, GPUTOCPUCOMTIME,\
+                                                     bertha, numpy.copy(D_ti), \
                 fock_mid_backwd, j, numpy.float_(dt), dip_mat, C, C_inv, ovapm, \
                 ndim, debug, fo, pulse, pulseFmax, pulsew, t0, pulseS, propthresh)
         mofostop = timeit.default_timer()
         print("Time_for_MO_Fock: %8.6f s."%(mofostop - mofostart))
+        
+        GPUTOCPUCOMTIME += commtime 
         
         if (fock_mid_tmp is None):
             print("Error accurs in mo_fock_mid_forwd_eval")
@@ -278,7 +282,7 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
        
         # transform fock_mid_tmp in MO basis
         fockp_mid_tmp = cupy.matmul(cupy.conjugate(C.T),cupy.matmul(fock_mid_tmp, C))
-        u = rtutil.exp_opmat(cupy.copy(fockp_mid_tmp),cupy.float_(dt),debug,fo)
+        u = rtutil.exp_opmat(USING_GPU,cupy.copy(fockp_mid_tmp),cupy.float_(dt),debug,fo)
     
         test_u = cupy.matmul(u,cupy.conjugate(u.T))
         if (not cupy.allclose(cupy.eye(u.shape[0]),test_u,atol=1.e-14)):
@@ -302,21 +306,21 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
         commstart = timeit.default_timer()
         nD_ti_dt = cupy.asnumpy(D_ti_dt)
         commstop = timeit.default_timer()
-        rtutil.GPUTOCPUCOMTIME += commstop - commstart
+        GPUTOCPUCOMTIME += commstop - commstart
 
         nfockm_ti_dt = bertha.get_realtime_fock(nD_ti_dt.T)
 
         commstart = timeit.default_timer()
         fockm_ti_dt = cupy.array(nfockm_ti_dt)
         commstop = timeit.default_timer()
-        rtutil.GPUTOCPUCOMTIME += commstop - commstart
+        GPUTOCPUCOMTIME += commstop - commstart
 
         gtrace = cupy.trace(cupy.matmul(D_ti_dt,fockm_ti_dt))
 
         commstart = timeit.default_timer()
         ene_list.append(cupy.asnumpy(gtrace))
         commstop = timeit.default_timer()
-        rtutil.GPUTOCPUCOMTIME += commstop - commstart
+        GPUTOCPUCOMTIME += commstop - commstart
         
         D_ti = cupy.copy(D_ti_dt)
         Dp_ti = cupy.copy(Dp_ti_dt)
@@ -328,7 +332,8 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
         mainstart = timeit.default_timer()
     
         mofostart = timeit.default_timer()
-        fock_mid_tmp = rtutil.mo_fock_mid_forwd_eval(bertha, numpy.copy(D_ti), \
+        commtime, fock_mid_tmp = rtutil.mo_fock_mid_forwd_eval(USING_GPU, GPUTOCPUCOMTIME,\
+                                                     bertha, numpy.copy(D_ti), \
                 fock_mid_backwd, j, numpy.float_(dt), dip_mat, C, C_inv, ovapm, \
                 ndim, debug, fo, pulse, pulseFmax, pulsew, t0, pulseS, propthresh)
         mofostop = timeit.default_timer()
@@ -345,7 +350,7 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
     
         # transform fock_mid_tmp in MO basis
         fockp_mid_tmp = numpy.matmul(numpy.conjugate(C.T),numpy.matmul(fock_mid_tmp, C))
-        u = rtutil.exp_opmat(numpy.copy(fockp_mid_tmp),numpy.float_(dt),debug,fo)
+        u = rtutil.exp_opmat(USING_GPU, numpy.copy(fockp_mid_tmp),numpy.float_(dt),debug,fo)
         if type(u) == cupy.ndarray:
             u = cupy.asnumpy(u)
     
@@ -443,17 +448,18 @@ def main_loop (j, niter, bertha, pulse, pulseFmax, pulsew, propthresh, pulseS, t
         mainend = timeit.default_timer()
         print("Time_for_mainloop: %8.6f s."%(mainend - mainstart))
    
-    return fock_mid_backwd, D_ti, Dp_ti
+    return GPUTOCPUCOMTIME, fock_mid_backwd, D_ti, Dp_ti
 
 ##########################################################################################
 
-def run_iterations_from_to (startiter, niter, bertha, args, fock_mid_backwd, dt, \
+def run_iterations_from_to (USING_GPU, GPUTOCPUCOMTIME, \
+        startiter, niter, bertha, args, fock_mid_backwd, dt, \
         dip_mat, C, C_inv, ovapm, ndim, debug, Dp_ti, dip_list, ene_list, weight_list, \
         fo, D_ti, occlist):
 
     dumpcounter = 0
 
-    if rtutil.USING_GPU:
+    if USING_GPU:
       commstart = timeit.default_timer()
 
       gC_inv = cupy.asarray(C_inv)
@@ -465,9 +471,9 @@ def run_iterations_from_to (startiter, niter, bertha, args, fock_mid_backwd, dt,
       gfock_mid_backwd = cupy.asarray(fock_mid_backwd)
 
       commstop = timeit.default_timer()
-      rtutil.GPUTOCPUCOMTIME += commstop - commstart
+      GPUTOCPUCOMTIME += commstop - commstart
 
-      print("Time_main_communication: %8.6f s."%(rtutil.GPUTOCPUCOMTIME))
+      print("Time_main_communication: %8.6f s."%(GPUTOCPUCOMTIME))
 
       for j in range(startiter, niter):
     
@@ -476,15 +482,18 @@ def run_iterations_from_to (startiter, niter, bertha, args, fock_mid_backwd, dt,
           start = time.time()
           cstart = time.process_time() 
 
-          rtutil.GPUTOCPUCOMTIME = 0.0
+          GPUTOCPUCOMTIME = 0.0
       
-          gfock_mid_backwd, gD_ti, gDp_ti = main_loop(j, niter, bertha, 
+          commtime, gfock_mid_backwd, gD_ti, gDp_ti = main_loop(USING_GPU, GPUTOCPUCOMTIME,\
+                                                      j, niter, bertha, 
                   args.pulse, args.pulseFmax, args.pulsew, args.propthresh,
                   args.pulseS, args.t0, fo, gD_ti, 
                   gfock_mid_backwd, dt, gdip_mat, gC, gC_inv, gS, 
                   ndim, debug, gDp_ti, dip_list, ene_list, weight_list, args.select)
           
-          print("Time_step_communication: %8.6f s."%(rtutil.GPUTOCPUCOMTIME))
+          GPUTOCPUCOMTIME += commtime
+          
+          print("Time_step_communication: %8.6f s."%(GPUTOCPUCOMTIME))
     
           if gfock_mid_backwd is None:
               return False
@@ -512,7 +521,8 @@ def run_iterations_from_to (startiter, niter, bertha, args, fock_mid_backwd, dt,
             start = time.time()
             cstart = time.process_time() 
         
-            fock_mid_backwd, D_ti, Dp_ti = main_loop(j, niter, bertha, 
+            commtime, fock_mid_backwd, D_ti, Dp_ti = main_loop(USING_GPU, GPUTOCPUCOMTIME, \
+                                                     j, niter, bertha, 
                     args.pulse, args.pulseFmax, args.pulsew, args.propthresh,
                     args.pulseS, args.t0, fo, D_ti, 
                     fock_mid_backwd, dt, dip_mat, C, C_inv, ovapm, 
@@ -757,14 +767,20 @@ def restart_run(args, filenames):
     fo = sys.stderr
     if debug:
         fo = open("debug_info.txt", "w")
+
+    USING_GPU = False
+    GPUTOCPUCOMTIME = 0.0
     
-    return run_iterations_from_to (jstart+1, niter, bertha, args, fock_mid_backwd, \
+    return run_iterations_from_to (USING_GPU, GPUTOCPUCOMTIME, \
+            jstart+1, niter, bertha, args, fock_mid_backwd, \
             dt, dip_mat, C, C_inv, ovapm, ndim, debug, Dp_ti, dip_list, ene_list, \
             weight_list, fo, D_ti, occlist), generatedinout
  
 ##########################################################################################
 
 def normal_run(args, filenames):
+
+    USING_GPU = False
 
     print("Options: ")
     print(args) 
@@ -937,15 +953,18 @@ def normal_run(args, filenames):
             dipz_mo=rtutil.dipole_selection(dipz_mo,nshift,nocc,occlist,virtlist,fo,debug)
 
         print(" Perturb with analytic kick ")
-        u0=rtutil.exp_opmat(dipz_mo,numpy.float_(-Amp),debug,fo)
+        u0=rtutil.exp_opmat(USING_GPU, dipz_mo,numpy.float_(-Amp),debug,fo)
         Dp_init=numpy.matmul(u0,numpy.matmul(D_0,numpy.conjugate(u0.T)))
         #transform back Dp_int
         Da=numpy.matmul(C,numpy.matmul(Dp_init,numpy.conjugate(C.T)))
         D_0=Dp_init
 
     print("Start first mo_fock_mid_forwd_eval ")
+
+    GPUTOCPUCOMTIME = 0.0
     
-    fock_mid_init = rtutil.mo_fock_mid_forwd_eval(bertha,Da,fockm,0,numpy.float_(dt),\
+    commtime, fock_mid_init = rtutil.mo_fock_mid_forwd_eval(USING_GPU, GPUTOCPUCOMTIME,\
+                                                  bertha,Da,fockm,0,numpy.float_(dt),\
             dip_mat,C,C_inv,ovapm,ndim, debug, fo, args.pulse, args.pulseFmax, args.pulsew, args.t0, args.pulseS, 
             args.propthresh)
     
@@ -961,11 +980,11 @@ def normal_run(args, filenames):
             numpy.allclose(fock_mid_init,fock_mid_h,atol=1.e-14))
     
     fockp_mid_init=numpy.matmul(numpy.conjugate(C.T),numpy.matmul(fock_mid_init,C))
-    u=rtutil.exp_opmat(fockp_mid_init,numpy.float_(dt),debug,fo)
+    u=rtutil.exp_opmat(USING_GPU,fockp_mid_init,numpy.float_(dt),debug,fo)
     if type(u) is cupy.ndarray:
         u=cupy.asnumpy(u)
 
-    #u=rtutil.exp_opmat(fockp_mid_init,numpy.float_(dt),debug,fo)
+    #u=rtutil.exp_opmat(USING_GPU,fockp_mid_init,numpy.float_(dt),debug,fo)
     #u=scila.expm(-1.j*fockp_mid_init*dt)
     temp=numpy.matmul(D_0,numpy.conjugate(u.T))
     Dp_t1=numpy.matmul(u,temp)
@@ -1031,9 +1050,11 @@ def normal_run(args, filenames):
     
     fock_mid_backwd = numpy.copy(fock_mid_init)
 
-    rtutil.USING_GPU = True
+    USING_GPU = True
+    GPUTOCPUCOMTIME = 0.0
 
-    return run_iterations_from_to (1, niter, bertha, args, fock_mid_backwd, \
+    return run_iterations_from_to (USING_GPU, GPUTOCPUCOMTIME, \
+            1, niter, bertha, args, fock_mid_backwd, \
             dt, dip_mat, C, C_inv, ovapm, ndim, debug, Dp_ti, dip_list, ene_list, \
             weight_list, fo, D_ti, occlist), generatedinout
     
