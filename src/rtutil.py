@@ -5,9 +5,6 @@ import sys
 
 import timeit
 
-USING_GPU = False
-GPUTOCPUCOMTIME = 0.0
-
 #######################################################################
 
 def progress_bar (count, total, status=''):
@@ -22,7 +19,7 @@ def progress_bar (count, total, status=''):
 
 #######################################################################
 
-def exp_opmat(mat,dt,debug=False,odbg=sys.stderr):
+def exp_opmat(USING_GPU, mat,dt,debug=False,odbg=sys.stderr):
 
     # first find eigenvectors and eigvals of F (hermitian)
     # and take the exponential of the -i*w*dt, w being eigvals of F
@@ -288,7 +285,8 @@ funcswitcher = {
    
 #######################################################################
 
-def mo_fock_mid_forwd_eval(bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
+def mo_fock_mid_forwd_eval(USING_GPU, GPUTOCPUCOMTIME,  \
+    bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
     dipole_z, C, C_inv, S, ndim, debug=False, odbg=sys.stderr, 
     impulsefunc="kick", fmax=0.0001, w=0.0, t0=0.0, sigma=0.0, propthresh=1.0e-6): 
 
@@ -317,7 +315,7 @@ def mo_fock_mid_forwd_eval(bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
       gfockmtx = cupy.asarray(fockmtx)
       commstop = timeit.default_timer()
       GPUTOCPUCOMTIME += (commstop - commstart)
-      
+
       pulse = func(fmax, w, t_arg, t0, sigma)
       if pulse is None:
         return None 
@@ -328,7 +326,7 @@ def mo_fock_mid_forwd_eval(bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
       while True:
            fockp_guess = cupy.matmul(cupy.conjugate(C.T), \
                    cupy.matmul(fock_guess,C))
-           u = exp_opmat(fockp_guess,delta_t,debug,odbg)
+           u = exp_opmat(USING_GPU, fockp_guess,delta_t,debug,odbg)
 
            if u is None:
              return None 
@@ -402,7 +400,7 @@ def mo_fock_mid_forwd_eval(bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
            fockp_guess = numpy.matmul(numpy.conjugate(C.T), \
                    numpy.matmul(fock_guess,C))
    
-           u = exp_opmat(fockp_guess,delta_t,debug,odbg)
+           u = exp_opmat(USING_GPU, fockp_guess,delta_t,debug,odbg)
    
            if u is None:
              return None 
@@ -461,4 +459,4 @@ def mo_fock_mid_forwd_eval(bertha, D_ti, fock_mid_ti_backwd, i, delta_t,
    #if USING_GPU:
    #   fock_inter = cupy.asnumpy(gfock_inter)
 
-   return fock_inter
+   return GPUTOCPUCOMTIME, fock_inter
