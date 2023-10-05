@@ -65,6 +65,7 @@ def exp_opmat(USING_GPU, mat,dt,debug=False,odbg=sys.stderr):
     mat_exp = None
 
     if USING_GPU:
+      print("USIGN_GPU in exp")
       cymat = None
 
       if type(mat) is numpy.ndarray:
@@ -364,9 +365,9 @@ def mo_fock_mid_forwd_eval(USING_GPU, GPUTOCPUCOMTIME,  \
                    break
 
                # for debug
-               if k >= 5:
-                   gtr_dt = cupy.trace(cupy.matmul(gS,gD_ti_dt))
-                   break
+               #if k >= 5:
+               #    tr_dt = cupy.trace(cupy.matmul(S,D_ti_dt))
+               #    break
    
            dens_test = cupy.copy(D_ti_dt)
            k += 1
@@ -445,6 +446,7 @@ def mo_fock_mid_forwd_eval(USING_GPU, GPUTOCPUCOMTIME,  \
                if debug:
                    odbg.write("Norm: %.10e Should be <= %.10e \n" %(norm_f, propthresh))
                    odbg.flush()
+
                if norm_f < (propthresh):
                    if debug:
                      odbg.write(" Converged after %i interpolations\n" % (k))
@@ -452,6 +454,11 @@ def mo_fock_mid_forwd_eval(USING_GPU, GPUTOCPUCOMTIME,  \
                      odbg.write("   norm of D_ti_dt_(%i)-D_ti_dt(%i) : %.8f\n" % (k,k-1,norm_f))
                    tr_dt = numpy.trace(numpy.matmul(S,D_ti_dt))
                    break
+               
+               # for debug
+               #if k >= 5:
+               #    tr_dt = numpy.trace(numpy.matmul(S,D_ti_dt))
+               #    break
    
            dens_test = numpy.copy(D_ti_dt)
            k += 1
