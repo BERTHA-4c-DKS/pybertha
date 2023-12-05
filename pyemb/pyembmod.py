@@ -147,13 +147,14 @@ class GridDensityFactory():
       ys=psi4.core.Vector.from_array(self.__points[:,1])
       zs=psi4.core.Vector.from_array(self.__points[:,2])
       ws=psi4.core.Vector.from_array(self.__points[:,3])
-
-      delta = 1.0e-2 #private parameter 
+      
       if isinstance(self.__basisset,str): 
           basisobj = psi4.core.BasisSet.build(self.__mol, 'ORBITAL',self.__basisset,puream=-1)
       else:
           basisobj = self.__basisset
-      basis_extents = psi4.core.BasisExtents(basisobj,delta)
+      # epsilon determines a cut off value for the basis function value 
+      epsilon = psi4.core.get_global_option("DFT_BASIS_TOLERANCE")
+      basis_extents = psi4.core.BasisExtents(basisobj,epsilon)
  
       blockopoints = psi4.core.BlockOPoints(xs, ys, zs, ws,basis_extents)
       npoints = blockopoints.npoints()
@@ -241,6 +242,10 @@ class pyemb:
         self.__adfoufname = ""
         self.__psioufname = ""
         self.__gridfilename = "grid.dat"
+        #psi4 extras
+        self.__p4scf_type = 'direct'
+        self.__p4df_basis = 'def2-universal-jkfit'
+        self.__p4df_guess = False
 
 #    def set_fde_relax(self,bool_):
 #        self.__fde_relax = bool_
@@ -355,6 +360,11 @@ class pyemb:
     def get_f_nad_xc(self):
         
         return self.__f_nad_xc
+
+    def set_psi4_extra(self,scf_type, df_guess, df_basis):
+        self.__p4df_guess = df_guess
+        self.__p4df_basis = df_basis
+        self.__p4scf_type = scf_type
 
     def set_f_nad_kin(self, kin):
 
@@ -554,14 +564,15 @@ class pyemb:
             
             #strings for psi4 molecule obj
             m_active=Molecule(self.__activefname)
-            #append charge and multuplicity
-            m_active.append(str(self.__active_charge) + '1' + '\n')
+            #charge and multuplicity are speciefied in the xyz
             m_active.append('symmetry c1' +'\n' + 'no_com' + '\n' + 'no_reorient' + '\n')
             
             m_enviro=Molecule(self.__envirofname)
+            charge_env = int(self.__tot_charge - self.__active_charge)
+            m_enviro.append(str(charge_env) + ' 1' + '\n')
 
             tot=Molecule(self.__activefname)
-            tot.append(m_enviro.geom_str()+'symmetry c1' +'\n' + 'no_com' + '\n' + 'no_reorient' + '\n')
+            tot.append('--\n'+ m_enviro.geom_str()+'symmetry c1' +'\n' + 'no_com' + '\n' + 'no_reorient' + '\n')
 
             #psi4 block
              
@@ -571,6 +582,8 @@ class pyemb:
                 build_superfunctional = psi4.driver.dft_funcs.build_superfunctional  
             
             if self.__grid_type == 2:
+               print("using grid corresponding to molecule \n")
+               tot.display_xyz()
                mol_obj=psi4.geometry(tot.geom_str())
             elif self.__grid_type == 3:
                mol_obj=psi4.geometry(m_active.geom_str())
@@ -626,13 +639,14 @@ class pyemb:
                               'dft_radial_points':  75,
                               'dft_spherical_points' : 434, #'dft_nuclear_scheme': 'treutler' | default
                               'puream' : 'True',            
-                              'scf_type' : 'direct',                     
-                              'DF_SCF_GUESS': 'False',
+                              'df_basis_scf' : self.__p4df_basis,
+                              'scf_type' : self.__p4scf_type,
+                              'DF_SCF_GUESS': self.__p4df_guess,
                               'd_convergence' : self.__thresh_conv,
                               'e_convergence' : self.__thresh_conv})
-            charge_env = int(self.__tot_charge - self.__active_charge)
-            m_enviro.append(str(charge_env) + ' 1' + '\n')
+            
             m_enviro.append('symmetry c1' +'\n' + 'no_com' + '\n' + 'no_reorient' + '\n')
+            print("embedding system\n")
             m_enviro.display_xyz()
             enviro_obj=psi4.geometry(m_enviro.geom_str())
             ene, enviro_wfn = psi4.energy(self.__enviro_func,return_wfn=True)

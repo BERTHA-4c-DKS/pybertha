@@ -502,3 +502,71 @@ def make_loewdin(O):
 
   LoewdinMat = numpy.matmul(z,numpy.matmul(da,zinv))
   return LoewdinMat
+# psi4 provide only the grid
+import psi4
+class abs_pot():
+    def __init__(self,cap_mat,Cmat,Umat,dt=0.1,cap_on=False):
+        self.__exp_mat = None
+        self.__exp_mat_half_ts = None # for delta_t/2
+        self.__eigvec = None
+        self.__eigval = None
+        self.__delta_t = dt
+        self.__grid = None
+        #self.__do_cap = None
+        
+
+        self.__do_cap = cap_on
+        if self.__do_cap:
+            if isinstance(Umat,np.ndarray):
+                cap_mat = np.matmul(cap_mat,Umat)
+                cap_mat = np.matmul(Umat.T,cap_mat)
+            
+            # transform to the propagation basis
+            
+            tmp = np.matmul(cap_mat,Cmat)
+            tmp = np.matmul(Cmat.T,tmp)
+            
+            #diagonalize so that we can form exp(-A*dt/2) diagonal elements
+            try:
+               eigval,eigvec=np.linalg.eigh(tmp)
+            except np.linalg.LinAlgError:
+                print("check CAP\n")
+                raise Exception("Error in numpy.linalg.eigh of inputted matrix")
+            idx = eigval.argsort()[::-1]
+            eigval = eigval[idx]
+            eigvec = eigvec[:,idx]
+            self.__eigval =eigval
+            self.__eigvec =eigvec
+    def cap_init(self):
+        #
+    def is_cap_on(self):   # verify fuction
+        return self.__do_cap
+    def time_step(self):
+        return self.__delta_t
+
+    def cap_matrix(self,dt_half=False):
+        # the exponential of the CAP is already built-in to fullfill the split-operator form -> i.e exp(-W*Dt/2)
+        # -> exp( -i(F(t+Dt/2) -iW) * Dt ) approx exp(-W *Dt/2) exp(-i F(t+Dt/2) * Dt) exp(-W *Dt/2)
+        # Further if exp( -iF(t+Dt'/2) * Dt') where Dt' = Dt/2 is needed (in MMUT) we provide the dt_half keyword
+        dt = self.__delta_t
+        if self.__do_cap:
+            if not isinstance(self.__exp_mat_half_ts,np.ndarray): # in case already exists skip
+               diag=np.exp(-0.5*self.__eigval*np.float_(dt*0.5) )
+             
+               dmat=np.diagflat(diag)
+               self.__exp_mat_half_ts = np.matmul(self.__eigvec ,np.matmul(dmat,self.__eigvec.T))
+               #assign
+            # form the exp operator
+           
+            if not isinstance(self.__exp_mat,np.ndarray): # in case already exists
+               diag=np.exp(-0.5*self.__eigval*dt)
+             
+               dmat=np.diagflat(diag)
+               self.__exp_mat = np.matmul(self.__eigvec ,np.matmul(dmat,self.__eigvec.T))
+            if dt_half:
+                res = self.__exp_mat_half_ts
+            else:
+                res = self.__exp_mat
+            return res
+        else:
+            return None
