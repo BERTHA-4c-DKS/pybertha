@@ -577,6 +577,10 @@ def restart_run(pberthaopt, args):
     # several paramenters to be specified in input- e.g AUG/ADZP for ADF, aug-cc-pvdz for psi4
 
     embfactory.initialize()
+
+    # HERE need to add enforce for restart 
+
+    print("TODO reStart RT")
    
     return run_iterations_from_to (jstart+1, niter, bertha, embfactory, args, fock_mid_backwd, \
             dt, dip_mat, C, C_inv, ovapm, ndim, debug, Dp_ti, dip_list, ene_list, \
