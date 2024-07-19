@@ -579,8 +579,6 @@ def restart_run(pberthaopt, args):
     embfactory.initialize()
 
     # HERE need to add enforce for restart 
-
-    print("TODO reStart RT")
    
     return run_iterations_from_to (jstart+1, niter, bertha, embfactory, args, fock_mid_backwd, \
             dt, dip_mat, C, C_inv, ovapm, ndim, debug, Dp_ti, dip_list, ene_list, \
