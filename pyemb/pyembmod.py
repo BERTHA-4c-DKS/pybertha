@@ -134,10 +134,13 @@ class GridDensityFactory():
 
   def lpos(self):
       return self.__lpos
+
   def nbf(self):
       return self.__nbas
+  
   def phi(self):
       return self.__phi
+  
   def points(self):
       return self.__points
       
