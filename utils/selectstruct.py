@@ -143,6 +143,7 @@ if __name__ == "__main__":
     else:
         similmols1 = []
         for i in range(len(xyzblocks1)):
+            print("Molecule ", i, " in file 1 of ", len(xyzblocks1))
             xyzblock1 = xyzblocks1[i]
             line1 = xyzblock1.split("\n")[0]
             line1 = ' '.join(line1.split())
@@ -160,6 +161,7 @@ if __name__ == "__main__":
         
         similmols2 = []
         for i in range(len(xyzblocks2)):
+            print("Molecule ", i, " in file 2 of ", len(xyzblocks2))
             xyzblock2 = xyzblocks2[i]
             line2 = xyzblock2.split("\n")[0]
             line2 = ' '.join(line2.split())
