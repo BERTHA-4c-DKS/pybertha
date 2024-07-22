@@ -1,6 +1,7 @@
 from rdkit import Chem
 from rdkit.Chem.AllChem import GetBestRMS, AlignMol
 from rdkit.Chem import Draw
+import sys
 
 import matplotlib.pyplot as plt
 
@@ -91,6 +92,11 @@ if __name__ == "__main__":
 
     coord1_filepath = "1.xyz"
     coord2_filepath = "1.xyz"
+
+    if len(sys.argv) == 3:
+        coord1_filepath = sys.argv[1]
+        coord2_filepath = sys.argv[2]
+
     xyzblocks1 = read_xyzblocks(coord1_filepath)
     xyzblocks2 = read_xyzblocks(coord2_filepath)
 
