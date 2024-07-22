@@ -188,4 +188,13 @@ if __name__ == "__main__":
                     minrmsd = rmsd
                     minidx = [i, j]
       
-    
+        print("Minimum RMSD: ", minrmsd)
+        print("Molecules: ", minidx)
+
+        # write the molecules with minimum RMSD to a file
+        fp = open("minrmsd1.xyz", "w")
+        fp.write(xyzblocks1[minidx[0]])
+        fp.close()
+        fp = open("minrmsd2.xyz", "w")
+        fp.write(xyzblocks2[minidx[1]])
+        fp.close()
