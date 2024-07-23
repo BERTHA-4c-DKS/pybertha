@@ -92,8 +92,14 @@ if __name__ == "__main__":
 
     coord1_filepath = "1.xyz"
     coord2_filepath = "1.xyz"
-
-    if len(sys.argv) == 3:
+    slicetorun = -1
+    totalslices = 0
+    if len(sys.argv) == 5:
+        coord1_filepath = sys.argv[1]
+        coord2_filepath = sys.argv[2]
+        slicetorun = int(sys.argv[3])
+        totalslices = int(sys.argv[4])
+    elif len(sys.argv) == 3:
         coord1_filepath = sys.argv[1]
         coord2_filepath = sys.argv[2]
 
@@ -180,7 +186,18 @@ if __name__ == "__main__":
 
         minrmsd = float("inf")
         minidx = [-1, -1]
-        for i in range(len(similmols1)):
+        startfrom = 0
+        upto = len(similmols1)
+        if slicetorun != -1:
+            total = totalslices
+            step = len(similmols1) // total
+            startfrom = slicetorun * step
+            upto = startfrom + step
+            if upto > len(similmols1):
+                upto = len(similmols1)
+            print("Running slice ", slicetorun, " of ", total, " from ", startfrom, " to ", upto)
+
+        for i in range(startfrom, upto):
             localminrmsd = float("inf")
             localminidx = [-1, -1]
             for j in range(len(similmols2)):
@@ -191,7 +208,7 @@ if __name__ == "__main__":
                 if rmsd < minrmsd:
                     minrmsd = rmsd
                     minidx = [i, j]
-                    
+
                 if rmsd < localminrmsd:
                     localminrmsd = rmsd
                     localminidx = [i, j]
