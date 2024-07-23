@@ -1,4 +1,5 @@
 import sys
+import time
 
 #########################################################################3
 
@@ -120,6 +121,8 @@ if __name__ == "__main__":
     for i in range(startfrom, upto):
         localminrmsd = float("inf")
         localminidx = [-1, -1]
+        # measure time needed to compare molecule i with all molecules in file 2
+        start = time.time()
         for j in range(len(similmols2)):
             atoms1 = similmols1[i]
             atoms2 = similmols2[j]
@@ -133,6 +136,8 @@ if __name__ == "__main__":
                 localminrmsd = rmsd
                 localminidx = [i, j]
 
+        end = time.time()
+        print("Time taken to compare molecule ", i, " with all molecules in file 2: ", end-start)
         print("Molecule ", i, " in file 1 of ", \
               len(similmols1), " Min RMSD: ", minrmsd, \
                 " Molecule ", minidx[1], " in file 2 of ", len(similmols2))
