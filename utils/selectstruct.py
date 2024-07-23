@@ -181,15 +181,24 @@ if __name__ == "__main__":
         minrmsd = float("inf")
         minidx = [-1, -1]
         for i in range(len(similmols1)):
+            localminrmsd = float("inf")
+            localminidx = [-1, -1]
             for j in range(len(similmols2)):
                 atoms1 = similmols1[i]
                 atoms2 = similmols2[j]
                 rmsd = cmp_rmsd(atoms1, atoms2)
-                print("%d %d RMSD: "%(i, j), rmsd)
+                #print("%d %d RMSD: "%(i, j), rmsd)
                 if rmsd < minrmsd:
                     minrmsd = rmsd
                     minidx = [i, j]
-      
+                    
+                if rmsd < localminrmsd:
+                    localminrmsd = rmsd
+                    localminidx = [i, j]
+
+            print("Molecule ", i, " in file 1 of ", len(xyzblocks1), " Min RMSD: ", minrmsd, " Molecule ", minidx[1], " in file 2 of ", len(xyzblocks2))
+            print("Local Min RMSD: ", localminrmsd, " Molecule ", localminidx[1], " in file 2 of ", len(xyzblocks2))
+
         print("Minimum RMSD: ", minrmsd)
         print("Molecules: ", minidx)
 
