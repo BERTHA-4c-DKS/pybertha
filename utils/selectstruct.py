@@ -165,8 +165,6 @@ if __name__ == "__main__":
                 atoms.append([atom, x, y, z])
             similmols1.append(atoms)
         
-        xyzblock1.clear()
-
         similmols2 = []
         for i in range(len(xyzblocks2)):
             print("Molecule ", i, " in file 2 of ", len(xyzblocks2))
@@ -184,8 +182,6 @@ if __name__ == "__main__":
                 z = float(line.split()[3])
                 atoms.append([atom, x, y, z])
             similmols2.append(atoms)
-
-        xyzblock2.clear()
 
         minrmsd = float("inf")
         minidx = [-1, -1]
