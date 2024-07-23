@@ -150,13 +150,13 @@ if __name__ == "__main__":
 
     # write the molecules with minimum RMSD to a file
     fp = open("minrmsd1.xyz", "w")
-    fp.write(len(similmols1[minidx[0]]) + "\n")
+    fp.write(str(len(similmols1[minidx[0]])) + "\n")
     fp.write("\n")
     for atom in similmols1[minidx[0]]:
         fp.write(atom[0] + " " + str(atom[1]) + " " + str(atom[2]) + " " + str(atom[3]) + "\n")
     fp.close()
     fp = open("minrmsd2.xyz", "w")
-    fp.write(len(similmols2[minidx[1]]) + "\n")
+    fp.write(str(len(similmols2[minidx[1]])) + "\n")
     fp.write("\n")
     for atom in similmols2[minidx[1]]:
         fp.write(atom[0] + " " + str(atom[1]) + " " + str(atom[2]) + " " + str(atom[3]) + "\n")
