@@ -100,6 +100,7 @@ if __name__ == "__main__":
 
     print("Number of molecules in file 1: ", len(similmols1))
     print("Number of molecules in file 2: ", len(similmols2))
+    sys.stdout.flush()
 
     minrmsd = float("inf")
     minidx = [-1, -1]
@@ -114,6 +115,7 @@ if __name__ == "__main__":
             upto = len(similmols1)
         print("Running slice ", slicetorun, " of ",\
                total, " from ", startfrom, " to ", upto)
+        sys.stdout.flush()
 
     for i in range(startfrom, upto):
         localminrmsd = float("inf")
@@ -136,6 +138,7 @@ if __name__ == "__main__":
                 " Molecule ", minidx[1], " in file 2 of ", len(similmols2))
         print("Local Min RMSD: ", localminrmsd, " Molecule ", localminidx[1], \
               " in file 2 of ", len(similmols2))        
+        sys.stdout.flush()
 
     print("Minimum RMSD: ", minrmsd)
     print("Molecules: ", minidx)
