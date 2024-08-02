@@ -9,7 +9,8 @@ OBJ = \
 
 all : $(BERTHAWLIB)
 
-FFLAGS+= -I${BERTHAROOT}/common -I${BERTHAROOT}/serial
+#FFLAGS+= -I${BERTHAROOT}/common -I${BERTHAROOT}/serial
+FFLAGS+= -I${BERTHAROOT}/common -I${BERTHAROOT}/serial -I${BERTHAROOT}/serial/MOD
 
 $(BERTHAWLIB): $(OBJ)
 	cp ${BERTHAROOT}/lib/* ../lib

@@ -317,7 +317,9 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
         print("unperturbed Dip z    ",dipz_ref)
 
     #if lin_emb=True, a single scf is performed at constant Vemb
-    maxiter = 20
+#    maxiter = 20
+# LB Reduced maxit to 4
+    maxiter = 4
     Dold = Da0 
     Da = Da0
     Eold = etotal

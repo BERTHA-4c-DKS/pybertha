@@ -4,7 +4,7 @@ import os
 import sys
 import pyadf 
 import pyadf.PyEmbed
-import psi4
+#import psi4
 import argparse
 from pkg_resources import parse_version
 
@@ -144,34 +144,34 @@ class GridDensityFactory():
   def points(self):
       return self.__points
       
-  def phi_builder(self):
+#  def phi_builder(self):
       
-      xs=psi4.core.Vector.from_array(self.__points[:,0])
-      ys=psi4.core.Vector.from_array(self.__points[:,1])
-      zs=psi4.core.Vector.from_array(self.__points[:,2])
-      ws=psi4.core.Vector.from_array(self.__points[:,3])
+#      xs=psi4.core.Vector.from_array(self.__points[:,0])
+#      ys=psi4.core.Vector.from_array(self.__points[:,1])
+#      zs=psi4.core.Vector.from_array(self.__points[:,2])
+#      ws=psi4.core.Vector.from_array(self.__points[:,3])
 
-      delta = 1.0e-2 #private parameter 
+#      delta = 1.0e-2 #private parameter 
  
-      basis = psi4.core.BasisSet.build(self.__mol, 'ORBITAL',self.__basisset,puream=-1)
-      basis_extents = psi4.core.BasisExtents(basis,delta)
+#      basis = psi4.core.BasisSet.build(self.__mol, 'ORBITAL',self.__basisset,puream=-1)
+#      basis_extents = psi4.core.BasisExtents(basis,delta)
  
-      blockopoints = psi4.core.BlockOPoints(xs, ys, zs, ws,basis_extents)
-      npoints = blockopoints.npoints()
-      #print("n points: %i" % npoints)
+#      blockopoints = psi4.core.BlockOPoints(xs, ys, zs, ws,basis_extents)
+#      npoints = blockopoints.npoints()
+#      #print("n points: %i" % npoints)
       
-      self.__lpos = numpy.array(blockopoints.functions_local_to_global())
-      #DEBUG 
-      #print("Local basis function mapping")
-      #print(lpos) 
+#      self.__lpos = numpy.array(blockopoints.functions_local_to_global())
+#      #DEBUG 
+#      #print("Local basis function mapping")
+#      #print(lpos) 
  
-      self.__nbas = basis.nbf() #number of basis functions
+#      self.__nbas = basis.nbf() #number of basis functions
+# 
+#      funcs = psi4.core.BasisFunctions(basis,npoints,self.__nbas)
  
-      funcs = psi4.core.BasisFunctions(basis,npoints,self.__nbas)
+#      funcs.compute_functions(blockopoints)
  
-      funcs.compute_functions(blockopoints)
- 
-      self.__phi = numpy.array(funcs.basis_values()["PHI"])[:npoints, :self.__lpos.shape[0]]
+#      self.__phi = numpy.array(funcs.basis_values()["PHI"])[:npoints, :self.__lpos.shape[0]]
 
   def from_Cocc(self,Cocc):
       if (self.__phi.shape[1] != Cocc.shape[0]):
@@ -468,147 +468,6 @@ class pyemb:
     
             self.__init = True
 
-        elif self.__jobtype == 'psi4':
-            
-            if len(self.__acc_int) != 2  :
-               raise PyEmbError ("input must be a list (radial and spherical points) ")
-
-            if self.__grid_type == 1 or self.__grid_type > 3:
-              raise TypeError("gridtype must be 2 or 3 if jobtype is " + self.__jobtype)
-
-            if not isinstance (self.__acc_int, list):
-              raise TypeError("param (parameter 1) must be a list of integer if jobtype " +
-               self.__jobtype )
-
-            if not all(isinstance(x, int) for x in self.__acc_int):
-              raise TypeError("param (parameter 1) must be a list of integer when jobtype " + 
-                       self.__jobtype )
-
-            init_stdout_redirect ()
-            t = threading.Thread(target=drain_pipe)
-            t.start()
-            
-            #psi4.core.set_output_file('debug_psi4.dat', False)
-            psi4.set_options({'basis' : self.__basis_frzn,
-                    'puream' : 'True',
-                    'dft_radial_scheme' : 'becke',
-                    'dft_radial_points':  self.__acc_int[0],
-                    'dft_spherical_points' : self.__acc_int[1]})  #'dft_nuclear_scheme': 'treutler' | default
-            #dummy pyadf molecule
-            m_dummy = pyadf.molecule(self.__envirofname)
-            
-            #strings for psi4 molecule obj
-            m_active=Molecule(self.__activefname)
-            m_active.append('symmetry c1' +'\n' + 'no_com' + '\n' + 'no_reorient' + '\n')
-            
-            m_enviro=Molecule(self.__envirofname)
-
-            tot=Molecule(self.__activefname)
-            tot.append(m_enviro.geom_str()+'symmetry c1' +'\n' + 'no_com' + '\n' + 'no_reorient' + '\n')
-
-            #psi4 block
-             
-            if parse_version(psi4.__version__) >= parse_version('1.3a1'):      
-                build_superfunctional = psi4.driver.dft.build_superfunctional
-            else:
-                build_superfunctional = psi4.driver.dft_funcs.build_superfunctional  
-            
-            if self.__grid_type == 2:
-               mol_obj=psi4.geometry(tot.geom_str())
-            elif self.__grid_type == 3:
-               mol_obj=psi4.geometry(m_active.geom_str())
-            elif self.__grid_type == -99:
-               print("Grid from extern file\n")
-               
-
-            else:
-               raise PyEmbError ("incompatible grid type")
-
-            if self.__grid_type == -99:
-               idx = 0
-               with open("grid.dat","r") as fgrid:
-                nlines = int(next(fgrid))
-                gridbin = numpy.zeros((nlines,4),dtype=numpy.float_)
-                for line in fgrid:
-                 raw = line.split()
-                 gridbin[idx,:]=raw
-                 idx += 1
-
-               fgrid.close() 
-               x = gridbin[:,0]
-               y = gridbin[:,1]
-               z = gridbin[:,2]
-               w = gridbin[:,3]
-
-            else:
-               basis_dummy = psi4.core.BasisSet.build(mol_obj, "ORBITAL", self.__basis_frzn)
-               
-               sup = build_superfunctional(self.__enviro_func, True)[0]
-               
-               Vpot = psi4.core.VBase.build(basis_dummy, sup, "RV")
-               Vpot.initialize()
-               
-               x, y, z, w = Vpot.get_np_xyzw()
-               Vpot.finalize()
-          
-            points = numpy.zeros((x.shape[0],4)) #dtype?
-            points[: ,0] = x
-            points[: ,1] = y
-            points[: ,2] = z
-            points[: ,3] = w
-          
-            psi4.core.clean()
-        
-            # prepare a custom pyadf grid object out of x,y,z,w. A mol object is only needed for cube dumping (see documentation)
-            self.__agrid=pyadf.customgrid(mol=m_dummy,coords=numpy.ascontiguousarray(points[:,:3], \
-                 dtype=numpy.float_),weights=numpy.ascontiguousarray(w,dtype=numpy.float_))
-            GridWriter.write_xyzw(grid=self.__agrid,filename='grid.txt',add_comment=False)
-            # TODO : code for the calculation of ESP and isolated enviroment density
-            #the quality of the grid for the environment gs calculation is set to 'good' (see Psi4 man)
-            psi4.set_options({'dft_radial_scheme' : 'becke',    #dft_radial_ and spherical_ points determine grid size
-                              'dft_radial_points':  75,
-                              'dft_spherical_points' : 434, #'dft_nuclear_scheme': 'treutler' | default
-                              'puream' : 'True',            
-                              'scf_type' : 'direct',                     
-                              'DF_SCF_GUESS': 'False',
-                              'd_convergence' : self.__thresh_conv,
-                              'e_convergence' : self.__thresh_conv})
-            m_enviro.append('symmetry c1' +'\n' + 'no_com' + '\n' + 'no_reorient' + '\n')
-            enviro_obj=psi4.geometry(m_enviro.geom_str())
-            ene, enviro_wfn = psi4.energy(self.__enviro_func,return_wfn=True)
-            
-            psi4_matrix = psi4.core.Matrix.from_array(points[:,:3])
-            enviro_epc = psi4.core.ESPPropCalc(enviro_wfn)
-
-            elpot_enviro = numpy.array(enviro_epc.compute_esp_over_grid_in_memory( psi4_matrix ))
-            psi4.core.clean()
-
-           
-            #represent the environ density on the grid
-            environment=GridDensityFactory(enviro_obj,points,self.__basis_frzn)
-            environment.print_detail()
-            enviro_dens = environment.from_Cocc(numpy.asarray(enviro_wfn.Ca_subset("AO","OCC") ))
-            density=numpy.zeros((x.shape[0],10))
-            density[:,0] = 2.0*enviro_dens
-
-            #cast into pyadf containers
-            dens_gf_enviro = GridFunctionFactory.newGridFunction(self.__agrid,numpy.ascontiguousarray(density[:,0],dtype=numpy.float_),gf_type="density")
-            densgrad = GridFunctionFactory.newGridFunction(self.__agrid, numpy.ascontiguousarray(density[:, 1:4],dtype=numpy.float_))
-            denshess = GridFunctionFactory.newGridFunction(self.__agrid, numpy.ascontiguousarray(density[:, 4:10],dtype=numpy.float_))  
-            self.__isolated_dens_enviro =  GridFunctionContainer([dens_gf_enviro, densgrad, denshess])
-
-            self.__isolated_elpot_enviro = GridFunctionFactory.newGridFunction(self.__agrid,numpy.ascontiguousarray(elpot_enviro,dtype=numpy.float_), gf_type="potential") 
-
-            os.close(stdout_fileno)
-            t.join()
-            
-            towrite = 1
-            if self.__psioufname == "":
-                towrite = 0
-
-            finalize_stdout_redirect(self.__psioufname, towrite)
- 
-            self.__init = True
         else: 
             raise PyEmbError ("incompatible job type")
 

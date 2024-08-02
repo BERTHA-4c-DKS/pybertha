@@ -20,6 +20,7 @@ c      USE mkl_service
       use shiftr, only: sfact
       use opensh, only: nopen
       use indsys
+      use one_elect_prop
 
       implicit none
 
@@ -36,6 +37,7 @@ c     potential to add
 
 c     restart from memory data 
       logical :: restartmem 
+      
 
       contains
 
@@ -121,15 +123,22 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       real :: coulenergy
 
       complex, allocatable :: olddensity(:,:)
+      complex, allocatable :: diisdensity(:,:)
       real :: maxdiff , percmaxdiff
 
       real, external :: walltime, cputime
 
       logical :: filefound, debug
 
+      real    :: diff_dip
+      real,dimension(3)    :: el_dip,el_dipold
+
 #ifdef USEOMPAPI 
       character(len=255) :: evariable
       integer :: nt, io
+     
+
+      el_dipold(:) = 100.0
 
 
 c      write(*,*) "Proc number: ", omp_get_num_procs()
@@ -396,6 +405,11 @@ c        call dftinit_fit(excfit,igrid,expo,v,nfitt,fitcase,zz,a)
 
   777 format
      > ("=============================================================")
+
+      call init_mat_dip(ndim)
+
+!      allocate(diisdensity(ndim,ndim))
+      
       do iter = 1,maxit
         if (verbose .eq. -1) then 
           write(6,*) "Iteration ", iter
@@ -428,11 +442,17 @@ c        call dftinit_fit(excfit,igrid,expo,v,nfitt,fitcase,zz,a)
 
         call v_calculation(nfitt,fitcase,v)
 
+!        print*,'v='
+!        print*,v(:)
+
         timetomt2 = walltime ()
         ctimetomt2 = cputime ()
         call factlu(nfitt,v)
 !! 
-        cfit(:) = v(:)
+!        cfit(:) = v(:)
+
+!        print*,'cfit='
+!        print*,cfit(:)
 
         timetomt2 = walltime () - timetomt2
         ctimetomt2 = cputime () - ctimetomt2
@@ -460,7 +480,11 @@ c        call dftinit_fit(excfit,igrid,expo,v,nfitt,fitcase,zz,a)
      +          '  cputime ', f10.2)
 
         v = zz + v
+! This has been introduced to stabilize the convergency
 
+        if(iter.ge.2)  v = 0.5d0*v + 0.5d0*cfit
+
+        cfit = v
 ! Note that this is necessary to evaluate the TOTAL energy
 
         call jmatfitt(fock,ndim,v,nfitt,fitcase)
@@ -727,7 +751,12 @@ c        end do
         endif
 
         diff = abs(eold-etotal)/(abs(etotal)+1.0)
-        if (diff.lt.thresh.and.iall.eq.2) then
+
+        print *, "thresh   : ", thresh 
+        print *, "diff     : ", diff  
+        print *, "diff_dip : ", diff_dip  
+
+        if (diff.lt.thresh.and.iall.eq.2.and.diff_dip.lt.1e-10) then
           goto 2000
         else
           continue
@@ -737,6 +766,15 @@ c        end do
         denscputime = cputime ()
         
         call dens()
+
+!DIIS
+
+!        if (iter ==1) diisdensity = c       
+!
+!        if (iter > 1) then
+!         c=0.5*c + 0.5*diisdensity
+!         diisdensity = c
+!        endif  
         
         if (densitydiff .eq. 1) then 
           maxdiff = 0.0 
@@ -776,6 +814,12 @@ c        end do
         end if
         eold = etotal
 
+        call dipole_calc(el_dip)
+
+        diff_dip = abs(DOT_PRODUCT(el_dip,el_dip)-DOT_PRODUCT(el_dipold,el_dipold)) 
+        el_dipold(:) = el_dip(:)
+
+
         wtimeiter = walltime () - wtimeiter
         ctimeiter = cputime () - ctimeiter
 
@@ -784,6 +828,7 @@ c        end do
  6666   format ("Total time for iteration ", I4, " walltime   ",
      +          F10.2, "  cputime ", F10.2, /)
       end do
+
 
       if (verbose .eq. 1) write(6,*) 'convergence not obtained in the maximum number'
       if (verbose .eq. 1) write(6,*) 'of iterations'
@@ -823,13 +868,15 @@ c     call getresourcesusage ()
         deallocate(olddensity)
       endif
 
+!      deallocate(diisdensity)
+
       wtimeiter = walltime ()
       !call gencubefile(ncent,coord,iznuc,nfitt,fitcase)
       wtimeiter = walltime () - wtimeiter
 
       if (verbose .eq. 1) write (6, 6679) wtimeiter
  6679 format ('Time for cube is: ', f8.4)
-
+      call free_mat_dip()
       call flush(6)
 
       return 

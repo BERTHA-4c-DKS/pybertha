@@ -418,6 +418,7 @@ def run_iterations_from_to (startiter, niter, bertha, args, fock_mid_backwd, dt,
             rtutil.progress_bar(j, niter-1)
 
         sys.stdout.flush()
+        
 
     sys.stdout.flush()
 
@@ -975,8 +976,7 @@ def main():
    parser.add_argument("--fittset", \
         help="Specify BERTHA fitting set \"atomname1:fittset1,atomname2:fittset2,...\"", \
         required=False, type=str, default="")
-   parser.add_argument("--func", 
-	    help="Specify exchange–correlation energy functional for active system available: LDA,B88P86,HCTH93,BLYP (default=BLYP)", \
+   parser.add_argument("--func", help="ystem available: LDA,B88P86,HCTH93,BLYP (default=BLYP)", \
         type=str, default="BLYP")
    parser.add_argument("-j","--jsonbasisfile", \
         help="Specify BERTHA JSON file for fitting and basis (default: fullsets.json)", \

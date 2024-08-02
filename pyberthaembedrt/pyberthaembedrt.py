@@ -275,7 +275,9 @@ def run_iterations_from_to (startiter, niter, bertha, embfactory, args, fock_mid
         grid = embfactory.get_grid()
         #bertha.get_realtime_fock has previously assigned  D_ti 
         if args.iterative: 
-          if ( ( j % int(args.period/dt) ) == 0.0 ):
+#          if ( ( j % int(args.period/dt) ) == 0.0 ):
+          if ( ( j % int(args.period/dt) ) == 0 ):
+             print('Update of emb. pot. period. ',args.period,' iteraction:',j, 'dt:',dt)
              rho = bertha.get_density_on_grid(grid)
              density=numpy.zeros((rho.shape[0],10))
              density[:,0] = rho
@@ -656,6 +658,9 @@ def normal_run(pberthaopt, args):
     debug = args.debug
     dt = args.dt
     t_int = args.totaltime
+
+    print('dt ',dt)
+
     niter = int(t_int/dt)
     
     print("Debug: ", debug)
@@ -976,7 +981,13 @@ def main():
    parser.add_argument("--berthamaxit", help="set bertha maxiterations (default = %d)"%(MAXIT),
          required=False, type=int, default=MAXIT)
    
+
    args = parser.parse_args()
+   if(args.period < args.dt):
+      print('ATTENTION: you set a period of updating V_emv smaller than dt')
+      print('This is not allowed: now period is set equal dt')
+      args.period = args.dt
+
    for path in args.modpaths.split(";"):
        sys.path.append(path)
 
