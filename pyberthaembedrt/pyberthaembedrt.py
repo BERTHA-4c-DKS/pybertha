@@ -267,14 +267,25 @@ def run_iterations_from_to (startiter, niter, bertha, embfactory, args, fock_mid
     dumpcounter = 0
 
     bertha.checksetthreads()
+
+    print('Setting grid (embfactory.get_grid)')
+    grid = embfactory.get_grid()
+    print('Done')
+
     
     for j in range(startiter, niter):
 
         sys.stdout.flush()
+
+        start = time.time()
+        cstart = time.process_time() 
         # here we set the embedding potential (updated at every step)
-        grid = embfactory.get_grid()
+#        grid = embfactory.get_grid()
         #bertha.get_realtime_fock has previously assigned  D_ti 
         if args.iterative: 
+           start_it = time.time()
+           cstart_it = time.process_time()
+
 #          if ( ( j % int(args.period/dt) ) == 0.0 ):
           if ( ( j % int(args.period/dt) ) == 0 ):
              print('Update of emb. pot. period. ',args.period,' iteraction:',j, 'dt:',dt)
@@ -285,8 +296,11 @@ def run_iterations_from_to (startiter, niter, bertha, embfactory, args, fock_mid
              # the embedding potential from converged density
              pot = embfactory.get_potential(density)
              bertha.set_embpot_on_grid(grid, pot)
-        start = time.time()
-        cstart = time.process_time() 
+
+             end_it = time.time()
+             cend_it = time.process_time()
+             print("timing to update of emb.pot. period. ( %15.5f"%(end_it - start_it),")")
+
     
         fock_mid_backwd, D_ti, Dp_ti = main_loop(j, niter, bertha, 
                 args.pulse, args.pulseFmax, args.pulsew, args.propthresh,
