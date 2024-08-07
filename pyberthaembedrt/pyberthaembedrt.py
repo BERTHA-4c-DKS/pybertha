@@ -319,6 +319,7 @@ def run_iterations_from_to (startiter, niter, bertha, embfactory, args, fock_mid
                 
                 encoder.FLOAT_REPR = lambda o: format(o, '.25E')
 
+
                 json_data = get_json_data(args, j, niter, ndim, ene_list, 
                         dip_list, D_ti, fock_mid_backwd, dip_mat, C, 
                         C_inv, ovapm, Dp_ti, weight_list)
