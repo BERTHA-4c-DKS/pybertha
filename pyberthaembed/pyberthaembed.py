@@ -319,7 +319,7 @@ def runspberthaembed (pberthaopt, restart = False, stdoutprint = True):
     #if lin_emb=True, a single scf is performed at constant Vemb
 #    maxiter = 20
 # LB Reduced maxit to 4
-    maxiter = 4
+    maxiter = 10
     Dold = Da0 
     Da = Da0
     Eold = etotal
