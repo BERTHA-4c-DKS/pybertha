@@ -105,7 +105,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       integer :: counter, icent, j, i, iter, 
      + nuca, nucb, nucc, nuccnt, rc, istate, a, iocc
 
-      real, allocatable :: v(:), zz(:)
+      real, allocatable :: v(:), zz(:), v_old(:)
       real, allocatable :: pp(:)
       integer           :: npoints
 
@@ -339,6 +339,8 @@ c          print *, "Here " , ndim, nocc
         ioccm0 = nocc
         allocate(v(nfitt),stat=rc)
         if (rc.ne.0) call errmsg('error allocating memory')
+        allocate(v_old(nfitt),stat=rc)
+        if (rc.ne.0) call errmsg('error allocating memory')
         allocate(zz(nfitt),stat=rc)
         if (rc.ne.0) call errmsg('error allocating memory')
 
@@ -384,6 +386,7 @@ c        call dftinit_fit(excfit,igrid,expo,v,nfitt,fitcase,zz,a)
         call jmatfitt(fock, ndim, v, nfitt, fitcase)
 
         deallocate(v)
+        deallocate(v_old)
         deallocate (zz)
 
         call oneel(monoelectronenergy)
@@ -449,8 +452,8 @@ c        call dftinit_fit(excfit,igrid,expo,v,nfitt,fitcase,zz,a)
         ctimetomt2 = cputime ()
         call factlu(nfitt,v)
 !! 
-!        cfit(:) = v(:)
-
+!!      cfit fitted density used density to grid
+        cfit(:) = v(:)
 !        print*,'cfit='
 !        print*,cfit(:)
 
@@ -480,11 +483,14 @@ c        call dftinit_fit(excfit,igrid,expo,v,nfitt,fitcase,zz,a)
      +          '  cputime ', f10.2)
 
         v = zz + v
+         
 ! This has been introduced to stabilize the convergency
-
-        if(iter.ge.2)  v = 0.5d0*v + 0.5d0*cfit
-
-        cfit = v
+        if(iter.eq.1) then
+          v_old = v
+        else
+          v = 0.5d0*v + 0.5d0*v_old
+          v_old = v
+        endif 
 ! Note that this is necessary to evaluate the TOTAL energy
 
         call jmatfitt(fock,ndim,v,nfitt,fitcase)
