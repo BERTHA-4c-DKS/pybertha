@@ -287,7 +287,7 @@ def run_iterations_from_to (startiter, niter, bertha, embfactory, args, fock_mid
            cstart_it = time.process_time()
 
 #          if ( ( j % int(args.period/dt) ) == 0.0 ):
-          if ( ( j % int(args.period/dt) ) == 0 ):
+           if ( ( j % int(args.period/dt) ) == 0 ):
              print('Update of emb. pot. period. ',args.period,' iteraction:',j, 'dt:',dt)
              rho = bertha.get_density_on_grid(grid)
              density=numpy.zeros((rho.shape[0],10))
