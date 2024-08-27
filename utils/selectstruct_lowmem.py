@@ -110,9 +110,11 @@ if __name__ == "__main__":
     if slicetorun != -1:
         total = totalslices
         step = len(similmols1) // total
-        startfrom = slicetorun * step
+        startfrom = (slicetorun - 1)* step
         upto = startfrom + step
         if upto > len(similmols1):
+            upto = len(similmols1)
+        if slicetorun == total:
             upto = len(similmols1)
         print("Running slice ", slicetorun, " of ",\
                total, " from ", startfrom, " to ", upto)
