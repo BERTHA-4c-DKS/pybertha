@@ -135,8 +135,6 @@ OBJ +=  \
         $(SERIALDIR)/dftinit_fit_allext.o \
         $(SERIALDIR)/dftinit_fit_minmem.o \
         $(SERIALDIR)/dftinit_fit_quadpregrid.o \
-        $(SERIALDIR)/rjmat.o \
-        $(SERIALDIR)/dftint.o \
         $(SERIALDIR)/oneel.o \
         $(SERIALDIR)/shftlv.o \
         $(SERIALDIR)/atomic.o \
@@ -149,7 +147,6 @@ OBJ +=  \
         $(SERIALDIR)/gridset.o \
         $(SERIALDIR)/rlebdv.o \
         $(SERIALDIR)/fit_excpot.o \
-        $(SERIALDIR)/gradfu.o \
         $(SERIALDIR)/lda1.o \
         $(SERIALDIR)/rel1e.o \
         $(SERIALDIR)/fock.o \
@@ -174,6 +171,8 @@ OBJ +=  \
         $(SERIALDIR)/epscalc.o \
         $(SERIALDIR)/fit_basis_xyz.o \
         $(SERIALDIR)/onel_pot_from_grid.o \
+	$(SERIALDIR)/VXCNONFITT/exc_gga_interface.o \
+	$(SERIALDIR)/VXCNONFITT/rjmat.o
 
 ifeq ($(USEOPENMP),yes)
         OBJ += \
@@ -199,6 +198,10 @@ $(BERTHAWLIB): $(OBJ)
 	cp $(BERTHAWLIB) ../lib
 
 clean:
-	rm -f *.o *.mod *__genmod.f90 $(BERTHAWLIB) ../lib/$(BERTHAWLIB) rm -f $(SERIALDIR)/*.o $(SERIALDIR)/*.mod $(SERIALDIR)/*__genmod.f90 \
-	  $(SERIALMODIR)/*.o $(SERIALMODIR)/*.mod $(SERIALMODIR)/*__genmod.f90  $(COMMONMODDIR)/*.o $(COMMONMODDIR)/*.mod $(COMMONMODDIR)/*__genmod.f90 \
+	rm -f *.o *.mod *__genmod.f90 $(BERTHAWLIB) ../lib/$(BERTHAWLIB) \
+	  $(SERIALDIR)/*.o $(SERIALDIR)/*.mod $(SERIALDIR)/*__genmod.f90 \
+	  $(SERIALMODIR)/*.o $(SERIALMODIR)/*.mod $(SERIALMODIR)/*__genmod.f90 \
+	  $(SERIALMODIR)/VXCNONFITT/*.o $(SERIALMODIR)/VXCNONFITT/*.mod \
+	  	$(SERIALMODIR)/VXCNONFITT/*__genmod.f90 \
+	  $(COMMONMODDIR)/*.o $(COMMONMODDIR)/*.mod $(COMMONMODDIR)/*__genmod.f90 \
 	  $(COMMONDIR)/*.o $(COMMONDIR)/*.mod $(COMMONDIR)/*__genmod.f90

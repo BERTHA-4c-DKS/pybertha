@@ -14,7 +14,7 @@ PROFILE=no
 USEINTEL=no
 
 #use cuda portland compiler
-USECUDA=yes
+USECUDA=no
 # avoid device update, does not work using SO, 
 # i.e., when using pybertha should be noo
 USEDEVICEUPDATE=no
@@ -30,7 +30,7 @@ LIBXC=no
 # export OMP_SCHEDULE=dynamic
 # export OMP_STACKSIZE=200M (KMP_.... for Intel)
 # export OMP_NUM_THREADS=4
-USEOPENMP=yes
+USEOPENMP=no
 
 BERTHAROOT=${BerthaRootPath}/bertha_ng
 
