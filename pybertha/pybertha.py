@@ -168,7 +168,6 @@ def runspbertha (pberthaopt):
                pberthaopt.potfilename + " do not exist")
             exit(1)
 
-
     ovapm, eigem, fockm, eigen = bertha.run()
 
     #np.savetxt('eigen.out', eigen.flatten(), fmt='%10.8e')

@@ -167,11 +167,11 @@ ifeq ($(FORBGQ),no)
       endif
      
       ifeq ($(DEBUG),yes)
-        FFLAGS += -finit-local-zero -fdefault-double-8 -fdefault-real-8 -O0 -ffixed-line-length-132 -fbacktrace -ffpe-trap=zero,overflow,underflow -g -W -Wall -I./$(MODIR)
+        FFLAGS += -finit-local-zero -fdefault-double-8 -fdefault-real-8 -O0 -ffixed-line-length-132 -fbacktrace -ffpe-trap=zero,overflow,underflow -g -W -Wall -I./$(MODIR) -frecursive
         CFLAGS += -D_FILE_OFFSET_BITS=64 -O0 -g -W -Wall
       else
         #FFLAGS += -finit-local-zero -fdefault-double-8 -fdefault-real-8 -O2 -I./$(MODIR) -W -Wall -ffixed-line-length-132
-        FFLAGS +=  -fdefault-double-8 -fdefault-real-8 -O3 -I./$(MODIR) -ffixed-line-length-132
+        FFLAGS +=  -fdefault-double-8 -fdefault-real-8 -O3 -I./$(MODIR) -ffixed-line-length-132 -frecursive
         CFLAGS += -D_FILE_OFFSET_BITS=64 -O3 -W -Wall
       endif
      

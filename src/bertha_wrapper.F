@@ -282,7 +282,7 @@ c      call mkl_set_num_threads(nt)
      &        status ="unknown")
       endif
 
-      call getmem ()
+      call getmem (.false.)
 
       if (densitydiff .eq. 1) then 
         allocate(olddensity(ndim, ndim),stat=rc)
