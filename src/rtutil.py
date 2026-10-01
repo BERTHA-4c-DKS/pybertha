@@ -306,7 +306,7 @@ def mo_fock_mid_forwd_eval(USING_GPU, GPUTOCPUCOMTIME,  \
       GPUTOCPUCOMTIME += (commstop - commstart)
 
       k = 1
-      t_arg = numpy.float_(i) * numpy.float_ (delta_t)
+      t_arg = numpy.float64(i) * numpy.float64 (delta_t)
       start = timeit.default_timer()
       fockmtx = bertha.get_realtime_fock(cD_ti.T)
       end = timeit.default_timer()
@@ -379,7 +379,7 @@ def mo_fock_mid_forwd_eval(USING_GPU, GPUTOCPUCOMTIME,  \
       
       Dp_ti = numpy.matmul(C_inv,numpy.matmul(D_ti,numpy.conjugate(C_inv.T)))
       k = 1
-      t_arg = numpy.float_(i) * numpy.float_ (delta_t)
+      t_arg = numpy.float64(i) * numpy.float64 (delta_t)
    
       start = timeit.default_timer()
       fockmtx = bertha.get_realtime_fock(D_ti.T)

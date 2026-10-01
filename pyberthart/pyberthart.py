@@ -269,7 +269,7 @@ def main_loop (USING_GPU, GPUTOCPUCOMTIME, \
         mofostart = timeit.default_timer()
         commtime, fock_mid_tmp = rtutil.mo_fock_mid_forwd_eval(USING_GPU, GPUTOCPUCOMTIME,\
                                                      bertha, numpy.copy(D_ti), \
-                fock_mid_backwd, j, numpy.float_(dt), dip_mat, C, C_inv, ovapm, \
+                fock_mid_backwd, j, numpy.float64(dt), dip_mat, C, C_inv, ovapm, \
                 ndim, debug, fo, pulse, pulseFmax, pulsew, t0, pulseS, propthresh)
         mofostop = timeit.default_timer()
         print("Time_for_MO_Fock: %8.6f s."%(mofostop - mofostart))
@@ -282,7 +282,7 @@ def main_loop (USING_GPU, GPUTOCPUCOMTIME, \
        
         # transform fock_mid_tmp in MO basis
         fockp_mid_tmp = cupy.matmul(cupy.conjugate(C.T),cupy.matmul(fock_mid_tmp, C))
-        u = rtutil.exp_opmat(USING_GPU,cupy.copy(fockp_mid_tmp),cupy.float_(dt),debug,fo)
+        u = rtutil.exp_opmat(USING_GPU,cupy.copy(fockp_mid_tmp),cupy.float64(dt),debug,fo)
     
         test_u = cupy.matmul(u,cupy.conjugate(u.T))
         if (not cupy.allclose(cupy.eye(u.shape[0]),test_u,atol=1.e-14)):
@@ -334,7 +334,7 @@ def main_loop (USING_GPU, GPUTOCPUCOMTIME, \
         mofostart = timeit.default_timer()
         commtime, fock_mid_tmp = rtutil.mo_fock_mid_forwd_eval(USING_GPU, GPUTOCPUCOMTIME,\
                                                      bertha, numpy.copy(D_ti), \
-                fock_mid_backwd, j, numpy.float_(dt), dip_mat, C, C_inv, ovapm, \
+                fock_mid_backwd, j, numpy.float64(dt), dip_mat, C, C_inv, ovapm, \
                 ndim, debug, fo, pulse, pulseFmax, pulsew, t0, pulseS, propthresh)
         mofostop = timeit.default_timer()
         print("Time_for_MO_Fock: %8.6f s."%(mofostop - mofostart))
@@ -350,7 +350,7 @@ def main_loop (USING_GPU, GPUTOCPUCOMTIME, \
     
         # transform fock_mid_tmp in MO basis
         fockp_mid_tmp = numpy.matmul(numpy.conjugate(C.T),numpy.matmul(fock_mid_tmp, C))
-        u = rtutil.exp_opmat(USING_GPU, numpy.copy(fockp_mid_tmp),numpy.float_(dt),debug,fo)
+        u = rtutil.exp_opmat(USING_GPU, numpy.copy(fockp_mid_tmp),numpy.float64(dt),debug,fo)
         if type(u) == cupy.ndarray:
             u = cupy.asnumpy(u)
     
@@ -598,20 +598,20 @@ def restart_run(args, filenames):
     ndim = int(json_data["ndim"])
     niter = int(json_data["niter"])
 
-    fock_mid_backwd_REAL = numpy.float_(json_data["fock_mid_backwd_REAL"])
-    fock_mid_backwd_IMAG = numpy.float_(json_data["fock_mid_backwd_IMAG"])
-    dip_mat_REAL = numpy.float_(json_data["dip_mat_REAL"])
-    dip_mat_IMAG = numpy.float_(json_data["dip_mat_IMAG"])
-    C_REAL = numpy.float_(json_data["C_REAL"])
-    C_IMAG = numpy.float_(json_data["C_IMAG"])
-    C_inv_REAL = numpy.float_(json_data["C_inv_REAL"])
-    C_inv_IMAG = numpy.float_(json_data["C_inv_IMAG"])
-    ovapm_REAL = numpy.float_(json_data["ovapm_REAL"])
-    ovapm_IMAG = numpy.float_(json_data["ovapm_IMAG"])
-    Dp_ti_REAL = numpy.float_(json_data["Dp_ti_REAL"])
-    Dp_ti_IMAG = numpy.float_(json_data["Dp_ti_IMAG"])
-    D_ti_REAL = numpy.float_(json_data["D_ti_REAL"])
-    D_ti_IMAG = numpy.float_(json_data["D_ti_IMAG"])
+    fock_mid_backwd_REAL = numpy.float64(json_data["fock_mid_backwd_REAL"])
+    fock_mid_backwd_IMAG = numpy.float64(json_data["fock_mid_backwd_IMAG"])
+    dip_mat_REAL = numpy.float64(json_data["dip_mat_REAL"])
+    dip_mat_IMAG = numpy.float64(json_data["dip_mat_IMAG"])
+    C_REAL = numpy.float64(json_data["C_REAL"])
+    C_IMAG = numpy.float64(json_data["C_IMAG"])
+    C_inv_REAL = numpy.float64(json_data["C_inv_REAL"])
+    C_inv_IMAG = numpy.float64(json_data["C_inv_IMAG"])
+    ovapm_REAL = numpy.float64(json_data["ovapm_REAL"])
+    ovapm_IMAG = numpy.float64(json_data["ovapm_IMAG"])
+    Dp_ti_REAL = numpy.float64(json_data["Dp_ti_REAL"])
+    Dp_ti_IMAG = numpy.float64(json_data["Dp_ti_IMAG"])
+    D_ti_REAL = numpy.float64(json_data["D_ti_REAL"])
+    D_ti_IMAG = numpy.float64(json_data["D_ti_IMAG"])
  
     fock_mid_backwd = check_and_covert (fock_mid_backwd_REAL ,
             fock_mid_backwd_IMAG, ndim)
@@ -622,10 +622,10 @@ def restart_run(args, filenames):
     Dp_ti = check_and_covert (Dp_ti_REAL, Dp_ti_IMAG, ndim)
     D_ti = check_and_covert (D_ti_REAL, D_ti_IMAG, ndim)
 
-    ene_list_REAL = numpy.float_(json_data["ene_list_REAL"])
-    ene_list_IMAG = numpy.float_(json_data["ene_list_IMAG"])
-    dip_list_REAL = numpy.float_(json_data["dip_list_REAL"])
-    dip_list_IMAG = numpy.float_(json_data["dip_list_IMAG"])
+    ene_list_REAL = numpy.float64(json_data["ene_list_REAL"])
+    ene_list_IMAG = numpy.float64(json_data["ene_list_IMAG"])
+    dip_list_REAL = numpy.float64(json_data["dip_list_REAL"])
+    dip_list_IMAG = numpy.float64(json_data["dip_list_IMAG"])
 
     if ((ene_list_REAL.shape != ene_list_IMAG.shape) or 
         (dip_list_REAL.shape != dip_list_IMAG.shape) or
@@ -641,8 +641,8 @@ def restart_run(args, filenames):
         dip_list.append(numpy.complex128(complex(dip_list_REAL[i],
             dip_list_IMAG[i])))
 
-    weight_list_REAL = numpy.float_(json_data["weight_list_REAL"])
-    weight_list_IMAG = numpy.float_(json_data["weight_list_IMAG"])
+    weight_list_REAL = numpy.float64(json_data["weight_list_REAL"])
+    weight_list_IMAG = numpy.float64(json_data["weight_list_IMAG"])
 
     weight_list = []
 
@@ -953,7 +953,7 @@ def normal_run(args, filenames):
             dipz_mo=rtutil.dipole_selection(dipz_mo,nshift,nocc,occlist,virtlist,fo,debug)
 
         print(" Perturb with analytic kick ")
-        u0=rtutil.exp_opmat(USING_GPU, dipz_mo,numpy.float_(-Amp),debug,fo)
+        u0=rtutil.exp_opmat(USING_GPU, dipz_mo,numpy.float64(-Amp),debug,fo)
         Dp_init=numpy.matmul(u0,numpy.matmul(D_0,numpy.conjugate(u0.T)))
         #transform back Dp_int
         Da=numpy.matmul(C,numpy.matmul(Dp_init,numpy.conjugate(C.T)))
@@ -964,7 +964,7 @@ def normal_run(args, filenames):
     GPUTOCPUCOMTIME = 0.0
     
     commtime, fock_mid_init = rtutil.mo_fock_mid_forwd_eval(USING_GPU, GPUTOCPUCOMTIME,\
-                                                  bertha,Da,fockm,0,numpy.float_(dt),\
+                                                  bertha,Da,fockm,0,numpy.float64(dt),\
             dip_mat,C,C_inv,ovapm,ndim, debug, fo, args.pulse, args.pulseFmax, args.pulsew, args.t0, args.pulseS, 
             args.propthresh)
     
@@ -980,11 +980,11 @@ def normal_run(args, filenames):
             numpy.allclose(fock_mid_init,fock_mid_h,atol=1.e-14))
     
     fockp_mid_init=numpy.matmul(numpy.conjugate(C.T),numpy.matmul(fock_mid_init,C))
-    u=rtutil.exp_opmat(USING_GPU,fockp_mid_init,numpy.float_(dt),debug,fo)
+    u=rtutil.exp_opmat(USING_GPU,fockp_mid_init,numpy.float64(dt),debug,fo)
     if type(u) is cupy.ndarray:
         u=cupy.asnumpy(u)
 
-    #u=rtutil.exp_opmat(USING_GPU,fockp_mid_init,numpy.float_(dt),debug,fo)
+    #u=rtutil.exp_opmat(USING_GPU,fockp_mid_init,numpy.float64(dt),debug,fo)
     #u=scila.expm(-1.j*fockp_mid_init*dt)
     temp=numpy.matmul(D_0,numpy.conjugate(u.T))
     Dp_t1=numpy.matmul(u,temp)
