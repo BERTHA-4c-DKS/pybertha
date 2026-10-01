@@ -342,6 +342,7 @@ c      call mkl_set_num_threads(nt)
        write(6,"(60('='))")
       endif
 
+
       nuccnt = 1
       do nucb = 2,ncent
         r1x = coord(1,nucb)-coord(1,nuccnt)
@@ -396,7 +397,7 @@ c      call mkl_set_num_threads(nt)
         !close(67)
 
         ioccm0 = ioccm0 - nshift
-        call dens()
+        call dens(.false.)
         if (densitydiff .eq. 1) then 
           if (allocated(olddensity)) olddensity = c
         endif
@@ -435,7 +436,7 @@ c      call mkl_set_num_threads(nt)
         endif
 
         ioccm0 = nocc
-        call dens()
+        call dens(.false.)
         if (densitydiff .eq. 1) then 
           if (allocated(olddensity)) olddensity = c
         endif
