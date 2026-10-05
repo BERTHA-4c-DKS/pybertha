@@ -1050,7 +1050,7 @@ def normal_run(args, filenames):
     
     fock_mid_backwd = numpy.copy(fock_mid_init)
 
-    USING_GPU = True
+    USING_GPU = False
     GPUTOCPUCOMTIME = 0.0
 
     return run_iterations_from_to (USING_GPU, GPUTOCPUCOMTIME, \

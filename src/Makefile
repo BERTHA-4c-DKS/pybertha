@@ -201,7 +201,7 @@ clean:
 	rm -f *.o *.mod *__genmod.f90 $(BERTHAWLIB) ../lib/$(BERTHAWLIB) \
 	  $(SERIALDIR)/*.o $(SERIALDIR)/*.mod $(SERIALDIR)/*__genmod.f90 \
 	  $(SERIALMODIR)/*.o $(SERIALMODIR)/*.mod $(SERIALMODIR)/*__genmod.f90 \
-	  $(SERIALMODIR)/VXCNONFITT/*.o $(SERIALMODIR)/VXCNONFITT/*.mod \
-	  	$(SERIALMODIR)/VXCNONFITT/*__genmod.f90 \
+	  $(SERIALDIR)/VXCNONFITT/*.o $(SERIALDIR)/VXCNONFITT/*.mod \
+	  	$(SERIALDIR)/VXCNONFITT/*__genmod.f90 \
 	  $(COMMONMODDIR)/*.o $(COMMONMODDIR)/*.mod $(COMMONMODDIR)/*__genmod.f90 \
 	  $(COMMONDIR)/*.o $(COMMONDIR)/*.mod $(COMMONDIR)/*__genmod.f90
