@@ -588,7 +588,7 @@ def run_iterations_from_to (USING_GPU, GPUTOCPUCOMTIME, \
 
 ##########################################################################################
 
-def restart_run(args, filenames):
+def restart_run(args, filenames, USING_GPU = False):
     
     fp = open(args.restartfile, 'r')
     json_data = json.load(fp)
@@ -768,7 +768,6 @@ def restart_run(args, filenames):
     if debug:
         fo = open("debug_info.txt", "w")
 
-    USING_GPU = False
     GPUTOCPUCOMTIME = 0.0
     
     return run_iterations_from_to (USING_GPU, GPUTOCPUCOMTIME, \
@@ -778,9 +777,7 @@ def restart_run(args, filenames):
  
 ##########################################################################################
 
-def normal_run(args, filenames):
-
-    USING_GPU = False
+def normal_run(args, filenames, USING_GPU = False):
 
     print("Options: ")
     print(args) 
@@ -963,7 +960,9 @@ def normal_run(args, filenames):
 
     GPUTOCPUCOMTIME = 0.0
     
-    commtime, fock_mid_init = rtutil.mo_fock_mid_forwd_eval(USING_GPU, GPUTOCPUCOMTIME,\
+    if USING_GPU:
+       print("USING_GPU, is true need to switch it off at the first step")
+    commtime, fock_mid_init = rtutil.mo_fock_mid_forwd_eval(False, GPUTOCPUCOMTIME,\
                                                   bertha,Da,fockm,0,numpy.float64(dt),\
             dip_mat,C,C_inv,ovapm,ndim, debug, fo, args.pulse, args.pulseFmax, args.pulsew, args.t0, args.pulseS, 
             args.propthresh)
@@ -1050,7 +1049,6 @@ def normal_run(args, filenames):
     
     fock_mid_backwd = numpy.copy(fock_mid_init)
 
-    USING_GPU = False
     GPUTOCPUCOMTIME = 0.0
 
     return run_iterations_from_to (USING_GPU, GPUTOCPUCOMTIME, \
@@ -1143,6 +1141,9 @@ def main():
         required=False, type=int, default=MAXIT)
    parser.add_argument("--addgridpot", help="Import a custom grid potential [\"gridfile.txt;pofile.txt\"]", required=False,
             type=str, default="")
+   parser.add_argument("--usegpucupy", help="use GPU inside python so CuPy", required=False,
+            default=False, action="store_true")
+
 
    args = parser.parse_args()
 
@@ -1159,11 +1160,11 @@ def main():
        if args.totaltime < 0.0:
            args.totaltime = 1.0
 
-       error, generatedinout = normal_run (args, filenames)
+       error, generatedinout = normal_run (args, filenames, USING_GPU=args.usegpucupy)
        if (not error):
            exit(1)
    else:
-      error, generatedinout = restart_run (args, filenames)
+      error, generatedinout = restart_run (args, filenames, USING_GPU=args.usegpucupy)
       if (error):
            exit(1)
 

@@ -295,6 +295,7 @@ def mo_fock_mid_forwd_eval(USING_GPU, GPUTOCPUCOMTIME,  \
 
    fock_inter = None
    gfock_inter = None
+   print("USING_GPU=: ", USING_GPU)
 
    if USING_GPU:
 
