@@ -14,7 +14,7 @@ PROFILE=no
 USEINTEL=no
 
 #use cuda portland compiler
-USECUDA=no
+USECUDA=yes
 # avoid device update, does not work using SO, 
 # i.e., when using pybertha should be noo
 USEDEVICEUPDATE=no
@@ -30,7 +30,7 @@ LIBXC=no
 # export OMP_SCHEDULE=dynamic
 # export OMP_STACKSIZE=200M (KMP_.... for Intel)
 # export OMP_NUM_THREADS=4
-USEOPENMP=yes
+USEOPENMP=no
 
 BERTHAROOT=${BerthaRootPath}/bertha_ng
 
@@ -111,14 +111,14 @@ ifeq ($(FORBGQ),no)
         # for Quadro P2000 -gpu=cc61,cuda12.1 
         # for marconi -gpu=cc70,cuda11.8 
         # for Loenardo  cc80 e cuda11.8
-        FFLAGS = -acc=gpu -gpu=cc80,cuda11.8 -Minfo=accel -cuda -cudalib=cublas,cusolver  
+        FFLAGS = -acc=gpu -gpu=cc89 -Minfo=accel -cuda -cudalib=cublas,cusolver  
         CFLAGS =
       endif
 
       # for Quadro P2000 -gpu=cc61,cuda12.1 
       # for marconi -gpu=cc70,cuda11.8 
       # for leonardo -gpu=cc80,cuda11.8 
-      LINKFLAGS += -acc=gpu -gpu=cc80,cuda11.8 -Minfo=accel -cuda -cudalib=cublas,cusolver  
+      LINKFLAGS += -acc=gpu -gpu=cc89 -Minfo=accel -cuda -cudalib=cublas,cusolver  
  
       ifeq ($(DEBUG),yes)
         FFLAGS += -r8 -Minform=warn -Mextend -O0 -g -cudalib=cublas -DUSECUDANV -DUSENVCOMPILER
