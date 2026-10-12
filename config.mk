@@ -30,7 +30,7 @@ LIBXC=no
 # export OMP_SCHEDULE=dynamic
 # export OMP_STACKSIZE=200M (KMP_.... for Intel)
 # export OMP_NUM_THREADS=4
-USEOPENMP=no
+USEOPENMP=yes
 
 BERTHAROOT=${BerthaRootPath}/bertha_ng
 

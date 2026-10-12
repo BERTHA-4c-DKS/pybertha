@@ -18,11 +18,11 @@ SERIALMODIR = ${BERTHAROOT}/serial/MOD
 SERIALDIR = ${BERTHAROOT}/serial
 
 OBJ = \
-	$(COMMONMODDIR)/rlight.o \
 	$(COMMONMODDIR)/constants.o \
 	$(COMMONMODDIR)/limits.o \
 	$(COMMONMODDIR)/shiftr.o \
 	$(COMMONMODDIR)/spec.o \
+	$(COMMONMODDIR)/rlight.o \
 	$(COMMONMODDIR)/opensh.o \
 	$(COMMONMODDIR)/clabel.o \
 	$(COMMONMODDIR)/energy.o \
