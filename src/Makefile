@@ -55,6 +55,7 @@ OBJ = \
 	$(COMMONMODDIR)/ijc.o \
 	$(COMMONMODDIR)/libxc_funcs.o \
 	$(COMMONMODDIR)/libxc_master.o \
+	$(COMMONMODDIR)/mod_options_flags.o \
         $(COMMONDIR)/cmatrix.o \
         $(COMMONDIR)/rmake.o \
         $(COMMONDIR)/stepn.o \

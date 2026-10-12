@@ -170,6 +170,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 
       use indsys, only : initijkvec
+      use mod_options_flags
 
       implicit none
 
@@ -213,7 +214,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       real, external :: walltime, cputime
 
-      logical :: filefound, debug
+      logical :: filefound
 
 #ifdef USECUDANV
       integer :: istat, lwork
@@ -459,7 +460,7 @@ c      call mkl_set_num_threads(nt)
         cfit(:) = v(:)
         excfit=0.0
 
-        call dftinit_fit_quadpregrid(excfit,igrid,expo,v,nfitt,fitcase,zz, debug)
+        call dftinit_fit_quadpregrid(excfit,igrid,expo,v,nfitt,fitcase,zz)
 
         v=v+zz
 
@@ -591,7 +592,7 @@ c      call mkl_set_num_threads(nt)
 
         timetomt2 = walltime ()
         ctimetomt2 = cputime ()
-        call dftinit_fit_quadpregrid(excfit,igrid,expo,v,nfitt,fitcase,zz, debug)
+        call dftinit_fit_quadpregrid(excfit,igrid,expo,v,nfitt,fitcase,zz)
         timetomt2 = walltime () - timetomt2
         ctimetomt2 = cputime () - ctimetomt2
 
@@ -1131,6 +1132,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       subroutine bertha_realtime_fock (dens_ptr, fock_ptr)
 
+      use mod_options_flags
       use fmat, only: fock
       use coeff, only: c
       use realtime
@@ -1147,7 +1149,6 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       real, allocatable :: pp(:)
       integer :: counter, i, j, a, rc
       integer :: npoints
-      logical :: debug
 
       debug = .false.
 
@@ -1175,7 +1176,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       a = 0
       excfit = 0.0
 c     call dftinit_fit(excfit,igrid,expo,v,nfitt,fitcase,zz,a)
-      call dftinit_fit_quadpregrid(excfit,igrid,expo,v,nfitt,fitcase,zz,debug)
+      call dftinit_fit_quadpregrid(excfit,igrid,expo,v,nfitt,fitcase,zz)
 
       v = zz + v
 ! Note that this is necessary to evaluate the TOTAL energy
