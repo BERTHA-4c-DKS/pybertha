@@ -18,6 +18,7 @@ SERIALMODIR = ${BERTHAROOT}/serial/MOD
 SERIALDIR = ${BERTHAROOT}/serial
 
 OBJ = \
+	$(COMMONMODDIR)/mod_options_flags.o \
 	$(COMMONMODDIR)/constants.o \
 	$(COMMONMODDIR)/limits.o \
 	$(COMMONMODDIR)/shiftr.o \
@@ -55,7 +56,6 @@ OBJ = \
 	$(COMMONMODDIR)/ijc.o \
 	$(COMMONMODDIR)/libxc_funcs.o \
 	$(COMMONMODDIR)/libxc_master.o \
-	$(COMMONMODDIR)/mod_options_flags.o \
         $(COMMONDIR)/cmatrix.o \
         $(COMMONDIR)/rmake.o \
         $(COMMONDIR)/stepn.o \
