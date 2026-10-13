@@ -9,16 +9,18 @@ c      USE mkl_service
 
       use spec, only: coord, znuc, cnuc, expset, iznuc, icrge, kvals,
      & nkappa, lmaxx, nfunct, ncent, ndim, nshift, nocc,
-     & iter, iall, irun, readinput, verbose, dumpfiles
+     & iter, iall, irun, readinput, dumpfiles
       use fmat, only: fock, ovap
-      use coeff, only: c
-      use dcoeff, only: d
-      use clabel, only: ioccm0
       use limits, only: ncentm, maxmv2, maxlqn, maxb, nkapm
       use constants, only: pi, bohr, elmnt
+      use clabel, only: ioccm0
       use energy, only: etotal
       use shiftr, only: sfact
       use opensh, only: nopen
+      use dcoeff, only: d
+      use coeff, only: c
+
+      use mod_options_flags
 
 #ifdef USECUDANV
       use cublas
